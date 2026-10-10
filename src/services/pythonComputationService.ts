@@ -1249,7 +1249,9 @@ export interface PythonLPBFResult {
     regime: string;
     /** Derivation of the regime thresholds (python REGIME_THRESHOLD_BASIS). */
     regimeBasis?: string;
-    /** Per-alloy note shown with the regime (threshold derived / misses keyhole in the dataset / not validated). */
+    /** Keyhole-mode cut on ΔH/hs used for this alloy (python regime_keyhole_cut: 20, Inconel 625 13.6). */
+    regimeKeyholeThreshold?: number;
+    /** Per-alloy note shown with the regime (threshold derived / IN625 per-alloy cut / not validated). */
     regimeMaterialNote?: string;
     /** Reporting-only note on the direction the served depth is biased (src/utils/depthBiasWarning.ts). No depth or regime number depends on it. */
     depthBiasWarning?: { direction: "may-underestimate" | "may-overestimate" | null; text: string | null; basis: string | null };

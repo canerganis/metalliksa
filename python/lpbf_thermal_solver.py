@@ -173,27 +173,52 @@ THERMOPHYSICAL_DB = {**four_alloy_thermophysical_db(), **SECONDARY_THERMOPHYSICA
 # (Ti-6Al-4V, 95 um 1/e^2) = 17.3-20.0 (a range along speed, not a confidence interval). Not an exact threshold.
 ENTHALPY_TRANSITION = 15.0
 ENTHALPY_KEYHOLE = 20.0
+# Inconel 625 only (planned bump in625-regime, 2026-10-11): per-alloy keyhole-mode cut on the same app index. Fitted
+# (max balanced accuracy, midpoint, rounded to 0.1) on 56 EOS M270 IN625 tracks of NIST mds2-2923 (Weaver et al.,
+# doi 10.18434/mds2-2923) with the pre-declared truth depth > half width (King et al. 2014 Sec. 5.2); scored once on
+# 13 held-out IN625 tracks (mds2-2923 AMMT spot series, Lane et al. 2020 doi 10.1007/s40192-020-00169-1 Table 3):
+# 0 errors, balanced accuracy 1.00 (the shared cut 20: 3 errors, 0.70). The held-out data only place the onset in
+# (12.67, 13.94]; 13.6 is the fit-split point estimate. Weaver, Heigel and Lane 2022 "about 30" is 21.73 in app units
+# (factor 0.7243) and makes the same 3 errors. docs/research/PREDECLARED_ / RESULTS_in625_regime_2026-10-11.*.
+# The transition cut 15 is not moved (it also starts the multi-reflection absorptivity and the depth increment), so
+# IN625 has no transition band: < 13.6 conduction, >= 13.6 keyhole mode. No width or depth number changes.
+ENTHALPY_KEYHOLE_IN625 = 13.6
 REGIME_THRESHOLD_BASIS = ("dH/hs < 15 conduction, 15-20 transition, >= 20 keyhole mode (melt-pool D/W > 0.5 "
-                          "screening onset). 20 is a provisional screening choice, not a derived exact threshold: it "
+                          "screening onset); Inconel 625 uses its own cut: < 13.6 conduction, >= 13.6 keyhole mode, "
+                          "no transition band (see the IN625 alloy note). "
+                          "20 is a provisional screening choice, not a derived exact threshold: it "
                           "lies in the overlap of King et al. 2014 30+/-4 (316L) converted to the repo convention "
                           "(19.3-25.2; conditional on the app absorptivity, 20 C preheat and property set; King's "
                           "printed density unit kg/m3 corrected to 7980 kg/m3) and the Cunningham et al. 2019 Fig. 3A "
                           "melt-pool transition line (Ti-6Al-4V; app index 17.3-20.0 along speed, a range, not a "
                           "confidence interval). Both sources and the held-out checks are for Ti-6Al-4V and 316L; "
-                          "transferred, not derived, for IN718/IN625/AlSi10Mg. "
+                          "transferred, not derived, for IN718/AlSi10Mg and the other alloys. "
                           "Cunningham and Gan data are not independent validation. Keyhole mode is not keyhole "
                           "porosity; a low index is not an assurance.")
 REGIME_MATERIAL_NOTE_DERIVED = ("threshold derived for this alloy from Ti-6Al-4V / 316L data (provisional screening "
                                 "choice)")
-REGIME_MATERIAL_NOTE_IN625 = ("threshold misses keyhole in the available dataset (measured keyhole indices "
-                              "13.9-18.6)")
+REGIME_MATERIAL_NOTE_IN625 = ("per-alloy keyhole-mode cut 13.6 (no transition band), fitted on 56 EOS M270 IN625 "
+                              "tracks of NIST mds2-2923 (Weaver et al.) with the truth depth > half width; on 13 "
+                              "held-out IN625 tracks (NIST AMMT, Lane et al. 2020) it makes 0 errors, balanced "
+                              "accuracy 1.00 (the shared cut 20 makes 3); the held-out data place the onset only in "
+                              "(12.67, 13.94], so 13.6 is a fit-split point estimate, not a held-out-validated value; "
+                              "tied to the app's estimated IN625 properties; screening only, not validation")
 REGIME_MATERIAL_NOTE_UNVALIDATED = "threshold not validated for this alloy"
+
+
+def _is_in625(material_name) -> bool:
+    return "625" in str(material_name or "").lower()
+
+
+def regime_keyhole_cut(material_name=None) -> float:
+    """Keyhole-mode cut on dH/hs for this alloy: ENTHALPY_KEYHOLE_IN625 for Inconel 625, else ENTHALPY_KEYHOLE."""
+    return ENTHALPY_KEYHOLE_IN625 if _is_in625(material_name) else ENTHALPY_KEYHOLE
 
 
 def regime_material_note(material_name: str) -> str:
     """Per-alloy statement shown next to the regime so that a low index never reads as an assurance."""
     name = str(material_name).lower()
-    if "625" in name:
+    if _is_in625(name):
         return REGIME_MATERIAL_NOTE_IN625
     if "ti-6al-4v" in name or "ti6al4v" in name or "316l" in name:
         return REGIME_MATERIAL_NOTE_DERIVED
@@ -244,8 +269,9 @@ DISTORTION_INDEX_BASIS = ("alloy/layer/preheat-only: E, alpha, nu, T_solidus - T
                           "not evaluated from scan parameters (P, v, hatch)")
 
 
-def classify_enthalpy_regime(normalized_enthalpy: float) -> str:
-    if normalized_enthalpy >= ENTHALPY_KEYHOLE:
+def classify_enthalpy_regime(normalized_enthalpy: float, material_name=None) -> str:
+    """Regime label; without a material name (or for any alloy but Inconel 625) the shared 15 / 20 cuts."""
+    if normalized_enthalpy >= regime_keyhole_cut(material_name):
         return "Keyhole Mode (melt-pool D/W > 0.5 screening onset)"
     if normalized_enthalpy >= ENTHALPY_TRANSITION:
         return "Transition Mode"
@@ -601,7 +627,7 @@ def calculate_meltpool_physics(
     # King et al. 2014 (doi 10.1016/j.jmatprotec.2014.06.005) Eq. (2.6), Hann calibration, pi INSIDE
     # the root: dH/hs = A P / (hs sqrt(pi D u sigma^3)), A = flat absorptivity. Repo convention differs
     # from King's calibration: r = 1/e^2 radius (King sigma = r/2), hs = rho cp_s (T_liq - T0), D = solid
-    # diffusivity; the 15/20 thresholds are derived in this convention (see REGIME_THRESHOLD_BASIS).
+    # diffusivity; the 15/20 thresholds (IN625: 13.6) are derived in this convention (see REGIME_THRESHOLD_BASIS).
     # dH always uses the flat absorptivity, also when the powder ray tracer is requested.
     enthalpy_denom = rho * cp_s * max(50.0, T_liq - T_preheat) * math.sqrt(math.pi * alpha_solid * v_scan * (r_beam ** 3))
     normalized_enthalpy = (eta_base_flat * P_laser) / max(1e-9, enthalpy_denom)
@@ -721,7 +747,7 @@ def calculate_meltpool_physics(
                                  "boundary: Zhao 2020 Ti-6Al-4V stable keyholes up to dH/hs 62 at high speed)")
 
     d_melt_m = d_iso + extra
-    regime = classify_enthalpy_regime(normalized_enthalpy)
+    regime = classify_enthalpy_regime(normalized_enthalpy, material_name)
 
     w_melt_um = w_melt_m * 1e6
     d_melt_um = d_melt_m * 1e6
@@ -953,6 +979,7 @@ def calculate_meltpool_physics(
 
     # 13. Dynamic P-V Process Window Map (2D Grid: Power 50-600W, Speed 200-2500 mm/s)
     process_map_grid = []
+    keyhole_cut = regime_keyhole_cut(material_name)
     p_steps = np.array([80, 150, 220, 300, 380, 460, 540], dtype=np.float64)
     v_steps = np.array([300, 600, 900, 1200, 1600, 2000, 2400], dtype=np.float64)
 
@@ -975,15 +1002,16 @@ def calculate_meltpool_physics(
                 d_um = w_um * 1.15
             else:
                 d_um = w_um * 0.70
-            if enth < ENTHALPY_TRANSITION:
-                pt_regime = "Optimal Conduction"
-                color_code = "#10b981"  # Emerald
-            elif enth >= ENTHALPY_KEYHOLE:
+            # Same per-alloy cuts as classify_enthalpy_regime (Inconel 625: keyhole from 13.6, no transition band).
+            if enth >= keyhole_cut:
                 pt_regime = "Keyhole Mode"
                 color_code = "#ef4444"  # Red
-            else:
+            elif enth >= ENTHALPY_TRANSITION:
                 pt_regime = "Transition"
                 color_code = "#38bdf8"  # Sky
+            else:
+                pt_regime = "Optimal Conduction"
+                color_code = "#10b981"  # Emerald
 
             # Check Lack of Fusion — Tang (h/W)^2+(t/D)^2
             tang_pt = (float(hatch_spacing_um) / max(1.0, w_um)) ** 2 + (
@@ -1050,6 +1078,7 @@ def calculate_meltpool_physics(
             "keyholeVaporCavityDepth_um": round(keyhole_depth_um, 1),
             "regime": regime,
             "regimeBasis": REGIME_THRESHOLD_BASIS,
+            "regimeKeyholeThreshold": regime_keyhole_cut(material_name),
             "regimeMaterialNote": regime_material_note(material_name),
             "extentStatus": extent_status,
             "extentNote": extent_note,
@@ -1158,6 +1187,7 @@ def calculate_meltpool_physics(
                 "lofStatus": lof_status
             },
             "regimeBasis": REGIME_THRESHOLD_BASIS,
+            "regimeKeyholeThreshold": keyhole_cut,
             "grid": process_map_grid,
             "ballingNote": ("Balling is screened at the operating point only (defectDiagnostics.ballingScreen, "
                             "Eagar-Tsai L/W); the quick grid has no melt-pool length and marks no balling zone."),

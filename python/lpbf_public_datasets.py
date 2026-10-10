@@ -144,17 +144,26 @@ TOTIS_PROVENANCE = {
 
 ENTHALPY_TRANSITION = 15.0
 ENTHALPY_KEYHOLE = 20.0
+# Mirror of lpbf_thermal_solver.ENTHALPY_KEYHOLE_IN625 (planned bump in625-regime, 2026-10-11).
+ENTHALPY_KEYHOLE_IN625 = 13.6
 REGIME_RULE = (
     "Screening classifier, not the papers' regime definition. Inputs: normalised enthalpy "
     "dH/h_s = eta*P / (rho*cp_s*max(50, T_liq-T0)*sqrt(pi*alpha_s*v*r^3)) (same form as "
     "lpbf_thermal_solver.py, flat-plate absorptivity_IR of the material authority, solid k/cp, r = d/2) "
     "and the dataset's own balling flag. balling == 1 -> 'balling-flagged' (Hofmann only); otherwise "
-    "dH/h_s < 15 -> 'conduction', 15 <= dH/h_s < 20 -> 'transition', >= 20 -> 'keyhole' "
+    "dH/h_s < 15 -> 'conduction', 15 <= dH/h_s < 20 -> 'transition', >= 20 -> 'keyhole'; "
+    "Inconel 625: dH/h_s < 13.6 -> 'conduction', >= 13.6 -> 'keyhole', no transition band "
     "(derivation: lpbf_thermal_solver.REGIME_THRESHOLD_BASIS). "
     "Measured D/W is recorded next to the label but not used for it."
 )
 REGIME_PARAMETERS = {"transitionEnthalpy": ENTHALPY_TRANSITION, "keyholeEnthalpy": ENTHALPY_KEYHOLE,
+                     "keyholeEnthalpyByAlloy": {"Inconel 625": ENTHALPY_KEYHOLE_IN625},
                      "balledLabel": "balling-flagged", "assumedPreheat_C": ASSUMED_PREHEAT_C}
+
+
+def keyhole_cut(material: str) -> float:
+    """Mirror of lpbf_thermal_solver.regime_keyhole_cut."""
+    return ENTHALPY_KEYHOLE_IN625 if "625" in str(material or "").lower() else ENTHALPY_KEYHOLE
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -1145,12 +1154,12 @@ def classify_regime(material: str, power_W: float, speed_mm_s: float, beam_diame
     h = normalized_enthalpy(material, power_W, speed_mm_s, beam_diameter_um, preheat_C)
     if balling == 1:
         label = "balling-flagged"
-    elif h < ENTHALPY_TRANSITION:
-        label = "conduction"
-    elif h < ENTHALPY_KEYHOLE:
+    elif h >= keyhole_cut(material):
+        label = "keyhole"
+    elif h >= ENTHALPY_TRANSITION:
         label = "transition"
     else:
-        label = "keyhole"
+        label = "conduction"
     return {"label": label, "normalizedEnthalpy": h}
 
 

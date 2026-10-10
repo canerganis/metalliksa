@@ -230,12 +230,18 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
     let badgeColor = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
     const sourceLabel =
       heatSource === "goldak" ? "Goldak double-ellipsoid" : heatSource === "eagar-tsai" ? "Eagar–Tsai Gaussian" : "regularized Rosenthal";
-    let desc = `Analytical conduction estimate. Width and depth from the T = T_liquidus isotherm of a ${sourceLabel} field (ΔH/hs < 15).`;
+    // Per-alloy keyhole cut served by the solver (20; Inconel 625 13.6, which leaves no transition band).
+    const servedCut = pyResult?.meltPoolGeometry?.regimeKeyholeThreshold;
+    const keyholeCut = typeof servedCut === "number" && Number.isFinite(servedCut) ? servedCut : 20;
+    let desc = `Analytical conduction estimate. Width and depth from the T = T_liquidus isotherm of a ${sourceLabel} field (ΔH/hs < ${Math.min(15, keyholeCut)}).`;
     let keyRisk = "Low screening indicator — unvalidated";
 
     if (isKeyhole) {
       badgeColor = "bg-rose-500/20 text-rose-300 border-rose-500/50 shadow-[0_0_12px_rgba(244,63,94,0.3)]";
-      desc = `Keyhole-mode onset (ΔH/hs ≥ 20, a provisional screening choice; melt-pool D/W > 0.5, King 2014 / Cunningham 2019 converted to this index). The ${sourceLabel} conduction estimate and Fabbro depth proxy do not resolve a cavity or pore entrapment. Keyhole mode is not keyhole porosity.`;
+      const onset = keyholeCut !== 20
+        ? `ΔH/hs ≥ ${keyholeCut}, this alloy's own cut, see the alloy note; melt-pool D/W > 0.5`
+        : "ΔH/hs ≥ 20, a provisional screening choice; melt-pool D/W > 0.5, King 2014 / Cunningham 2019 converted to this index";
+      desc = `Keyhole-mode onset (${onset}). The ${sourceLabel} conduction estimate and Fabbro depth proxy do not resolve a cavity or pore entrapment. Keyhole mode is not keyhole porosity.`;
       keyRisk = "Keyhole-mode screening indicator";
     } else if (isTransition) {
       badgeColor = "bg-amber-500/20 text-amber-300 border-amber-500/40";

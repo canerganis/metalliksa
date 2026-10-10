@@ -145,14 +145,15 @@ class UnchangedNumerics(unittest.TestCase):
         self.assertEqual(res["meltPoolGeometry"]["regimeBasis"], solver.REGIME_THRESHOLD_BASIS)
         self.assertEqual(res["processWindowMap"]["regimeBasis"], solver.REGIME_THRESHOLD_BASIS)
         self.assertIn("Keyhole mode is not keyhole porosity", solver.REGIME_THRESHOLD_BASIS)
-        self.assertIn("transferred, not derived, for IN718/IN625/AlSi10Mg", solver.REGIME_THRESHOLD_BASIS)
+        self.assertIn("transferred, not derived, for IN718/AlSi10Mg and the other alloys", solver.REGIME_THRESHOLD_BASIS)
+        self.assertIn("Inconel 625 uses its own cut: < 13.6 conduction, >= 13.6 keyhole mode", solver.REGIME_THRESHOLD_BASIS)
 
     def test_regime_material_notes_and_wording(self):
         # A low index must not read as an assurance; the threshold is a provisional screening choice.
         self.assertIn("provisional screening choice", solver.REGIME_THRESHOLD_BASIS)
         self.assertIn("not a derived exact threshold", solver.REGIME_THRESHOLD_BASIS)
         self.assertIn("a low index is not an assurance", solver.REGIME_THRESHOLD_BASIS)
-        expect = {"Inconel 625": "threshold misses keyhole in the available dataset (measured keyhole indices 13.9-18.6)",
+        expect = {"Inconel 625": solver.REGIME_MATERIAL_NOTE_IN625,
                   "Inconel 718": "threshold not validated for this alloy",
                   "AlSi10Mg": "threshold not validated for this alloy"}
         for mat, note in expect.items():
@@ -170,6 +171,116 @@ class UnchangedNumerics(unittest.TestCase):
         self.assertIn("beam-diameter convention", model["depthBenchmarkNote"])
         self.assertIn("no vaporisation heat sink", model["depthBenchmarkNote"])
         self.assertIn(model["depthBenchmarkNote"], model["basis"])
+
+
+# IN625 per-alloy cut (planned bump in625-regime, 2026-10-11). Pre-bump (pin ec7e1f7a, commit f8c2f3b9) IN625 Rosenthal
+# results at 80 C preheat: (P_W, v_mm_s, d_um) -> (dH/hs, pre-bump family, depth_um, width_um, length_um, cavity_um)
+PRE_BUMP_IN625 = {
+    (195, 1200, 100): (14.6, "Conduction", 41.1, 85.1, 389.9, 0.0),
+    (150, 400, 100): (19.45, "Transition", 104.0, 163.1, 501.2, 24.8),
+    (195, 800, 100): (17.88, "Transition", 76.5, 125.7, 562.5, 15.6),
+    (100, 400, 100): (12.96, "Conduction", 47.3, 97.6, 209.9, 0.0),
+    (195, 800, 170): (8.06, "Conduction", 48.4, 100.9, 388.2, 0.0),
+}
+# Pre-bump process-map grid of IN625 195/800/100 (C conduction, T transition, K keyhole, L lack of fusion)
+PRE_IN625_GRID_ENTHALPY = [
+    11.98, 8.47, 6.91, 5.99, 5.19, 4.64, 4.23, 22.45, 15.88, 12.96, 11.23, 9.72, 8.7, 7.94,
+    32.93, 23.29, 19.01, 16.47, 14.26, 12.76, 11.64, 44.91, 31.76, 25.93, 22.45, 19.45, 17.39, 15.88,
+    56.88, 40.22, 32.84, 28.44, 24.63, 22.03, 20.11, 68.86, 48.69, 39.76, 34.43, 29.82, 26.67, 24.35,
+    80.84, 57.16, 46.67, 40.42, 35.0, 31.31, 28.58,
+]
+PRE_IN625_GRID_REGIME = "CLLLLLLKTCLLLLKKTTLLLKKKKTTTKKKKKKKKKKKKKKKKKKKKK"
+PRE_IN625_GRID_DEPTH_UM = [
+    71.5, 59.8, 55.3, 52.9, 51.0, 49.9, 49.1, 170.1, 130.0, 62.9, 58.9, 55.8, 53.8, 52.4,
+    329.1, 150.1, 129.0, 117.1, 60.2, 57.4, 55.6, 378.0, 279.4, 144.6, 130.0, 117.9, 110.0, 104.4,
+    421.3, 308.8, 260.7, 141.8, 127.7, 118.4, 111.8, 460.5, 335.6, 282.0, 250.9, 136.8, 126.3, 118.8,
+    496.6, 360.4, 301.7, 267.5, 238.7, 219.6, 125.3,
+]
+# The 13 held-out units of the declared run (docs/research/RESULTS_in625_regime_2026-10-11.md section 5):
+# (unit, app index at 20 C, measured depth over half width). Truth: keyhole when the ratio > 1.
+HELD_OUT_IN625 = [
+    ("mds2-ammt-row14", 4.17, 0.34), ("mds2-ammt-row13", 5.57, 0.41), ("lane2020-AMMT-C", 5.78, 0.57),
+    ("lane2020-AMMT-B", 7.08, 0.59), ("lane2020-AMMT-A", 7.70, 0.57), ("mds2-ammt-row12", 7.91, 0.55),
+    ("mds2-ammt-row11", 9.88, 0.68), ("mds2-ammt-row10", 12.67, 0.81), ("lane2020-CBM-C", 13.94, 1.20),
+    ("lane2020-CBM-B", 17.07, 1.37), ("lane2020-CBM-A", 18.57, 1.77), ("mds2-ammt-row09", 23.86, 1.31),
+    ("mds2-ammt-row08", 48.28, 2.92),
+]
+KEYHOLE_LABEL = "Keyhole Mode (melt-pool D/W > 0.5 screening onset)"
+
+
+class In625RegimeCut(unittest.TestCase):
+    def test_cut_values_and_other_alloys_unchanged(self):
+        self.assertEqual(solver.ENTHALPY_KEYHOLE_IN625, 13.6)
+        self.assertEqual(solver.regime_keyhole_cut("Inconel 625"), 13.6)
+        for mat in (None, "Inconel 718", "Ti-6Al-4V", "316L Stainless Steel", "AlSi10Mg", "Hastelloy X", "CoCrMo"):
+            self.assertEqual(solver.regime_keyhole_cut(mat), 20.0, mat)
+        c = solver.classify_enthalpy_regime
+        self.assertEqual(c(13.59, "Inconel 625"), "Conduction Mode (Stable)")
+        for x in (13.6, 14.99, 15.0, 19.99, 20.0, 60.0):
+            self.assertEqual(c(x, "Inconel 625"), KEYHOLE_LABEL, x)
+        for mat in (None, "Inconel 718", "316L Stainless Steel"):
+            self.assertEqual(c(14.99, mat), "Conduction Mode (Stable)")
+            self.assertEqual(c(15.0, mat), "Transition Mode")
+            self.assertEqual(c(19.99, mat), "Transition Mode")
+            self.assertEqual(c(20.0, mat), KEYHOLE_LABEL)
+        # the transition cut is shared and not moved (it also starts eta_eff and the depth increment)
+        self.assertEqual(solver.ENTHALPY_TRANSITION, 15.0)
+
+    def test_held_out_scores_pinned(self):
+        # Truth fixed before the run (depth > half width); the cut lies in the held-out-admissible interval.
+        self.assertTrue(12.667 < solver.ENTHALPY_KEYHOLE_IN625 <= 13.937)
+        errors_in625 = sum((x >= solver.regime_keyhole_cut("Inconel 625")) != (r > 1.0) for _, x, r in HELD_OUT_IN625)
+        errors_shared = sum((x >= solver.ENTHALPY_KEYHOLE) != (r > 1.0) for _, x, r in HELD_OUT_IN625)
+        self.assertEqual((errors_in625, errors_shared), (0, 3))
+        self.assertEqual(sum(r > 1.0 for _, _, r in HELD_OUT_IN625), 5)
+
+    def test_geometry_bit_equal_only_label_moves(self):
+        for (p, v, d), (h, fam, depth, width, length, cavity) in PRE_BUMP_IN625.items():
+            res = _run("Inconel 625", p, v, d, 80, heat_source="rosenthal")
+            g = res["meltPoolGeometry"]
+            self.assertEqual(res["processParameters"]["normalizedEnthalpy"], h)
+            self.assertEqual((g["depth_um"], g["width_um"], g["length_um"], g["keyholeVaporCavityDepth_um"]),
+                             (depth, width, length, cavity), (p, v, d))
+            want = "Keyhole" if h >= 13.6 else "Conduction"
+            self.assertTrue(g["regime"].startswith(want), (p, v, d, g["regime"]))
+            self.assertEqual(g["regimeKeyholeThreshold"], 13.6)
+            self.assertEqual(g["regimeMaterialNote"], solver.REGIME_MATERIAL_NOTE_IN625)
+            self.assertEqual(res["processWindowMap"]["regimeKeyholeThreshold"], 13.6)
+        self.assertEqual(_run("Inconel 718", 200, 800, 80, 80)["meltPoolGeometry"]["regimeKeyholeThreshold"], 20.0)
+
+    def test_in625_grid_labels_follow_the_cut_numbers_unchanged(self):
+        grid = _run("Inconel 625", 195, 800, 100, 80, heat_source="rosenthal")["processWindowMap"]["grid"]
+        self.assertEqual([c["normalizedEnthalpy"] for c in grid], PRE_IN625_GRID_ENTHALPY)
+        self.assertEqual([c["depth_um"] for c in grid], PRE_IN625_GRID_DEPTH_UM)
+        moved = []
+        for c, old in zip(grid, PRE_IN625_GRID_REGIME):
+            if old == "L":
+                self.assertEqual(c["regime"], "Lack of Fusion Zone")
+            elif c["normalizedEnthalpy"] >= 13.6:
+                self.assertEqual((c["regime"], c["color"]), ("Keyhole Mode", "#ef4444"))
+                if old != "K":
+                    moved.append(c["normalizedEnthalpy"])
+            else:
+                self.assertEqual((c["regime"], c["color"]), ("Optimal Conduction", "#10b981"))
+        self.assertNotIn("Transition", [c["regime"] for c in grid])
+        self.assertTrue(moved and all(13.6 <= x < 20.0 for x in moved), moved)
+
+    def test_lane_conditions_at_20c(self):
+        # Lane et al. 2020 conditions as served by the app at 20 C: CBM (100 um) keyhole, AMMT (170 um) conduction.
+        for p, v, d, fam in ((150, 400, 100, "Keyhole"), (195, 800, 100, "Keyhole"), (195, 1200, 100, "Keyhole"),
+                             (137.9, 400, 170, "Conduction"), (179.2, 800, 170, "Conduction")):
+            g = _run("Inconel 625", p, v, d, 20, heat_source="rosenthal")["meltPoolGeometry"]
+            self.assertTrue(g["regime"].startswith(fam), (p, v, d, g["regime"]))
+
+    def test_public_dataset_mirror(self):
+        self.assertEqual(pds.ENTHALPY_KEYHOLE_IN625, solver.ENTHALPY_KEYHOLE_IN625)
+        self.assertEqual(pds.REGIME_PARAMETERS["keyholeEnthalpyByAlloy"], {"Inconel 625": 13.6})
+        families = {"conduction": "Conduction", "transition": "Transition", "keyhole": "Keyhole"}
+        for p, v, d, t0 in ((195, 1200, 100, 80.0), (195, 1200, 100, 20.0), (150, 400, 100, 20.0), (100, 400, 100, 80.0)):
+            lab = pds.classify_regime("Inconel 625", p, v, d, t0, None)
+            full = _run("Inconel 625", p, v, d, t0)
+            self.assertTrue(full["meltPoolGeometry"]["regime"].startswith(families[lab["label"]]), (p, v, d, t0, lab))
+            self.assertNotEqual(lab["label"], "transition")
 
 
 class PorosityDecoupled(unittest.TestCase):

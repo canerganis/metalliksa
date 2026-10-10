@@ -647,8 +647,9 @@ def main():
         "lpbf-build-job-eagar-tsai-balling-screen-v13",
         "lpbf-build-job-eagar-tsai-balling-screen-v14",
         "lpbf-build-job-eagar-tsai-balling-screen-v15",
+        "lpbf-build-job-la6-gusarov-v18",
     ), BUILD_JOB_SOLVER_REVISION
-    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-la6-gusarov-v19"
+    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-in625-regime-v20"
     assert ti["processSeed"] == 42
     assert ti["scanStrategy"]["id"] == "stripe"
     assert ti["uq"] is None  # lazy default
