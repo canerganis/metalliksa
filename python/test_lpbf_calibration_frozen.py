@@ -35,11 +35,13 @@ BASE_REF = BASE_REF_CANDIDATES[0]
 # keyhole-regime bump (only label/basis text keys changed: keyholePorosityRisk text, regimeBasis, regimeMaterialNote,
 # depthBenchmarkNote); re-pinned at the la6-gusarov bump (only text keys changed: geometricDefectScreen.modelId v2 and
 # the balling screen sources/basis in geometricDefectScreen and defectDiagnostics); re-pinned again after the exported
-# provenance title fix (only the defectDiagnostics provenance title text changed).
+# provenance title fix (only the defectDiagnostics provenance title text changed); re-pinned at the in625-regime bump
+# (316L input: only the regimeBasis text and the new regimeKeyholeThreshold key changed, in both blocks; undoing them
+# reproduces the previous digests).
 HTTP_GOLDEN = {
-    "eagar-tsai": "b29cd5df30811ab83ee5c284160d373dd61dd1e7316661dfc424cac45a8caba9",
-    "goldak": "851f009195c0a73f0819ca5899f04b602edf16251db7cc556f8f1413b5a94a4d",
-    "rosenthal": "c65d734525b1e7c764036c44559569cbe57389d684287005e0a3bf1e15e7143f",
+    "eagar-tsai": "8d4c51c1b905db43cc1422b713960649b982934a5a111bf4c217ba1111b746a0",
+    "goldak": "f64e8c67c5dbd5a989cb69d9aee33c16f5f55a57f8143d3b49a1ec246506bae6",
+    "rosenthal": "170f9d4a3b7f144fc1f3606b1235f54f1733f4cfc019a9f03463b063640ed011",
 }
 HTTP_INPUT = {"material": "316L Stainless Steel", "laserPower_W": 200, "scanSpeed_mm_s": 900, "beamDiameter_um": 80,
               "preheatTemp_C": 20, "layerThickness_um": 30, "hatchSpacing_um": 100}

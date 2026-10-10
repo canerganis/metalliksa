@@ -35,12 +35,14 @@ PRE_BUMP_FINGERPRINT = "7482697c458b6c1aa2a77829f2fbce0c4ce4ac9466e9a3583e97b9a7
 PRE_BUMP_REVISION = "520903802a5cb89e368af60f68e53f232c99046d"
 # The goldens are recorded at this implementation (re-recorded after the 2026-10-07 keyhole-regime
 # bump d92d1a3a -> cda80143, on top of the balling-screen bump), and GOLDEN_REVISION is a commit carrying it
-# (the second re-pin commit of feat/lpbf-la6-gusarov-bump, taban 4f5faa3a): the "from" side of the next bump. la6-gusarov
+# (the re-pin commit c2e4c63d of research/in625-regime-threshold): the "from" side of the next bump. in625-regime
+# (2026-10-11, ec7e1f7a -> 0d52d7f7) re-recorded all goldens: only 7 G11/G18 thermal-dict digests changed (regime label/basis
+# text, IN625 note and grid labels, new regimeKeyholeThreshold), the rest recording metadata. Before that, la6-gusarov
 # (2026-10-08, cda80143 -> ec7e1f7a; first pinned 5f9d651e, then the exported provenance title was fixed) re-recorded all goldens: 97 text/digest observations (plus G3 stripe crossSectionArea 6400 -> 2698.01);
 # previously only G11 and G18
 # (label/basis text of the thermal dicts) changed.
-GOLDEN_FINGERPRINT = "ec7e1f7a6606e937e448fefe97549b49a7ddfe7b95376b93867ae007b0c12555"
-GOLDEN_REVISION = "26db2aceb68ace5e1fc537bfe14782a2eb83a35f"
+GOLDEN_FINGERPRINT = "0d52d7f707b98fc588c0972c1c198315d3c1071ed1c7ad7ab91616e69b5248e8"
+GOLDEN_REVISION = "c2e4c63d9492b3c3224765f20c8e043d5b3b7948"
 SLOW = os.environ.get("LPBF_PARITY_SLOW") == "1"
 # Off the reference machine every case test is skipped (the goldens are bit-exact for one
 # environment). METALLIKSA_REQUIRE_PARITY=1 turns such a "NOT VERIFIED" skip into a failure,
