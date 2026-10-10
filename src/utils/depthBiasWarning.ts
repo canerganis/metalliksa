@@ -50,7 +50,7 @@ export const DEPTH_BIAS_CELLS: Record<string, readonly [number, number, number]>
 };
 
 export const DEPTH_BIAS_DIRECTION_TEMPLATE =
-  "Depth {verb} for this alloy and kernel in the {regime} band. On held-out published single tracks the {kernel} " +
+  "Depth {verb} for this alloy and kernel in the {regime} band. On published single tracks the {kernel} " +
   "kernel on {alloy} {action} the depth by a median of {pct}% (n={n}, {sources} source{plural}). This is a screening " +
   "note, not a validated correction, and transfer to another machine is not established.";
 export const DEPTH_BIAS_FEW_TEMPLATE =

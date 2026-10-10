@@ -22,7 +22,7 @@ _MAX_ENTRIES = 64
 
 # Increment when build-job solver behavior changes so a warm worker cannot
 # return results produced by an earlier implementation for identical inputs.
-BUILD_JOB_SOLVER_REVISION = "lpbf-build-job-la6-gusarov-v18"
+BUILD_JOB_SOLVER_REVISION = "lpbf-build-job-la6-gusarov-v19"
 BUILD_JOB_MODEL_ID = "rosenthal-screening-v1"
 
 
