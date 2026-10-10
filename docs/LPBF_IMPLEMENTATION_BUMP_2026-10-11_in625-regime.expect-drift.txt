@@ -1,0 +1,7 @@
+g11_build_job_meltpool:meltpool.0.canonicalSha256
+g11_build_job_meltpool:meltpool.0.typedSha256
+g11_build_job_meltpool:meltpool.1.canonicalSha256
+g11_build_job_meltpool:meltpool.1.typedSha256
+g11_build_job_meltpool:meltpool.2.canonicalSha256
+g11_build_job_meltpool:meltpool.2.typedSha256
+g18_in625_latent_heat:meltpool.in625
