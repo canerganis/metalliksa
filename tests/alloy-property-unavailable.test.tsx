@@ -132,3 +132,14 @@ test("rule-of-mixtures density: computed from tabulated values only, never a fal
   assert.equal(ruleOfMixturesDensity({ Ni: 50, Al: 50 }, "at_pct").density_gcm3, null);
   assert.equal(ruleOfMixturesDensity({}).density_gcm3, null);
 });
+
+test("decision lab: the stress proxy is labelled a heuristic thermal-strain proxy and says when it exceeds yield", () => {
+  const noYield = renderToStaticMarkup(<StressProxyMetric stress_MPa={3477} yieldStrength_MPa={null} />);
+  assert.match(noYield, /Thermal-strain proxy \(heuristic, elastic; not a stress\)/);
+  assert.match(noYield, /3477 MPa-eq\./);
+  assert.doesNotMatch(noYield, /Exceeds yield/);
+  const above = renderToStaticMarkup(<StressProxyMetric stress_MPa={3477} yieldStrength_MPa={600} />);
+  assert.match(above, /Exceeds yield; elastic estimate not physical as a stress/);
+  assert.match(above, /data-check="flag"/);
+  assert.doesNotMatch(renderToStaticMarkup(<StressProxyMetric stress_MPa={300} yieldStrength_MPa={600} />), /Exceeds yield/);
+});

@@ -46,7 +46,7 @@ agg = aggregate_part_porosity(samples, powder_gas_prior_percent=0.01)
 assert agg['status'] == 'aggregated'
 assert agg['mechanismCounts']['keyhole'] == 0, "a null keyhole risk adds no keyhole porosity"
 assert agg['mechanismCounts']['balling'] == 1
-assert agg['relativeDensity']['mean_percent'] < 100.0
+assert agg['screeningIndex']['mean_percent'] < 100.0
 
 print(json.dumps(agg))
 `;
@@ -59,5 +59,5 @@ print(json.dumps(agg))
   
   assert.equal(result.status, 'aggregated');
   assert.equal(result.sampleCount, 2);
-  assert.ok(result.relativeDensity.mean_percent > 0);
+  assert.ok(result.screeningIndex.mean_percent > 0);
 });

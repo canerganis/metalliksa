@@ -36,7 +36,7 @@ import { isComputedMeltPoolExtent, meltPoolExtentInfo } from "../../utils/meltPo
 import { BuildJobKineticsPanel } from "./BuildJobKineticsPanel";
 import { MachineTileLine } from "./MachineTileLine";
 import { BuildJobMicrostructurePanel } from "./BuildJobMicrostructurePanel";
-import { stressProxyYieldCheck } from "../../utils/residualStressYieldCheck";
+import { stressProxyPresentation } from "../../utils/residualStressYieldCheck";
 import { peakTemperatureBasisLabel } from "../../utils/peakTemperatureDisplay";
 import { PublishedTrackBands } from "../PublishedTrackBands";
 
@@ -634,9 +634,10 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
       {job?.porosity && (
         <div className="rounded-2xl border border-violet-500/30 bg-[#090e18] p-3.5 grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="space-y-1">
-            <h3 className="text-[10px] font-bold text-violet-300 uppercase tracking-widest">Part Relative Density</h3>
-            <div className="text-xl text-white font-bold">{job.porosity.relativeDensity.mean_percent.toFixed(2)}%</div>
-            <div className="text-[9px] text-slate-500">95% CI: {job.porosity.relativeDensity.p05_percent.toFixed(2)} - {job.porosity.relativeDensity.p95_percent.toFixed(2)}</div>
+            <h3 className="text-[10px] font-bold text-violet-300 uppercase tracking-widest">Heuristic Screening Index</h3>
+            <div className="text-xl text-white font-bold" title={job.porosity.screeningIndex.basis}>{job.porosity.screeningIndex.mean_percent.toFixed(2)}%</div>
+            <div className="text-[9px] text-amber-500/80">{job.porosity.screeningIndex.evidenceLabel}: not a measured or predicted relative density</div>
+            <div className="text-[9px] text-slate-500" title={job.porosity.screeningIndex.spreadBasis}>Spread of penalties (not a CI): {job.porosity.screeningIndex.spread_lower_percent.toFixed(2)} to {job.porosity.screeningIndex.spread_upper_percent.toFixed(2)}</div>
           </div>
           <div className="space-y-1">
             <h3 className="text-[10px] font-bold text-violet-300 uppercase tracking-widest">Dominant Mechanism</h3>
@@ -805,8 +806,8 @@ const Metric: React.FC<{ label: string; value: string; ok?: boolean | null; hint
 
 /** Stress proxy vs 0.7 Rp0.2: pass/fail only with a real yield strength, otherwise explicitly unavailable. */
 export const StressProxyMetric: React.FC<{ stress_MPa: number; yieldStrength_MPa: number | null | undefined }> = ({ stress_MPa, yieldStrength_MPa }) => {
-  const check = stressProxyYieldCheck(stress_MPa, yieldStrength_MPa);
-  return <Metric label="Stress proxy (MPa); unresolved field" value={String(stress_MPa)} ok={check.ok} hint={check.hint} />;
+  const p = stressProxyPresentation(stress_MPa, yieldStrength_MPa);
+  return <Metric label={p.label} value={`${stress_MPa} MPa-eq.`} ok={p.check.ok} hint={p.hint} />;
 };
 
 const Tiny: React.FC<{ label: string; value: string; icon?: React.ReactNode; sub?: React.ReactNode }> = ({ label, value, icon, sub }) => (

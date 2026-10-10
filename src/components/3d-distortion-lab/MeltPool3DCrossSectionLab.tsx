@@ -53,6 +53,7 @@ import { buildGoldakCaeCard } from "../../utils/goldakCaeCard";
 import { literatureErrorUnavailableText } from "../../utils/meltPoolExtentStatus";
 import { MeltPoolExtentNotice } from "../MeltPoolExtentNotice";
 import { DepthBiasNotice } from "../DepthBiasNotice";
+import { STRESS_PROXY_LABEL, STRESS_PROXY_UNIT_NOTE } from "../../utils/residualStressYieldCheck";
 import { resolveDepthBiasWarning } from "../../utils/depthBiasWarning";
 import { PublishedTrackBands } from "../PublishedTrackBands";
 import { DISTORTION_HEURISTIC_NOTE } from "../../utils/distortionHeuristic";
@@ -1276,8 +1277,8 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
                   <span className="font-bold text-slate-200">{pyResult.defectDiagnostics.ballingInstabilityRisk}</span>
                 </div>
                 <div className="flex items-center justify-between p-1.5 bg-[#050810] rounded-lg border border-slate-800">
-                  <span className="text-slate-300">Thermal-stress heuristic (unvalidated):</span>
-                  <span className="font-bold text-amber-300">{pyResult.defectDiagnostics.effectiveResidualStress_MPa} MPa</span>
+                  <span className="text-slate-300" title={STRESS_PROXY_UNIT_NOTE}>{STRESS_PROXY_LABEL}:</span>
+                  <span className="font-bold text-amber-300">{pyResult.defectDiagnostics.effectiveResidualStress_MPa} MPa-eq.</span>
                 </div>
                 <p data-testid="distortion-heuristic-note" className="text-[10px] leading-snug text-slate-500">
                   {DISTORTION_HEURISTIC_NOTE}
