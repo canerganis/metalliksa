@@ -345,6 +345,30 @@ def adopted(threshold: float) -> float:
     return round(threshold, ADOPTION_DECIMALS)
 
 
+def heldout_admissible_interval(units: Sequence[Dict[str, Any]], threshold: float, index_fn=None) -> Dict[str, Any]:
+    """Section 7 (amendment B1). Every cut c with lowerExclusive < c <= upperInclusive gives the same held-out
+    predictions as `threshold` (call keyhole if index >= c), hence the same confusion; a cut outside it moves at least
+    one unit across, which changes tp/fn or tn/fp. Reads indices only, no label. None means unbounded on that side."""
+    index_fn = index_fn or repo_index
+    pairs = sorted((index_fn(u), u["unit_id"]) for u in units)
+    below = [p for p in pairs if p[0] < threshold]
+    above = [p for p in pairs if p[0] >= threshold]
+    lo = below[-1] if below else (None, None)
+    hi = above[0] if above else (None, None)
+    return {"threshold": threshold, "lowerExclusive": lo[0], "lowerUnit": lo[1], "upperInclusive": hi[0],
+            "upperUnit": hi[1], "nHeldout": len(pairs),
+            "definition": "every cut c with lowerExclusive < c <= upperInclusive gives the same held-out confusion "
+                          "as the adopted cut (keyhole if index >= c)"}
+
+
+def licensed_claim(interval: Dict[str, Any], t_f: float) -> str:
+    """Section 12 (amendment B1): the only statement a PASS licenses."""
+    lo = "-inf" if interval["lowerExclusive"] is None else f"{interval['lowerExclusive']:.2f}"
+    hi = "+inf" if interval["upperInclusive"] is None else f"{interval['upperInclusive']:.2f}"
+    return (f"The IN625 depth > half-width onset on the app index lies in ({lo}, {hi}] (held-out-admissible "
+            f"interval); T_F = {t_f:.1f} is the fit-split point estimate, not a held-out-validated value.")
+
+
 def leave_one_out_thresholds(fit_units: Sequence[Dict[str, Any]], index_fn=None,
                              label_fn=None) -> List[Optional[float]]:
     out: List[Optional[float]] = []
@@ -422,6 +446,7 @@ def analyse(ledger: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
     loo_ba = [(_arm(held, t)["balancedAccuracy"] if t is not None else None) for t in loo]
     verdict = evaluate_pass(arms["F_fitted"], arms["B_current_20"], secondary["F_fitted"], secondary["B_current_20"],
                             loo_ba, fit["nFitKeyhole"], fit["nFitNotKeyhole"])
+    interval = heldout_admissible_interval(held, t_f)
 
     # 3. Sensitivities (reported, not part of the verdict).
     unamb = [u for u in held if not is_ambiguous(u)]
@@ -445,7 +470,9 @@ def analyse(ledger: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
             "fit": fit, "adoptedThreshold": t_f, "looThresholds": loo, "looHeldoutBA": loo_ba,
             "weaverToRepoFactor": factor, "weaverThresholdInRepoUnits": t_s,
             "kingBandInRepoUnits": [KING_BAND[0] * factor, KING_BAND[1] * factor],
-            "arms": arms, "secondaryTruth": secondary, "verdict": verdict, "sensitivities": sens,
+            "arms": arms, "secondaryTruth": secondary, "verdict": verdict,
+            "heldoutAdmissibleInterval": interval,
+            "licensedClaimIfPass": licensed_claim(interval, t_f), "sensitivities": sens,
             "transitionCutConsequence": ("adopted keyhole cut is below the transition cut 15: the IN625 transition band "
                                          "would be empty" if t_f < BASELINE_TRANSITION_CUT else "none"),
             "units": per_unit}
@@ -485,7 +512,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     _require_committed([DECLARATION, Path(__file__).resolve(), LEDGER_CSV])
     result = declared_run()
     RESULTS_JSON.write_text(json.dumps(result, indent=2, sort_keys=False) + "\n", encoding="utf-8")
-    print(json.dumps({"verdict": result["verdict"], "adoptedThreshold": result["adoptedThreshold"]}, indent=2))
+    iv = result["heldoutAdmissibleInterval"]
+    print(json.dumps({"verdict": result["verdict"], "adoptedThreshold": result["adoptedThreshold"],
+                      "heldoutAdmissibleInterval": [iv["lowerExclusive"], iv["upperInclusive"]]}, indent=2))
     return 0
 
 

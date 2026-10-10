@@ -150,6 +150,56 @@ class HeldoutIsolation(unittest.TestCase):
         self.assertEqual(a["counts"]["excluded"], 1)
 
 
+class AdmissibleInterval(unittest.TestCase):
+    """Amendment B1: the held-out-admissible interval is every cut with the same held-out confusion as T_F."""
+
+    hs = [4.0, 7.5, 9.0, 12.0, 12.0, 14.0, 17.0, 23.0]
+    ys = [False, False, False, False, True, True, True, True]
+
+    def _units(self):
+        return [_u(h, y, split="heldout", uid=f"ho{i}") for i, (h, y) in enumerate(zip(self.hs, self.ys))]
+
+    def test_interval_brackets_and_matches_brute_force(self):
+        iv = E.heldout_admissible_interval(self._units(), 13.0, H)
+        self.assertEqual((iv["lowerExclusive"], iv["upperInclusive"]), (12.0, 14.0))
+        self.assertEqual(iv["upperUnit"], "ho5")
+        ref = E.confusion(self.hs, self.ys, 13.0)
+        same = lambda c: {k: v for k, v in E.confusion(self.hs, self.ys, c).items() if k != "threshold"} == \
+            {k: v for k, v in ref.items() if k != "threshold"}  # noqa: E731
+        for c in (12.0001, 12.5, 13.9, 14.0):
+            self.assertTrue(same(c), c)
+        for c in (12.0, 11.9, 14.0001, 16.0):
+            self.assertFalse(same(c), c)
+
+    def test_cut_on_a_unit_and_ties(self):
+        iv = E.heldout_admissible_interval(self._units(), 12.0, H)  # both 12.0 units are called keyhole
+        self.assertEqual((iv["lowerExclusive"], iv["upperInclusive"]), (9.0, 12.0))
+
+    def test_unbounded_sides(self):
+        iv = E.heldout_admissible_interval(self._units(), 2.0, H)
+        self.assertIsNone(iv["lowerExclusive"])
+        self.assertEqual(iv["upperInclusive"], 4.0)
+        iv = E.heldout_admissible_interval(self._units(), 30.0, H)
+        self.assertEqual(iv["lowerExclusive"], 23.0)
+        self.assertIsNone(iv["upperInclusive"])
+        self.assertIn("-inf", E.licensed_claim(E.heldout_admissible_interval(self._units(), 2.0, H), 2.0))
+
+    def test_reads_no_label(self):
+        units = [{"unit_id": f"x{i}", "split": "heldout", "h": h} for i, h in enumerate(self.hs)]
+        iv = E.heldout_admissible_interval(units, 13.0, H)
+        self.assertEqual((iv["lowerExclusive"], iv["upperInclusive"]), (12.0, 14.0))
+
+    def test_analyse_reports_interval_and_claim(self):
+        a = E.analyse(_synthetic_ledger())
+        iv = a["heldoutAdmissibleInterval"]
+        self.assertEqual(iv["threshold"], a["adoptedThreshold"])
+        self.assertEqual(iv["nHeldout"], a["counts"]["heldout"])
+        lo, hi = iv["lowerExclusive"], iv["upperInclusive"]
+        self.assertTrue((lo is None or lo < a["adoptedThreshold"]) and (hi is None or a["adoptedThreshold"] <= hi))
+        self.assertIn("fit-split point estimate", a["licensedClaimIfPass"])
+        self.assertIn("not a held-out-validated value", a["licensedClaimIfPass"])
+
+
 class SplitRule(unittest.TestCase):
     def test_split_ignores_geometry(self):
         key = E.condition_key("EOS M270", 195, 800, 100)

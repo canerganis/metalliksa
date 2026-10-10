@@ -10,6 +10,11 @@ Ledger: `data/benchmark/in625-regime-ledger-2026-10-11/units.csv`. Nothing froze
 `experimentalValidation=false`, `validationStatus=unvalidated`, `productionReady=false`. Nothing runs before the gate
 approves this file.
 
+Amendment 1 (2026-10-11, before any run, after the pre-registration gate at `14d0de3a`): section 5 now gives the
+identity reason for the one exclusion (B2); section 7 adds the held-out-admissible interval as a reported quantity;
+section 10 discloses the baseline's known held-out errors and what that implies for the PASS rule; section 12 limits
+what a PASS licenses (B1). The fit rule, the split, the arms and the PASS thresholds are unchanged.
+
 ## 1. Question and scope
 
 The app labels the regime from the normalised enthalpy dH/hs with cuts 15 (transition) and 20 (keyhole mode), both
@@ -75,8 +80,18 @@ Split rule (`assign_split`; it reads source, machine and process condition only,
 | excluded | an mds2 EOS M270 row whose machine family, power, speed and D4sigma (rounded to 0.1) equal a held-out Lane CBM unit | 1 (195 W, 800 mm/s, 100 um) |
 
 Why this split: the held-out units test transfer to a different machine with a measured spot (AMMT) and to a
-separately published campaign (Lane 2020 AM-Bench plates). The excluded row is the same machine model and the same
-nominal condition as Lane CBM B; it is dropped so that no fit label shares a process condition with a held-out unit.
+separately published campaign (Lane 2020 AM-Bench plates).
+
+Why the excluded row is excluded: mds2 EOS Summary row 29 (195 W, 800 mm/s, D4sigma 100 um, n = 10, mean depth
+91.258 um, mean width 135.58 um) is very likely the same physical tracks as the held-out Lane CBM B class, not only
+the same condition. Evidence: Weaver 2022 Sec. 2.2 says their data set includes ten Lane 2020 EOS tracks; their
+Table 4 lists case B with d = 91.28 um, which matches row 29 and the Lane Table 4 CBM B class depth of 91 um; row 29
+has n = 10; and no mds2 EOS row exists at the other two CBM conditions (150 W / 400 mm/s, 195 W / 1200 mm/s), so the
+ten Lane tracks can only sit in row 29. Counter-evidence, recorded: the mds2 Data sheet folders behind that condition
+are named Plate 3, 4 and 9 and dated 2018-08-28 to 2018-09-10, with no AM-Bench label, so the identity is inferred,
+not stated by the data set. Either way the row is a held-out target: keeping it in the fit split would put CBM B's
+measured geometry into the threshold. The exclusion is therefore required, not optional.
+
 Lane CBM is the same machine model as the fit split (Lane 2020 Introduction), so for those three units the test is
 cross-campaign, not cross-machine; this is stated, not hidden.
 
@@ -124,6 +139,13 @@ trivially passable: an always-keyhole or never-keyhole call has BA 0.5 (fails P1
 unit fails P3; if the current cut 20 already makes at most one held-out error, no candidate can pass P3, which is the
 intended outcome "the current cut is not beaten". The tests pin these cases on synthetic confusions.
 
+Held-out-admissible interval (amendment 1, reported with every verdict): the set of cuts c that give the same
+held-out confusion as T_F. With "keyhole if index >= c" it is (L, U], where L is the largest held-out index below T_F
+and U is the smallest held-out index at or above T_F; any cut outside it moves at least one held-out unit and changes
+the confusion. The runner computes it from held-out indices only (`heldout_admissible_interval`, no label read) and
+writes it to the results JSON with the two bounding unit ids. The interval, not the BA alone, is the measure of how
+tightly the held-out split locates the onset (section 12).
+
 ## 8. Sensitivities (reported, never part of the verdict)
 
 1. Unambiguous held-out units only (section 4 item 4), arms F and B.
@@ -160,6 +182,23 @@ transition in their own units (SOURCES section 1 item 4). The safeguards are str
 fit rule with no free choice, and tests that show the fitted cut is invariant to held-out geometry and that no
 held-out label is read before the fit returns. The gate should judge the PASS rule with this disclosure in mind.
 
+Amendment 1 adds what follows, stated plainly because it changes what a PASS means.
+
+1. The baseline's held-out errors were known when the P2 and P3 margins were set. Arm B (cut 20) misses exactly the
+   three Lane CBM classes (app index 18.57, 17.07, 13.94; depth over half width 1.77, 1.37, 1.20) and makes no other
+   held-out error: BA(B) = 0.70 with 3 errors. The margins (gain 0.15, two fewer errors) were chosen with this known.
+2. Consequence: on the held-out split every cut in (9.88, 17.07] passes P1, P2 and P3 (9.88 is the mds2 AMMT
+   D4sigma 144 um unit, not keyhole; 17.07 is Lane CBM B, keyhole). The fit-split boundary on the 195 W / 800 mm/s
+   EOS spot series (labels flip between estimated D4sigma of about 105 and 125 um, as read by the pre-registration
+   gate) sits near app index 12 to 15, inside that window. The outcome of P1 to P3 is therefore effectively known
+   before the run; a PASS on those items is not a surprising success.
+3. Inside that window only two held-out units constrain where the cut sits: Lane CBM C at 13.94 (keyhole) and the
+   mds2 AMMT D4sigma 122 um unit at 12.67 (not keyhole). The held-out-admissible interval (section 7) can only be
+   (9.88, 12.67], (12.67, 13.94] or (13.94, 17.07]. The mds2 AMMT units are one power and speed with a spot series.
+4. P5 is not an independent check on this set: the secondary labels (depth over D4sigma/2 > 1) equal the primary
+   labels on all 13 held-out units.
+5. P6 depends on the 56 leave-one-out refits, which have not been computed; its outcome is not claimed here.
+
 ## 11. Procedure
 
 1. Gate approves this file (ORCHESTRA section 2, RESEARCH step 3). Nothing runs before that.
@@ -168,7 +207,8 @@ held-out label is read before the fit returns. The gate should judge the PASS ru
    The runner refuses to start if any of the three files is uncommitted or modified, if the ledger hash differs from
    the pin, if the solver cuts differ from 15 / 20, or if the results file already exists.
 3. Output: `docs/research/RESULTS_in625_regime_2026-10-11.json` (hashes of the declaration, runner, ledger, workbook,
-   loader and solver; git HEAD; fit; all arms; verdict; sensitivities; per-unit table). A written
+   loader and solver; git HEAD; fit; all arms; verdict; held-out-admissible interval and the licensed claim;
+   sensitivities; per-unit table). A written
    `RESULTS_in625_regime_2026-10-11.md` follows and quotes only numbers from the JSON.
 4. Crashes are recorded with the traceback and the fix; the run is not repeated to improve a number. A negative result
    is committed and reported.
@@ -177,11 +217,19 @@ held-out label is read before the fit returns. The gate should judge the PASS ru
 
 ## 12. What a PASS allows
 
+What a PASS licenses (amendment 1), and nothing more: "the IN625 depth > half-width onset on the app index lies in
+the held-out-admissible interval (L, U]; T_F is the fit-split point estimate". It does not license a held-out-validated
+threshold to 0.1: the held-out split cannot tell T_F from any other cut in (L, U]. The runner writes this sentence with
+the numbers filled in (`licensedClaimIfPass`). The RESULTS file and any BUILD note, product note or PROOF entry must
+quote the interval, not only the BA.
+
 A PASS allows a planned physics bump on a BUILD lane: a per-alloy keyhole cut for Inconel 625 equal to T_F in the app
-convention, a rewritten `REGIME_MATERIAL_NOTE_IN625` that states the source, the truth criterion and the held-out
-score, a fingerprint bump of `lpbf_thermal_solver.py` (and the mirror in `lpbf_public_datasets.py`) with goldens,
-parity, a PROOF entry and an Opus gate. Other alloys keep 15 / 20. A FAIL or INCONCLUSIVE leaves the product
-unchanged and is committed as a negative result.
+convention, a rewritten `REGIME_MATERIAL_NOTE_IN625` that states the source, the truth criterion, the held-out score
+and the held-out-admissible interval, a fingerprint bump of `lpbf_thermal_solver.py` (and the mirror in `lpbf_public_datasets.py`) with goldens,
+parity, a PROOF entry and an Opus gate. Other alloys keep 15 / 20. A PASS does not allow moving the transition cut 15:
+the solver also uses 15 as the onset of its multi-reflection absorptivity step, so moving it would change depth
+numbers. If T_F is below 15, the order of the IN625 labels is a BUILD-lane decision (section 8 item 5). A FAIL or
+INCONCLUSIVE leaves the product unchanged and is committed as a negative result.
 
 ## 13. Files
 

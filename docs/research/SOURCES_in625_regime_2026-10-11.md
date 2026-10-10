@@ -25,7 +25,8 @@ unit was scored. `experimentalValidation` stays false.
    The lane therefore fits the threshold to a declared morphology criterion instead of transferring 30.
 5. The IN625 ledger has 70 condition-level units with measured width and depth and full process inputs: 64 from the
    NIST mds2-2923 workbook (Weaver's own plates; 57 EOS M270, 7 AMMT) and 6 Lane 2020 class means (3 CBM, 3 AMMT).
-   Ghosh 2018 is not in it (spot size not stated, section 6). Split and exclusions are in the pre-registration.
+   Ghosh 2018 is not in it (spot size not stated, section 6). Split and exclusions are in the pre-registration. One
+   mds2 EOS row (row 29) is very likely the Lane CBM B tracks themselves (section 3.3) and is excluded.
 6. The brief's app indices 19.45 and 17.88 for Lane CBM A and B are the app at 80 C preheat. At the dataset convention
    of 20 C they are 18.57 and 17.07 (the repo note "13.9 to 18.6" uses 20 C).
 
@@ -79,7 +80,8 @@ PMC metadata quirk, recorded only: the Weaver XML journal-meta names "J Mater Pr
 | uncertainty | expanded U (k = 2) of the mean following Lane 2020; along-track variability 2 % (width) and 5 % (depth) | same paragraph; Summary columns "Width/Depth: Combined, Expanded uncertainty" |
 | spot | estimated for EOS M270, measured for AMMT | README "Machine settings"; Summary column "Estimated D4sigma Spot Diameter (um)" |
 | IN625 rows | Summary sheet: 57 EOS M270 rows (140 measurements), 7 AMMT rows (18 measurements); Data sheet holds 178 IN625 image rows (plates 3, 4, 8, 9, 10 on EOS M270, "SpotSize" on AMMT) | sheet Summary, column Material; sheet Data |
-| relation to Weaver 2022 | README cites doi:10.1016/j.jmapro.2021.10.053 as an associated publication; the Data sheet plates are dated 2018-08-28 to 2018-10-26, none is an AM-Bench 2018 plate | README "Description"; Data sheet column Folder Name |
+| relation to Weaver 2022 | README cites doi:10.1016/j.jmapro.2021.10.053 as an associated publication; the Data sheet folders are named by plate (Plates 3, 4, 8, 9, 10, "SpotSize") and dated 2018-08-28 to 2018-10-26, with no AM-Bench label, but the data set does contain the ten Lane 2020 EOS tracks Weaver Sec. 2.2 includes (next row) | README "Description"; Data sheet column Folder Name |
+| Lane 2020 EOS tracks inside mds2 | Summary row 29 (EOS M270, 195 W, 800 mm/s, D4sigma 100 um, n = 10, depth 91.258 um) is very likely the AM-Bench 2018 CBM B tracks: Weaver Sec. 2.2 says the set includes ten Lane 2020 EOS tracks, Weaver Table 4 case B gives d = 91.28 um, n = 10, and no mds2 EOS row exists at 150 W / 400 mm/s or 195 W / 1200 mm/s; its ten Data sheet images sit in folders Plate3 Set1/Set2 (1 each), Plate4 Set1/Set2 (3 each) and Plate9 Set1/Set2 (1 each), so the identity is inferred, not labelled | Summary row 29; Data sheet; Weaver Sec. 2.2, Table 4 |
 
 The Summary sheet's measurement counts (158) and the Data sheet's IN625 image rows (178) differ; the unit of this lane
 is the published Summary row, so the difference is recorded, not resolved.
@@ -172,8 +174,11 @@ Not in the ledger, with reasons:
 2. mds2-2923 IN718 rows: different alloy.
 3. Lane per-track Table 3 rows: the unit is the Table 4 class mean (the authors' combined reference values), so
    tracks are not counted separately.
-4. Weaver's ten Lane 2020 EOS tracks: present in the ledger through Lane Table 4, not through mds2 (the mds2 plates
-   are not AM-Bench plates).
+4. Weaver's ten Lane 2020 EOS tracks: very likely mds2 Summary row 29 (section 3.3), the same physical tracks as the
+   held-out Lane CBM B class. That row is in the ledger with split "excluded" and is never fitted or scored; the
+   tracks enter the evaluation only once, through Lane Table 4 class CBM-B. Without the exclusion a held-out target
+   would enter the fit (pre-registration section 5). Correction of 2026-10-11 (amendment 1): an earlier version of this
+   item said the tracks were not in mds2 because the mds2 plates are not AM-Bench plates; that was wrong.
 
 Uncertainty columns: mds2 rows carry the published U (k = 2). Lane rows carry 2 x Table 4 U_mean combined with the
 mds2 README variability (2 % width, 5 % depth); this is an approximation used only for the ambiguity sensitivity.
