@@ -1251,6 +1251,8 @@ export interface PythonLPBFResult {
     regimeBasis?: string;
     /** Per-alloy note shown with the regime (threshold derived / misses keyhole in the dataset / not validated). */
     regimeMaterialNote?: string;
+    /** Reporting-only note on the direction the served depth is biased (src/utils/depthBiasWarning.ts). No depth or regime number depends on it. */
+    depthBiasWarning?: { direction: "likely-underestimated" | "may-overestimate" | null; text: string | null; basis: string | null };
     /** Only "computed" is a closed, unfloored liquidus isotherm (python/lpbf_thermal_solver.py). */
     extentStatus: MeltPoolExtentStatus;
     extentNote: string | null;

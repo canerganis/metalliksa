@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { DepthBiasNotice } from "../DepthBiasNotice";
 import { pythonComputationService, type LPBFCalibratedMeltpoolResult } from "../../services/pythonComputationService";
 import {
   COMMITTED_CALIBRATION_ARTEFACT,
@@ -78,6 +79,7 @@ export function CalibratedResultView({ result }: { result: LPBFCalibratedMeltpoo
         </div>
       )}
       {c.available ? <p data-testid="cal-regime" className="text-[11px] text-slate-400">Regime label (screening, at the default absorptivity, unchanged): <strong className="text-slate-200">{c.regimeLabel ?? "—"}</strong></p> : null}
+      {c.available ? <DepthBiasNotice geometry={result.screening?.meltPoolGeometry} material={result.screening?.material} className="mt-1" /> : null}
       {result.outsideTrainingEnvelope ? <p data-testid="envelope-warning" className="text-amber-300">Outside the training envelope, calibrated numbers greyed: {result.envelopeNotes.join("; ")}.</p> : null}
     </div>
   );

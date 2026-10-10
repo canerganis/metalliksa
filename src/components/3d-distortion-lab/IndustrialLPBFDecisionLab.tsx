@@ -31,6 +31,7 @@ import { heatTreatmentCohorts, orientationCohorts } from "../../utils/lpbfFourAl
 import type { PythonLpbfScreeningGate } from "../../services/pythonComputationService";
 import { LPBF_DEMO_VECTORS } from "../../utils/lpbfDemoVectors";
 import { MeltPoolExtentNotice } from "../MeltPoolExtentNotice";
+import { DepthBiasNotice } from "../DepthBiasNotice";
 import { isComputedMeltPoolExtent, meltPoolExtentInfo } from "../../utils/meltPoolExtentStatus";
 import { BuildJobKineticsPanel } from "./BuildJobKineticsPanel";
 import { MachineTileLine } from "./MachineTileLine";
@@ -627,6 +628,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
         </div>
       )}
       {thermal && <MeltPoolExtentNotice geometry={thermal.meltPoolGeometry} />}
+      {thermal && <DepthBiasNotice geometry={thermal.meltPoolGeometry} material={thermal.material} />}
       {thermal && <PublishedTrackBands thermal={thermal} />}
 
       {job?.porosity && (

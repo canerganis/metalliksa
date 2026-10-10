@@ -2,6 +2,7 @@ import type { createLpbfQualificationReport } from "./lpbfQualificationReport";
 import type { PythonLpbfBuildJobResult } from "../services/pythonComputationService";
 import { canonicalLpbfMaterialName } from "./lpbfMaterialIdentity";
 import { MACHINE_BAND_SENTENCE, MACHINE_OFFSET_SENTENCE, MACHINE_PRIVACY_SENTENCE, MACHINE_SECTION_TITLE, MACHINE_VERDICT_SENTENCE, machineReportLines, type MachineCalibrationReportInput } from "../data/lpbfMachineCalibration";
+import { resolveDepthBiasWarning } from "./depthBiasWarning";
 import type { SimulationResult } from "../services/lpbfSimulationService";
 
 /** The research qualification dossier this export is built on. */
@@ -222,6 +223,13 @@ export function buildLpbfRunReportHtml(report: LpbfQualificationReport, extras: 
       row("Material property SHA-256", unavailable(buildJob?.materialPropertySha256, buildJob ? "not reported" : "no build-job screening for the current inputs")),
     ].join("")}</dl><h3>Research evidence</h3>${research.length ? `<ul>${research.map(item => `<li><code>${escapeHtml(JSON.stringify(item))}</code></li>`).join("")}</ul>` : `<p>No linked research evidence records.</p>`}`);
 
+  const thermalGeometry = buildJob?.thermal?.meltPoolGeometry;
+  const depthBias = thermalGeometry ? resolveDepthBiasWarning(thermalGeometry, buildJob?.thermal?.material) : null;
+  const depthBiasSection = !thermalGeometry || !depthBias ? "" : section("depth-bias", "Melt-pool depth bias note",
+    `<p class="muted">Reporting text only: no label, verdict or gate reads it. Screening regime label: ${escapeHtml(thermalGeometry.regime)}.</p>`
+    + (thermalGeometry.regimeMaterialNote ? `<p>Alloy note: ${escapeHtml(thermalGeometry.regimeMaterialNote)}.</p>` : "")
+    + (depthBias.text ? `<p>${escapeHtml(depthBias.text)}</p><p class="muted">Basis: ${escapeHtml(depthBias.basis ?? "")}</p>` : `<p>No depth bias note applies to this regime and alloy.</p>`));
+
   const bands = report.publishedTrackBands;
   const bandsSection = !bands ? "" : section("error-bands", "Published-track error bands",
     `<p class="muted">${escapeHtml(bands.statement)} Reporting text only: no label, verdict or gate reads these bands. Kernel ${escapeHtml(bands.kernel)}, alloy ${escapeHtml(bands.material)}, screening regime class ${escapeHtml(bands.regime)} (default absorptivity).</p>`
@@ -248,5 +256,5 @@ export function buildLpbfRunReportHtml(report: LpbfQualificationReport, extras: 
   const data = `<script type="application/json" id="dossier-data">${serializeLpbfRunReportDossier(report, options.createdAt)}</script>`;
   return `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">`
     + `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:"><meta name="referrer" content="no-referrer">`
-    + `<title>${escapeHtml(`LPBF run report ${text(ctx.buildId)}`)}</title><style>${STYLE}</style></head><body><main>${header}${context}${inputs}${identity}${results}${verdictSection}${measurements}${bandsSection}${machineSection}${sources}${limitations}${reproduce}${data}</main></body></html>\n`;
+    + `<title>${escapeHtml(`LPBF run report ${text(ctx.buildId)}`)}</title><style>${STYLE}</style></head><body><main>${header}${context}${inputs}${identity}${results}${verdictSection}${measurements}${depthBiasSection}${bandsSection}${machineSection}${sources}${limitations}${reproduce}${data}</main></body></html>\n`;
 }

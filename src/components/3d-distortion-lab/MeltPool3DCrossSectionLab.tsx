@@ -52,6 +52,8 @@ import {
 import { buildGoldakCaeCard } from "../../utils/goldakCaeCard";
 import { literatureErrorUnavailableText } from "../../utils/meltPoolExtentStatus";
 import { MeltPoolExtentNotice } from "../MeltPoolExtentNotice";
+import { DepthBiasNotice } from "../DepthBiasNotice";
+import { resolveDepthBiasWarning } from "../../utils/depthBiasWarning";
 import { PublishedTrackBands } from "../PublishedTrackBands";
 import { DISTORTION_HEURISTIC_NOTE } from "../../utils/distortionHeuristic";
 
@@ -242,6 +244,8 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
 
     const materialNote = pyResult?.meltPoolGeometry?.regimeMaterialNote;
     if (materialNote) desc += ` Alloy note: ${materialNote}.`;
+    const depthBias = resolveDepthBiasWarning(pyResult?.meltPoolGeometry, pyResult?.material);
+    if (depthBias.text) desc += ` ${depthBias.text}`;
 
     return {
       enthalpy: parseFloat(enthalpy.toFixed(2)),
@@ -1114,6 +1118,7 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
                   </div>
                 </div>
                 <MeltPoolExtentNotice geometry={pyResult.meltPoolGeometry} />
+                <DepthBiasNotice geometry={pyResult.meltPoolGeometry} material={pyResult.material} />
                 <PublishedTrackBands thermal={pyResult} />
 
                 <div className="space-y-1 text-[11px] text-slate-300">
