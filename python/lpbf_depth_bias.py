@@ -45,6 +45,17 @@ NO_CHECK_TEMPLATE = (
     "No held-out check for this alloy and kernel ({kernel} on {alloy}, {regime} band), so no direction of the depth "
     "error is given."
 )
+DISAGREE_TEMPLATE = (
+    "No depth bias direction: the served regime label ({label}) and the error-band class from the enthalpy index "
+    "({regime}, dH/hs {index}) disagree here. For context only, the {kernel} kernel on {alloy} in the {regime} band has a "
+    "median depth error of {pct}% ({action}, n={n}, {sources} source{plural}). No direction is given. This is a screening "
+    "note, not a validated correction."
+)
+DISAGREE_NO_CELL_TEMPLATE = (
+    "No depth bias direction: the served regime label ({label}) and the error-band class from the enthalpy index "
+    "({regime}, dH/hs {index}) disagree here, and there is no held-out check for {kernel} on {alloy} in the {regime} band. "
+    "No direction is given."
+)
 BASIS_TEMPLATE = (
     "Error-band summary {bands_id}, cell {alloy} / {kernel_id} / {regime}: relative error pred / meas - 1, equal source "
     "weight, digitized figures included, screening only."
@@ -122,6 +133,12 @@ def _kernel(heat_source: Optional[str]) -> Optional[str]:
     return None
 
 
+def labels_contradict(label_class: Optional[str], index_class: Optional[str]) -> bool:
+    """True when the served label and the index class are conduction vs keyhole (two steps apart). Adjacent classes
+    (the IN625 label has no transition band, so transition vs keyhole is expected) keep their direction."""
+    return {label_class, index_class} == {"conduction", "keyhole"}
+
+
 def depth_bias_warning(regime: Optional[str], material_name: Optional[str], heat_source: Optional[str],
                        enthalpy: Any = None, table: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """{direction, text, basis}. The class comes from the enthalpy index when given, else from the served label.
@@ -138,6 +155,17 @@ def depth_bias_warning(regime: Optional[str], material_name: Optional[str], heat
         classed_by = CLASS_BASIS.format(lo=f"{lo:g}", hi=f"{hi:g}")
     fields = {"regime": rc, "alloy": alloy, "kernel": KERNEL_LABELS[kernel]}
     cell = t["cells"].get(f"{alloy}|{kernel}|{rc}")
+    label_cls = _regime_class(regime)
+    if by_index is not None and labels_contradict(label_cls, by_index):
+        fields.update(label=label_cls, index=f"{float(enthalpy):g}")
+        basis = (BASIS_TEMPLATE.format(bands_id=t["bandsId"], alloy=alloy, kernel_id=kernel, regime=rc) if cell
+                 else BASIS_NO_CHECK.format(bands_id=t["bandsId"])) + classed_by
+        if cell is None:
+            return {"direction": None, "text": DISAGREE_NO_CELL_TEMPLATE.format(**fields), "basis": basis}
+        median, n, n_sources = cell
+        fields.update(n=n, pct=round(abs(median) * 100), sources=n_sources, plural="" if n_sources == 1 else "s",
+                      action="overpredicted" if median > 0 else "underpredicted")
+        return {"direction": None, "text": DISAGREE_TEMPLATE.format(**fields), "basis": basis}
     if cell is None:
         return {"direction": None, "text": NO_CHECK_TEMPLATE.format(**fields),
                 "basis": BASIS_NO_CHECK.format(bands_id=t["bandsId"]) + classed_by}

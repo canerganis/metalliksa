@@ -58,6 +58,32 @@ class LaneConditionsPerKernel(unittest.TestCase):
         self.assertIn("Goldak", after["depthBiasWarning"]["text"])
         self.assertIn("transition band", after["depthBiasWarning"]["text"])
 
+    def test_lane_cbm_c_label_and_index_class_disagree_so_no_direction(self):
+        # Lane CBM-C: 195 W, 1200 mm/s, 100 um, default preheat. Served Keyhole Mode (IN625 cut 13.6), index 13.94
+        # (conduction by the 15 edge), measured underpredicted: the note must not claim a direction.
+        for kernel in db.KERNEL_LABELS:
+            res, g = _geometry(195.0, 1200.0, 100.0, kernel)
+            idx = res["processParameters"]["normalizedEnthalpy"]
+            self.assertTrue(g["regime"].startswith("Keyhole"), g["regime"])
+            self.assertEqual(db.enthalpy_class(idx), "conduction", idx)
+            w = db.depth_bias_warning(g["regime"], res["material"], kernel, idx)
+            self.assertIsNone(w["direction"], kernel)
+            self.assertIn("disagree", w["text"])
+            self.assertIn("(keyhole)", w["text"])
+            self.assertIn("conduction, dH/hs", w["text"])
+            self.assertIn(f"dH/hs {idx:g}", w["text"])
+            self.assertIn("No direction is given", w["text"])
+            self.assertIn("n=16", w["text"]) if kernel == "rosenthal" else None
+            db.attach_depth_bias_warning(res)
+            self.assertIsNone(res["meltPoolGeometry"]["depthBiasWarning"]["direction"])
+        # Adjacent classes (IN625 keyhole label, transition index) keep the transition direction.
+        self.assertEqual(db.depth_bias_warning("Keyhole Mode", "Inconel 625", "rosenthal", 17.1)["direction"], db.UNDER)
+        # Context-free no-cell variant.
+        w = db.depth_bias_warning("Keyhole Mode", "Inconel 718", "goldak", 10.0)
+        self.assertIsNone(w["direction"])
+        self.assertIn("disagree", w["text"])
+        self.assertNotRegex(w["text"], "[\u2013\u2014]")
+
     def test_class_follows_index_edges_not_served_label(self):
         # CBM C style index 13.94 is below the 15 edge: conduction by the bands, whatever the served IN625 label says.
         self.assertEqual(db.enthalpy_class(13.94), "conduction")
@@ -122,7 +148,9 @@ class SummaryDerived(unittest.TestCase):
 class TsMirror(unittest.TestCase):
     def test_templates_and_table_equal_typescript(self):
         src = TS_FILE.read_text(encoding="utf-8")
-        pairs = (("DEPTH_BIAS_DIRECTION_TEMPLATE", db.DIRECTION_TEMPLATE), ("DEPTH_BIAS_FEW_TEMPLATE", db.FEW_TEMPLATE),
+        pairs = (("DEPTH_BIAS_DISAGREE_TEMPLATE", db.DISAGREE_TEMPLATE),
+                 ("DEPTH_BIAS_DISAGREE_NO_CELL_TEMPLATE", db.DISAGREE_NO_CELL_TEMPLATE),
+                 ("DEPTH_BIAS_DIRECTION_TEMPLATE", db.DIRECTION_TEMPLATE), ("DEPTH_BIAS_FEW_TEMPLATE", db.FEW_TEMPLATE),
                  ("DEPTH_BIAS_FLAT_TEMPLATE", db.FLAT_TEMPLATE), ("DEPTH_BIAS_NO_CHECK_TEMPLATE", db.NO_CHECK_TEMPLATE),
                  ("DEPTH_BIAS_BASIS_TEMPLATE", db.BASIS_TEMPLATE), ("DEPTH_BIAS_BASIS_NO_CHECK", db.BASIS_NO_CHECK))
         for const, py in pairs:

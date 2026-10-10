@@ -65,6 +65,15 @@ export const DEPTH_BIAS_FLAT_TEMPLATE =
 export const DEPTH_BIAS_NO_CHECK_TEMPLATE =
   "No held-out check for this alloy and kernel ({kernel} on {alloy}, {regime} band), so no direction of the depth " +
   "error is given.";
+export const DEPTH_BIAS_DISAGREE_TEMPLATE =
+  "No depth bias direction: the served regime label ({label}) and the error-band class from the enthalpy index " +
+  "({regime}, dH/hs {index}) disagree here. For context only, the {kernel} kernel on {alloy} in the {regime} band has a " +
+  "median depth error of {pct}% ({action}, n={n}, {sources} source{plural}). No direction is given. This is a screening " +
+  "note, not a validated correction.";
+export const DEPTH_BIAS_DISAGREE_NO_CELL_TEMPLATE =
+  "No depth bias direction: the served regime label ({label}) and the error-band class from the enthalpy index " +
+  "({regime}, dH/hs {index}) disagree here, and there is no held-out check for {kernel} on {alloy} in the {regime} band. " +
+  "No direction is given.";
 export const DEPTH_BIAS_BASIS_TEMPLATE =
   "Error-band summary {bands_id}, cell {alloy} / {kernel_id} / {regime}: relative error pred / meas - 1, equal source " +
   "weight, digitized figures included, screening only.";
@@ -102,6 +111,11 @@ export function enthalpyClassOf(enthalpy: number | null | undefined): string | n
   return e < lo ? "conduction" : e < hi ? "transition" : "keyhole";
 }
 
+/** Conduction vs keyhole is a contradiction; adjacent classes (the IN625 label has no transition band) keep their direction. */
+function labelsContradict(labelClass: string | null, indexClass: string | null): boolean {
+  return (labelClass === "conduction" && indexClass === "keyhole") || (labelClass === "keyhole" && indexClass === "conduction");
+}
+
 function kernelOf(heatSource: string | null | undefined): string | null {
   const k = String(heatSource ?? "").trim().toLowerCase().replace(/_/g, "-");
   for (const name of Object.keys(KERNEL_LABELS)) if (k.startsWith(name)) return name;
@@ -127,6 +141,16 @@ export function computeDepthBiasWarning(
   const classedBy = byIndex ? fill(DEPTH_BIAS_CLASS_BASIS, { lo, hi }) : "";
   const fields: Record<string, string | number> = { regime: rc, alloy, kernel: KERNEL_LABELS[kernel] };
   const cell = DEPTH_BIAS_CELLS[`${alloy}|${kernel}|${rc}`];
+  const labelClass = regimeClassOf(regime);
+  if (byIndex && labelsContradict(labelClass, byIndex)) {
+    Object.assign(fields, { label: labelClass as string, index: String(Number(enthalpy)) });
+    const dBasis =
+      (cell ? fill(DEPTH_BIAS_BASIS_TEMPLATE, { bands_id: DEPTH_BIAS_BANDS_ID, alloy, kernel_id: kernel, regime: rc }) : fill(DEPTH_BIAS_BASIS_NO_CHECK, { bands_id: DEPTH_BIAS_BANDS_ID })) + classedBy;
+    if (!cell) return { direction: null, text: fill(DEPTH_BIAS_DISAGREE_NO_CELL_TEMPLATE, fields), basis: dBasis };
+    const [m, cn, cs] = cell;
+    Object.assign(fields, { n: cn, pct: Math.round(Math.abs(m) * 100), sources: cs, plural: cs === 1 ? "" : "s", action: m > 0 ? "overpredicted" : "underpredicted" });
+    return { direction: null, text: fill(DEPTH_BIAS_DISAGREE_TEMPLATE, fields), basis: dBasis };
+  }
   if (!cell) {
     return {
       direction: null,

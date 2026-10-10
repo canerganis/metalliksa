@@ -33,9 +33,13 @@ test("the band class follows the enthalpy index edges, not the served label", ()
   assert.match(w.text ?? "", /transition band/);
   assert.match(w.basis ?? "", /Inconel 625 \/ rosenthal \/ transition/);
   assert.match(w.basis ?? "", /conduction below 15, transition 15 to 20, keyhole at 20 or above/);
-  // Index below 15 is conduction even when the label says keyhole.
+  // Index below 15 is conduction while the label says keyhole: contradiction, no direction (Lane CBM-C).
   const c = computeDepthBiasWarning("Keyhole Mode", "Inconel 625", "rosenthal", 13.94);
-  assert.equal(c.direction, "may-overestimate");
+  assert.equal(c.direction, null);
+  assert.match(c.text ?? "", /served regime label \(keyhole\) and the error-band class from the enthalpy index \(conduction, dH\/hs 13\.94\) disagree here/);
+  assert.match(c.text ?? "", /median depth error of 25% \(overpredicted, n=16, 2 sources\)\. No direction is given/);
+  for (const k of ["rosenthal", "eagar-tsai", "goldak"]) assert.equal(computeDepthBiasWarning("Keyhole Mode", "Inconel 625", k, 13.94).direction, null);
+  assert.equal(computeDepthBiasWarning("Keyhole Mode", "Inconel 625", "rosenthal", 17.1).direction, "may-underestimate");
   // Without an index the label decides (n=1 keyhole cell: no direction).
   const f = computeDepthBiasWarning("Keyhole Mode", "Inconel 625", "rosenthal");
   assert.equal(f.direction, null);
