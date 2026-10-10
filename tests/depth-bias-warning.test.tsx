@@ -16,7 +16,7 @@ test("Transition and Keyhole labels warn that depth is likely underestimated", (
 test("Conduction on IN625 gets the softer overprediction note, other alloys get none", () => {
   const w = computeDepthBiasWarning("Conduction Mode (Stable)", "Inconel 625");
   assert.equal(w.direction, "may-overestimate");
-  assert.match(w.text ?? "", /1\.5 times/);
+  assert.match(w.text ?? "", /1\.25 to 1\.3 times for the served depth/);
   assert.equal(computeDepthBiasWarning("Conduction Mode (Stable)", "Inconel 718").direction, null);
 });
 
