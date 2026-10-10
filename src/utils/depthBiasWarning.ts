@@ -1,7 +1,8 @@
 // Depth-bias note for the served melt-pool depth. Reporting only: no regime threshold, depth number or verdict reads it.
-// Mirror of python/lpbf_depth_bias.py (python/test_lpbf_depth_bias.py pins the texts equal).
+// Mirror of python/lpbf_depth_bias.py (python/test_lpbf_depth_bias.py pins the table and templates equal, and the table
+// equal to data/calibration/lpbf-meltpool-error-bands-v1.summary.json). Relative error there is pred / meas - 1.
 
-export type DepthBiasDirection = "likely-underestimated" | "may-overestimate" | null;
+export type DepthBiasDirection = "may-underestimate" | "may-overestimate" | null;
 
 export interface DepthBiasWarning {
   direction: DepthBiasDirection;
@@ -9,40 +10,135 @@ export interface DepthBiasWarning {
   basis: string | null;
 }
 
-export const DEPTH_BIAS_UNDER_TEXT =
-  "Depth is likely underestimated. The served depth is a conduction isotherm depth plus an uncited keyhole increment. On IN625 single tracks in the " +
-  "Transition band by this label (Lane et al. CBM tracks, 150 W at 400 mm/s and 195 W at 800 mm/s, beam about " +
-  "100 um, enthalpy index 19.45 and 17.88) the observed depth to half-width ratio was 1.4 to 1.8 and the served " +
-  "depth was about 0.7 to 0.85 times the observed depth. This is a screening note from a small held-out check, not a validated correction.";
-export const DEPTH_BIAS_UNDER_BASIS =
-  "Held-out IN625 check, Lane et al. CBM tracks (n=2); research notes RESULTS_lane_ab_latent_check_2026-10-10 " +
-  "and RESULTS_ke_width_n3_2026-10-10. Alloys other than IN625 have no such check.";
-export const DEPTH_BIAS_OVER_TEXT =
-  "Depth may be overestimated. In our held-out checks, conduction depth estimates overpredicted conduction-mode " +
-  "IN625 tracks (AMMT, beam 170 um, enthalpy index about 7.4 to 8.1) by about 1.25 to 1.3 times for the served depth. This is a screening note " +
-  "from a small check, not a validated correction.";
-export const DEPTH_BIAS_OVER_BASIS =
-  "Held-out IN625 check, AMMT tracks; research notes RESULTS_ke_width_n3_2026-10-10 and " +
-  "SOURCES_ke_scaling_2026-10-10.";
+export const MIN_N_FOR_DIRECTION = 5;
+export const MIN_ABS_MEDIAN_FOR_DIRECTION = 0.05;
 
-export function computeDepthBiasWarning(regime: string | null | undefined, materialName: string | null | undefined): DepthBiasWarning {
-  const r = String(regime ?? "").toLowerCase();
-  const isIn625 = String(materialName ?? "").toLowerCase().includes("625");
-  if (r.startsWith("transition") || r.startsWith("keyhole")) {
-    return { direction: "likely-underestimated", text: DEPTH_BIAS_UNDER_TEXT, basis: DEPTH_BIAS_UNDER_BASIS };
-  }
-  if (r.startsWith("conduction") && isIn625) {
-    return { direction: "may-overestimate", text: DEPTH_BIAS_OVER_TEXT, basis: DEPTH_BIAS_OVER_BASIS };
-  }
-  return { direction: null, text: null, basis: null };
+export const DEPTH_BIAS_BANDS_ID = "lpbf-meltpool-error-bands-2026-10-08-2799e8af82c6";
+
+/** "alloy|kernel|regime" -> [median relative error, n tracks, n sources]. */
+export const DEPTH_BIAS_CELLS: Record<string, readonly [number, number, number]> = {
+  "316L Stainless Steel|eagar-tsai|conduction": [0.257, 167, 2],
+  "316L Stainless Steel|eagar-tsai|keyhole": [-0.305, 442, 3],
+  "316L Stainless Steel|eagar-tsai|transition": [-0.426, 122, 2],
+  "Inconel 625|eagar-tsai|conduction": [0.208, 23, 2],
+  "Inconel 625|eagar-tsai|keyhole": [-0.077, 1, 1],
+  "Inconel 625|eagar-tsai|transition": [-0.518, 6, 1],
+  "Inconel 718|eagar-tsai|keyhole": [-0.113, 7, 1],
+  "Ti-6Al-4V|eagar-tsai|conduction": [0.556, 8, 1],
+  "Ti-6Al-4V|eagar-tsai|keyhole": [-0.047, 80, 2],
+  "Ti-6Al-4V|eagar-tsai|transition": [-0.41, 6, 1],
+  "316L Stainless Steel|goldak|conduction": [0.371, 163, 2],
+  "316L Stainless Steel|goldak|keyhole": [-0.305, 442, 3],
+  "316L Stainless Steel|goldak|transition": [-0.385, 122, 2],
+  "Inconel 625|goldak|conduction": [0.437, 17, 2],
+  "Inconel 625|goldak|keyhole": [-0.013, 1, 1],
+  "Inconel 625|goldak|transition": [-0.475, 6, 1],
+  "Inconel 718|goldak|keyhole": [-0.113, 7, 1],
+  "Ti-6Al-4V|goldak|conduction": [0.753, 8, 1],
+  "Ti-6Al-4V|goldak|keyhole": [-0.047, 80, 2],
+  "Ti-6Al-4V|goldak|transition": [-0.352, 6, 1],
+  "316L Stainless Steel|rosenthal|conduction": [0.2, 160, 2],
+  "316L Stainless Steel|rosenthal|keyhole": [-0.139, 442, 3],
+  "316L Stainless Steel|rosenthal|transition": [-0.353, 122, 2],
+  "Inconel 625|rosenthal|conduction": [0.254, 16, 2],
+  "Inconel 625|rosenthal|keyhole": [0.598, 1, 1],
+  "Inconel 625|rosenthal|transition": [-0.26, 6, 1],
+  "Inconel 718|rosenthal|keyhole": [0.298, 7, 1],
+  "Ti-6Al-4V|rosenthal|conduction": [0.549, 8, 1],
+  "Ti-6Al-4V|rosenthal|keyhole": [0.284, 80, 2],
+  "Ti-6Al-4V|rosenthal|transition": [0.03, 6, 1],
+};
+
+export const DEPTH_BIAS_DIRECTION_TEMPLATE =
+  "Depth {verb} for this alloy and kernel in the {regime} band. On held-out published single tracks the {kernel} " +
+  "kernel on {alloy} {action} the depth by a median of {pct}% (n={n}, {sources} source{plural}). This is a screening " +
+  "note, not a validated correction, and transfer to another machine is not established.";
+export const DEPTH_BIAS_FEW_TEMPLATE =
+  "Too few held-out tracks to give a direction: the {kernel} kernel on {alloy} in the {regime} band has n={n} " +
+  "(median {action} the depth by {pct}%). This is a screening note, not a validated correction.";
+export const DEPTH_BIAS_FLAT_TEMPLATE =
+  "No clear depth bias direction: the {kernel} kernel on {alloy} in the {regime} band has a median depth error of " +
+  "{pct}% (n={n}, {sources} source{plural}). This is a screening note, not a validated correction.";
+export const DEPTH_BIAS_NO_CHECK_TEMPLATE =
+  "No held-out check for this alloy and kernel ({kernel} on {alloy}, {regime} band), so no direction of the depth " +
+  "error is given.";
+export const DEPTH_BIAS_BASIS_TEMPLATE =
+  "Error-band summary {bands_id}, cell {alloy} / {kernel_id} / {regime}: relative error pred / meas - 1, equal source " +
+  "weight, digitized figures included, screening only.";
+export const DEPTH_BIAS_BASIS_NO_CHECK = "Error-band summary {bands_id} has no depth cell for this alloy, kernel and regime band.";
+
+const KERNEL_LABELS: Record<string, string> = { rosenthal: "Rosenthal", "eagar-tsai": "Eagar-Tsai", goldak: "Goldak" };
+
+function fill(template: string, fields: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (_m, k: string) => String(fields[k]));
 }
 
-/** Uses a served depthBiasWarning when the payload carries one, else derives it from the regime label and alloy name. */
+function alloyOf(materialName: string | null | undefined): string | null {
+  const m = String(materialName ?? "").toLowerCase();
+  if (m.includes("316")) return "316L Stainless Steel";
+  if (m.includes("625")) return "Inconel 625";
+  if (m.includes("718")) return "Inconel 718";
+  if (m.includes("ti-6al-4v") || m.includes("ti64") || m.includes("6al")) return "Ti-6Al-4V";
+  return null;
+}
+
+function regimeClassOf(regime: string | null | undefined): string | null {
+  const r = String(regime ?? "").toLowerCase();
+  for (const name of ["conduction", "transition", "keyhole"]) if (r.startsWith(name)) return name;
+  return null;
+}
+
+function kernelOf(heatSource: string | null | undefined): string | null {
+  const k = String(heatSource ?? "").trim().toLowerCase().replace(/_/g, "-");
+  for (const name of Object.keys(KERNEL_LABELS)) if (k.startsWith(name)) return name;
+  return null;
+}
+
+/** The note for the regime label, alloy and the heat-source kernel actually served (rosenthal, eagar-tsai or goldak). */
+export function computeDepthBiasWarning(
+  regime: string | null | undefined,
+  materialName: string | null | undefined,
+  heatSource: string | null | undefined,
+): DepthBiasWarning {
+  const rc = regimeClassOf(regime);
+  const alloy = alloyOf(materialName);
+  const kernel = kernelOf(heatSource);
+  if (!rc || !alloy || !kernel) return { direction: null, text: null, basis: null };
+  const fields: Record<string, string | number> = { regime: rc, alloy, kernel: KERNEL_LABELS[kernel] };
+  const cell = DEPTH_BIAS_CELLS[`${alloy}|${kernel}|${rc}`];
+  if (!cell) {
+    return {
+      direction: null,
+      text: fill(DEPTH_BIAS_NO_CHECK_TEMPLATE, fields),
+      basis: fill(DEPTH_BIAS_BASIS_NO_CHECK, { bands_id: DEPTH_BIAS_BANDS_ID }),
+    };
+  }
+  const [median, n, nSources] = cell;
+  Object.assign(fields, {
+    n,
+    pct: Math.round(Math.abs(median) * 100),
+    sources: nSources,
+    plural: nSources === 1 ? "" : "s",
+    action: median > 0 ? "overpredicted" : "underpredicted",
+  });
+  const basis = fill(DEPTH_BIAS_BASIS_TEMPLATE, { bands_id: DEPTH_BIAS_BANDS_ID, alloy, kernel_id: kernel, regime: rc });
+  if (n < MIN_N_FOR_DIRECTION) return { direction: null, text: fill(DEPTH_BIAS_FEW_TEMPLATE, fields), basis };
+  if (Math.abs(median) < MIN_ABS_MEDIAN_FOR_DIRECTION) return { direction: null, text: fill(DEPTH_BIAS_FLAT_TEMPLATE, fields), basis };
+  const over = median > 0;
+  return {
+    direction: over ? "may-overestimate" : "may-underestimate",
+    text: fill(DEPTH_BIAS_DIRECTION_TEMPLATE, { ...fields, verb: over ? "may be overestimated" : "may be underestimated" }),
+    basis,
+  };
+}
+
+/** Uses a served depthBiasWarning when the payload carries one, else derives it from the regime label, alloy name and served kernel. */
 export function resolveDepthBiasWarning(
   geometry: { regime?: string; depthBiasWarning?: DepthBiasWarning } | null | undefined,
   material: string | { name?: string } | null | undefined,
+  heatSource?: string | null,
 ): DepthBiasWarning {
   if (geometry?.depthBiasWarning) return geometry.depthBiasWarning;
   const name = typeof material === "string" ? material : material?.name;
-  return computeDepthBiasWarning(geometry?.regime, name);
+  return computeDepthBiasWarning(geometry?.regime, name, heatSource);
 }

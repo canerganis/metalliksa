@@ -628,7 +628,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
         </div>
       )}
       {thermal && <MeltPoolExtentNotice geometry={thermal.meltPoolGeometry} />}
-      {thermal && <DepthBiasNotice geometry={thermal.meltPoolGeometry} material={thermal.material} />}
+      {thermal && <DepthBiasNotice geometry={thermal.meltPoolGeometry} material={thermal.material} heatSource={thermal.processParameters?.heatSource} />}
       {thermal && <PublishedTrackBands thermal={thermal} />}
 
       {job?.porosity && (

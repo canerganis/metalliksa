@@ -224,11 +224,11 @@ export function buildLpbfRunReportHtml(report: LpbfQualificationReport, extras: 
     ].join("")}</dl><h3>Research evidence</h3>${research.length ? `<ul>${research.map(item => `<li><code>${escapeHtml(JSON.stringify(item))}</code></li>`).join("")}</ul>` : `<p>No linked research evidence records.</p>`}`);
 
   const thermalGeometry = buildJob?.thermal?.meltPoolGeometry;
-  const depthBias = thermalGeometry ? resolveDepthBiasWarning(thermalGeometry, buildJob?.thermal?.material) : null;
+  const depthBias = thermalGeometry ? resolveDepthBiasWarning(thermalGeometry, buildJob?.thermal?.material, buildJob?.thermal?.processParameters?.heatSource) : null;
   const depthBiasSection = !thermalGeometry || !depthBias ? "" : section("depth-bias", "Melt-pool depth bias note",
     `<p class="muted">Reporting text only: no label, verdict or gate reads it. Screening regime label: ${escapeHtml(thermalGeometry.regime)}.</p>`
     + (thermalGeometry.regimeMaterialNote ? `<p>Alloy note: ${escapeHtml(thermalGeometry.regimeMaterialNote)}.</p>` : "")
-    + (depthBias.text ? `<p>${escapeHtml(depthBias.text)}</p><p class="muted">Basis: ${escapeHtml(depthBias.basis ?? "")}</p>` : `<p>No depth bias note applies to this regime and alloy.</p>`));
+    + (depthBias.text ? `<p>${escapeHtml(depthBias.text)}</p><p class="muted">Basis: ${escapeHtml(depthBias.basis ?? "")}</p>` : `<p>No depth bias note applies (regime, alloy or served kernel not recognised).</p>`));
 
   const bands = report.publishedTrackBands;
   const bandsSection = !bands ? "" : section("error-bands", "Published-track error bands",

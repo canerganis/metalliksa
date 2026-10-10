@@ -244,7 +244,7 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
 
     const materialNote = pyResult?.meltPoolGeometry?.regimeMaterialNote;
     if (materialNote) desc += ` Alloy note: ${materialNote}.`;
-    const depthBias = resolveDepthBiasWarning(pyResult?.meltPoolGeometry, pyResult?.material);
+    const depthBias = resolveDepthBiasWarning(pyResult?.meltPoolGeometry, pyResult?.material, pyResult?.processParameters?.heatSource);
     if (depthBias.text) desc += ` ${depthBias.text}`;
 
     return {
@@ -1118,7 +1118,7 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
                   </div>
                 </div>
                 <MeltPoolExtentNotice geometry={pyResult.meltPoolGeometry} />
-                <DepthBiasNotice geometry={pyResult.meltPoolGeometry} material={pyResult.material} />
+                <DepthBiasNotice geometry={pyResult.meltPoolGeometry} material={pyResult.material} heatSource={pyResult.processParameters?.heatSource} />
                 <PublishedTrackBands thermal={pyResult} />
 
                 <div className="space-y-1 text-[11px] text-slate-300">

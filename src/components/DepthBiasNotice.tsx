@@ -8,9 +8,11 @@ import { resolveDepthBiasWarning, type DepthBiasWarning } from "../utils/depthBi
 export const DepthBiasNotice: React.FC<{
   geometry: { regime?: string; regimeMaterialNote?: string; depthBiasWarning?: DepthBiasWarning } | null | undefined;
   material?: string | { name?: string } | null;
+  /** Heat-source kernel actually served (rosenthal, eagar-tsai or goldak); the note depends on it. */
+  heatSource?: string | null;
   className?: string;
-}> = ({ geometry, material, className }) => {
-  const warning = resolveDepthBiasWarning(geometry, material);
+}> = ({ geometry, material, heatSource, className }) => {
+  const warning = resolveDepthBiasWarning(geometry, material, heatSource);
   const note = geometry?.regimeMaterialNote;
   if (!warning.text && !note) return null;
   return (
