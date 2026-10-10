@@ -361,12 +361,43 @@ def heldout_admissible_interval(units: Sequence[Dict[str, Any]], threshold: floa
                           "as the adopted cut (keyhole if index >= c)"}
 
 
-def licensed_claim(interval: Dict[str, Any], t_f: float) -> str:
-    """Section 12 (amendment B1): the only statement a PASS licenses."""
+def heldout_calls(units: Sequence[Dict[str, Any]], threshold: float, index_fn=None, label_fn=None) -> List[Dict[str, Any]]:
+    """Per-unit held-out calls of one cut (keyhole if index >= cut), sorted by index. Scoring only: call it after the
+    fit has returned, never inside it."""
+    index_fn = index_fn or repo_index
+    label_fn = label_fn or truth_keyhole
+    out = []
+    for u in units:
+        h = index_fn(u)
+        y = bool(label_fn(u))
+        p = predict_keyhole(h, threshold)
+        out.append({"unitId": u["unit_id"], "index": h, "truthKeyhole": y, "predictedKeyhole": p, "correct": y == p})
+    return sorted(out, key=lambda c: (c["index"], c["unitId"]))
+
+
+def licensed_claim(interval: Dict[str, Any], t_f: float, conf: Dict[str, Any],
+                   calls: Sequence[Dict[str, Any]]) -> str:
+    """Section 12 (amendment 2): the only statement a PASS licenses. `conf` and `calls` are arm F's held-out
+    confusion and per-unit calls at T_F. With no held-out error the claim places the onset in the interval; with
+    errors it names the misclassified units and says only that every cut in the interval makes the same held-out
+    predictions as T_F, errors included (the held-out data contradict an onset inside it)."""
+    wrong = [c for c in calls if not c["correct"]]
+    if len(wrong) != conf["errors"] or len(calls) != conf["n"]:
+        raise ValueError("held-out calls disagree with the held-out confusion")
+    if conf["threshold"] != t_f or interval["threshold"] != t_f:
+        raise ValueError("confusion, interval and T_F refer to different cuts")
     lo = "-inf" if interval["lowerExclusive"] is None else f"{interval['lowerExclusive']:.2f}"
     hi = "+inf" if interval["upperInclusive"] is None else f"{interval['upperInclusive']:.2f}"
-    return (f"The IN625 depth > half-width onset on the app index lies in ({lo}, {hi}] (held-out-admissible "
-            f"interval); T_F = {t_f:.1f} is the fit-split point estimate, not a held-out-validated value.")
+    tail = f"T_F = {t_f:.1f} is the fit-split point estimate, not a held-out-validated value."
+    if not wrong:
+        return (f"The IN625 depth > half-width onset on the app index lies in ({lo}, {hi}] (held-out-admissible "
+                f"interval; arm F makes no held-out error); {tail}")
+    named = "; ".join(
+        f"{c['unitId']} (index {c['index']:.2f}, measured {'keyhole' if c['truthKeyhole'] else 'not keyhole'}, "
+        f"called {'keyhole' if c['predictedKeyhole'] else 'not keyhole'})" for c in wrong)
+    return (f"Arm F misclassifies {len(wrong)} held-out unit{'s' if len(wrong) > 1 else ''}: {named}. The held-out "
+            f"split does not place the IN625 depth > half-width onset in ({lo}, {hi}]; it only shows that every cut "
+            f"in ({lo}, {hi}] makes the same held-out predictions as T_F, these errors included. {tail}")
 
 
 def leave_one_out_thresholds(fit_units: Sequence[Dict[str, Any]], index_fn=None,
@@ -447,6 +478,7 @@ def analyse(ledger: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
     verdict = evaluate_pass(arms["F_fitted"], arms["B_current_20"], secondary["F_fitted"], secondary["B_current_20"],
                             loo_ba, fit["nFitKeyhole"], fit["nFitNotKeyhole"])
     interval = heldout_admissible_interval(held, t_f)
+    calls_f = heldout_calls(held, t_f)
 
     # 3. Sensitivities (reported, not part of the verdict).
     unamb = [u for u in held if not is_ambiguous(u)]
@@ -471,8 +503,8 @@ def analyse(ledger: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
             "weaverToRepoFactor": factor, "weaverThresholdInRepoUnits": t_s,
             "kingBandInRepoUnits": [KING_BAND[0] * factor, KING_BAND[1] * factor],
             "arms": arms, "secondaryTruth": secondary, "verdict": verdict,
-            "heldoutAdmissibleInterval": interval,
-            "licensedClaimIfPass": licensed_claim(interval, t_f), "sensitivities": sens,
+            "heldoutAdmissibleInterval": interval, "heldoutCallsF": calls_f,
+            "licensedClaimIfPass": licensed_claim(interval, t_f, arms["F_fitted"], calls_f), "sensitivities": sens,
             "transitionCutConsequence": ("adopted keyhole cut is below the transition cut 15: the IN625 transition band "
                                          "would be empty" if t_f < BASELINE_TRANSITION_CUT else "none"),
             "units": per_unit}
@@ -514,7 +546,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     RESULTS_JSON.write_text(json.dumps(result, indent=2, sort_keys=False) + "\n", encoding="utf-8")
     iv = result["heldoutAdmissibleInterval"]
     print(json.dumps({"verdict": result["verdict"], "adoptedThreshold": result["adoptedThreshold"],
-                      "heldoutAdmissibleInterval": [iv["lowerExclusive"], iv["upperInclusive"]]}, indent=2))
+                      "heldoutAdmissibleInterval": [iv["lowerExclusive"], iv["upperInclusive"]],
+                      "heldoutErrorsF": result["arms"]["F_fitted"]["errors"],
+                      "licensedClaimIfPass": result["licensedClaimIfPass"]}, indent=2))
     return 0
 
 

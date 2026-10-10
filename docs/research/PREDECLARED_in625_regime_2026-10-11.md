@@ -2,8 +2,8 @@
 
 File: `docs/research/PREDECLARED_in625_regime_2026-10-11.md`
 
-**PREDECLARED. Screening evaluation, not validation. No threshold has been fitted and no held-out unit has been
-scored.** Lane `in625-regime-threshold`, branch `research/in625-regime-threshold`, base `b22657f5` (local main).
+**PREDECLARED. Screening evaluation, not validation. No threshold has been fitted; held-out units have been scored
+only at fixed trial cuts with no fit, as disclosed in section 10.** Lane `in625-regime-threshold`, branch `research/in625-regime-threshold`, base `b22657f5` (local main).
 Sources and locators: `docs/research/SOURCES_in625_regime_2026-10-11.md` (cited below as SOURCES). Runner:
 `python/tools/lpbf_in625_regime_threshold.py`. Synthetic tests: `python/test_lpbf_in625_regime_threshold.py`.
 Ledger: `data/benchmark/in625-regime-ledger-2026-10-11/units.csv`. Nothing frozen changes in this lane; labels stay
@@ -14,6 +14,13 @@ Amendment 1 (2026-10-11, before any run, after the pre-registration gate at `14d
 identity reason for the one exclusion (B2); section 7 adds the held-out-admissible interval as a reported quantity;
 section 10 discloses the baseline's known held-out errors and what that implies for the PASS rule; section 12 limits
 what a PASS licenses (B1). The fit rule, the split, the arms and the PASS thresholds are unchanged.
+
+Amendment 2 (2026-10-11, before any run, after gate round 2 at `85e1df60`): the PASS rule allows arm F one held-out
+error, and two of the three possible held-out-admissible intervals carry one held-out error each, so the amendment 1
+sentence "the onset lies in (L, U]" would be contradicted by held-out data in those cases. Section 12 now makes the
+licensed sentence depend on F's held-out errors, the runner writes F's per-unit held-out calls, and section 10 item 3
+states which interval is error-free. Section 5 and SOURCES section 3.3 now name the source of each value used for the
+row 29 exclusion. The fit rule, the split, the arms, the PASS thresholds and the verdict logic are unchanged.
 
 ## 1. Question and scope
 
@@ -84,10 +91,11 @@ separately published campaign (Lane 2020 AM-Bench plates).
 
 Why the excluded row is excluded: mds2 EOS Summary row 29 (195 W, 800 mm/s, D4sigma 100 um, n = 10, mean depth
 91.258 um, mean width 135.58 um) is very likely the same physical tracks as the held-out Lane CBM B class, not only
-the same condition. Evidence: Weaver 2022 Sec. 2.2 says their data set includes ten Lane 2020 EOS tracks; their
-Table 4 lists case B with d = 91.28 um, which matches row 29 and the Lane Table 4 CBM B class depth of 91 um; row 29
-has n = 10; and no mds2 EOS row exists at the other two CBM conditions (150 W / 400 mm/s, 195 W / 1200 mm/s), so the
-ten Lane tracks can only sit in row 29. Counter-evidence, recorded: the mds2 Data sheet folders behind that condition
+the same condition. Evidence, by source: Weaver 2022 Sec. 2.2 says their data set includes ten Lane 2020 EOS tracks;
+Weaver Table 4 lists case B with d = 91.28 um (re-read from the logged XML in amendment 2, SOURCES section 3.3),
+which matches the mds2 row 29 mean depth 91.258 um and the Lane Table 4 CBM B class depth of 91 um; the mds2 Summary
+gives row 29 n = 10 measurements (Weaver Table 4 gives no count); and no mds2 EOS row exists at the other two CBM
+conditions (150 W / 400 mm/s, 195 W / 1200 mm/s), so the ten Lane tracks can only sit in row 29. Counter-evidence, recorded: the mds2 Data sheet folders behind that condition
 are named Plate 3, 4 and 9 and dated 2018-08-28 to 2018-09-10, with no AM-Bench label, so the identity is inferred,
 not stated by the data set. Either way the row is a held-out target: keeping it in the fit split would put CBM B's
 measured geometry into the threshold. The exclusion is therefore required, not optional.
@@ -195,6 +203,13 @@ Amendment 1 adds what follows, stated plainly because it changes what a PASS mea
 3. Inside that window only two held-out units constrain where the cut sits: Lane CBM C at 13.94 (keyhole) and the
    mds2 AMMT D4sigma 122 um unit at 12.67 (not keyhole). The held-out-admissible interval (section 7) can only be
    (9.88, 12.67], (12.67, 13.94] or (13.94, 17.07]. The mds2 AMMT units are one power and speed with a spot series.
+   Only (12.67, 13.94] is error-free on the held-out split (tp 5, fn 0, tn 8, fp 0). The other two intervals each
+   carry one held-out error and still pass P1 to P3: a cut in (9.88, 12.67] calls `mds2-ammt-row10` (index 12.67,
+   depth over half width 0.814) keyhole, a false positive (BA 0.94); a cut in (13.94, 17.07] misses `lane2020-CBM-C`
+   (index 13.94, depth over half width 1.20, not ambiguous), a false negative (BA 0.90). These counts were
+   recomputed by the gate and the worker from held-out indices and labels at fixed trial cuts, with no fit. In those
+   two cases the held-out data contradict an onset inside the interval, which is why section 12 changes the
+   licensed sentence.
 4. P5 is not an independent check on this set: the secondary labels (depth over D4sigma/2 > 1) equal the primary
    labels on all 13 held-out units.
 5. P6 depends on the 56 leave-one-out refits, which have not been computed; its outcome is not claimed here.
@@ -207,7 +222,8 @@ Amendment 1 adds what follows, stated plainly because it changes what a PASS mea
    The runner refuses to start if any of the three files is uncommitted or modified, if the ledger hash differs from
    the pin, if the solver cuts differ from 15 / 20, or if the results file already exists.
 3. Output: `docs/research/RESULTS_in625_regime_2026-10-11.json` (hashes of the declaration, runner, ledger, workbook,
-   loader and solver; git HEAD; fit; all arms; verdict; held-out-admissible interval and the licensed claim;
+   loader and solver; git HEAD; fit; all arms; verdict; held-out-admissible interval, arm F's per-unit held-out
+   calls and the licensed claim;
    sensitivities; per-unit table). A written
    `RESULTS_in625_regime_2026-10-11.md` follows and quotes only numbers from the JSON.
 4. Crashes are recorded with the traceback and the fix; the run is not repeated to improve a number. A negative result
@@ -217,11 +233,20 @@ Amendment 1 adds what follows, stated plainly because it changes what a PASS mea
 
 ## 12. What a PASS allows
 
-What a PASS licenses (amendment 1), and nothing more: "the IN625 depth > half-width onset on the app index lies in
-the held-out-admissible interval (L, U]; T_F is the fit-split point estimate". It does not license a held-out-validated
-threshold to 0.1: the held-out split cannot tell T_F from any other cut in (L, U]. The runner writes this sentence with
-the numbers filled in (`licensedClaimIfPass`). The RESULTS file and any BUILD note, product note or PROOF entry must
-quote the interval, not only the BA.
+What a PASS licenses (amendments 1 and 2), and nothing more, depends on arm F's held-out errors at T_F:
+
+1. F makes no held-out error: "the IN625 depth > half-width onset on the app index lies in the held-out-admissible
+   interval (L, U]; T_F is the fit-split point estimate, not a held-out-validated value".
+2. F makes one or more held-out errors (P3 allows one): the sentence names every misclassified held-out unit id with
+   its index, measured class and call, and says that the held-out split does not place the onset in (L, U]; it only
+   says that every cut in (L, U] makes the same held-out predictions as T_F, these errors included, and that T_F is
+   the fit-split point estimate, not a held-out-validated value. No onset location is licensed in this case.
+
+Neither case licenses a held-out-validated threshold to 0.1: the held-out split cannot tell T_F from any other cut in
+(L, U]. The runner writes the sentence with the numbers filled in (`licensed_claim`, output `licensedClaimIfPass`)
+from F's held-out confusion and per-unit calls (output `heldoutCallsF`), and refuses if the two disagree; synthetic
+tests pin both branches (`LicensedClaim` in the test file). The RESULTS file and any BUILD note, product note or PROOF
+entry must quote the interval and F's held-out errors, not only the BA.
 
 A PASS allows a planned physics bump on a BUILD lane: a per-alloy keyhole cut for Inconel 625 equal to T_F in the app
 convention, a rewritten `REGIME_MATERIAL_NOTE_IN625` that states the source, the truth criterion, the held-out score

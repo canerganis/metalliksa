@@ -182,7 +182,10 @@ class AdmissibleInterval(unittest.TestCase):
         iv = E.heldout_admissible_interval(self._units(), 30.0, H)
         self.assertEqual(iv["lowerExclusive"], 23.0)
         self.assertIsNone(iv["upperInclusive"])
-        self.assertIn("-inf", E.licensed_claim(E.heldout_admissible_interval(self._units(), 2.0, H), 2.0))
+        units = self._units()
+        claim = E.licensed_claim(E.heldout_admissible_interval(units, 2.0, H), 2.0,
+                                 E.confusion(self.hs, self.ys, 2.0), E.heldout_calls(units, 2.0, H, Y))
+        self.assertIn("-inf", claim)
 
     def test_reads_no_label(self):
         units = [{"unit_id": f"x{i}", "split": "heldout", "h": h} for i, h in enumerate(self.hs)]
@@ -198,6 +201,87 @@ class AdmissibleInterval(unittest.TestCase):
         self.assertTrue((lo is None or lo < a["adoptedThreshold"]) and (hi is None or a["adoptedThreshold"] <= hi))
         self.assertIn("fit-split point estimate", a["licensedClaimIfPass"])
         self.assertIn("not a held-out-validated value", a["licensedClaimIfPass"])
+        self.assertEqual(len(a["heldoutCallsF"]), a["counts"]["heldout"])
+        self.assertEqual(sum(1 for c in a["heldoutCallsF"] if not c["correct"]), a["arms"]["F_fitted"]["errors"])
+
+
+class LicensedClaim(unittest.TestCase):
+    """Amendment 2: the PASS sentence must not be contradicted by held-out data.
+
+    Synthetic held-out layout shaped like the declared window (made-up ids and indices): not keyhole at 4, 9 and
+    12.5, keyhole at 14, 17 and 25. Only cuts in (12.5, 14] are error-free; a cut in (14, 17] misses the keyhole unit
+    at 14 (a false negative), a cut in (9, 12.5] calls the unit at 12.5 keyhole (a false positive)."""
+
+    hs = [4.0, 9.0, 12.5, 14.0, 17.0, 25.0]
+    ys = [False, False, False, True, True, True]
+    ids = ["n-lo", "n-mid", "n-edge", "k-edge", "k-mid", "k-hi"]
+
+    def _units(self):
+        return [_u(h, y, split="heldout", uid=i) for h, y, i in zip(self.hs, self.ys, self.ids)]
+
+    def _claim(self, t):
+        units = self._units()
+        iv = E.heldout_admissible_interval(units, t, H)
+        conf = E.confusion(self.hs, self.ys, t)
+        return conf, E.licensed_claim(iv, t, conf, E.heldout_calls(units, t, H, Y))
+
+    def test_error_free_interval_places_the_onset(self):
+        conf, claim = self._claim(13.2)
+        self.assertEqual(conf["errors"], 0)
+        self.assertIn("lies in (12.50, 14.00]", claim)
+        self.assertIn("no held-out error", claim)
+        self.assertNotIn("misclassifies", claim)
+        self.assertNotIn("does not place", claim)
+
+    def test_false_negative_is_named_and_onset_not_placed(self):
+        conf, claim = self._claim(15.5)
+        self.assertEqual((conf["fn"], conf["fp"]), (1, 0))
+        self.assertIn("misclassifies 1 held-out unit: k-edge (index 14.00, measured keyhole, called not keyhole)",
+                      claim)
+        self.assertIn("does not place the IN625 depth > half-width onset in (14.00, 17.00]", claim)
+        self.assertIn("every cut in (14.00, 17.00] makes the same held-out predictions as T_F, these errors included",
+                      claim)
+        self.assertNotIn("lies in", claim)
+        self.assertIn("not a held-out-validated value", claim)
+
+    def test_false_positive_is_named_and_onset_not_placed(self):
+        conf, claim = self._claim(11.0)
+        self.assertEqual((conf["fn"], conf["fp"]), (0, 1))
+        self.assertIn("n-edge (index 12.50, measured not keyhole, called keyhole)", claim)
+        self.assertIn("does not place the IN625 depth > half-width onset in (9.00, 12.50]", claim)
+        self.assertNotIn("lies in", claim)
+
+    def test_several_errors_are_all_named(self):
+        conf, claim = self._claim(20.0)
+        self.assertEqual(conf["errors"], 2)
+        self.assertIn("misclassifies 2 held-out units", claim)
+        self.assertIn("k-edge", claim)
+        self.assertIn("k-mid", claim)
+        self.assertNotIn("k-hi", claim)
+
+    def test_inconsistent_inputs_raise(self):
+        units = self._units()
+        iv = E.heldout_admissible_interval(units, 15.5, H)
+        calls = E.heldout_calls(units, 15.5, H, Y)
+        with self.assertRaises(ValueError):
+            E.licensed_claim(iv, 15.5, E.confusion(self.hs, self.ys, 13.2), calls)
+        with self.assertRaises(ValueError):
+            E.licensed_claim(iv, 15.5, E.confusion(self.hs, self.ys, 15.5), calls[:-1])
+
+    def test_analyse_names_heldout_errors(self):
+        ledger = _synthetic_ledger()
+        a = E.analyse(ledger)
+        self.assertEqual(a["arms"]["F_fitted"]["errors"], 0)
+        self.assertIn("lies in", a["licensedClaimIfPass"])
+        scrambled = copy.deepcopy(ledger)
+        for u in scrambled:
+            if u["split"] == "heldout" and u["unit_id"] == "ho-k0":
+                u["depth_um"] = 10.0  # one held-out keyhole unit becomes not keyhole; the fit is unchanged
+        b = E.analyse(scrambled)
+        self.assertEqual(b["adoptedThreshold"], a["adoptedThreshold"])
+        self.assertEqual(b["arms"]["F_fitted"]["errors"], 1)
+        self.assertIn("misclassifies 1 held-out unit: ho-k0", b["licensedClaimIfPass"])
+        self.assertNotIn("lies in", b["licensedClaimIfPass"])
 
 
 class SplitRule(unittest.TestCase):
