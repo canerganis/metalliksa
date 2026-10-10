@@ -4,9 +4,9 @@
  "group": "G8",
  "description": "final-state, selected-time, local-history observers and CpuRunProgress; rejection messages",
  "slow": false,
- "recordedImplementationHash": "ec7e1f7a6606e937e448fefe97549b49a7ddfe7b95376b93867ae007b0c12555",
+ "recordedImplementationHash": "0d52d7f707b98fc588c0972c1c198315d3c1071ed1c7ad7ab91616e69b5248e8",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "26db2aceb68ace5e1fc537bfe14782a2eb83a35f",
+ "recordedGitHead": "e5c8614b53d06aae7b409e9db10c9ab8c329024d",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,8 +68,8 @@
   }
  },
  "recordedRuns_s": [
-  26.0,
-  24.1
+  31.6,
+  30.7
  ],
  "recordedTwice": true,
  "observations": {
