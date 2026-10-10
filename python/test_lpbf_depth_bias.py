@@ -29,7 +29,23 @@ class LaneConditions(unittest.TestCase):
             self.assertTrue(g["regime"].startswith("Conduction"), g["regime"])
             w = db.depth_bias_warning(g["regime"], res["material"])
             self.assertEqual(w["direction"], "may-overestimate")
-            self.assertIn("1.5 times", w["text"])
+            self.assertIn("1.25 to 1.3 times", w["text"])
+
+    def test_stated_ratio_range_brackets_served_over_observed(self):
+        # Observed Lane et al. Table 3 mean depths (um); texts must describe the served depth_um, not a research model.
+        cases = (("CBM-A", 150.0, 400.0, 100.0, 151.53), ("CBM-B", 195.0, 800.0, 100.0, 91.25),
+                 ("AMMT-A", 137.9, 400.0, 170.0, 42.63), ("AMMT-B", 179.2, 800.0, 170.0, 35.98))
+        under = re.search(r"about ([\d.]+) to ([\d.]+) times the observed depth", db.UNDER_TEXT)
+        over = re.search(r"by about ([\d.]+) to ([\d.]+) times for the served depth", db.OVER_TEXT)
+        self.assertIsNotNone(under)
+        self.assertIsNotNone(over)
+        tol = 0.02
+        for name, P, v, d, obs in cases:
+            _, g = _geometry(P, v, d)
+            ratio = g["depth_um"] / obs
+            lo, hi = map(float, (under if name.startswith("CBM") else over).groups())
+            self.assertLess(ratio, 1.0) if name.startswith("CBM") else self.assertGreater(ratio, 1.0)
+            self.assertTrue(lo - tol <= ratio <= hi + tol, (name, ratio, lo, hi))
 
     def test_attach_touches_nothing_else(self):
         res, g = _geometry(150.0, 400.0, 100.0)

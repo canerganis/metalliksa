@@ -10,16 +10,16 @@ export interface DepthBiasWarning {
 }
 
 export const DEPTH_BIAS_UNDER_TEXT =
-  "Depth is likely underestimated. The served depth is a conduction estimate. On IN625 single tracks in the " +
+  "Depth is likely underestimated. The served depth is a conduction isotherm depth plus an uncited keyhole increment. On IN625 single tracks in the " +
   "Transition band by this label (Lane et al. CBM tracks, 150 W at 400 mm/s and 195 W at 800 mm/s, beam about " +
-  "100 um, enthalpy index 19.45 and 17.88) the observed depth to half-width ratio was 1.4 to 1.8 and conduction " +
-  "models gave about 0.5 times the observed depth. This is a screening note from a small held-out check, not a validated correction.";
+  "100 um, enthalpy index 19.45 and 17.88) the observed depth to half-width ratio was 1.4 to 1.8 and the served " +
+  "depth was about 0.7 to 0.85 times the observed depth. This is a screening note from a small held-out check, not a validated correction.";
 export const DEPTH_BIAS_UNDER_BASIS =
   "Held-out IN625 check, Lane et al. CBM tracks (n=2); research notes RESULTS_lane_ab_latent_check_2026-10-10 " +
   "and RESULTS_ke_width_n3_2026-10-10. Alloys other than IN625 have no such check.";
 export const DEPTH_BIAS_OVER_TEXT =
   "Depth may be overestimated. In our held-out checks, conduction depth estimates overpredicted conduction-mode " +
-  "IN625 tracks (AMMT, beam 170 um, enthalpy index about 7.4 to 8.1) by about 1.5 times. This is a screening note " +
+  "IN625 tracks (AMMT, beam 170 um, enthalpy index about 7.4 to 8.1) by about 1.25 to 1.3 times for the served depth. This is a screening note " +
   "from a small check, not a validated correction.";
 export const DEPTH_BIAS_OVER_BASIS =
   "Held-out IN625 check, AMMT tracks; research notes RESULTS_ke_width_n3_2026-10-10 and " +
