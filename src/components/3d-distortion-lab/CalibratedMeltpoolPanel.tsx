@@ -79,7 +79,7 @@ export function CalibratedResultView({ result }: { result: LPBFCalibratedMeltpoo
         </div>
       )}
       {c.available ? <p data-testid="cal-regime" className="text-[11px] text-slate-400">Regime label (screening, at the default absorptivity, unchanged): <strong className="text-slate-200">{c.regimeLabel ?? "—"}</strong></p> : null}
-      {c.available ? <DepthBiasNotice geometry={result.screening?.meltPoolGeometry} material={result.screening?.material} heatSource={result.screening?.processParameters?.heatSource} className="mt-1" /> : null}
+      {c.available ? <DepthBiasNotice geometry={result.screening?.meltPoolGeometry} material={result.screening?.material} heatSource={result.screening?.processParameters?.heatSource} enthalpy={result.screening?.processParameters?.normalizedEnthalpy} className="mt-1" /> : null}
       {result.outsideTrainingEnvelope ? <p data-testid="envelope-warning" className="text-amber-300">Outside the training envelope, calibrated numbers greyed: {result.envelopeNotes.join("; ")}.</p> : null}
     </div>
   );

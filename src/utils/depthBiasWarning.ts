@@ -13,7 +13,10 @@ export interface DepthBiasWarning {
 export const MIN_N_FOR_DIRECTION = 5;
 export const MIN_ABS_MEDIAN_FOR_DIRECTION = 0.05;
 
-export const DEPTH_BIAS_BANDS_ID = "lpbf-meltpool-error-bands-2026-10-08-2799e8af82c6";
+/** Error-band class edges on the normalized enthalpy index dH/hs (summary config.thresholds): < lo conduction, < hi transition, else keyhole. */
+export const DEPTH_BIAS_ENTHALPY_EDGES: readonly [number, number] = [15.0, 20.0];
+
+export const DEPTH_BIAS_BANDS_ID = "lpbf-meltpool-error-bands-2026-10-11-9cc1957538f8";
 
 /** "alloy|kernel|regime" -> [median relative error, n tracks, n sources]. */
 export const DEPTH_BIAS_CELLS: Record<string, readonly [number, number, number]> = {
@@ -65,6 +68,9 @@ export const DEPTH_BIAS_NO_CHECK_TEMPLATE =
 export const DEPTH_BIAS_BASIS_TEMPLATE =
   "Error-band summary {bands_id}, cell {alloy} / {kernel_id} / {regime}: relative error pred / meas - 1, equal source " +
   "weight, digitized figures included, screening only.";
+export const DEPTH_BIAS_CLASS_BASIS =
+  " Band class from the enthalpy index dH/hs: conduction below {lo}, transition {lo} to {hi}, " +
+  "keyhole at {hi} or above.";
 export const DEPTH_BIAS_BASIS_NO_CHECK = "Error-band summary {bands_id} has no depth cell for this alloy, kernel and regime band.";
 
 const KERNEL_LABELS: Record<string, string> = { rosenthal: "Rosenthal", "eagar-tsai": "Eagar-Tsai", goldak: "Goldak" };
@@ -88,29 +94,44 @@ function regimeClassOf(regime: string | null | undefined): string | null {
   return null;
 }
 
+/** Error-band class of the normalized enthalpy index; null when the index is missing or not finite. */
+export function enthalpyClassOf(enthalpy: number | null | undefined): string | null {
+  if (enthalpy === null || enthalpy === undefined || !Number.isFinite(Number(enthalpy))) return null;
+  const e = Number(enthalpy);
+  const [lo, hi] = DEPTH_BIAS_ENTHALPY_EDGES;
+  return e < lo ? "conduction" : e < hi ? "transition" : "keyhole";
+}
+
 function kernelOf(heatSource: string | null | undefined): string | null {
   const k = String(heatSource ?? "").trim().toLowerCase().replace(/_/g, "-");
   for (const name of Object.keys(KERNEL_LABELS)) if (k.startsWith(name)) return name;
   return null;
 }
 
-/** The note for the regime label, alloy and the heat-source kernel actually served (rosenthal, eagar-tsai or goldak). */
+/**
+ * The note for the alloy, the heat-source kernel actually served (rosenthal, eagar-tsai or goldak) and the band class of
+ * the normalized enthalpy index (the error bands' own edges). The served regime label is used only when the index is missing.
+ */
 export function computeDepthBiasWarning(
   regime: string | null | undefined,
   materialName: string | null | undefined,
   heatSource: string | null | undefined,
+  enthalpy?: number | null,
 ): DepthBiasWarning {
-  const rc = regimeClassOf(regime);
+  const byIndex = enthalpyClassOf(enthalpy);
+  const rc = byIndex ?? regimeClassOf(regime);
   const alloy = alloyOf(materialName);
   const kernel = kernelOf(heatSource);
   if (!rc || !alloy || !kernel) return { direction: null, text: null, basis: null };
+  const [lo, hi] = DEPTH_BIAS_ENTHALPY_EDGES;
+  const classedBy = byIndex ? fill(DEPTH_BIAS_CLASS_BASIS, { lo, hi }) : "";
   const fields: Record<string, string | number> = { regime: rc, alloy, kernel: KERNEL_LABELS[kernel] };
   const cell = DEPTH_BIAS_CELLS[`${alloy}|${kernel}|${rc}`];
   if (!cell) {
     return {
       direction: null,
       text: fill(DEPTH_BIAS_NO_CHECK_TEMPLATE, fields),
-      basis: fill(DEPTH_BIAS_BASIS_NO_CHECK, { bands_id: DEPTH_BIAS_BANDS_ID }),
+      basis: fill(DEPTH_BIAS_BASIS_NO_CHECK, { bands_id: DEPTH_BIAS_BANDS_ID }) + classedBy,
     };
   }
   const [median, n, nSources] = cell;
@@ -121,7 +142,7 @@ export function computeDepthBiasWarning(
     plural: nSources === 1 ? "" : "s",
     action: median > 0 ? "overpredicted" : "underpredicted",
   });
-  const basis = fill(DEPTH_BIAS_BASIS_TEMPLATE, { bands_id: DEPTH_BIAS_BANDS_ID, alloy, kernel_id: kernel, regime: rc });
+  const basis = fill(DEPTH_BIAS_BASIS_TEMPLATE, { bands_id: DEPTH_BIAS_BANDS_ID, alloy, kernel_id: kernel, regime: rc }) + classedBy;
   if (n < MIN_N_FOR_DIRECTION) return { direction: null, text: fill(DEPTH_BIAS_FEW_TEMPLATE, fields), basis };
   if (Math.abs(median) < MIN_ABS_MEDIAN_FOR_DIRECTION) return { direction: null, text: fill(DEPTH_BIAS_FLAT_TEMPLATE, fields), basis };
   const over = median > 0;
@@ -132,13 +153,14 @@ export function computeDepthBiasWarning(
   };
 }
 
-/** Uses a served depthBiasWarning when the payload carries one, else derives it from the regime label, alloy name and served kernel. */
+/** Uses a served depthBiasWarning when the payload carries one, else derives it from the enthalpy index (regime label only when the index is missing), alloy name and served kernel. */
 export function resolveDepthBiasWarning(
   geometry: { regime?: string; depthBiasWarning?: DepthBiasWarning } | null | undefined,
   material: string | { name?: string } | null | undefined,
   heatSource?: string | null,
+  enthalpy?: number | null,
 ): DepthBiasWarning {
   if (geometry?.depthBiasWarning) return geometry.depthBiasWarning;
   const name = typeof material === "string" ? material : material?.name;
-  return computeDepthBiasWarning(geometry?.regime, name, heatSource);
+  return computeDepthBiasWarning(geometry?.regime, name, heatSource, enthalpy);
 }

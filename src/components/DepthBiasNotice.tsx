@@ -10,9 +10,11 @@ export const DepthBiasNotice: React.FC<{
   material?: string | { name?: string } | null;
   /** Heat-source kernel actually served (rosenthal, eagar-tsai or goldak); the note depends on it. */
   heatSource?: string | null;
+  /** Normalized enthalpy index dH/hs (processParameters.normalizedEnthalpy); the band class comes from it. */
+  enthalpy?: number | null;
   className?: string;
-}> = ({ geometry, material, heatSource, className }) => {
-  const warning = resolveDepthBiasWarning(geometry, material, heatSource);
+}> = ({ geometry, material, heatSource, enthalpy, className }) => {
+  const warning = resolveDepthBiasWarning(geometry, material, heatSource, enthalpy);
   const note = geometry?.regimeMaterialNote;
   if (!warning.text && !note) return null;
   return (

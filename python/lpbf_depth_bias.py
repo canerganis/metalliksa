@@ -1,7 +1,10 @@
 """Depth-bias note for the served melt-pool depth (reporting only, outside the frozen LPBF physics).
 
 The note is derived from the committed error-band summary (data/calibration/lpbf-meltpool-error-bands-v1.summary.json)
-for the alloy, the heat-source kernel actually served and the regime class of the served label. Relative error there is
+for the alloy, the heat-source kernel actually served and the regime class of the track's normalized enthalpy index
+(dH/hs, processParameters.normalizedEnthalpy) cut at the summary's own pre-declared edges (config.thresholds, 15 / 20).
+The served regime label is used only when the index is missing, because the served label can move (the IN625 keyhole
+cut is 13.6) while the bands were built on the fixed edges. Relative error there is
 pred / meas - 1 on published single tracks (positive = the kernel over-predicts). Where the summary has no cell for
 that alloy and kernel the note says so and gives no direction. It reads no solver internals, changes no regime
 threshold and no depth number, and claims nothing validated (experimentalValidation stays false).
@@ -46,6 +49,8 @@ BASIS_TEMPLATE = (
     "Error-band summary {bands_id}, cell {alloy} / {kernel_id} / {regime}: relative error pred / meas - 1, equal source "
     "weight, digitized figures included, screening only."
 )
+CLASS_BASIS = (" Band class from the enthalpy index dH/hs: conduction below {lo}, transition {lo} to {hi}, "
+               "keyhole at {hi} or above.")
 BASIS_NO_CHECK = "Error-band summary {bands_id} has no depth cell for this alloy, kernel and regime band."
 
 
@@ -58,14 +63,19 @@ def build_cells(summary: Dict[str, Any]) -> Dict[str, Any]:
             continue
         key = f"{alloys[0]}|{c['kernel']}|{c['regime']}"
         cells[key] = [round(float(c["median"]), 3), int(c["n"]), int(c["nSources"])]
-    return {"bandsId": summary.get("bandsId"), "cells": cells}
+    return {"bandsId": summary.get("bandsId"), "cells": cells, "edges": _edges(summary)}
+
+
+def _edges(summary: Dict[str, Any]) -> list:
+    th = (summary.get("config") or {}).get("thresholds") or []
+    return [float(th[0]), float(th[1])] if len(th) == 2 else [15.0, 20.0]
 
 
 def _load() -> Dict[str, Any]:
     try:
         return build_cells(json.loads(SUMMARY_PATH.read_text(encoding="utf-8")))
     except (OSError, ValueError):
-        return {"bandsId": None, "cells": {}}
+        return {"bandsId": None, "cells": {}, "edges": [15.0, 20.0]}
 
 
 TABLE = _load()
@@ -92,6 +102,18 @@ def _regime_class(regime: Optional[str]) -> Optional[str]:
     return None
 
 
+def enthalpy_class(enthalpy: Any, edges: Optional[list] = None) -> Optional[str]:
+    """Error-band class of the normalized enthalpy index: < lo conduction, < hi transition, else keyhole."""
+    try:
+        e = float(enthalpy)
+    except (TypeError, ValueError):
+        return None
+    if e != e:
+        return None
+    lo, hi = edges if edges is not None else TABLE["edges"]
+    return "conduction" if e < lo else ("transition" if e < hi else "keyhole")
+
+
 def _kernel(heat_source: Optional[str]) -> Optional[str]:
     k = str(heat_source or "").strip().lower().replace("_", "-")
     for name in KERNEL_LABELS:
@@ -101,22 +123,28 @@ def _kernel(heat_source: Optional[str]) -> Optional[str]:
 
 
 def depth_bias_warning(regime: Optional[str], material_name: Optional[str], heat_source: Optional[str],
-                       table: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-    """{direction, text, basis}. direction is None when no direction can be given; text is None only when the regime
-    class, alloy or kernel is unknown."""
+                       enthalpy: Any = None, table: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """{direction, text, basis}. The class comes from the enthalpy index when given, else from the served label.
+    direction is None when no direction can be given; text is None only when the class, alloy or kernel is unknown."""
     t = table if table is not None else TABLE
-    rc, alloy, kernel = _regime_class(regime), _alloy(material_name), _kernel(heat_source)
+    by_index = enthalpy_class(enthalpy, t.get("edges"))
+    rc = by_index or _regime_class(regime)
+    alloy, kernel = _alloy(material_name), _kernel(heat_source)
     if rc is None or alloy is None or kernel is None:
         return {"direction": None, "text": None, "basis": None}
+    classed_by = ""
+    if by_index is not None:
+        lo, hi = t.get("edges") or [15.0, 20.0]
+        classed_by = CLASS_BASIS.format(lo=f"{lo:g}", hi=f"{hi:g}")
     fields = {"regime": rc, "alloy": alloy, "kernel": KERNEL_LABELS[kernel]}
     cell = t["cells"].get(f"{alloy}|{kernel}|{rc}")
     if cell is None:
         return {"direction": None, "text": NO_CHECK_TEMPLATE.format(**fields),
-                "basis": BASIS_NO_CHECK.format(bands_id=t["bandsId"])}
+                "basis": BASIS_NO_CHECK.format(bands_id=t["bandsId"]) + classed_by}
     median, n, n_sources = cell
     fields.update(n=n, pct=round(abs(median) * 100), sources=n_sources, plural="" if n_sources == 1 else "s",
                   action="overpredicted" if median > 0 else "underpredicted")
-    basis = BASIS_TEMPLATE.format(bands_id=t["bandsId"], alloy=alloy, kernel_id=kernel, regime=rc)
+    basis = BASIS_TEMPLATE.format(bands_id=t["bandsId"], alloy=alloy, kernel_id=kernel, regime=rc) + classed_by
     if n < MIN_N_FOR_DIRECTION:
         return {"direction": None, "text": FEW_TEMPLATE.format(**fields), "basis": basis}
     if abs(median) < MIN_ABS_MEDIAN_FOR_DIRECTION:
@@ -131,5 +159,6 @@ def attach_depth_bias_warning(result: Dict[str, Any]) -> Dict[str, Any]:
     geometry = result.get("meltPoolGeometry")
     if isinstance(geometry, dict):
         params = result.get("processParameters") or {}
-        geometry["depthBiasWarning"] = depth_bias_warning(geometry.get("regime"), result.get("material"), params.get("heatSource"))
+        geometry["depthBiasWarning"] = depth_bias_warning(geometry.get("regime"), result.get("material"), params.get("heatSource"),
+                                                           params.get("normalizedEnthalpy"))
     return result

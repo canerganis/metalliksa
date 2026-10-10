@@ -32,13 +32,18 @@ class LaneConditionsPerKernel(unittest.TestCase):
                 res, g = _geometry(P, v, d, kernel)
                 self.assertAlmostEqual(g["depth_um"] / obs, pin, delta=0.01, msg=(kernel, name))
                 self.assertEqual(res["processParameters"]["heatSource"], kernel)
-                w = db.depth_bias_warning(g["regime"], res["material"], kernel)
+                idx = res["processParameters"]["normalizedEnthalpy"]
+                w = db.depth_bias_warning(g["regime"], res["material"], kernel, idx)
                 if name.startswith("CBM"):
-                    self.assertTrue(g["regime"].startswith("Transition"), g["regime"])
+                    # The IN625 served label is Keyhole here (cut 13.6) but the error bands class by the 15 / 20 edges.
+                    self.assertTrue(g["regime"].startswith("Keyhole"), g["regime"])
+                    self.assertEqual(db.enthalpy_class(idx), "transition", (name, idx))
+                    self.assertIn("cell Inconel 625 / " + kernel + " / transition", w["basis"])
                     self.assertLess(pin, 1.0)
                     self.assertEqual(w["direction"], db.UNDER, (kernel, name))
                 else:
                     self.assertTrue(g["regime"].startswith("Conduction"), g["regime"])
+                    self.assertEqual(db.enthalpy_class(idx), "conduction", (name, idx))
                     self.assertGreater(pin, 1.0)
                     self.assertEqual(w["direction"], db.OVER, (kernel, name))
                 self.assertIn(db.KERNEL_LABELS[kernel], w["text"])
@@ -51,6 +56,28 @@ class LaneConditionsPerKernel(unittest.TestCase):
         after = res["meltPoolGeometry"]
         self.assertEqual({k: v for k, v in after.items() if k != "depthBiasWarning"}, before)
         self.assertIn("Goldak", after["depthBiasWarning"]["text"])
+        self.assertIn("transition band", after["depthBiasWarning"]["text"])
+
+    def test_class_follows_index_edges_not_served_label(self):
+        # CBM C style index 13.94 is below the 15 edge: conduction by the bands, whatever the served IN625 label says.
+        self.assertEqual(db.enthalpy_class(13.94), "conduction")
+        self.assertEqual(db.enthalpy_class(14.99), "conduction")
+        self.assertEqual(db.enthalpy_class(15.0), "transition")
+        self.assertEqual(db.enthalpy_class(19.99), "transition")
+        self.assertEqual(db.enthalpy_class(20.0), "keyhole")
+        self.assertEqual(db.TABLE["edges"], [15.0, 20.0])
+        keyhole_label = "Keyhole Mode (x)"
+        for idx, cls in ((13.94, "conduction"), (17.1, "transition"), (18.6, "transition")):
+            w = db.depth_bias_warning(keyhole_label, "Inconel 625", "rosenthal", idx)
+            self.assertIn(f"/ rosenthal / {cls}", w["basis"], idx)
+            self.assertIn("Band class from the enthalpy index", w["basis"])
+        # No index: falls back to the served label.
+        w = db.depth_bias_warning(keyhole_label, "Inconel 625", "rosenthal")
+        self.assertIn("/ rosenthal / keyhole", w["basis"])
+        self.assertNotIn("Band class from the enthalpy index", w["basis"])
+        self.assertEqual(db.depth_bias_warning(keyhole_label, "Inconel 625", "rosenthal", float("nan"))["basis"], w["basis"])
+        # An index alone classes the track even when the label is unknown.
+        self.assertIsNotNone(db.depth_bias_warning(None, "Inconel 625", "rosenthal", 17.0)["text"])
 
 
 class SummaryDerived(unittest.TestCase):
@@ -108,6 +135,11 @@ class TsMirror(unittest.TestCase):
         self.assertEqual(cells, db.TABLE["cells"])
         self.assertIn(f'DEPTH_BIAS_BANDS_ID = "{db.TABLE["bandsId"]}"', src)
         self.assertIn(f"MIN_N_FOR_DIRECTION = {db.MIN_N_FOR_DIRECTION};", src)
+        lo, hi = db.TABLE["edges"]
+        self.assertIn(f"DEPTH_BIAS_ENTHALPY_EDGES: readonly [number, number] = [{lo}, {hi}];", src)
+        m = re.search(r"export const DEPTH_BIAS_CLASS_BASIS =\s*((?:\"(?:[^\"\\]|\\.)*\"\s*\+?\s*)+);", src)
+        self.assertIsNotNone(m)
+        self.assertEqual("".join(re.findall(r"\"((?:[^\"\\]|\\.)*)\"", m.group(1))), db.CLASS_BASIS)
 
 
 if __name__ == "__main__":
