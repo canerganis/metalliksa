@@ -233,8 +233,10 @@ class In718EndToEnd(unittest.TestCase):
         th = res["thermal"]
         dh = float(th["processParameters"]["normalizedEnthalpy"])
         self.assertEqual(th["meltPoolGeometry"]["extentStatus"], "computed")
-        # The Rosenthal L/W (~7.1) no longer drives balling; the Eagar-Tsai L/W (~5.02, Wave B) is Moderate.
-        self.assertGreater(float(th["meltPoolGeometry"]["aspectRatio_L_over_W"]), 5.5)
+        # The Rosenthal L/W (5.18 after P1, 2026-10-11; ~7.1 before) no longer drives balling; the Eagar-Tsai L/W (~5.02, Wave B) is Moderate.
+        ros_lw = float(th["meltPoolGeometry"]["aspectRatio_L_over_W"])
+        self.assertAlmostEqual(ros_lw, 5.18, delta=0.01)
+        self.assertGreater(ros_lw, 3.8)
         screen = th["defectDiagnostics"]["ballingScreen"]
         self.assertEqual(screen["band"], "moderate")
         self.assertAlmostEqual(screen["lengthToWidth"], 5.016, delta=0.01)
@@ -272,6 +274,15 @@ class In718EndToEnd(unittest.TestCase):
         v, dh = self._check(solve_lpbf_build_job(dict(self.PAYLOAD)))
         stub.calculate_powder_bed_absorptivity.assert_not_called()
         self._assert_flat_risky(v, dh)
+
+class KeyholeDepthBiasLofNote(unittest.TestCase):
+    def test_note_text_names_the_unmodelled_absorptance_and_the_cut(self):
+        from lpbf_build_job_solver import KEYHOLE_DEPTH_BIAS_LOF_NOTE
+        from lpbf_thermal_solver import ENTHALPY_TRANSITION
+        self.assertIn("biased low", KEYHOLE_DEPTH_BIAS_LOF_NOTE)
+        self.assertIn("A(R)", KEYHOLE_DEPTH_BIAS_LOF_NOTE)
+        self.assertIn(f"{ENTHALPY_TRANSITION:g}", KEYHOLE_DEPTH_BIAS_LOF_NOTE)
+
 
 if __name__ == "__main__":
     unittest.main()

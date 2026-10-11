@@ -39,7 +39,8 @@ def main():
 
     ros = calculate_meltpool_physics("Inconel 718", 285, 960, 80, 80, 40, 110)
     assert_true(ros["modelId"] == "rosenthal-screening-v1", "Build Job path untouched")
-    assert_true(ros["keyholeModel"]["modelId"] == "heuristic-keyhole-increment-v1", "Rosenthal keeps the labelled heuristic increment")
+    # P1 (2026-10-11): the Rosenthal increment heuristic was removed; every kernel serves the Fabbro leg.
+    assert_true(ros["keyholeModel"]["modelId"] == "fabbro-keyhole-v1", "Rosenthal serves the Fabbro keyhole leg after P1")
 
     print("PASS: Heiple–Roper Marangoni screening")
     return 0

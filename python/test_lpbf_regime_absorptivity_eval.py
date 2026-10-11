@@ -197,8 +197,10 @@ class TinyPipeline(unittest.TestCase):
 
     def test_stage2_parity_and_frozen_populations(self):
         s1, s2, _ = self.out["near_a0"]
-        self.assertTrue(s2["parity"]["ok"])
-        self.assertEqual(s2["parity"]["maxRelErr"], 0.0)
+        # P1 (2026-10-11): on a post-P1 tree the live-solver parity check is skipped, reported as not applicable.
+        self.assertIsNone(s2["parity"]["ok"])
+        self.assertEqual(s2["parity"]["status"], "not-applicable")
+        self.assertEqual(s2["parity"]["nChecked"], 0)
         self.assertNotIn("skill", str(s2["gridSets"]).lower())
         pops = s2["populations"]
         pa = pops["hofmann-316l-2026"]["base"]["eagar-tsai"]["depth"]

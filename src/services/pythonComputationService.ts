@@ -1234,7 +1234,7 @@ export interface PythonLPBFResult {
     absorptionModel?: "flat-plate" | "powder-raytrace";
     thermalSliceBackend?: "cpu" | "warp";
     stefanNumber?: number;
-    /** 1/(1+0.55 St) for rosenthal (uncited screening factor), 1 for goldak/eagar-tsai (Wave B LA-5). */
+    /** 1.0 for every source since 2026-10-11 (P1). */
     latentHeatPowerFactor?: number;
     /** Power that drove the screening field: P_absorbed * latentHeatPowerFactor. */
     fieldPower_W?: number;

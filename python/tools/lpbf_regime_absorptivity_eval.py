@@ -569,6 +569,12 @@ def _live_is_pre_p1() -> Tuple[bool, str]:
     return live == PRE_P1_FINGERPRINT, live
 
 
+def _parity_text(par: Dict[str, Any]) -> str:
+    if par["ok"] is None:
+        return "not applicable (frozen pre-P1 kernel, live solver is post-P1; no live-solver check was run)"
+    return f"{'pass' if par['ok'] else 'FAIL'}, {par['nChecked']} kernel inputs, max rel err {par['maxRelErr']:.2e}"
+
+
 def run_baseline(stage1: Dict[str, Any], jobs: int = 1) -> Dict[str, Any]:
     rows = stage1["rows"]
     tasks = unique_tasks(rows, None)
@@ -587,7 +593,7 @@ def run_baseline(stage1: Dict[str, Any], jobs: int = 1) -> Dict[str, Any]:
         for r in rows:
             baseline_only[r["rowId"]] = {vk: {k: list(res_by[(k, args_of(r, vk))]) for k in KERNELS} for vk in r["variants"]}
         return {"baseline": baseline_only,
-                "parity": {"ok": True, "nChecked": 0, "maxRelErr": 0.0, "rtol": rtol, "failures": [], "nFailures": 0,
+                "parity": {"ok": None, "status": "not-applicable", "nChecked": 0, "maxRelErr": None, "rtol": rtol, "failures": [], "nFailures": 0,
                            "skipped": ("live-solver parity not applicable: the kernel is frozen as the pre-P1 served path "
                                        f"(fingerprint {PRE_P1_FINGERPRINT[:8]}); live fingerprint {live[:8]} is post-P1 "
                                        "(2026-10-11), the baseline comes from the frozen kernel alone")}}
@@ -1260,7 +1266,7 @@ def run_stage3(stage1: Dict[str, Any], stage2: Dict[str, Any], jobs: int,
           "lanePower": PRIMARY["lanePower"]}
     diag = diagnostics(ev, g0, a0_all)
     verdicts = {k: {grid_key(g): results["A0"][grid_key(g)][k]["verdict"] for g in grid} for k in KERNELS}
-    invalid = (not stage2["parity"]["ok"]) or (not diag["D4"]["pass"])
+    invalid = (stage2["parity"]["ok"] is False) or (not diag["D4"]["pass"])
     decision = overall_decision(verdicts, invalid)
     robustness = None
     if decision["result"] == "PASS":
@@ -1356,7 +1362,7 @@ def render_markdown(doc: Dict[str, Any]) -> str:
           f"- D2 absorptance shape (Trapp 316L discs, digitized): n={dg['D2']['n']}, MAE law {_p(dg['D2']['maeLaw'])}, MAE flat 0.42 {_p(dg['D2']['maeFlat'])}",
           f"- D3 envelope: A(H) in [{_p(dg['D3']['min'])}, {_p(dg['D3']['max'])}], inside [0.25, 0.80]: {dg['D3']['insideEnvelope']}",
           f"- D4 conduction identity: {'pass' if dg['D4']['pass'] else 'FAIL'} ({dg['D4']['nViolations']} violations)",
-          f"- Parity (stage 2): {'pass' if doc['parity']['ok'] else 'FAIL'}, {doc['parity']['nChecked']} kernel inputs, max rel err {doc['parity']['maxRelErr']:.2e}",
+          f"- Parity (stage 2): {_parity_text(doc['parity'])}",
           f"- D1 containment, D5 Cunningham regime agreement, D6 Trapp geometry, D7 ungated widths and the catalog sentinels are in the JSON record.", ""]
     for key, v in dg["D1"].items():
         L.append(f"  - D1 {key}: {_p(v['share'])} of {v['n']}")
@@ -1432,9 +1438,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             return 2
         s2 = build_stage2(s1, lf_sha(s1_bytes), args.jobs, args.date, fp)
         P["stage2"].write_text(dump_json(s2), encoding="utf-8", newline="\n")
-        print(f"stage 2 written: {P['stage2']} parity ok={s2['parity']['ok']} checked={s2['parity']['nChecked']} "
-              f"maxRel={s2['parity']['maxRelErr']:.2e}")
-        return 0 if s2["parity"]["ok"] else 3
+        print(f"stage 2 written: {P['stage2']} parity {_parity_text(s2['parity'])}")
+        return 3 if s2["parity"]["ok"] is False else 0
     # stage 3
     for key in ("stage1", "stage2"):
         if not committed(P[key]):

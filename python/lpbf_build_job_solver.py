@@ -33,7 +33,7 @@ from lpbf_job_cache import (
     cache_put,
 )
 from lpbf_screening_uq import apply_uq_prop_scales, run_screening_uq
-from lpbf_thermal_solver import calculate_meltpool_physics
+from lpbf_thermal_solver import ENTHALPY_TRANSITION, calculate_meltpool_physics
 from murakami_fatigue_screening import (
     build_qualification_block,
     evaluate_murakami_block,
@@ -284,6 +284,12 @@ PARAMETER_INDEPENDENT_ADVISORY_NOTE = (
     "alloy/layer advisory independent of P, v and hatch: the frozen distortion index depends only on "
     "alloy properties, preheat and layer thickness (not on P, v or hatch); it does not change the verdict"
 )
+# P1 (2026-10-11): at dH/hs >= ENTHALPY_TRANSITION the served depth is the Fabbro leg with a flat absorptivity, so
+# transition and keyhole depth is biased low (keyhole absorptance A(R) not modelled).
+KEYHOLE_DEPTH_BIAS_LOF_NOTE = (
+    f"At dH/hs >= {ENTHALPY_TRANSITION:g} the transition and keyhole depth is biased low because the keyhole "
+    "absorptance A(R) is not modelled, so a lack-of-fusion fail in this regime may be a model artefact."
+)
 BALLING_SCREEN_NOTE = (
     "Eagar-Tsai aspect-ratio screen calibrated on Hofmann 2026 316L single tracks (Zenodo 10.5281/zenodo.16979848; "
     "High threshold 5.5 chosen in-sample, model L/W uncertainty about +-10 %; low recall and spot-size dependent: "
@@ -397,6 +403,8 @@ def compose_verdict(thermal, alloy_id, extras=None):
             f"Lack of fusion (Tang): (h/W)²+(t/D)² = {tang:.3f} (need ≤1.0); "
             f"W/h = {width_over_hatch:.2f}, D/t = {depth_over_layer:.2f}."
         )
+        if dh >= ENTHALPY_TRANSITION:
+            reasons[-1] += " " + KEYHOLE_DEPTH_BIAS_LOF_NOTE
     elif lof_warn:
         reasons.append(
             f"Tang overlap marginal: (h/W)²+(t/D)² = {tang:.3f} (pass ≤0.80)."
