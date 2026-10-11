@@ -1387,6 +1387,10 @@ export interface PythonLPBFResult {
       color: string;
       width_um: number;
       depth_um: number;
+      /** True when the Tang lack-of-fusion flag fired on a cell with dH/hs >= 20 (depth biased low, A(R) not modelled). */
+      keyholeIndexLackOfFusion?: boolean;
+      /** Only present when keyholeIndexLackOfFusion is true. */
+      lackOfFusionNote?: string;
     }[];
     /** The quick grid marks no balling zone (no melt-pool length); balling is screened at the operating point. */
     ballingNote?: string;

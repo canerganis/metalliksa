@@ -173,6 +173,10 @@ THERMOPHYSICAL_DB = {**four_alloy_thermophysical_db(), **SECONDARY_THERMOPHYSICA
 # (Ti-6Al-4V, 95 um 1/e^2) = 17.3-20.0 (a range along speed, not a confidence interval). Not an exact threshold.
 ENTHALPY_TRANSITION = 15.0
 ENTHALPY_KEYHOLE = 20.0
+KEYHOLE_INDEX_LOF_NOTE = (
+    "Keyhole-index cell: the Tang lack-of-fusion flag comes from a keyhole depth that is biased low "
+    "(keyhole absorptance A(R) not modelled); treat as unresolved, not as lack of fusion."
+)
 # Inconel 625 only (planned bump in625-regime, 2026-10-11): per-alloy keyhole-mode cut on the same app index. Fitted
 # (max balanced accuracy, midpoint, rounded to 0.1) on 56 EOS M270 IN625 tracks of NIST mds2-2923 (Weaver et al.,
 # doi 10.18434/mds2-2923) with the pre-declared truth depth > half width (King et al. 2014 Sec. 5.2); scored once on
@@ -1015,15 +1019,22 @@ def calculate_meltpool_physics(
             # No balling cell: the balling screen needs the Eagar–Tsai liquidus L/W, which this quick grid
             # does not compute (the former (1.6 + 0.55 min(6, Pe)) > 3.8 rule was Pe > 4, uncited).
 
-            process_map_grid.append({
+            # Additive flag (P1 follow-on): the Tang flag of a keyhole-index cell comes from the Fabbro depth, which is
+            # biased low because the keyhole absorptance A(R) is not modelled. Regime string and colour are unchanged.
+            keyhole_index_lof = bool(tang_pt > 1.0 and enth >= ENTHALPY_KEYHOLE)
+            cell = {
                 "power_W": int(p_val),
                 "speed_mm_s": int(v_val),
                 "normalizedEnthalpy": round(enth, 2),
                 "regime": pt_regime,
                 "color": color_code,
                 "width_um": round(w_um, 1),
-                "depth_um": round(d_um, 1)
-            })
+                "depth_um": round(d_um, 1),
+                "keyholeIndexLackOfFusion": keyhole_index_lof,
+            }
+            if keyhole_index_lof:
+                cell["lackOfFusionNote"] = KEYHOLE_INDEX_LOF_NOTE
+            process_map_grid.append(cell)
 
     result = {
         "success": True,

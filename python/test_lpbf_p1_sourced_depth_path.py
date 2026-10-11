@@ -258,6 +258,13 @@ class ProcessMapProxy(unittest.TestCase):
             e = fabbro_keyhole_depth_m(P, v, d_beam, m["k_s"], m["alpha_s"], m["T_vap"], T0, 0.4, idx)["depth_m"] * 1e6
             self.assertAlmostEqual(c["depth_um"], max(0.5 * c["width_um"], e), delta=0.1, msg=c)
             got.append(labels[c["regime"]])
+            # P1 follow-on: additive keyhole-index flag, regime string and colour unchanged.
+            flag = c["regime"] == "Lack of Fusion Zone" and idx >= solver.ENTHALPY_KEYHOLE
+            self.assertEqual(c["keyholeIndexLackOfFusion"], flag, msg=c)
+            self.assertEqual("lackOfFusionNote" in c, flag, msg=c)
+            if flag:
+                self.assertIn("not as lack of fusion", c["lackOfFusionNote"])
+                self.assertEqual(c["color"], "#f59e0b")
         self.assertEqual("".join(got), SYNTHETIC_GRID_REGIME)
 
 

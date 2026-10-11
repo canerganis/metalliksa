@@ -379,7 +379,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
                     <button
                       key={idx}
                       type="button"
-                      title={`${pt.power_W} W, ${pt.speed_mm_s} mm/s — ${pt.regime}`}
+                      title={`${pt.power_W} W, ${pt.speed_mm_s} mm/s — ${pt.regime}${pt.lackOfFusionNote ? ` — ${pt.lackOfFusionNote}` : ""}`}
                       onClick={() =>
                         updateLpbfProcess({ laserPower_W: pt.power_W, scanSpeed_mms: pt.speed_mm_s })
                       }
