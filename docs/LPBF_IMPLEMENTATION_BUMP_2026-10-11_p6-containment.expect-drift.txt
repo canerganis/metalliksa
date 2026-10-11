@@ -1,0 +1,11 @@
+g11_build_job_meltpool:meltpool.0.canonicalSha256
+g11_build_job_meltpool:meltpool.0.peakTemperature_C
+g11_build_job_meltpool:meltpool.0.typedSha256
+g11_build_job_meltpool:meltpool.1.canonicalSha256
+g11_build_job_meltpool:meltpool.1.peakTemperature_C
+g11_build_job_meltpool:meltpool.1.typedSha256
+g11_build_job_meltpool:meltpool.2.canonicalSha256
+g11_build_job_meltpool:meltpool.2.peakTemperature_C
+g11_build_job_meltpool:meltpool.2.typedSha256
+g12_analytical_modules:solidification.evaluate
+g18_in625_latent_heat:meltpool.in625
