@@ -103,8 +103,8 @@ class ComparisonToolTest(unittest.TestCase):
     def test_e_fingerprint_field_equals_expected(self):
         expected = (PYTHON_DIR / "lpbf_implementation_fingerprint.expected").read_text(encoding="utf-8").strip()
         self.assertEqual(self.doc["implementationFingerprint"], expected)
-        # P6 containment bump pin (2026-10-11, 7870aae6 -> 807d74b3); the P1 pins were c61ab6a8 then 7870aae6.
-        self.assertTrue(expected.startswith("807d74b3"))
+        # P7a rules-and-nulls bump pin (2026-10-11, 807d74b3 -> 0e1599b4); earlier pins c61ab6a8, 7870aae6, 807d74b3.
+        self.assertTrue(expected.startswith("0e1599b4"))
         checks = {c["id"]: c for c in self.doc["checks"]}
         self.assertEqual(checks["A2-physics-fingerprint"]["result"], "skipped")  # --quick does not run the test
         self.assertIn("--quick", checks["A2-physics-fingerprint"]["detail"])
@@ -165,10 +165,9 @@ class ComparisonToolTest(unittest.TestCase):
         """The committed docs record equals a fresh full run (needs the fingerprint test; about 15 s)."""
         # The current record (fingerprint cda80143, keyhole-regime bump; numbers equal the balling-screen record,
         # only the fingerprint differs); the earlier records are kept as history.
-        # Current record: fingerprint 807d74b3 (P6 containment bump, 2026-10-11; fingerprint only, every column equals
-        # the P1 follow-on record because P6 moves no geometry, length or dwell). The earlier records are kept as
-        # history.
-        committed = PYTHON_DIR.parent / "docs" / "LPBF_NIST_2716_THERMOGRAPHY_COMPARISON_2026-10-11_p6-containment.json"
+        # Current record: fingerprint 0e1599b4 (P7a rules-and-nulls bump, 2026-10-11; fingerprint only, every column
+        # equals the P6 record because P7a moves no geometry, length or dwell). The earlier records are kept as history.
+        committed = PYTHON_DIR.parent / "docs" / "LPBF_NIST_2716_THERMOGRAPHY_COMPARISON_2026-10-11_p7a-rules-and-nulls.json"
         doc = tool.build_document(False, "2026-10-11")
         self.assertEqual(tool.serialize(doc), committed.read_text(encoding="utf-8"))
         self.assertEqual(tool.render_markdown(doc), committed.with_suffix(".md").read_text(encoding="utf-8"))

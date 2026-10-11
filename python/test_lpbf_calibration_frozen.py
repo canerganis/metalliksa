@@ -43,11 +43,15 @@ BASE_REF = BASE_REF_CANDIDATES[0]
 # follow-on (7870aae6: every grid cell gains keyholeIndexLackOfFusion, plus lackOfFusionNote where true; all three
 # digests change, nothing else); re-pinned at the P6 containment bump (2026-10-11, 807d74b3: the served peak is the
 # loss-free Eagar-Tsai maximum under the sourced-T_v policy, null here for 316L 200/900/80, recoil and denudation
-# null, the new reason keys, the conduction-field-interface label; geometry unchanged, all three digests change).
+# null, the new reason keys, the conduction-field-interface label; geometry unchanged, all three digests change);
+# re-pinned at the P7a rules-and-nulls bump (2026-10-11, 0e1599b4: lackOfFusionStatus Pass or Fail with the margin
+# flag, stress and distortion null with the reason, PDAS scalar and SDAS null with the band keys, marangoni doi null
+# with a basis, regimeKeyholeCutBasis, highBandApplicable, the Fabbro basis text; geometry unchanged, all three
+# digests change).
 HTTP_GOLDEN = {
-    "eagar-tsai": "2cb4792e6c150b113cba7f1c39c8a92a035cb7a639d0ea52b0f3d72f2fec24bc",
-    "goldak": "ec487273ad33aa501c138bc24e3fc971c3b119426ebc9fb9558ac150d85c7157",
-    "rosenthal": "faa49e23407e744ec5b12e1b22fc3d1993e431116f9224d57f9856ee14b547ea",
+    "eagar-tsai": "fe497684ba7c43a0f6ad30fc05d6ccf4b0b9b3eb28e7ff1e794775fac78a5e84",
+    "goldak": "8fb42e1956ce64d4269fda6cfb9b1713f547522736712aef08f960a404839c28",
+    "rosenthal": "a461dc87994c378cfed6792ab009b8d69bc4a993347263643f4e3f07e0b3e733",
 }
 HTTP_INPUT = {"material": "316L Stainless Steel", "laserPower_W": 200, "scanSpeed_mm_s": 900, "beamDiameter_um": 80,
               "preheatTemp_C": 20, "layerThickness_um": 30, "hatchSpacing_um": 100}
