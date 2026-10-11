@@ -1,0 +1,2275 @@
+{
+  "schema": "lpbf-depth-path-stage1b-run-v1",
+  "git_head": "cd324b6adc7a8132ccd438de0513039914e14ad5",
+  "declaration": {
+    "schema": "lpbf-depth-path-stage1b-v1",
+    "stage": "1b",
+    "selection_disclosure": "arms chosen from stage 1 N3 sensitivity readouts S_ETleg and S_k19.9/S_k28.78; N3 has no pass authority",
+    "fresh_ledger": {
+      "path": "data/benchmark/in625-fresh-depth-2026-10-11/ledger.csv",
+      "sha256": "523c87016b5eb817f95dac107d2cbe4b539a19079a4113b15fbd8d3615c5e416",
+      "rows": 17,
+      "conditions": 15
+    },
+    "scored_arms": [
+      "H_ET",
+      "H_k"
+    ],
+    "descriptive_arms": [
+      "served_reference",
+      "baseline",
+      "H",
+      "ET_served"
+    ],
+    "shared": {
+      "reference_index_preheat_C": 20.0,
+      "absorptance_map": "stage 1 section 3",
+      "gate_index_min": 15.0,
+      "link": "max(d_c, e_fabbro) above gate",
+      "fabbro_enthalpy_arg": 99.0,
+      "T_boil_C": 2880.0
+    },
+    "H_ET": {
+      "conduction_leg": "eagar-tsai",
+      "keyhole_k_alpha": [
+        9.8,
+        "9.8/(8440*410)"
+      ]
+    },
+    "H_k": {
+      "conduction_leg": "rosenthal",
+      "keyhole_props": "Sabau 2018 App. D averaged T0 to T_v, rho 7700, latent excluded",
+      "values": {
+        "20.0": {
+          "k": 25.354,
+          "cp": 639.11
+        },
+        "79.85": {
+          "k": 25.682,
+          "cp": 643.84
+        }
+      },
+      "tolerance": 0.01
+    },
+    "inputs": {
+      "sabau2018": {
+        "surface_model": "bare_plate",
+        "D4sigma_um": 80.0,
+        "T0_C": 20.0,
+        "beam_provenance": "80 um selected by the source against these same tracks (reran 70, 80, 100 um, Sabau PDF p31-32); Rubenchik 2018 PDF p8 fn 3 suggests GE IN625 data at D4sigma about 57 um"
+      },
+      "gan2021": {
+        "surface_model": "bare_plate (powder not modelled)",
+        "D4sigma_um": 100.0,
+        "T0_C": 79.85,
+        "depth": "corrected",
+        "replicates": "mean per replicate_group"
+      }
+    },
+    "readings": {
+      "R0": "Gan depth as released",
+      "R40": "Gan depth minus 40 um; Sabau unchanged"
+    },
+    "descriptive_beam_sensitivity": {
+      "authority": "none",
+      "block": "sabau2018 only",
+      "arms": [
+        "served_reference",
+        "H_ET",
+        "H_k"
+      ],
+      "D4sigma_um": [
+        56.6,
+        100.0
+      ],
+      "labels": [
+        "S_beam56.6",
+        "S_beam100"
+      ],
+      "excluded_from": [
+        "pooled",
+        "pass_rule",
+        "verdict"
+      ]
+    },
+    "metric": {
+      "unit": "condition",
+      "pooled": "mean APE over 15 conditions",
+      "per_source": [
+        "MAPE",
+        "signed_bias"
+      ]
+    },
+    "pass_rule": {
+      "per_arm_all_of_under_R0_and_R40": [
+        "pooled MAPE <= served_reference pooled - 5.0 pp",
+        "source MAPE <= served_reference source MAPE - 2.0 pp, for sabau2018 and gan2021 each",
+        "count floor: APE_arm < APE_served on >= 11 of 15 conditions, >= 5 of 9 gan2021, >= 4 of 6 sabau2018",
+        "one-sided exact paired sign-flip test on APE_served - APE_arm over 15 conditions, p <= 0.025",
+        "completeness: 15 conditions valid for arm, served_reference, baseline, else INCONCLUSIVE"
+      ],
+      "multiplicity": "Bonferroni, 0.05 over 2 arms",
+      "lane_verdict": "PASS if at least one scored arm passes; descriptive arms and N3 never produce a PASS",
+      "both_pass_stage2_order": [
+        "H_k",
+        "H_ET"
+      ]
+    },
+    "secondary_N3": {
+      "authority": "none",
+      "label": "already seen, selection data",
+      "H_ET_must_equal": "stage 1 S_ETleg"
+    },
+    "expectation": "both arms FAIL; main cause: gate opens Fabbro at Pe below its fit band (Sabau low speed)",
+    "experimentalValidation": false,
+    "original_N3": "NOT_PASSED",
+    "original_N4": "NOT_EVALUATED"
+  },
+  "pins": {
+    "fresh_ledger_sha256": "523c87016b5eb817f95dac107d2cbe4b539a19079a4113b15fbd8d3615c5e416",
+    "loader_lf_sha256": "d4bf2b88aa6a3a45b17408177404a1f160eae9f11049944b6bc6ed0654f5b34a",
+    "loader_crlf_sha256_declared": "25aecfd49dcdf187aecbce8d22c9f0e242cc21383c706c53c0bdc80503f81ae3",
+    "projected_source_numerics_lf_sha256": "6a093f53bf51c4badfef37d2cca6f89009d8d7248668985280b7d2abeadf07f7"
+  },
+  "sabau_averaged_props_recomputed": {
+    "20.0": {
+      "k_W_mK": 25.353893939101706,
+      "cp_J_kgK": 639.1079621745621,
+      "alpha_m2_s": 5.152045809883503e-06
+    },
+    "79.85": {
+      "k_W_mK": 25.68168374393325,
+      "cp_J_kgK": 643.8352998978385,
+      "alpha_m2_s": 5.180336653857664e-06
+    }
+  },
+  "ledger_provenance": {
+    "id": "in625-fresh-depth-2026-10-11",
+    "file": "ledger.csv",
+    "fileSha256": "523c87016b5eb817f95dac107d2cbe4b539a19079a4113b15fbd8d3615c5e416",
+    "rows": 17,
+    "rowsBySource": {
+      "sabau2018-ornl-tm-1044": 6,
+      "gan2021-immi-afrl-in625": 11
+    },
+    "barePlateRowIds": [
+      "sabau2018-mp1",
+      "sabau2018-mp2",
+      "sabau2018-p2s05",
+      "sabau2018-p2s1",
+      "sabau2018-p2s2",
+      "sabau2018-p4s6"
+    ],
+    "powderRowIds": [
+      "gan2021-B10",
+      "gan2021-B11",
+      "gan2021-B12",
+      "gan2021-B13",
+      "gan2021-B14",
+      "gan2021-B15",
+      "gan2021-B16",
+      "gan2021-B17",
+      "gan2021-B18",
+      "gan2021-B19",
+      "gan2021-B20"
+    ],
+    "evidenceKind": "published measurement (numbers transcribed from tables)",
+    "experimentalValidation": false,
+    "usedForSelectionOrCalibration": false,
+    "sources": {
+      "sabau2018-ornl-tm-1044": "Sabau et al., ORNL/TM-2018/1044 (2018), Tables 1 and 2, Figs. 2 and 3",
+      "gan2021-immi-afrl-in625": "Gan, Jones, Lu, Liu, IMMI 10 (2021) 177, doi:10.1007/s40192-021-00209-4, Table 2"
+    }
+  },
+  "scores": {
+    "H_ET": {
+      "R0": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 1.308401295210628,
+          "bias": 1.1780824149053417
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 2.976117448505456,
+          "bias": 2.976117448505456
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.19659052634740923,
+          "bias": -0.020607607494734215
+        }
+      },
+      "R40": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 1.5137541828890373,
+          "bias": 1.5137541828890373
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 2.976117448505456,
+          "bias": 2.976117448505456
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.5388453391447581,
+          "bias": 0.5388453391447581
+        }
+      }
+    },
+    "H_k": {
+      "R0": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 0.6511293113135153,
+          "bias": 0.32026091870105394
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 1.2142377875182115,
+          "bias": 1.2142377875182115
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.27572366051038455,
+          "bias": -0.27572366051038455
+        }
+      },
+      "R40": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 0.5803236635656158,
+          "bias": 0.5803236635656158
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 1.2142377875182115,
+          "bias": 1.2142377875182115
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.15771424759721844,
+          "bias": 0.15771424759721844
+        }
+      }
+    },
+    "served_reference": {
+      "R0": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 0.7845090559163833,
+          "bias": 0.6047585012707394
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 1.7365844464839035,
+          "bias": 1.7365844464839035
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.14979212887137028,
+          "bias": -0.14979212887137028
+        }
+      },
+      "R40": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 0.9104771868300466,
+          "bias": 0.9104771868300466
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 1.7365844464839035,
+          "bias": 1.7365844464839035
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.3597390137274751,
+          "bias": 0.3597390137274751
+        }
+      }
+    },
+    "baseline": {
+      "R0": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 0.5906580793138947,
+          "bias": 0.07038399025580039
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 0.8858263964859283,
+          "bias": 0.7667787774383091
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.3938792011992056,
+          "bias": -0.3938792011992056
+        }
+      },
+      "R40": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 0.42968660385297347,
+          "bias": 0.2969749778595571
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 0.8858263964859283,
+          "bias": 0.7667787774383091
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.12559340876433683,
+          "bias": -0.016227555192944377
+        }
+      }
+    },
+    "H": {
+      "R0": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 1.308401295210628,
+          "bias": 1.1780824149053417
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 2.976117448505456,
+          "bias": 2.976117448505456
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.19659052634740923,
+          "bias": -0.020607607494734215
+        }
+      },
+      "R40": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 1.5137541828890373,
+          "bias": 1.5137541828890373
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 2.976117448505456,
+          "bias": 2.976117448505456
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.5388453391447581,
+          "bias": 0.5388453391447581
+        }
+      }
+    },
+    "ET_served": {
+      "R0": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 0.649331055145319,
+          "bias": 0.034411773900987354
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 0.8684682188475655,
+          "bias": 0.8408888537682003
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.5032396126771547,
+          "bias": -0.5032396126771547
+        }
+      },
+      "R40": {
+        "pooled": {
+          "n": 15,
+          "complete": true,
+          "MAPE": 0.47571923032466573,
+          "bias": 0.22157671227475415
+        },
+        "sabau2018": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 0.8684682188475655,
+          "bias": 0.8408888537682003
+        },
+        "gan2021": {
+          "n": 9,
+          "complete": true,
+          "MAPE": 0.21388657130939925,
+          "bias": -0.1912980487208767
+        }
+      }
+    }
+  },
+  "rules": {
+    "H_ET": {
+      "R0": {
+        "complete": true,
+        "status": "FAIL",
+        "passes": false,
+        "items": {
+          "1_pooled": false,
+          "2_per_source": false,
+          "3_count_floor": false,
+          "4_sign_flip": false
+        },
+        "pooled_MAPE_pct": 130.8401295210628,
+        "served_pooled_MAPE_pct": 78.45090559163833,
+        "pooled_margin_pp": -52.389223929424475,
+        "source_margin_pp": {
+          "sabau2018": -123.95330020215522,
+          "gan2021": -4.679839747603895
+        },
+        "wins": {
+          "total": 2,
+          "gan2021": 2,
+          "sabau2018": 0
+        },
+        "sign_flip_p": 0.99786376953125,
+        "scores": {
+          "pooled": {
+            "n": 15,
+            "complete": true,
+            "MAPE": 1.308401295210628,
+            "bias": 1.1780824149053417
+          },
+          "sabau2018": {
+            "n": 6,
+            "complete": true,
+            "MAPE": 2.976117448505456,
+            "bias": 2.976117448505456
+          },
+          "gan2021": {
+            "n": 9,
+            "complete": true,
+            "MAPE": 0.19659052634740923,
+            "bias": -0.020607607494734215
+          }
+        },
+        "served_scores": {
+          "pooled": {
+            "n": 15,
+            "complete": true,
+            "MAPE": 0.7845090559163833,
+            "bias": 0.6047585012707394
+          },
+          "sabau2018": {
+            "n": 6,
+            "complete": true,
+            "MAPE": 1.7365844464839035,
+            "bias": 1.7365844464839035
+          },
+          "gan2021": {
+            "n": 9,
+            "complete": true,
+            "MAPE": 0.14979212887137028,
+            "bias": -0.14979212887137028
+          }
+        }
+      },
+      "R40": {
+        "complete": true,
+        "status": "FAIL",
+        "passes": false,
+        "items": {
+          "1_pooled": false,
+          "2_per_source": false,
+          "3_count_floor": false,
+          "4_sign_flip": false
+        },
+        "pooled_MAPE_pct": 151.37541828890372,
+        "served_pooled_MAPE_pct": 91.04771868300466,
+        "pooled_margin_pp": -60.32769960589906,
+        "source_margin_pp": {
+          "sabau2018": -123.95330020215522,
+          "gan2021": -17.9106325417283
+        },
+        "wins": {
+          "total": 3,
+          "gan2021": 3,
+          "sabau2018": 0
+        },
+        "sign_flip_p": 0.999603271484375,
+        "scores": {
+          "pooled": {
+            "n": 15,
+            "complete": true,
+            "MAPE": 1.5137541828890373,
+            "bias": 1.5137541828890373
+          },
+          "sabau2018": {
+            "n": 6,
+            "complete": true,
+            "MAPE": 2.976117448505456,
+            "bias": 2.976117448505456
+          },
+          "gan2021": {
+            "n": 9,
+            "complete": true,
+            "MAPE": 0.5388453391447581,
+            "bias": 0.5388453391447581
+          }
+        },
+        "served_scores": {
+          "pooled": {
+            "n": 15,
+            "complete": true,
+            "MAPE": 0.9104771868300466,
+            "bias": 0.9104771868300466
+          },
+          "sabau2018": {
+            "n": 6,
+            "complete": true,
+            "MAPE": 1.7365844464839035,
+            "bias": 1.7365844464839035
+          },
+          "gan2021": {
+            "n": 9,
+            "complete": true,
+            "MAPE": 0.3597390137274751,
+            "bias": 0.3597390137274751
+          }
+        }
+      }
+    },
+    "H_k": {
+      "R0": {
+        "complete": true,
+        "status": "FAIL",
+        "passes": false,
+        "items": {
+          "1_pooled": true,
+          "2_per_source": false,
+          "3_count_floor": false,
+          "4_sign_flip": false
+        },
+        "pooled_MAPE_pct": 65.11293113135153,
+        "served_pooled_MAPE_pct": 78.45090559163833,
+        "pooled_margin_pp": 13.337974460286805,
+        "source_margin_pp": {
+          "sabau2018": 52.2346658965692,
+          "gan2021": -12.593153163901427
+        },
+        "wins": {
+          "total": 6,
+          "gan2021": 0,
+          "sabau2018": 6
+        },
+        "sign_flip_p": 0.274932861328125,
+        "scores": {
+          "pooled": {
+            "n": 15,
+            "complete": true,
+            "MAPE": 0.6511293113135153,
+            "bias": 0.32026091870105394
+          },
+          "sabau2018": {
+            "n": 6,
+            "complete": true,
+            "MAPE": 1.2142377875182115,
+            "bias": 1.2142377875182115
+          },
+          "gan2021": {
+            "n": 9,
+            "complete": true,
+            "MAPE": 0.27572366051038455,
+            "bias": -0.27572366051038455
+          }
+        },
+        "served_scores": {
+          "pooled": {
+            "n": 15,
+            "complete": true,
+            "MAPE": 0.7845090559163833,
+            "bias": 0.6047585012707394
+          },
+          "sabau2018": {
+            "n": 6,
+            "complete": true,
+            "MAPE": 1.7365844464839035,
+            "bias": 1.7365844464839035
+          },
+          "gan2021": {
+            "n": 9,
+            "complete": true,
+            "MAPE": 0.14979212887137028,
+            "bias": -0.14979212887137028
+          }
+        }
+      },
+      "R40": {
+        "complete": true,
+        "status": "PASS",
+        "passes": true,
+        "items": {
+          "1_pooled": true,
+          "2_per_source": true,
+          "3_count_floor": true,
+          "4_sign_flip": true
+        },
+        "pooled_MAPE_pct": 58.03236635656158,
+        "served_pooled_MAPE_pct": 91.04771868300466,
+        "pooled_margin_pp": 33.01535232644308,
+        "source_margin_pp": {
+          "sabau2018": 52.2346658965692,
+          "gan2021": 20.202476613025663
+        },
+        "wins": {
+          "total": 15,
+          "gan2021": 9,
+          "sabau2018": 6
+        },
+        "sign_flip_p": 3.0517578125e-05,
+        "scores": {
+          "pooled": {
+            "n": 15,
+            "complete": true,
+            "MAPE": 0.5803236635656158,
+            "bias": 0.5803236635656158
+          },
+          "sabau2018": {
+            "n": 6,
+            "complete": true,
+            "MAPE": 1.2142377875182115,
+            "bias": 1.2142377875182115
+          },
+          "gan2021": {
+            "n": 9,
+            "complete": true,
+            "MAPE": 0.15771424759721844,
+            "bias": 0.15771424759721844
+          }
+        },
+        "served_scores": {
+          "pooled": {
+            "n": 15,
+            "complete": true,
+            "MAPE": 0.9104771868300466,
+            "bias": 0.9104771868300466
+          },
+          "sabau2018": {
+            "n": 6,
+            "complete": true,
+            "MAPE": 1.7365844464839035,
+            "bias": 1.7365844464839035
+          },
+          "gan2021": {
+            "n": 9,
+            "complete": true,
+            "MAPE": 0.3597390137274751,
+            "bias": 0.3597390137274751
+          }
+        }
+      }
+    }
+  },
+  "lane_verdict": {
+    "verdict": "FAIL",
+    "passing_arms": [],
+    "stage2_arm": null,
+    "stage2_entry": false,
+    "arm_status": {
+      "H_ET": "FAIL",
+      "H_k": "FAIL"
+    }
+  },
+  "beam_sensitivity": {
+    "S_beam56.6": {
+      "served_reference": {
+        "sabau_scores": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 3.0757245027597606,
+          "bias": 3.0757245027597606
+        },
+        "depth_um_by_condition": {
+          "sabau2018-mp1": 171.8,
+          "sabau2018-mp2": 242.7,
+          "sabau2018-p2s05": 374.8,
+          "sabau2018-p2s1": 265.4,
+          "sabau2018-p2s2": 169.2,
+          "sabau2018-p4s6": 94.8
+        }
+      },
+      "H_ET": {
+        "sabau_scores": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 5.262355555072106,
+          "bias": 5.262355555072106
+        },
+        "depth_um_by_condition": {
+          "sabau2018-mp1": 265.72643545646497,
+          "sabau2018-mp2": 442.36725666915817,
+          "sabau2018-p2s05": 572.8278778629092,
+          "sabau2018-p2s1": 401.0978844699841,
+          "sabau2018-p2s2": 254.82081243489833,
+          "sabau2018-p4s6": 141.6220255967038
+        }
+      },
+      "H_k": {
+        "sabau_scores": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 2.256421176405706,
+          "bias": 2.256421176405706
+        },
+        "depth_um_by_condition": {
+          "sabau2018-mp1": 150.55742742394514,
+          "sabau2018-mp2": 250.64000887336678,
+          "sabau2018-p2s05": 254.08817836106894,
+          "sabau2018-p2s1": 193.8082955294987,
+          "sabau2018-p2s2": 136.2382818355351,
+          "sabau2018-p4s6": 91.27154584790892
+        }
+      }
+    },
+    "S_beam100": {
+      "served_reference": {
+        "sabau_scores": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 0.8979634784340581,
+          "bias": 0.8251460181165978
+        },
+        "depth_um_by_condition": {
+          "sabau2018-mp1": 52.7,
+          "sabau2018-mp2": 131.3,
+          "sabau2018-p2s05": 235.3,
+          "sabau2018-p2s1": 118.1,
+          "sabau2018-p2s2": 51.9,
+          "sabau2018-p4s6": 38.0
+        }
+      },
+      "H_ET": {
+        "sabau_scores": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 1.4676766770941823,
+          "bias": 1.4676766770941823
+        },
+        "depth_um_by_condition": {
+          "sabau2018-mp1": 53.0,
+          "sabau2018-mp2": 213.74993279487364,
+          "sabau2018-p2s05": 367.25740485402986,
+          "sabau2018-p2s1": 180.4689432745706,
+          "sabau2018-p2s2": 50.4,
+          "sabau2018-p4s6": 33.3
+        }
+      },
+      "H_k": {
+        "sabau_scores": {
+          "n": 6,
+          "complete": true,
+          "MAPE": 0.6779748951180052,
+          "bias": 0.6025240398838696
+        },
+        "depth_um_by_condition": {
+          "sabau2018-mp1": 50.0,
+          "sabau2018-mp2": 129.9727689619956,
+          "sabau2018-p2s05": 174.47466473249,
+          "sabau2018-p2s1": 119.30000000000001,
+          "sabau2018-p2s2": 46.5,
+          "sabau2018-p4s6": 34.7
+        }
+      }
+    }
+  },
+  "conditions": [
+    {
+      "cond_id": "sabau2018-mp1",
+      "source": "sabau2018",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 100.0,
+        "speed_mm_s": 300.0,
+        "diameter_um": 80.0,
+        "preheat_C": 20.0
+      },
+      "observed_depth_um": {
+        "R0": 46.0,
+        "R40": 46.0
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 152.37223730421724,
+          "status": "computed",
+          "APE_R0": 2.312439941396027,
+          "APE_R40": 2.312439941396027,
+          "index": 19.97699750777601,
+          "A_D": 0.5624215113033193,
+          "gate_open": true,
+          "d_c_um": 73.6,
+          "fabbro_um": 152.37223730421724,
+          "peclet": 4.237224489795917,
+          "peclet_in_fit_range": true,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 91.89999999999999,
+          "status": "computed",
+          "APE_R0": 0.9978260869565215,
+          "APE_R40": 0.9978260869565215,
+          "index": 19.97699750777601,
+          "A_D": 0.5624215113033193,
+          "gate_open": true,
+          "d_c_um": 91.89999999999999,
+          "fabbro_um": 90.29369582898475,
+          "peclet": 2.329171836356661,
+          "peclet_in_fit_range": true,
+          "leg": "conduction",
+          "keyhole_k_W_mK": 25.353893939101706,
+          "keyhole_alpha_m2_s": 5.152045809883503e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 97.0,
+          "status": "computed",
+          "APE_R0": 1.108695652173913,
+          "APE_R40": 1.108695652173913
+        },
+        "baseline": {
+          "pred_depth_um": 72.8,
+          "status": "computed",
+          "APE_R0": 0.5826086956521739,
+          "APE_R40": 0.5826086956521739
+        },
+        "H": {
+          "pred_depth_um": 152.37223730421724,
+          "status": "computed",
+          "APE_R0": 2.312439941396027,
+          "APE_R40": 2.312439941396027,
+          "index": 19.97699750777601,
+          "A_D": 0.5624215113033193,
+          "gate_open": true,
+          "d_c_um": 91.89999999999999,
+          "fabbro_um": 152.37223730421724,
+          "peclet": 4.237224489795917,
+          "peclet_in_fit_range": true,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 58.0,
+          "status": "computed",
+          "APE_R0": 0.2608695652173913,
+          "APE_R40": 0.2608695652173913
+        }
+      }
+    },
+    {
+      "cond_id": "sabau2018-mp2",
+      "source": "sabau2018",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 150.0,
+        "speed_mm_s": 300.0,
+        "diameter_um": 80.0,
+        "preheat_C": 20.0
+      },
+      "observed_depth_um": {
+        "R0": 168.0,
+        "R40": 168.0
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 298.6333564721693,
+          "status": "computed",
+          "APE_R0": 0.7775795028105315,
+          "APE_R40": 0.7775795028105315,
+          "index": 29.965496261664015,
+          "A_D": 0.7348575070462732,
+          "gate_open": true,
+          "d_c_um": 107.20000000000002,
+          "fabbro_um": 298.6333564721693,
+          "peclet": 4.237224489795917,
+          "peclet_in_fit_range": true,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 176.96602695312998,
+          "status": "computed",
+          "APE_R0": 0.05336920805434514,
+          "APE_R40": 0.05336920805434514,
+          "index": 29.965496261664015,
+          "A_D": 0.7348575070462732,
+          "gate_open": true,
+          "d_c_um": 115.80000000000001,
+          "fabbro_um": 176.96602695312998,
+          "peclet": 2.329171836356661,
+          "peclet_in_fit_range": true,
+          "leg": "keyhole",
+          "keyhole_k_W_mK": 25.353893939101706,
+          "keyhole_alpha_m2_s": 5.152045809883503e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 183.4,
+          "status": "computed",
+          "APE_R0": 0.0916666666666667,
+          "APE_R40": 0.0916666666666667
+        },
+        "baseline": {
+          "pred_depth_um": 108.0,
+          "status": "computed",
+          "APE_R0": 0.35714285714285715,
+          "APE_R40": 0.35714285714285715
+        },
+        "H": {
+          "pred_depth_um": 298.6333564721693,
+          "status": "computed",
+          "APE_R0": 0.7775795028105315,
+          "APE_R40": 0.7775795028105315,
+          "index": 29.965496261664015,
+          "A_D": 0.7348575070462732,
+          "gate_open": true,
+          "d_c_um": 115.80000000000001,
+          "fabbro_um": 298.6333564721693,
+          "peclet": 4.237224489795917,
+          "peclet_in_fit_range": true,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 154.1,
+          "status": "computed",
+          "APE_R0": 0.08273809523809528,
+          "APE_R40": 0.08273809523809528
+        }
+      }
+    },
+    {
+      "cond_id": "sabau2018-p2s05",
+      "source": "sabau2018",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 75.0,
+        "speed_mm_s": 50.0,
+        "diameter_um": 80.0,
+        "preheat_C": 20.0
+      },
+      "observed_depth_um": {
+        "R0": 58.0,
+        "R40": 58.0
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 441.62871352998064,
+          "status": "computed",
+          "APE_R0": 6.614288164310011,
+          "APE_R40": 6.614288164310011,
+          "index": 36.70008786517683,
+          "A_D": 0.7748427078474874,
+          "gate_open": true,
+          "d_c_um": 164.70000000000005,
+          "fabbro_um": 441.62871352998064,
+          "peclet": 0.7062040816326529,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 203.83895878953717,
+          "status": "computed",
+          "APE_R0": 2.514464806716158,
+          "APE_R40": 2.514464806716158,
+          "index": 36.70008786517683,
+          "A_D": 0.7748427078474874,
+          "gate_open": true,
+          "d_c_um": 172.7,
+          "fabbro_um": 203.83895878953717,
+          "peclet": 0.38819530605944347,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole",
+          "keyhole_k_W_mK": 25.353893939101706,
+          "keyhole_alpha_m2_s": 5.152045809883503e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 327.4,
+          "status": "computed",
+          "APE_R0": 4.644827586206896,
+          "APE_R40": 4.644827586206896
+        },
+        "baseline": {
+          "pred_depth_um": 165.99999999999997,
+          "status": "computed",
+          "APE_R0": 1.8620689655172409,
+          "APE_R40": 1.8620689655172409
+        },
+        "H": {
+          "pred_depth_um": 441.62871352998064,
+          "status": "computed",
+          "APE_R0": 6.614288164310011,
+          "APE_R40": 6.614288164310011,
+          "index": 36.70008786517683,
+          "A_D": 0.7748427078474874,
+          "gate_open": true,
+          "d_c_um": 172.7,
+          "fabbro_um": 441.62871352998064,
+          "peclet": 0.7062040816326529,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 216.6,
+          "status": "computed",
+          "APE_R0": 2.7344827586206897,
+          "APE_R40": 2.7344827586206897
+        }
+      }
+    },
+    {
+      "cond_id": "sabau2018-p2s1",
+      "source": "sabau2018",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 75.0,
+        "speed_mm_s": 100.0,
+        "diameter_um": 80.0,
+        "preheat_C": 20.0
+      },
+      "observed_depth_um": {
+        "R0": 49.0,
+        "R40": 49.0
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 293.06433744464744,
+          "status": "computed",
+          "APE_R0": 4.980904845809131,
+          "APE_R40": 4.980904845809131,
+          "index": 25.950880999608664,
+          "A_D": 0.6998092785680121,
+          "gate_open": true,
+          "d_c_um": 117.20000000000002,
+          "fabbro_um": 293.06433744464744,
+          "peclet": 1.4124081632653058,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 148.83183997997313,
+          "status": "computed",
+          "APE_R0": 2.0373844893872066,
+          "APE_R40": 2.0373844893872066,
+          "index": 25.950880999608664,
+          "A_D": 0.6998092785680121,
+          "gate_open": true,
+          "d_c_um": 130.79999999999998,
+          "fabbro_um": 148.83183997997313,
+          "peclet": 0.7763906121188869,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole",
+          "keyhole_k_W_mK": 25.353893939101706,
+          "keyhole_alpha_m2_s": 5.152045809883503e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 178.7,
+          "status": "computed",
+          "APE_R0": 2.646938775510204,
+          "APE_R40": 2.646938775510204
+        },
+        "baseline": {
+          "pred_depth_um": 115.19999999999999,
+          "status": "computed",
+          "APE_R0": 1.351020408163265,
+          "APE_R40": 1.351020408163265
+        },
+        "H": {
+          "pred_depth_um": 293.06433744464744,
+          "status": "computed",
+          "APE_R0": 4.980904845809131,
+          "APE_R40": 4.980904845809131,
+          "index": 25.950880999608664,
+          "A_D": 0.6998092785680121,
+          "gate_open": true,
+          "d_c_um": 130.79999999999998,
+          "fabbro_um": 293.06433744464744,
+          "peclet": 1.4124081632653058,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 116.2,
+          "status": "computed",
+          "APE_R0": 1.3714285714285714,
+          "APE_R40": 1.3714285714285714
+        }
+      }
+    },
+    {
+      "cond_id": "sabau2018-p2s2",
+      "source": "sabau2018",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 75.0,
+        "speed_mm_s": 200.0,
+        "diameter_um": 80.0,
+        "preheat_C": 20.0
+      },
+      "observed_depth_um": {
+        "R0": 39.0,
+        "R40": 39.0
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 130.3919253871584,
+          "status": "computed",
+          "APE_R0": 2.343382702234831,
+          "APE_R40": 2.343382702234831,
+          "index": 18.350043932588417,
+          "A_D": 0.47654160472734575,
+          "gate_open": true,
+          "d_c_um": 67.8,
+          "fabbro_um": 130.3919253871584,
+          "peclet": 2.8248163265306117,
+          "peclet_in_fit_range": true,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 87.0,
+          "status": "computed",
+          "APE_R0": 1.2307692307692308,
+          "APE_R40": 1.2307692307692308,
+          "index": 18.350043932588417,
+          "A_D": 0.47654160472734575,
+          "gate_open": true,
+          "d_c_um": 87.0,
+          "fabbro_um": 73.27417590583377,
+          "peclet": 1.5527812242377739,
+          "peclet_in_fit_range": false,
+          "leg": "conduction",
+          "keyhole_k_W_mK": 25.353893939101706,
+          "keyhole_alpha_m2_s": 5.152045809883503e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 88.0,
+          "status": "computed",
+          "APE_R0": 1.2564102564102564,
+          "APE_R40": 1.2564102564102564
+        },
+        "baseline": {
+          "pred_depth_um": 69.1,
+          "status": "computed",
+          "APE_R0": 0.7717948717948716,
+          "APE_R40": 0.7717948717948716
+        },
+        "H": {
+          "pred_depth_um": 130.3919253871584,
+          "status": "computed",
+          "APE_R0": 2.343382702234831,
+          "APE_R40": 2.343382702234831,
+          "index": 18.350043932588417,
+          "A_D": 0.47654160472734575,
+          "gate_open": true,
+          "d_c_um": 87.0,
+          "fabbro_um": 130.3919253871584,
+          "peclet": 2.8248163265306117,
+          "peclet_in_fit_range": true,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 58.5,
+          "status": "computed",
+          "APE_R0": 0.5,
+          "APE_R40": 0.5
+        }
+      }
+    },
+    {
+      "cond_id": "sabau2018-p4s6",
+      "source": "sabau2018",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 150.0,
+        "speed_mm_s": 1000.0,
+        "diameter_um": 80.0,
+        "preheat_C": 20.0
+      },
+      "observed_depth_um": {
+        "R0": 31.0,
+        "R40": 31.0
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 56.67139556863838,
+          "status": "computed",
+          "APE_R0": 0.8281095344722058,
+          "APE_R40": 0.8281095344722058,
+          "index": 16.412778249350108,
+          "A_D": 0.3907195857019069,
+          "gate_open": true,
+          "d_c_um": 39.8,
+          "fabbro_um": 56.67139556863838,
+          "peclet": 14.124081632653057,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 45.0,
+          "status": "computed",
+          "APE_R0": 0.45161290322580644,
+          "APE_R40": 0.45161290322580644,
+          "index": 16.412778249350108,
+          "A_D": 0.3907195857019069,
+          "gate_open": true,
+          "d_c_um": 45.0,
+          "fabbro_um": 37.361255854513054,
+          "peclet": 7.763906121188869,
+          "peclet_in_fit_range": true,
+          "leg": "conduction",
+          "keyhole_k_W_mK": 25.353893939101706,
+          "keyhole_alpha_m2_s": 5.152045809883503e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 51.8,
+          "status": "computed",
+          "APE_R0": 0.6709677419354838,
+          "APE_R40": 0.6709677419354838
+        },
+        "baseline": {
+          "pred_depth_um": 43.099999999999994,
+          "status": "computed",
+          "APE_R0": 0.3903225806451611,
+          "APE_R40": 0.3903225806451611
+        },
+        "H": {
+          "pred_depth_um": 56.67139556863838,
+          "status": "computed",
+          "APE_R0": 0.8281095344722058,
+          "APE_R40": 0.8281095344722058,
+          "index": 16.412778249350108,
+          "A_D": 0.3907195857019069,
+          "gate_open": true,
+          "d_c_um": 45.0,
+          "fabbro_um": 56.67139556863838,
+          "peclet": 14.124081632653057,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 39.1,
+          "status": "computed",
+          "APE_R0": 0.2612903225806452,
+          "APE_R40": 0.2612903225806452
+        }
+      }
+    },
+    {
+      "cond_id": "G300_1230",
+      "source": "gan2021",
+      "n_rows": 3,
+      "condition": {
+        "power_W": 300.0,
+        "speed_mm_s": 1230.0,
+        "diameter_um": 100.0,
+        "preheat_C": 79.85
+      },
+      "observed_depth_um": {
+        "R0": 115.7,
+        "R40": 75.7
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 123.57646720852831,
+          "status": "computed",
+          "APE_R0": 0.06807663965884451,
+          "APE_R40": 0.6324500291747465,
+          "index": 21.178467083300266,
+          "A_D": 0.623037590047886,
+          "gate_open": true,
+          "d_c_um": 69.3,
+          "fabbro_um": 123.57646720852831,
+          "peclet": 21.715775510204075,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 83.9,
+          "status": "computed",
+          "APE_R0": 0.27484874675885906,
+          "APE_R40": 0.10832232496697493,
+          "index": 21.178467083300266,
+          "A_D": 0.623037590047886,
+          "gate_open": true,
+          "d_c_um": 83.9,
+          "fabbro_um": 82.5326048205371,
+          "peclet": 11.8718153103433,
+          "peclet_in_fit_range": false,
+          "leg": "conduction",
+          "keyhole_k_W_mK": 25.68168374393325,
+          "keyhole_alpha_m2_s": 5.180336653857664e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 100.0,
+          "status": "computed",
+          "APE_R0": 0.1356957649092481,
+          "APE_R40": 0.321003963011889
+        },
+        "baseline": {
+          "pred_depth_um": 70.8,
+          "status": "computed",
+          "APE_R0": 0.3880726015557477,
+          "APE_R40": 0.06472919418758263
+        },
+        "H": {
+          "pred_depth_um": 123.57646720852831,
+          "status": "computed",
+          "APE_R0": 0.06807663965884451,
+          "APE_R40": 0.6324500291747465,
+          "index": 21.178467083300266,
+          "A_D": 0.623037590047886,
+          "gate_open": true,
+          "d_c_um": 83.9,
+          "fabbro_um": 123.57646720852831,
+          "peclet": 21.715775510204075,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 52.2,
+          "status": "computed",
+          "APE_R0": 0.5488331892826275,
+          "APE_R40": 0.3104359313077939
+        }
+      }
+    },
+    {
+      "cond_id": "gan2021-B12",
+      "source": "gan2021",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 290.0,
+        "speed_mm_s": 953.0,
+        "diameter_um": 100.0,
+        "preheat_C": 79.85
+      },
+      "observed_depth_um": {
+        "R0": 140.1,
+        "R40": 100.1
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 160.414410724904,
+          "status": "computed",
+          "APE_R0": 0.14499936277590297,
+          "APE_R40": 0.6025415656833567,
+          "index": 23.258268019600298,
+          "A_D": 0.6584909408922562,
+          "gate_open": true,
+          "d_c_um": 80.5,
+          "fabbro_um": 160.414410724904,
+          "peclet": 16.825312244897958,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 105.8981733217167,
+          "status": "computed",
+          "APE_R0": 0.24412438742529122,
+          "APE_R40": 0.05792380940775928,
+          "index": 23.258268019600298,
+          "A_D": 0.6584909408922562,
+          "gate_open": true,
+          "d_c_um": 93.69999999999999,
+          "fabbro_um": 105.8981733217167,
+          "peclet": 9.198243894924525,
+          "peclet_in_fit_range": true,
+          "leg": "keyhole",
+          "keyhole_k_W_mK": 25.68168374393325,
+          "keyhole_alpha_m2_s": 5.180336653857664e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 122.8,
+          "status": "computed",
+          "APE_R0": 0.12348322626695216,
+          "APE_R40": 0.2267732267732268
+        },
+        "baseline": {
+          "pred_depth_um": 82.19999999999999,
+          "status": "computed",
+          "APE_R0": 0.41327623126338336,
+          "APE_R40": 0.1788211788211789
+        },
+        "H": {
+          "pred_depth_um": 160.414410724904,
+          "status": "computed",
+          "APE_R0": 0.14499936277590297,
+          "APE_R40": 0.6025415656833567,
+          "index": 23.258268019600298,
+          "A_D": 0.6584909408922562,
+          "gate_open": true,
+          "d_c_um": 93.69999999999999,
+          "fabbro_um": 160.414410724904,
+          "peclet": 16.825312244897958,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 59.1,
+          "status": "computed",
+          "APE_R0": 0.5781584582441114,
+          "APE_R40": 0.40959040959040954
+        }
+      }
+    },
+    {
+      "cond_id": "gan2021-B13",
+      "source": "gan2021",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 370.0,
+        "speed_mm_s": 1230.0,
+        "diameter_um": 100.0,
+        "preheat_C": 79.85
+      },
+      "observed_depth_um": {
+        "R0": 141.9,
+        "R40": 101.9
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 171.55270821802574,
+          "status": "computed",
+          "APE_R0": 0.20896905016226733,
+          "APE_R40": 0.6835398254958365,
+          "index": 26.120109402736993,
+          "A_D": 0.7012866693889738,
+          "gate_open": true,
+          "d_c_um": 82.89999999999999,
+          "fabbro_um": 171.55270821802574,
+          "peclet": 21.715775510204075,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 114.57433759907731,
+          "status": "computed",
+          "APE_R0": 0.19256985483384562,
+          "APE_R40": 0.12438015308221102,
+          "index": 26.120109402736993,
+          "A_D": 0.7012866693889738,
+          "gate_open": true,
+          "d_c_um": 93.39999999999999,
+          "fabbro_um": 114.57433759907731,
+          "peclet": 11.8718153103433,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole",
+          "keyhole_k_W_mK": 25.68168374393325,
+          "keyhole_alpha_m2_s": 5.180336653857664e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 136.7,
+          "status": "computed",
+          "APE_R0": 0.03664552501761816,
+          "APE_R40": 0.34151128557409205
+        },
+        "baseline": {
+          "pred_depth_um": 85.29999999999998,
+          "status": "computed",
+          "APE_R0": 0.39887244538407346,
+          "APE_R40": 0.16290480863591777
+        },
+        "H": {
+          "pred_depth_um": 171.55270821802574,
+          "status": "computed",
+          "APE_R0": 0.20896905016226733,
+          "APE_R40": 0.6835398254958365,
+          "index": 26.120109402736993,
+          "A_D": 0.7012866693889738,
+          "gate_open": true,
+          "d_c_um": 93.39999999999999,
+          "fabbro_um": 171.55270821802574,
+          "peclet": 21.715775510204075,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 76.5,
+          "status": "computed",
+          "APE_R0": 0.4608879492600423,
+          "APE_R40": 0.24926398429833174
+        }
+      }
+    },
+    {
+      "cond_id": "gan2021-B14",
+      "source": "gan2021",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 225.0,
+        "speed_mm_s": 1230.0,
+        "diameter_um": 100.0,
+        "preheat_C": 79.85
+      },
+      "observed_depth_um": {
+        "R0": 85.3,
+        "R40": 45.3
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 56.62427487263132,
+          "status": "computed",
+          "APE_R0": 0.3361749721848614,
+          "APE_R40": 0.24998399277331837,
+          "index": 15.8838503124752,
+          "A_D": 0.3806447678566705,
+          "gate_open": true,
+          "d_c_um": 43.8,
+          "fabbro_um": 56.62427487263132,
+          "peclet": 21.715775510204075,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 49.9,
+          "status": "computed",
+          "APE_R0": 0.41500586166471276,
+          "APE_R40": 0.10154525386313469,
+          "index": 15.8838503124752,
+          "A_D": 0.3806447678566705,
+          "gate_open": true,
+          "d_c_um": 49.9,
+          "fabbro_um": 37.8174664390295,
+          "peclet": 11.8718153103433,
+          "peclet_in_fit_range": false,
+          "leg": "conduction",
+          "keyhole_k_W_mK": 25.68168374393325,
+          "keyhole_alpha_m2_s": 5.180336653857664e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 60.1,
+          "status": "computed",
+          "APE_R0": 0.2954279015240328,
+          "APE_R40": 0.32671081677704206
+        },
+        "baseline": {
+          "pred_depth_um": 49.7,
+          "status": "computed",
+          "APE_R0": 0.4173505275498241,
+          "APE_R40": 0.0971302428256072
+        },
+        "H": {
+          "pred_depth_um": 56.62427487263132,
+          "status": "computed",
+          "APE_R0": 0.3361749721848614,
+          "APE_R40": 0.24998399277331837,
+          "index": 15.8838503124752,
+          "A_D": 0.3806447678566705,
+          "gate_open": true,
+          "d_c_um": 49.9,
+          "fabbro_um": 56.62427487263132,
+          "peclet": 21.715775510204075,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 43.8,
+          "status": "computed",
+          "APE_R0": 0.48651817116060964,
+          "APE_R40": 0.033112582781456956
+        }
+      }
+    },
+    {
+      "cond_id": "gan2021-B15",
+      "source": "gan2021",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 290.0,
+        "speed_mm_s": 1588.0,
+        "diameter_um": 100.0,
+        "preheat_C": 79.85
+      },
+      "observed_depth_um": {
+        "R0": 89.1,
+        "R40": 49.099999999999994
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 69.01199562192434,
+          "status": "computed",
+          "APE_R0": 0.22545459459119702,
+          "APE_R40": 0.4055396257011069,
+          "index": 18.017667665709784,
+          "A_D": 0.45899688606853795,
+          "gate_open": true,
+          "d_c_um": 49.3,
+          "fabbro_um": 69.01199562192434,
+          "peclet": 28.03630204081632,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 65.6,
+          "status": "computed",
+          "APE_R0": 0.26374859708193044,
+          "APE_R40": 0.33604887983706727,
+          "index": 18.017667665709784,
+          "A_D": 0.45899688606853795,
+          "gate_open": true,
+          "d_c_um": 65.6,
+          "fabbro_um": 46.524403234429826,
+          "peclet": 15.327189197418829,
+          "peclet_in_fit_range": false,
+          "leg": "conduction",
+          "keyhole_k_W_mK": 25.68168374393325,
+          "keyhole_alpha_m2_s": 5.180336653857664e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 71.9,
+          "status": "computed",
+          "APE_R0": 0.1930415263748596,
+          "APE_R40": 0.46435845213849314
+        },
+        "baseline": {
+          "pred_depth_um": 55.7,
+          "status": "computed",
+          "APE_R0": 0.37485970819304143,
+          "APE_R40": 0.13441955193482708
+        },
+        "H": {
+          "pred_depth_um": 69.01199562192434,
+          "status": "computed",
+          "APE_R0": 0.22545459459119702,
+          "APE_R40": 0.4055396257011069,
+          "index": 18.017667665709784,
+          "A_D": 0.45899688606853795,
+          "gate_open": true,
+          "d_c_um": 65.6,
+          "fabbro_um": 69.01199562192434,
+          "peclet": 28.03630204081632,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 44.0,
+          "status": "computed",
+          "APE_R0": 0.5061728395061728,
+          "APE_R40": 0.10386965376782067
+        }
+      }
+    },
+    {
+      "cond_id": "gan2021-B16",
+      "source": "gan2021",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 241.0,
+        "speed_mm_s": 990.0,
+        "diameter_um": 100.0,
+        "preheat_C": 79.85
+      },
+      "observed_depth_um": {
+        "R0": 103.7,
+        "R40": 63.7
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 99.43972714920473,
+          "status": "computed",
+          "APE_R0": 0.04108266972801615,
+          "APE_R40": 0.5610632205526644,
+          "index": 18.963795726526,
+          "A_D": 0.5089389315644797,
+          "gate_open": true,
+          "d_c_um": 61.60000000000001,
+          "fabbro_um": 99.43972714920473,
+          "peclet": 17.478551020408158,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 80.5,
+          "status": "computed",
+          "APE_R0": 0.22372227579556414,
+          "APE_R40": 0.2637362637362637,
+          "index": 18.963795726526,
+          "A_D": 0.5089389315644797,
+          "gate_open": true,
+          "d_c_um": 80.5,
+          "fabbro_um": 65.76991815194074,
+          "peclet": 9.555363542471436,
+          "peclet_in_fit_range": true,
+          "leg": "conduction",
+          "keyhole_k_W_mK": 25.68168374393325,
+          "keyhole_alpha_m2_s": 5.180336653857664e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 88.0,
+          "status": "computed",
+          "APE_R0": 0.1513982642237223,
+          "APE_R40": 0.38147566718995285
+        },
+        "baseline": {
+          "pred_depth_um": 66.3,
+          "status": "computed",
+          "APE_R0": 0.3606557377049181,
+          "APE_R40": 0.04081632653061215
+        },
+        "H": {
+          "pred_depth_um": 99.43972714920473,
+          "status": "computed",
+          "APE_R0": 0.04108266972801615,
+          "APE_R40": 0.5610632205526644,
+          "index": 18.963795726526,
+          "A_D": 0.5089389315644797,
+          "gate_open": true,
+          "d_c_um": 80.5,
+          "fabbro_um": 99.43972714920473,
+          "peclet": 17.478551020408158,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 51.9,
+          "status": "computed",
+          "APE_R0": 0.4995178399228544,
+          "APE_R40": 0.185243328100471
+        }
+      }
+    },
+    {
+      "cond_id": "gan2021-B17",
+      "source": "gan2021",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 349.0,
+        "speed_mm_s": 1430.0,
+        "diameter_um": 100.0,
+        "preheat_C": 79.85
+      },
+      "observed_depth_um": {
+        "R0": 118.6,
+        "R40": 78.6
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 130.3007822226062,
+          "status": "computed",
+          "APE_R0": 0.09865752295620737,
+          "APE_R40": 0.6577707661909186,
+          "index": 22.849843584193064,
+          "A_D": 0.6515287290049655,
+          "gate_open": true,
+          "d_c_um": 71.10000000000001,
+          "fabbro_um": 130.3007822226062,
+          "peclet": 25.24679591836734,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 87.52723769775253,
+          "status": "computed",
+          "APE_R0": 0.2619963094624576,
+          "APE_R40": 0.1135780877576658,
+          "index": 22.849843584193064,
+          "A_D": 0.6515287290049655,
+          "gate_open": true,
+          "d_c_um": 84.1,
+          "fabbro_um": 87.52723769775253,
+          "peclet": 13.802191783569851,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole",
+          "keyhole_k_W_mK": 25.68168374393325,
+          "keyhole_alpha_m2_s": 5.180336653857664e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 108.4,
+          "status": "computed",
+          "APE_R0": 0.08600337268128153,
+          "APE_R40": 0.37913486005089075
+        },
+        "baseline": {
+          "pred_depth_um": 73.4,
+          "status": "computed",
+          "APE_R0": 0.38111298482293415,
+          "APE_R40": 0.06615776081424922
+        },
+        "H": {
+          "pred_depth_um": 130.3007822226062,
+          "status": "computed",
+          "APE_R0": 0.09865752295620737,
+          "APE_R40": 0.6577707661909186,
+          "index": 22.849843584193064,
+          "A_D": 0.6515287290049655,
+          "gate_open": true,
+          "d_c_um": 84.1,
+          "fabbro_um": 130.3007822226062,
+          "peclet": 25.24679591836734,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 52.3,
+          "status": "computed",
+          "APE_R0": 0.5590219224283305,
+          "APE_R40": 0.33460559796437656
+        }
+      }
+    },
+    {
+      "cond_id": "gan2021-B19",
+      "source": "gan2021",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 349.0,
+        "speed_mm_s": 1058.0,
+        "diameter_um": 100.0,
+        "preheat_C": 79.85
+      },
+      "observed_depth_um": {
+        "R0": 147.5,
+        "R40": 107.5
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 187.50503249436275,
+          "status": "computed",
+          "APE_R0": 0.2712205592838153,
+          "APE_R40": 0.7442328604126768,
+          "index": 26.56491412880319,
+          "A_D": 0.7051698852514564,
+          "gate_open": true,
+          "d_c_um": 87.3,
+          "fabbro_um": 187.50503249436275,
+          "peclet": 18.67909795918367,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 124.4097552815269,
+          "status": "computed",
+          "APE_R0": 0.15654403198964814,
+          "APE_R40": 0.1573000491304828,
+          "index": 26.56491412880319,
+          "A_D": 0.7051698852514564,
+          "gate_open": true,
+          "d_c_um": 97.79999999999998,
+          "fabbro_um": 124.4097552815269,
+          "peclet": 10.211691543368465,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole",
+          "keyhole_k_W_mK": 25.68168374393325,
+          "keyhole_alpha_m2_s": 5.180336653857664e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 145.3,
+          "status": "computed",
+          "APE_R0": 0.014915254237288058,
+          "APE_R40": 0.3516279069767443
+        },
+        "baseline": {
+          "pred_depth_um": 89.70000000000002,
+          "status": "computed",
+          "APE_R0": 0.3918644067796609,
+          "APE_R40": 0.16558139534883706
+        },
+        "H": {
+          "pred_depth_um": 187.50503249436275,
+          "status": "computed",
+          "APE_R0": 0.2712205592838153,
+          "APE_R40": 0.7442328604126768,
+          "index": 26.56491412880319,
+          "A_D": 0.7051698852514564,
+          "gate_open": true,
+          "d_c_um": 97.79999999999998,
+          "fabbro_um": 187.50503249436275,
+          "peclet": 18.67909795918367,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 86.3,
+          "status": "computed",
+          "APE_R0": 0.41491525423728814,
+          "APE_R40": 0.19720930232558143
+        }
+      }
+    },
+    {
+      "cond_id": "gan2021-B20",
+      "source": "gan2021",
+      "n_rows": 1,
+      "condition": {
+        "power_W": 241.0,
+        "speed_mm_s": 1529.0,
+        "diameter_um": 100.0,
+        "preheat_C": 79.85
+      },
+      "observed_depth_um": {
+        "R0": 76.4,
+        "R40": 36.400000000000006
+      },
+      "arms": {
+        "H_ET": {
+          "pred_depth_um": 47.77449645398239,
+          "status": "computed",
+          "APE_R0": 0.3746793657855709,
+          "APE_R40": 0.31248616631819726,
+          "index": 15.259458524994203,
+          "A_D": 0.36875159095227056,
+          "gate_open": true,
+          "d_c_um": 39.3,
+          "fabbro_um": 47.77449645398239,
+          "peclet": 26.99465102040816,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "H_k": {
+          "pred_depth_um": 42.1,
+          "status": "computed",
+          "APE_R0": 0.4489528795811519,
+          "APE_R40": 0.15659340659340645,
+          "index": 15.259458524994203,
+          "A_D": 0.36875159095227056,
+          "gate_open": true,
+          "d_c_um": 42.1,
+          "fabbro_um": 32.1666040739164,
+          "peclet": 14.757728137816997,
+          "peclet_in_fit_range": false,
+          "leg": "conduction",
+          "keyhole_k_W_mK": 25.68168374393325,
+          "keyhole_alpha_m2_s": 5.180336653857664e-06
+        },
+        "served_reference": {
+          "pred_depth_um": 52.6,
+          "status": "computed",
+          "APE_R0": 0.31151832460732987,
+          "APE_R40": 0.44505494505494486
+        },
+        "baseline": {
+          "pred_depth_um": 44.400000000000006,
+          "status": "computed",
+          "APE_R0": 0.41884816753926696,
+          "APE_R40": 0.21978021978021975
+        },
+        "H": {
+          "pred_depth_um": 47.77449645398239,
+          "status": "computed",
+          "APE_R0": 0.3746793657855709,
+          "APE_R40": 0.31248616631819726,
+          "index": 15.259458524994203,
+          "A_D": 0.36875159095227056,
+          "gate_open": true,
+          "d_c_um": 42.1,
+          "fabbro_um": 47.77449645398239,
+          "peclet": 26.99465102040816,
+          "peclet_in_fit_range": false,
+          "leg": "keyhole"
+        },
+        "ET_served": {
+          "pred_depth_um": 40.1,
+          "status": "computed",
+          "APE_R0": 0.47513089005235604,
+          "APE_R40": 0.10164835164835151
+        }
+      }
+    }
+  ],
+  "kernel_calls_cached": 177,
+  "prediction_phase_s": 6.22966269999597,
+  "secondary_N3": {
+    "authority": "none",
+    "label": "already seen, selection data",
+    "scores": {
+      "nist-20180828": {
+        "H_ET": {
+          "intended_rows": 26,
+          "complete": true,
+          "depth_MAPE": 0.13985845646206702,
+          "depth_bias_fraction": -0.007619972486323618
+        },
+        "H_k": {
+          "intended_rows": 26,
+          "complete": true,
+          "depth_MAPE": 0.2528055240216092,
+          "depth_bias_fraction": -0.10936431350597485
+        },
+        "served_reference": {
+          "intended_rows": 26,
+          "complete": true,
+          "depth_MAPE": 0.2716352523818137,
+          "depth_bias_fraction": -0.015606053605166025
+        },
+        "baseline": {
+          "intended_rows": 26,
+          "complete": true,
+          "depth_MAPE": 0.37371454319587993,
+          "depth_bias_fraction": -0.11768534441923227
+        }
+      },
+      "nist-20180905": {
+        "H_ET": {
+          "intended_rows": 22,
+          "complete": true,
+          "depth_MAPE": 0.19278967377207168,
+          "depth_bias_fraction": 0.03132857688291165
+        },
+        "H_k": {
+          "intended_rows": 22,
+          "complete": true,
+          "depth_MAPE": 0.17702249796770594,
+          "depth_bias_fraction": -0.03303297264904584
+        },
+        "served_reference": {
+          "intended_rows": 22,
+          "complete": true,
+          "depth_MAPE": 0.18345649131723551,
+          "depth_bias_fraction": 0.05169185336619889
+        },
+        "baseline": {
+          "intended_rows": 22,
+          "complete": true,
+          "depth_MAPE": 0.30793385727092254,
+          "depth_bias_fraction": -0.07278551258748814
+        }
+      },
+      "nist-20180910": {
+        "H_ET": {
+          "intended_rows": 96,
+          "complete": true,
+          "depth_MAPE": 0.15762197699412814,
+          "depth_bias_fraction": -0.04259725122686034
+        },
+        "H_k": {
+          "intended_rows": 96,
+          "complete": true,
+          "depth_MAPE": 0.2448104002934639,
+          "depth_bias_fraction": -0.006242575947221556
+        },
+        "served_reference": {
+          "intended_rows": 96,
+          "complete": true,
+          "depth_MAPE": 0.2745559631062907,
+          "depth_bias_fraction": 0.08988363682494045
+        },
+        "baseline": {
+          "intended_rows": 96,
+          "complete": true,
+          "depth_MAPE": 0.3412031493814504,
+          "depth_bias_fraction": 0.023236450549780782
+        }
+      },
+      "nist-20181026": {
+        "H_ET": {
+          "intended_rows": 34,
+          "complete": true,
+          "depth_MAPE": 0.2690776619599989,
+          "depth_bias_fraction": 0.21414558682488596
+        },
+        "H_k": {
+          "intended_rows": 34,
+          "complete": true,
+          "depth_MAPE": 0.17689502294499562,
+          "depth_bias_fraction": 0.1583756193945868
+        },
+        "served_reference": {
+          "intended_rows": 34,
+          "complete": true,
+          "depth_MAPE": 0.2385082120910851,
+          "depth_bias_fraction": 0.23399357612483318
+        },
+        "baseline": {
+          "intended_rows": 34,
+          "complete": true,
+          "depth_MAPE": 0.3122237909212482,
+          "depth_bias_fraction": 0.09102718500296382
+        }
+      },
+      "lane-CBM": {
+        "H_ET": {
+          "intended_rows": 10,
+          "complete": true,
+          "depth_MAPE": 0.2404175222075196,
+          "depth_bias_fraction": -0.23860816584580208
+        },
+        "H_k": {
+          "intended_rows": 10,
+          "complete": true,
+          "depth_MAPE": 0.3525751018092991,
+          "depth_bias_fraction": -0.3525751018092991
+        },
+        "served_reference": {
+          "intended_rows": 10,
+          "complete": true,
+          "depth_MAPE": 0.3087890824203769,
+          "depth_bias_fraction": -0.3087890824203769
+        },
+        "baseline": {
+          "intended_rows": 10,
+          "complete": true,
+          "depth_MAPE": 0.3933164308391974,
+          "depth_bias_fraction": -0.3933164308391974
+        }
+      },
+      "lane-AMMT": {
+        "H_ET": {
+          "intended_rows": 13,
+          "complete": true,
+          "depth_MAPE": 0.07990254873105909,
+          "depth_bias_fraction": -0.02631700386378473
+        },
+        "H_k": {
+          "intended_rows": 13,
+          "complete": true,
+          "depth_MAPE": 0.1344245269592055,
+          "depth_bias_fraction": 0.1344245269592055
+        },
+        "served_reference": {
+          "intended_rows": 13,
+          "complete": true,
+          "depth_MAPE": 0.24282955300910664,
+          "depth_bias_fraction": 0.24282955300910664
+        },
+        "baseline": {
+          "intended_rows": 13,
+          "complete": true,
+          "depth_MAPE": 0.24282955300910664,
+          "depth_bias_fraction": 0.24282955300910664
+        }
+      },
+      "pooled_heldout": {
+        "H_ET": {
+          "intended_rows": 175,
+          "complete": true,
+          "depth_MAPE": 0.18265503700937608,
+          "depth_bias_fraction": 0.006586513240024937
+        },
+        "H_k": {
+          "intended_rows": 175,
+          "complete": true,
+          "depth_MAPE": 0.22105139446945474,
+          "depth_bias_fraction": 0.013031578300459163
+        },
+        "served_reference": {
+          "intended_rows": 175,
+          "complete": true,
+          "depth_MAPE": 0.25569925423772655,
+          "depth_bias_fraction": 0.10166128492805489
+        },
+        "baseline": {
+          "intended_rows": 175,
+          "complete": true,
+          "depth_MAPE": 0.32706059765378476,
+          "depth_bias_fraction": 0.016845497981036562
+        }
+      }
+    },
+    "lane_CBM_AMMT_ratios": {
+      "A": {
+        "CBM_rows": 3,
+        "AMMT_rows": 4,
+        "H_ET": 2.852810476586066,
+        "H_k": 1.943632567849687,
+        "served_reference": 1.8181818181818183,
+        "baseline": 1.4204545454545456,
+        "observed_ratio": 3.5548778103616816
+      },
+      "B": {
+        "CBM_rows": 3,
+        "AMMT_rows": 4,
+        "H_ET": 2.1720465784531298,
+        "H_k": 1.5390243902439023,
+        "served_reference": 1.5669642857142858,
+        "baseline": 1.2790178571428574,
+        "observed_ratio": 2.5365763261524203
+      },
+      "C": {
+        "CBM_rows": 4,
+        "AMMT_rows": 5,
+        "H_ET": 1.4247104247104247,
+        "H_k": 1.137313432835821,
+        "served_reference": 1.1010928961748632,
+        "baseline": 1.1010928961748632,
+        "observed_ratio": 2.041383989145183
+      }
+    },
+    "stage1_consistency": {
+      "rows_compared": 201,
+      "max_rel_diff": 0.0,
+      "h_et_reproduces_stage1_S_ETleg": true
+    },
+    "kernel_calls_cached": 474
+  },
+  "elapsed_s": 19.606115299997327,
+  "sha256_before": {
+    "python\\tools\\run_lpbf_depth_path_stage1b.py": "fa4c24882e2cbf4ea20f806645ec024955978fbf8a4dc5ae05b0aa449af0cdba",
+    "python\\test_lpbf_depth_path_stage1b.py": "ea2525e39aee49c43e10d9a1c7d9217385a4fb2950a2f43514562bb6cd2ae5bc",
+    "docs\\research\\PREDECLARED_depth_path_stage1b_2026-10-11.md": "2aa563c96ce918d7123f28cba969a7d5092fbd7b123c3435f441301edf8a159c",
+    "docs\\research\\PREDECLARED_depth_path_2026-10-11.md": "e1ee7ac525293becc88eed9c65699aaf57c78aa27e2bbf09cc08953eaa3dc159",
+    "docs\\research\\SOURCES_depth_path_2026-10-11.md": "c60df3ad82c9133ac99775bae0b68c0bd59e3e7955c5d2754158127373d7e027",
+    "python\\tools\\run_lpbf_depth_path_stage1.py": "9527ab6959d8a76bf0b9c860199c514520c6fde21f7b557cfa76bf9ff27e5692",
+    "python\\test_lpbf_depth_path_stage1.py": "ebbe80c4731ff0938b22ab6e8945ca6ca6593912cb04234a29eeeda885afbe64",
+    "python\\lpbf_in625_fresh_depth.py": "d6340f2e22a7966f16421aabc1efb5d51ac9c34fb0eef3d2c062af0bf03c48d9",
+    "python\\test_lpbf_in625_fresh_depth.py": "4a55f42b65395f722aa2a13f53bcc540d98611e8c32b0de3ef5133e2fe6d7529",
+    "data\\benchmark\\in625-fresh-depth-2026-10-11\\ledger.csv": "523c87016b5eb817f95dac107d2cbe4b539a19079a4113b15fbd8d3615c5e416",
+    "data\\benchmark\\in625-fresh-depth-2026-10-11\\LICENSE-ATTRIBUTION.md": "c2a93ea11688cf869f2c79664f48277345ba0d6a067e6622ccd461e67be0f3da",
+    "docs\\research\\RESULTS_depth_path_stage1_2026-10-11.json": "da323692190e4b9521a6e0b1fca862187b4290461759735d0878eff22159f1be",
+    "python\\tools\\run_lpbf_n3_nominal_shape_screen.py": "25aecfd49dcdf187aecbce8d22c9f0e242cc21383c706c53c0bdc80503f81ae3",
+    "python\\tools\\lpbf_projected_source_numerics.py": "f49ff3c656c5b6baa4a07e164f944c57aa6ebbc52961203b1d7b40d7ff7680b2",
+    "python\\lpbf_thermal_solver.py": "b53ff362d1d676e08083ac38269407f837fb4274f44a500e57cd54e33cc5492c",
+    "python\\fabbro_keyhole.py": "6bed878945b50c23deaa547f546176860eea04897450b5eba852dac967b7c5a0",
+    "python\\lpbf_public_datasets.py": "bc8423ab3f8106eafe81a2876b5fc39369f923be93b0f40adc945dc1d386a66c",
+    "python\\four_alloy_materials.py": "6ee3cdc135878ed9336d9fb7aa3a5812478449c63522c5af099a68a4f4637053",
+    "python\\lpbf_implementation_fingerprint.expected": "a9b84a3ea71034b6e7c225bf29a2212c7722dc894cda26a9f9b3cf6694fb76b7",
+    "data\\benchmark\\nist-mds2-2923-in718\\official\\Master_TrackList_Measurements.xlsx": "6cd32669f5c84cdb9e90890ba40ddc5548c85b0dbb95cf038f2f6fc69da67a52",
+    "data\\benchmark\\lane-in625-amb2018-02\\table3_tracks.csv": "32fe10fb8606a49cdc59e1e3753b40e6be9ea9751dae9ec8ac95c217e6d16179",
+    "data\\benchmark\\lane-in625-amb2018-02\\table4_summary.csv": "b3eaf59e1b3e7aa2b989449095b4a7f7f5ba6d3188e77604fe8151eb1b9843d5"
+  },
+  "sha256_after": {
+    "python\\tools\\run_lpbf_depth_path_stage1b.py": "fa4c24882e2cbf4ea20f806645ec024955978fbf8a4dc5ae05b0aa449af0cdba",
+    "python\\test_lpbf_depth_path_stage1b.py": "ea2525e39aee49c43e10d9a1c7d9217385a4fb2950a2f43514562bb6cd2ae5bc",
+    "docs\\research\\PREDECLARED_depth_path_stage1b_2026-10-11.md": "2aa563c96ce918d7123f28cba969a7d5092fbd7b123c3435f441301edf8a159c",
+    "docs\\research\\PREDECLARED_depth_path_2026-10-11.md": "e1ee7ac525293becc88eed9c65699aaf57c78aa27e2bbf09cc08953eaa3dc159",
+    "docs\\research\\SOURCES_depth_path_2026-10-11.md": "c60df3ad82c9133ac99775bae0b68c0bd59e3e7955c5d2754158127373d7e027",
+    "python\\tools\\run_lpbf_depth_path_stage1.py": "9527ab6959d8a76bf0b9c860199c514520c6fde21f7b557cfa76bf9ff27e5692",
+    "python\\test_lpbf_depth_path_stage1.py": "ebbe80c4731ff0938b22ab6e8945ca6ca6593912cb04234a29eeeda885afbe64",
+    "python\\lpbf_in625_fresh_depth.py": "d6340f2e22a7966f16421aabc1efb5d51ac9c34fb0eef3d2c062af0bf03c48d9",
+    "python\\test_lpbf_in625_fresh_depth.py": "4a55f42b65395f722aa2a13f53bcc540d98611e8c32b0de3ef5133e2fe6d7529",
+    "data\\benchmark\\in625-fresh-depth-2026-10-11\\ledger.csv": "523c87016b5eb817f95dac107d2cbe4b539a19079a4113b15fbd8d3615c5e416",
+    "data\\benchmark\\in625-fresh-depth-2026-10-11\\LICENSE-ATTRIBUTION.md": "c2a93ea11688cf869f2c79664f48277345ba0d6a067e6622ccd461e67be0f3da",
+    "docs\\research\\RESULTS_depth_path_stage1_2026-10-11.json": "da323692190e4b9521a6e0b1fca862187b4290461759735d0878eff22159f1be",
+    "python\\tools\\run_lpbf_n3_nominal_shape_screen.py": "25aecfd49dcdf187aecbce8d22c9f0e242cc21383c706c53c0bdc80503f81ae3",
+    "python\\tools\\lpbf_projected_source_numerics.py": "f49ff3c656c5b6baa4a07e164f944c57aa6ebbc52961203b1d7b40d7ff7680b2",
+    "python\\lpbf_thermal_solver.py": "b53ff362d1d676e08083ac38269407f837fb4274f44a500e57cd54e33cc5492c",
+    "python\\fabbro_keyhole.py": "6bed878945b50c23deaa547f546176860eea04897450b5eba852dac967b7c5a0",
+    "python\\lpbf_public_datasets.py": "bc8423ab3f8106eafe81a2876b5fc39369f923be93b0f40adc945dc1d386a66c",
+    "python\\four_alloy_materials.py": "6ee3cdc135878ed9336d9fb7aa3a5812478449c63522c5af099a68a4f4637053",
+    "python\\lpbf_implementation_fingerprint.expected": "a9b84a3ea71034b6e7c225bf29a2212c7722dc894cda26a9f9b3cf6694fb76b7",
+    "data\\benchmark\\nist-mds2-2923-in718\\official\\Master_TrackList_Measurements.xlsx": "6cd32669f5c84cdb9e90890ba40ddc5548c85b0dbb95cf038f2f6fc69da67a52",
+    "data\\benchmark\\lane-in625-amb2018-02\\table3_tracks.csv": "32fe10fb8606a49cdc59e1e3753b40e6be9ea9751dae9ec8ac95c217e6d16179",
+    "data\\benchmark\\lane-in625-amb2018-02\\table4_summary.csv": "b3eaf59e1b3e7aa2b989449095b4a7f7f5ba6d3188e77604fe8151eb1b9843d5"
+  },
+  "all_source_hashes_unchanged": true,
+  "status": "completed"
+}
