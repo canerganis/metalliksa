@@ -1,5 +1,5 @@
 {
- "bandsId": "lpbf-meltpool-error-bands-2026-10-11-7a003dbdea12",
+ "bandsId": "lpbf-meltpool-error-bands-2026-10-11-47f3bb3d18c6",
  "cells": [
   {
    "alloys": [
@@ -6257,7 +6257,7 @@
  "codeRevision": {
   "dirtyTrackedPaths": 0,
   "gitBranch": "feat/p1-sourced-physics",
-  "gitHead": "5ed41e0cb5196565c137ff7eee8781ae3ce7e0aa",
+  "gitHead": "a6dff386d48857f771c0657fbc33e1a7ce956e95",
   "python": "3.12.10"
  },
  "config": {
@@ -6326,7 +6326,7 @@
   "z80": 1.2816
  },
  "configSha256": "398d02d54da2261b5c5d2944b89d5147f8534f043bb291c1a83f235c7e70303f",
- "contentSha256": "7a003dbdea127f6c436955c4280cd5b739d890855871bb0add43b5359cb9dde4",
+ "contentSha256": "47f3bb3d18c60dd466e7ed4a58857416049c1cb5f8defac77bc40b8cfc6606ac",
  "evidenceKind": "screening-only",
  "evidenceLabel": "Screening only",
  "excluded": {
@@ -6339,10 +6339,10 @@
  "experimentalValidation": false,
  "generatedAt": "2026-10-11",
  "honesty": "typical error of the frozen screening kernels on published single tracks, per kernel, alloy family and screening regime class; reporting text only: it is not a tolerance, not a prediction interval for any other machine and not experimental validation; the leave-one-source-out coverage is reported next to every band and shows that a band built from some published sources does not transfer to another; no per-row measurement uncertainty exists in any source; digitized figures (Trapp, Ghosh) and a development sentinel (NIST AMB2022-03 IN718) are flagged; experimentalValidation=false",
- "implementationHash": "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32",
+ "implementationHash": "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede",
  "labelPromotionProposed": "none",
  "rowCount": 863,
- "rowsSha256": "895793ad49c2d93b543273d88019f9edea0774be475b8d77cbf9c7c8fb7d0a7c",
+ "rowsSha256": "a2484ec94c67b4b52c029f03a8589263b9bacb8f3c10a360415b660ee6426dcc",
  "schema": "lpbf-meltpool-error-bands-1",
  "sources": [
   {

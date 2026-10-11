@@ -1,5 +1,5 @@
 {
- "bandsId": "lpbf-meltpool-error-bands-2026-10-11-7a003dbdea12",
+ "bandsId": "lpbf-meltpool-error-bands-2026-10-11-47f3bb3d18c6",
  "cells": [
   {
    "alloys": [
@@ -5734,13 +5734,13 @@
    20.0
   ]
  },
- "contentSha256": "7a003dbdea127f6c436955c4280cd5b739d890855871bb0add43b5359cb9dde4",
+ "contentSha256": "47f3bb3d18c60dd466e7ed4a58857416049c1cb5f8defac77bc40b8cfc6606ac",
  "evidenceKind": "screening-only",
  "evidenceLabel": "Screening only",
  "experimentalValidation": false,
  "generatedAt": "2026-10-11",
  "honesty": "typical error of the frozen screening kernels on published single tracks, per kernel, alloy family and screening regime class; reporting text only: it is not a tolerance, not a prediction interval for any other machine and not experimental validation; the leave-one-source-out coverage is reported next to every band and shows that a band built from some published sources does not transfer to another; no per-row measurement uncertainty exists in any source; digitized figures (Trapp, Ghosh) and a development sentinel (NIST AMB2022-03 IN718) are flagged; experimentalValidation=false",
- "implementationHash": "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32",
+ "implementationHash": "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede",
  "labelLine": "Screening only · typical published-data error shown; transfer to another lab not established",
  "labelPromotionProposed": "none",
  "schema": "lpbf-meltpool-error-bands-summary-1",
