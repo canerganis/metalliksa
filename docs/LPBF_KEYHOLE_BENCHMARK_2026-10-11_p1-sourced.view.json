@@ -1,0 +1,159 @@
+{
+ "depth": {
+  "cunningham140": 79.447,
+  "cunningham95": 44.785,
+  "zhaoBoundaryBare": 63.768,
+  "zhaoBoundaryPowder": 30.524
+ },
+ "evidenceKind": "Literature comparison (screening only; digitized published measurements)",
+ "evidenceNote": "docs/LPBF_KEYHOLE_THRESHOLD_EVIDENCE_2026-10-07.md",
+ "generatedAt": "2026-10-11",
+ "heldOut": {
+  "hofmann316l": {
+   "current": 561,
+   "legacy": 511,
+   "n": 677
+  },
+  "kuLeuven316l_spot37.5um_unverified": {
+   "current": 43,
+   "legacy": 41,
+   "n": 44
+  },
+  "kuLeuven316l_spot75um_sensitivity": {
+   "current": 34,
+   "legacy": 26,
+   "n": 44
+  },
+  "kuLeuvenTi64_spot37.5um_unverified": {
+   "current": 11,
+   "legacy": 14,
+   "n": 14
+  },
+  "kuLeuvenTi64_spot75um_sensitivity": {
+   "current": 8,
+   "legacy": 3,
+   "n": 14
+  },
+  "laneIn625LegacyProps": {
+   "current": 13,
+   "legacy": 13,
+   "n": 23
+  },
+  "totisTi64": {
+   "current": 74,
+   "legacy": 69,
+   "n": 80
+  }
+ },
+ "honesty": "Comparison of the app's existing screening with published Ti-6Al-4V x-ray measurements; digitized figure values (read uncertainty recorded per row); app thermophysical properties and flat absorptivity are the app's estimates, not the papers' values; not experimental validation; this report changes no solver number.",
+ "implementationHash": "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32",
+ "keyholeThreshold": {
+  "app": 20.0,
+  "appIndexAtPublishedKeyholeLine": {
+   "max": 20.005,
+   "median": 17.662,
+   "min": 17.293,
+   "n": 9
+  },
+  "intervalOverlap": {
+   "empty": false,
+   "high": 20.005,
+   "low": 19.251
+  },
+  "kingConvertedInterval": {
+   "high": 25.175,
+   "low": 19.251,
+   "mid": 22.213
+  },
+  "legacy": 30.0
+ },
+ "label": "Keyhole regime screening vs published x-ray data (legacy 15/30 vs current 15/20)",
+ "physicsBump": "keyhole-regime (threshold 30 -> 20; porosity screen decoupled; Fabbro unchanged)",
+ "porosity": {
+  "appIndexAlongPublishedPorosityBoundary": {
+   "max": 62.424,
+   "median": 24.942,
+   "min": 15.0,
+   "n": 20
+  },
+  "zhaoPoreCasesFlaggedHigh": "19/35",
+  "zhaoPoreCasesPossible": "16/35"
+ },
+ "readOnly": true,
+ "regimeConfusion": {
+  "accuracy": 0.891,
+  "legacy_15_30": {
+   "accuracy": 0.652,
+   "matrix": {
+    "conduction": {
+     "conduction": 1,
+     "keyhole": 0,
+     "transition": 0
+    },
+    "keyhole": {
+     "conduction": 0,
+     "keyhole": 26,
+     "transition": 15
+    },
+    "transition": {
+     "conduction": 1,
+     "keyhole": 0,
+     "transition": 3
+    }
+   },
+   "n": 46
+  },
+  "matrix": {
+   "conduction": {
+    "conduction": 1,
+    "keyhole": 0,
+    "transition": 0
+   },
+   "keyhole": {
+    "conduction": 0,
+    "keyhole": 37,
+    "transition": 4
+   },
+   "transition": {
+    "conduction": 1,
+    "keyhole": 0,
+    "transition": 3
+   }
+  },
+  "n": 46,
+  "rule": "app dH/hs 15/20 vs Cunningham 2019 Fig. 3A (95 um, Ti-6Al-4V; in-sample, the derivation set of the 20)"
+ },
+ "schema": "lpbf-keyhole-benchmark-view-2",
+ "sources": [
+  {
+   "doi": "10.1126/science.aav4687",
+   "id": "cunningham-ti64-2019",
+   "rows": 69
+  },
+  {
+   "doi": "10.1038/s41467-021-22704-0",
+   "id": "gan-keyhole-2021",
+   "rows": 5
+  },
+  {
+   "doi": "10.1088/0022-3727/44/44/445401",
+   "id": "hann-ss304-2011",
+   "rows": 14
+  },
+  {
+   "doi": "10.1038/s41467-022-28694-x",
+   "id": "huang-al7a77-2022",
+   "rows": 6
+  },
+  {
+   "doi": "10.1126/science.abd1587",
+   "id": "zhao-ti64-2020-boundary",
+   "rows": 20
+  },
+  {
+   "doi": "10.1126/science.abd1587",
+   "id": "zhao-ti64-2020-pores",
+   "rows": 35
+  }
+ ]
+}
