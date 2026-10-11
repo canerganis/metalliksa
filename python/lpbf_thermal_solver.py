@@ -30,11 +30,14 @@ from four_alloy_materials import four_alloy_thermophysical_db, resolve_alloy_id,
 from in625_thermal_material import LATENT_HEAT_J_KG as IN625_LATENT_HEAT_J_KG
 from goldak_solver import GoldakField, MODEL_ID as GOLDAK_MODEL_ID, seed_goldak_axes
 from solidification_front import MODEL_ID as SOLIDIFICATION_MODEL_ID, evaluate_solidification
-from marangoni_screening import (MODEL_ID as MARANGONI_MODEL_ID, SURFACE_VELOCITY_DOI as MARANGONI_SURFACE_VELOCITY_DOI,
+from marangoni_screening import (BAND_BASIS as MARANGONI_BAND_BASIS, MODEL_ID as MARANGONI_MODEL_ID,
+                                 SURFACE_VELOCITY_DOI as MARANGONI_SURFACE_VELOCITY_DOI,
                                  marangoni_flow_direction, marangoni_screening)
 from lpbf_defect_diagnostics import balling_screen, defect_diagnostics
 
 # Secondary alloys only. Ti-6Al-4V, 316L, AlSi10Mg, IN718 live in four_alloy_materials.py.
+# pdas_A1 and sdas_B1 below: unused since P7a (2026-10-11; no sourced PDAS prefactor or SDAS B1); kept so no material
+# snapshot hash moves. The solver does not read them.
 SECONDARY_THERMOPHYSICAL_DB = {
     "Inconel 625": {
         "base": "Ni",
@@ -235,14 +238,58 @@ def regime_material_note(material_name: str) -> str:
 
 
 # Keyhole-porosity screen (proxy, not a porosity boundary; Zhao 2020 shows no single index cut exists).
+# P7a (2026-10-11): the level 30 no longer drives any verdict; it is an advisory ("unsourced screening threshold")
+# and the former do-not-print edge 35 is removed. The Fabbro onset ramp's full-weight point is the separate constant
+# FABBRO_ONSET_RAMP_FULL_AT so that demoting the porosity level does not read as demoting the ramp.
 POROSITY_SCREEN_NEGLIGIBLE_BELOW = 15.0
 POROSITY_SCREEN_HIGH_AT = 30.0
+FABBRO_ONSET_RAMP_FULL_AT = 30.0
 KEYHOLE_POROSITY_BASIS = ("Porosity unresolved; legacy screening level on the normalised enthalpy, independent of the "
                           "regime threshold. < 15: Zhao 2020 (doi 10.1126/science.abd1587) found no pore condition "
                           "below 15 (0/35) and its boundary minimum is 15.0; 0/35 observations is not evidence of "
-                          "safety. >= 30 is the legacy screen kept for verdict continuity, not a porosity boundary "
-                          "(Zhao 2020 stable keyholes up to dH/hs 62 at high speed). Keyhole mode (>= 20) does not "
-                          "imply porosity.")
+                          "safety. >= 30 is an unsourced screening threshold, a legacy porosity level kept as an "
+                          "advisory for continuity, not a porosity boundary (Zhao 2020 stable keyholes up to dH/hs 62 "
+                          "at high speed); since P7a it drives no verdict. Keyhole mode (>= 20) does not imply porosity.")
+# P7a: keyhole-mode basis served per alloy (the keyhole gate and regimeKeyholeCutBasis). A mode onset, not a porosity
+# boundary. King 2014 Conclusion (4) and Sec. 5.6: threshold 30 +/- 4 for 316L (50 um powder layer); Conclusions (1)
+# and (5): voids appear in keyhole mode and increase far above the threshold (a qualitative association). Cunningham
+# 2019 p.2: keyhole threshold and morphology by x-ray imaging. Zhao 2020 (Science 370, 1080): energy-density threshold
+# about 3.7 MJ/m2 below which no keyhole pores form, no pore condition below index 15, stable keyholes up to 62. Huang
+# 2022 (doi 10.1038/s41467-022-28694-x): the transition to unstable keyhole melting is alloy dependent (H/hm x Lth about
+# 8 +/- 3 for Ti-6Al-4V and 20 +/- 3 for Al7A77 in that paper's units).
+KEYHOLE_MODE_ONSET_STATEMENT = (
+    "keyhole mode onset, not a porosity boundary: King 2014 Conclusion (4) and Sec. 5.6 (30 +/- 4 for 316L, 50 um "
+    "powder layer) with Conclusions (1) and (5) (voids appear in keyhole mode and increase far above the threshold, a "
+    "qualitative association); Cunningham 2019 p.2 (keyhole threshold and morphology by x-ray imaging); Zhao 2020 "
+    "(Science 370, 1080: energy density threshold about 3.7 MJ/m2 below which no keyhole pores form, no pore condition "
+    "below index 15, stable keyholes up to 62); Huang 2022 (doi 10.1038/s41467-022-28694-x: the transition to unstable "
+    "keyhole melting is alloy dependent, H/hm x Lth about 8 +/- 3 for Ti-6Al-4V and 20 +/- 3 for Al7A77 in that "
+    "paper's units)")
+KEYHOLE_CUT_BASIS_316L = (
+    "cut 20: King 2014 30 +/- 4 converted to this convention by the pinned tools/lpbf_keyhole_benchmark.king_conversion: "
+    "22.2 (19.3 to 25.2), conditional on the app absorptivity 0.42 (index convention), T0 20 C and the app 316L "
+    "property set; King's printed density unit corrected to 7980 kg/m3")
+KEYHOLE_CUT_BASIS_TI64 = (
+    "cut 20: Cunningham 2019 Fig. 3A red line along speed, 17.3 to 20.0 in app units (a range along speed, not a "
+    "confidence interval)")
+KEYHOLE_CUT_BASIS_IN625 = (
+    "cut 13.6: fitted on 56 NIST mds2-2923 tracks; the PASSED held-out bracket places the onset in (12.67, 13.94]; "
+    "13.6 is the fit split point estimate")
+KEYHOLE_CUT_BASIS_TRANSFERRED = "cut 20: transferred from the 316L and Ti-6Al-4V bases, not derived for this alloy"
+
+
+def keyhole_cut_basis(material_name=None) -> str:
+    """Per-alloy keyhole-mode cut basis (P7a): the onset statement plus the alloy's own cut provenance."""
+    name = str(material_name or "").lower()
+    if _is_in625(name):
+        own = KEYHOLE_CUT_BASIS_IN625
+    elif "316" in name:
+        own = KEYHOLE_CUT_BASIS_316L
+    elif "ti-6al-4v" in name or "ti6al4v" in name or name.startswith("ti64"):
+        own = KEYHOLE_CUT_BASIS_TI64
+    else:
+        own = KEYHOLE_CUT_BASIS_TRANSFERRED
+    return f"{KEYHOLE_MODE_ONSET_STATEMENT}; {own}"
 KEYHOLE_DEPTH_BENCHMARK_NOTE = ("vs x-ray vapor-depression depths (keyhole benchmark 2026-10-07): under-predicts "
                                 "Ti-6Al-4V (median ratio 0.62 at 95 um, 0.12 at 140 um) and exceeds the measured "
                                 "316L melt depth in 176/677 Hofmann tracks; no single A(R) or ramp change fixes "
@@ -259,7 +306,10 @@ FABBRO_BASIS = ("Fabbro 2020 eq. 2 (A(R) P distributed by multiple reflection) w
                 "the keyhole threshold R = 1 and with R (Trapp 2017 Fig. 3a 316L 0.3 to 0.78; Deisenroth 2020 Fig. 7 "
                 "IN625 0.34 to 0.90; Fabbro 2020 Sec. 4.1 and A(1) about 0.6), so transition and keyhole depth from "
                 "this leg is biased low. m=2.4, n=3 fitted for 2<=Pe<=10 and served outside that band for every kernel "
-                "(see pecletInFitRange); uncited linear dH/hs onset ramp 15->30 (P2); k_s is the room-temperature solid "
+                "(see pecletInFitRange); unsourced linear dH/hs onset ramp 15 to 30 (the 15 reads Cunningham 2019 Fig. 3A, "
+                "the 30 is a legacy level; a sourced shape in other units exists: Gan 2021 Eq. 2 regime edges 1.4 and 6.0 "
+                "in Gan units, Naderi 2022 Eq. 16 and Table 3 for IN625 and IN718; replacement is P3); k_s is the "
+                "room-temperature solid "
                 "value (Fabbro's constants imply a high-temperature K; P2). Depth served as max(conduction isotherm "
                 "depth, this leg) for every kernel; " + KEYHOLE_DEPTH_BENCHMARK_NOTE)
 EFFECTIVE_ABSORPTIVITY_BASIS = ("flat absorptivity of the material authority for the conduction field (Eagar-Tsai 1983 "
@@ -282,8 +332,18 @@ ABSORPTION_MODEL_POWDER_RAYTRACE = "powder-raytrace"
 ABSORPTION_MODELS = (ABSORPTION_MODEL_FLAT, ABSORPTION_MODEL_POWDER_RAYTRACE)
 # thermalSlices sampler: "cpu" (default, every machine) or "warp" (float32 GPU sampler, opt-in only).
 THERMAL_SLICE_BACKENDS = ("cpu", "warp")
-DISTORTION_INDEX_BASIS = ("alloy/layer/preheat-only: E, alpha, nu, T_solidus - T_preheat and layer thickness; "
-                          "not evaluated from scan parameters (P, v, hatch)")
+# P7a (2026-10-11): stress and distortion are unavailable (G1 audit B08, B09; lead decision 4). The former
+# sigma_eff = 0.72 E alpha dT / (1 - nu) and index = sigma_eff (layer / 40 um) / 420 MPa were unsourced constants;
+# Mercelis and Kruth 2006 (Rapid Prototyping J. 12, 254) Sec. 2 assumes the stress of the newly added layer equals the
+# yield strength and supports a cap at yield only, and the authority yield values are unsourced wrought values.
+STRESS_UNAVAILABLE_REASON = ("unavailable: no sourced stress model (Mercelis and Kruth 2006 supports a yield cap only, "
+                             "and the yield values are unsourced)")
+LOF_MARGIN_BASIS = ("unsourced screening threshold 0.80; the only published analog is Harkin 2023 Eq. 11 and "
+                    "Conclusions, R_c^2 = 0.7 (R_c 0.83) for analytic Rosenthal geometry, Ti-6Al-4V on one machine; it "
+                    "differs and is not applied. One lack-of-fusion rule for both screens: the Tang unit criterion")
+DISTORTION_INDEX_BASIS = ("unavailable since P7a (2026-10-11): the former alloy/layer/preheat-only index "
+                          "0.72 E alpha dT / (1 - nu) x (layer / 40 um) / 420 MPa used unsourced constants and is "
+                          "not served; " + STRESS_UNAVAILABLE_REASON)
 
 
 def classify_enthalpy_regime(normalized_enthalpy: float, material_name=None) -> str:
@@ -864,7 +924,7 @@ def calculate_meltpool_physics(
     else:
         flow = marangoni_flow_direction(props["d_gamma_dT_N_mK"], float(sulfur_ppm))
         ma = {**flow, "marangoniNumber": None, "surfaceVelocity_m_s": None, "pecletMarangoni": None,
-              "surfaceVelocityDoi": MARANGONI_SURFACE_VELOCITY_DOI, "doi": "10.1016/j.ijheatmasstransfer.2020.120801"}
+              "surfaceVelocityDoi": MARANGONI_SURFACE_VELOCITY_DOI, "doi": None, "basis": MARANGONI_BAND_BASIS}
         marangoni_number = None
         marangoni_unavailable_reason = MARANGONI_UNAVAILABLE_REASON + str(peak_unavailable_reason)
 
@@ -878,14 +938,19 @@ def calculate_meltpool_physics(
     w_over_h = w_melt_um / h_um
     d_over_t = d_melt_um / t_um
 
+    # P7a (2026-10-11): one lack-of-fusion rule for both screens, the Tang unit criterion (Harkin 2023 Eq. 5 quoting
+    # Tang, Pistorius and Beuth 2017): Pass or Fail only. The former 0.80 "Warning" band is an unsourced screening
+    # threshold reported as the margin advisory flag lackOfFusionMarginAdvisory (never a status, never a verdict).
+    lof_margin_advisory = bool(0.80 < lof_criterion_val <= 1.0)
     if lof_criterion_val > 1.0:
         lof_risk = "Severe Lack of Fusion (Tang index > 1 — inter-track/layer unmelt)"
         lof_status = "Fail"
-    elif lof_criterion_val > 0.80:
-        lof_risk = "Marginal Overlap (Tang index approaching 1)"
-        lof_status = "Warning"
+    elif lof_margin_advisory:
+        lof_risk = ("Full Fusion Bonding (Tang (h/W)^2+(t/D)^2 ≤ 1.0); margin advisory: index above 0.80, an unsourced "
+                    "screening threshold")
+        lof_status = "Pass"
     else:
-        lof_risk = "Full Fusion Bonding (Tang (h/W)^2+(t/D)^2 ≤ 0.80)"
+        lof_risk = "Full Fusion Bonding (Tang (h/W)^2+(t/D)^2 ≤ 1.0)"
         lof_status = "Pass"
 
     # B) Balling / track-instability screen (lpbf_defect_diagnostics.balling_screen): Eagar–Tsai liquidus
@@ -897,10 +962,11 @@ def calculate_meltpool_physics(
     else:
         et_extent = _eagar_tsai_companion(T_preheat, P_laser, eta_base, k_th, alpha_th, rho, cp, r_beam, d_beam,
                                           v_scan, T_liq, fabbro["depth_m"], normalized_enthalpy)
-    balling = balling_screen(*et_extent)
+    balling = balling_screen(*et_extent, material_name=material_name)
     if balling["band"] == "high":
         balling_risk = (f"High Balling Risk (Eagar-Tsai L/W {balling['lengthToWidth']:.2f} > "
-                        f"{balling['highThreshold']}; empirical 316L-calibrated screen)")
+                        f"{balling['highThreshold']}; empirical 316L-calibrated screen, unsourced screening threshold, "
+                        "advisory)")
     elif balling["band"] == "moderate":
         balling_risk = (f"Moderate (Eagar-Tsai L/W {balling['lengthToWidth']:.2f} > {balling['moderateThreshold']:.2f}, "
                         "Gusarov/Yadroitsev bound; advisory)")
@@ -921,10 +987,11 @@ def calculate_meltpool_physics(
         x_rear=x_rear,
         search_depth=search_depth,
         r_beam=r_beam,
-        sdas_B1=float(props.get("sdas_B1", 40.0)),
         material_name=material_name,
         depth_from_keyhole_leg=bool(fabbro["depth_m"] > d_iso),
     )
+    # P7a: pdas_A1 and sdas_B1 of the property set are no longer passed (unused since P7a; the keys stay in the
+    # authority so no material hash moves). PDAS is the sourced Ni-Nb band or null; SDAS is null (no sourced B1).
 
     def _opt(value, digits):
         return None if value is None else round(float(value), digits)
@@ -937,18 +1004,10 @@ def calculate_meltpool_physics(
     pdas_um = sol["primaryDendriteArmSpacing_PDAS_um"]
     sdas_um = sol["secondaryDendriteArmSpacing_SDAS_um"]
 
-    # 11. Residual Stress & Recoater Crash Upper Bound (no artificial 1200 MPa ceiling)
-    e_gpa = props["youngs_modulus_GPa"]
-    alpha_exp = props["thermal_expansion_1_K"]
-    nu = props["poissons_ratio"]
-    delta_t_stress = max(10.0, T_sol - T_preheat)
-    elastic_stress_max_mpa = (e_gpa * 1e3 * alpha_exp * delta_t_stress) / max(0.01, 1.0 - nu)
-    effective_residual_stress_mpa = elastic_stress_max_mpa * 0.72
-    distortion_index = (effective_residual_stress_mpa * (float(layer_thickness_um) / 40.0)) / 420.0
-    # The index has no scan-dependent term (alloy, preheat and layer thickness only), so no recoater
-    # High/Moderate/Low band is assigned from it here; the value itself is unchanged.
-    recoater_risk = (f"Not evaluated from scan parameters (alloy/layer/preheat-only distortion index "
-                     f"{distortion_index:.2f})")
+    # 11. Residual stress and distortion: unavailable since P7a (2026-10-11, G1 audit B08/B09). The former
+    # 0.72 E alpha dT / (1 - nu) and the index (layer / 40 um) / 420 MPa were unsourced; Mercelis and Kruth 2006 Sec. 2
+    # supports a cap at the yield strength only, and the authority yield values are unsourced. Nothing is computed.
+    recoater_risk = STRESS_UNAVAILABLE_REASON
 
     # 12. Geometric 2D contours from liquidus isolines, scaled by depth / d_iso (1 below the Fabbro leg, e_kh / d_iso
     # where the leg exceeds the isotherm depth)
@@ -1162,6 +1221,7 @@ def calculate_meltpool_physics(
             "regimeBasis": REGIME_THRESHOLD_BASIS,
             "regimeKeyholeThreshold": regime_keyhole_cut(material_name),
             "regimeMaterialNote": regime_material_note(material_name),
+            "regimeKeyholeCutBasis": keyhole_cut_basis(material_name),
             "extentStatus": extent_status,
             "extentNote": extent_note,
             "peakOffset_um": round(x_peak * 1e6, 1),
@@ -1199,6 +1259,7 @@ def calculate_meltpool_physics(
             "marangoniUnavailableReason": marangoni_unavailable_reason,
             "aspectNote": ma["aspectNote"],
             "doi": ma["doi"],
+            "basis": ma.get("basis", MARANGONI_BAND_BASIS),
         },
         "hydrodynamicsAndRecoil": {
             "peakTemperature_C": _opt(t_peak_C, 1),
@@ -1242,10 +1303,13 @@ def calculate_meltpool_physics(
             "keyholePorosityResolved": False,
             "ballingInstabilityRisk": balling_risk,
             "ballingScreen": balling,
+            "lackOfFusionMarginAdvisory": lof_margin_advisory,
+            "lackOfFusionMarginBasis": LOF_MARGIN_BASIS,
             "recoaterCrashRisk": recoater_risk,
-            "effectiveResidualStress_MPa": round(effective_residual_stress_mpa, 1),
-            "distortionIndex": round(distortion_index, 2),
+            "effectiveResidualStress_MPa": None,
+            "distortionIndex": None,
             "distortionIndexBasis": DISTORTION_INDEX_BASIS,
+            "stressUnavailableReason": STRESS_UNAVAILABLE_REASON,
         },
         "solidificationKinetics": {
             "modelId": SOLIDIFICATION_MODEL_ID,
@@ -1263,7 +1327,12 @@ def calculate_meltpool_physics(
             "g_over_r_ratio": _opt(g_over_r, 0),
             "microstructureMorphology": morphology,
             "primaryDendriteArmSpacing_PDAS_um": _opt(pdas_um, 2),
+            "pdasBand_um": sol.get("pdasBand_um"),
+            "pdasBasis": sol.get("pdasBasis"),
+            "pdasOutOfRange": sol.get("pdasOutOfRange"),
+            "pdasUnavailableReason": sol.get("pdasUnavailableReason"),
             "secondaryDendriteArmSpacing_SDAS_um": _opt(sdas_um, 2),
+            "sdasUnavailableReason": sol.get("sdasUnavailableReason"),
             "phaseTransformation": sol.get("phaseTransformation"),
             "frontPointCount": sol.get("frontPointCount"),
             "tail": sol.get("tail"),

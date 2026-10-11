@@ -55,7 +55,10 @@ class ScreenFunction(unittest.TestCase):
             self.assertEqual(s["modelId"], BALLING_SCREEN_MODEL_ID)
             self.assertFalse(s["experimentalValidation"])
             json.dumps(s, allow_nan=False)
-        self.assertEqual(balling_screen(600.0, 100.0, 40.0, "computed")["verdictEffect"], "risky")
+        # P7a (2026-10-11): High is an advisory (unsourced screening threshold), never risky; 316L only when labelled.
+        self.assertEqual(balling_screen(600.0, 100.0, 40.0, "computed")["verdictEffect"], "advisory")
+        self.assertEqual(balling_screen(600.0, 100.0, 40.0, "computed", material_name="Inconel 718")["band"], "moderate")
+        self.assertEqual(balling_screen(600.0, 100.0, 40.0, "computed", material_name="316L Stainless Steel")["band"], "high")
         self.assertEqual(balling_screen(450.0, 100.0, 40.0, "computed")["verdictEffect"], "advisory")
         self.assertEqual(balling_screen(300.0, 100.0, 40.0, "computed")["verdictEffect"], "none")
 

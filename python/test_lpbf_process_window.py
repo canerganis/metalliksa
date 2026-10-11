@@ -99,11 +99,14 @@ class ProcessWindowTests(unittest.TestCase):
     def test_parameter_independent_advisories_listed_once(self):
         adv = self.default["gridAdvisories"]
         self.assertTrue(adv)
-        from lpbf_build_job_solver import PARAMETER_INDEPENDENT_ADVISORY_NOTE
+        from lpbf_build_job_solver import STRESS_GATES_NOT_EVALUATED_NOTE
+        # P7a (2026-10-11): recoater and distortion are not evaluated in every cell (no sourced stress model).
+        self.assertEqual([a["gate"] for a in adv], ["recoater", "distortion"])
         for a in adv:
-            self.assertEqual(a["note"], PARAMETER_INDEPENDENT_ADVISORY_NOTE)
+            self.assertEqual(a["note"], STRESS_GATES_NOT_EVALUATED_NOTE)
             self.assertEqual(a["cells"], 121)
             self.assertTrue(all(a["gate"] not in c["advisoryGates"] for c in self.default["cells"]))
+            self.assertTrue(all(a["gate"] in c["unavailableGates"] for c in self.default["cells"]))
 
     def test_validation_refusals(self):
         nan = float("nan")

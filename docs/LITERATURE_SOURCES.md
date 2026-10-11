@@ -73,6 +73,22 @@ NIST data are public data products, not necessarily journal articles. The datase
 - **NIST access review (2026-10-02).** Audit/readme record, not a primary measurement source. Repository source: `data/benchmark/nist-access-review-2026-10-02/README.md`.
 - **Additional AM-Bench / public benchmark records.** Dataset-specific attribution records are kept beside benchmark data under `data/benchmark/`; consult those records for license and exact file lineage. The general index is `data/benchmark/README.md`.
 
+## Primaries not in the library (quoted via a secondary; P7a, 2026-10-11)
+
+These works are cited by the implementation but are not in the paper library and were not read; each is quoted only through the named secondary, and no DOI was added or edited for them (G1 source sweep section 1.3).
+
+- **Rosenthal, D. (1946).** Moving point-source conduction solution. Not in the library, quoted via Eagar & Tsai 1983 and the repository's `python/lpbf_thermal_solver.py` comments.
+- **Goldak, J.; Chakravarti, A.; Bibby, M. (1984).** Double-ellipsoid heat source. Not in the library, quoted via the retained screening source notes and the OpenFOAM backend listing above.
+- **Tang, M.; Pistorius, P. C.; Beuth, J. L. (2017).** Lack-of-fusion criterion `(h/W)^2 + (t/D)^2 <= 1` (Addit. Manuf. 14, 39; paywalled). Not in the library, quoted via Harkin et al. 2023 Eq. 5 (`harkin2023_lof_hatch_spacing.pdf`), which also finds the unit value problematic with analytic geometry (Eq. 9 to 11, Conclusions).
+- **Knight, C. J. (1979).** Knudsen-layer recoil relation. Not in the library; the former recoil value is no longer served (P6).
+- **Hunt, J. D. (1984).** Columnar-to-equiaxed and G/R morphology criterion. Not in the library, quoted via Ghosh et al. 2017 (Eq. 7) for the PDAS band member and via the repository's screening bands.
+- **Hunt, J. D.; Lu, S.-Z. (1996).** Primary spacing model. Not in the library; the former served prefactor was unsourced and is not served since P7a.
+- **Kirkwood, D. H. (1985).** Secondary arm spacing exponent form `λ2 ∝ Ṫ^(-1/3)`. Not in the library; no prefactor is served since P7a.
+- **Ahmed, T.; Rack, H. J. (1998).** Ti-6Al-4V beta to alpha-prime cooling-rate criterion (410 K/s). Not in the library, quoted via the repository's phase note.
+- **Gaumann, M. et al. (2001).** CET constants. Not in the library, quoted via the G/R solidification lane records.
+- **Heiple, C. R.; Roper, J. R. (1982, 1983).** Surface-active element inversion of `dγ/dT` (Welding J. 61, 97s). Not retrievable; the 30 to 60 ppm S band, the linear blend and the 15 ppm default are unsourced screening values (`marangoni_screening.BAND_BASIS`); the DOI formerly cited next to them (10.1016/j.ijheatmasstransfer.2020.120801) resolved to an unrelated paper and was removed.
+- **Mercelis, P.; Kruth, J.-P. (2006).** Residual stresses in SLS/SLM (Rapid Prototyping J. 12, 254; `mercelis2006_residual_stresses_sls_slm_manuscript.pdf` in the library). Sec. 2 assumes the stress of the newly added layer equals the yield strength (a cap, not a magnitude; experiments 316L only), which is why the stress and distortion numbers are unavailable since P7a.
+
 ## Repository provenance and open metadata
 
 - The date-stamped research documents consulted for cross-checking are `docs/LPBF_BALLING_CALIBRATION_2026-10-07.md`, `docs/LPBF_CALIBRATION_SCORECARD_2026-10-07.md`, `docs/LPBF_CALIBRATION_SCORECARD_v2_2026-10-07.md`, `docs/LPBF_CALIBRATION_V2_PREREGISTRATION_2026-10-07.md`, `docs/LPBF_KEYHOLE_BENCHMARK_2026-10-07.md`, `docs/LPBF_KEYHOLE_LITERATURE_NOTES_2026-10-07.md`, `docs/LPBF_KEYHOLE_THRESHOLD_EVIDENCE_2026-10-07.md`, and `docs/LPBF_SCHEIL_LAVES_2026-10-07.md`. Their cited sources should be interpreted with the relevant dataset/module citation above; they are evidence notes, not additional publications by themselves.

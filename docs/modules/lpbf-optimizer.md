@@ -75,10 +75,10 @@ Background work: none; resources: fetch.
 - `python/lpbf_bayesian_optimizer.py::run_bayesian_optimization`
 - `python/lpbf_bayesian_optimizer.py:307-334#nIterations`
 - `src/components/LpbfProcessWindowMap.tsx::LpbfProcessWindowMap`
-- `src/services/pythonComputationService.ts:851-855#lpbf-process-window`
+- `src/services/pythonComputationService.ts:861-865#lpbf-process-window`
 - `routes/physics.ts:87-87#60000`
 - `python/lpbf_process_window.py::run_process_window`
-- `python/lpbf_process_window.py:35-35#MAX_CELLS = 225`
+- `python/lpbf_process_window.py:37-37#MAX_CELLS = 225`
 
 ## Tests
 

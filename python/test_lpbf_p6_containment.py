@@ -294,7 +294,9 @@ class BuildJobNullInputs(unittest.TestCase):
         from lpbf_build_job_solver import compose_verdict
         th = run(UNSOURCED, 150.0, 1200.0)
         base = compose_verdict(th, "in718")
-        self.assertEqual(base["notEvaluatedGates"], [])
+        # P7a (2026-10-11): the stress gates are always not-evaluated (no sourced stress model); nothing else is.
+        self.assertEqual(base["notEvaluatedGates"], ["recoater", "distortion"])
+        self.assertNotEqual(base["verdict"], "inconclusive")
         nulled = copy.deepcopy(th)
         nulled["defectDiagnostics"]["tangIndex_hW_tD"] = None
         nulled["defectDiagnostics"]["lackOfFusionOverlapIndex"] = None

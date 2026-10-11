@@ -77,6 +77,7 @@ IN625_VALIDATION_PROPS = {
     "thermal_expansion_1_K": 13.1e-6,
     "youngs_modulus_GPa": 205.0,
     "poissons_ratio": 0.29,
+    # unused since P7a (2026-10-11): the solver reads neither; kept so the AM-Bench property hash does not move.
     "pdas_A1": 80.0,
     "sdas_B1": 42.0,
 }

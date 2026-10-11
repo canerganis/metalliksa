@@ -62,6 +62,19 @@ export const kineticsLine = (label: string, value: number | null | undefined, un
     ? `** ${label}: ${value} ${unit}`
     : `** ${label}: unavailable${reason ? ` (${reason})` : ""}`;
 
+/** P7a: the PDAS scalar is null; the sourced Ni-Nb band (Ghosh 2017) is written when served, else the reason. */
+export const pdasBandLine = (kin: { primaryDendriteArmSpacing_PDAS_um?: number | null; pdasBand_um?: { hunt: number; kurzFisher: number } | null; pdasUnavailableReason?: string | null; unavailableReason?: string | null }): string => {
+  const band = kin.pdasBand_um;
+  if (band && Number.isFinite(band.hunt) && Number.isFinite(band.kurzFisher)) {
+    return `** Primary Spacing (PDAS band, Ni-Nb model alloy, Ghosh 2017): ${Math.min(band.hunt, band.kurzFisher).toFixed(3)} to ${Math.max(band.hunt, band.kurzFisher).toFixed(3)} um`;
+  }
+  if (typeof kin.primaryDendriteArmSpacing_PDAS_um === "number" && Number.isFinite(kin.primaryDendriteArmSpacing_PDAS_um)) {
+    return `** Primary Spacing (PDAS, legacy payload): ${kin.primaryDendriteArmSpacing_PDAS_um} um`;
+  }
+  const reason = kin.pdasUnavailableReason ?? kin.unavailableReason;
+  return `** Primary Spacing (PDAS): unavailable${reason ? ` (${reason})` : ""}`;
+};
+
 export interface GoldakCaeCard {
   filename: string;
   text: string;
@@ -170,7 +183,7 @@ export function buildGoldakCaeCard(
     kineticsLine("G_avg", kin.thermalGradient_G_K_m, "K/m", kin.unavailableReason),
     kineticsLine("R_solid", kin.solidificationRate_R_m_s, "m/s", kin.unavailableReason),
     kineticsLine("Cooling Rate", kin.coolingRate_K_s, "K/s", kin.unavailableReason),
-    kineticsLine("Primary Spacing (PDAS)", kin.primaryDendriteArmSpacing_PDAS_um, "um", kin.unavailableReason),
+    pdasBandLine(kin),
     RULE,
   );
 

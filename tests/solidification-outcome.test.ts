@@ -47,6 +47,10 @@ test("a block without status, null, or non-finite numbers is an error, not a res
   assert.deepEqual(solidificationOutcome(null), { error: "legacy result without status" });
   assert.ok("error" in solidificationOutcome(as({ ...BLOCKS.available_in718_150_1200, G_K_m: null })));
   assert.ok("error" in solidificationOutcome(as({ ...BLOCKS.available_in718_150_1200, PDAS_um: Number.NaN })));
+  // P7a: PDAS and SDAS are null in every served block (the sourced band is pdasBand_um); null is not an error.
+  assert.equal(BLOCKS.available_in718_150_1200.PDAS_um, null);
+  assert.equal(BLOCKS.available_in718_150_1200.SDAS_um, null);
+  assert.ok("result" in solidificationOutcome(as({ ...BLOCKS.available_in718_150_1200, PDAS_um: null, SDAS_um: null })));
 });
 
 test("the Lab routes every result through the guard", () => {

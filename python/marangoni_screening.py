@@ -6,8 +6,9 @@ Heiple & Roper, *Welding Journal* 61 (1982) / follow-on 1983: surface-active S (
 flips ∂γ/∂T and therefore the surface-flow direction — outward (wide, shallow) when
 ∂γ/∂T < 0, inward (narrow, deep) when ∂γ/∂T > 0.
 
-Inversion band 30–60 ppm S is the welding / LPBF review range (Heiple–Roper;
-Ebrahimi et al., *Int. J. Heat Mass Transfer* 2021, DOI 10.1016/j.ijheatmasstransfer.2020.120801).
+Inversion band 30–60 ppm S: Heiple and Roper 1982 (Welding J. 61, 97s) and 1983 are not retrievable; no
+verifiable source for the band edges, the linear blend across them and the 15 ppm default. They are unsourced
+screening values (P7a, 2026-10-11; the DOI formerly cited here resolved to an unrelated paper and was removed).
 Alloy ∂γ/∂T comes from `four_alloy_materials.py`. This module does **not** refit W/D.
 
 Surface velocity: order-of-magnitude estimate of DebRoy & David, *Rev. Mod. Phys.* 67 (1995) 85,
@@ -23,6 +24,9 @@ MODEL_ID = "marangoni-heiple-v1"
 SULFUR_OUTWARD_PPM = 30.0
 SULFUR_INWARD_PPM = 60.0
 SURFACE_VELOCITY_DOI = "10.1103/RevModPhys.67.85"
+BAND_BASIS = ("unsourced screening values: inversion band 30 to 60 ppm S, the linear blend across it and the 15 ppm "
+              "default; Heiple and Roper 1982 (Welding J. 61, 97s) and 1983 are not retrievable and no verifiable "
+              "source for the band edges exists (P7a)")
 
 
 def debroy_david_surface_velocity_m_s(
@@ -104,5 +108,6 @@ def marangoni_screening(
         "pecletMarangoni": float(Pe_Ma),
         "geometrySource": "thermal",
         "aspectNote": flow["aspectNote"],
-        "doi": "10.1016/j.ijheatmasstransfer.2020.120801",
+        "doi": None,
+        "basis": BAND_BASIS,
     }

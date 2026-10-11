@@ -19,15 +19,20 @@ test("available (conduction-field interface): numbers, correlation names, proven
   const t = text(markup);
   assert.match(markup, /data-micro-status="available"/);
   // P6 (2026-10-11): the available fixture is the conduction point 150 W / 1200 mm/s (the former 285 W / 960 mm/s
-  // point serves null G/R because its depth comes from the Fabbro keyhole leg): PDAS/SDAS 0.38/0.29 um.
-  assert.ok(t.includes("0.38") && t.includes("0.29"), t);
-  assert.ok(t.includes("Hunt–Lu 1996"), t);
+  // point serves null G/R because its depth comes from the Fabbro keyhole leg). P7a: the PDAS scalar and SDAS are
+  // null; this IN718 point lies outside the Ghosh 2017 validity range, so the PDAS tile shows the reason, not a number.
+  assert.equal(BLOCKS.available_in718_150_1200.PDAS_um, null);
+  assert.equal(BLOCKS.available_in718_150_1200.SDAS_um, null);
+  assert.ok(!t.includes("Hunt–Lu 1996"), t);
+  assert.ok(t.includes("PDAS BAND") || t.includes("PDAS band"), t);
+  assert.ok(t.includes(BLOCKS.available_in718_150_1200.pdasBand_um ? "Ni-Nb model alloy, Ghosh 2017" : "Ghosh 2017 validity range"), t);
+  assert.ok(t.includes("no sourced SDAS prefactor"), t);
   // modelId (solidification-front-v1) and gradientSource (conduction-field-interface) are both shown once.
   assert.equal(t.split("solidification-front-v1").length - 1, 1, t);
   assert.equal(t.split("conduction-field-interface").length - 1, 1, t);
   assert.match(markup, /data-micro-provenance/);
   assert.ok(t.includes("Source: solidification-front-v1 · conduction-field-interface"), t);
-  assert.ok(t.includes("Kirkwood 1985") && !t.includes("cells have no secondary arms"), t);
+  assert.ok(!t.includes("cells have no secondary arms"), t);
   assert.ok(t.includes("median of G·R over front samples"), t);
   assert.ok(t.includes("Columnar dendritic (Hunt G/R screening)"), t);
   assert.doesNotMatch(markup, /data-micro-note="regime"/);

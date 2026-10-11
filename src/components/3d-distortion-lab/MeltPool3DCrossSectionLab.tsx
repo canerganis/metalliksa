@@ -57,6 +57,7 @@ import { STRESS_PROXY_LABEL, STRESS_PROXY_UNIT_NOTE } from "../../utils/residual
 import { resolveDepthBiasWarning } from "../../utils/depthBiasWarning";
 import { PublishedTrackBands } from "../PublishedTrackBands";
 import { DISTORTION_HEURISTIC_NOTE } from "../../utils/distortionHeuristic";
+import { pdasBandText } from "../../utils/pdasBandText";
 
 export interface MeltPool3DCrossSectionProps {
   initialPower_W?: number;
@@ -1257,12 +1258,12 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
                   <span className="font-bold text-sky-300">{typeof pyResult.solidificationKinetics.g_over_r_ratio === "number" ? `${pyResult.solidificationKinetics.g_over_r_ratio.toExponential(2)} K·s/m²` : "n/a"}</span>
                 </div>
                 <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">PDAS (Hunt–Lu):</span>
-                  <span className="font-bold text-purple-300">{typeof pyResult.solidificationKinetics.primaryDendriteArmSpacing_PDAS_um === "number" ? `${pyResult.solidificationKinetics.primaryDendriteArmSpacing_PDAS_um} μm` : "n/a"}</span>
+                  <span className="text-slate-400">PDAS band (Ghosh 2017, Ni-Nb):</span>
+                  <span className="font-bold text-purple-300 text-right max-w-[58%]">{pdasBandText(pyResult.solidificationKinetics)}</span>
                 </div>
                 <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">SDAS (Kirkwood):</span>
-                  <span className="font-bold text-fuchsia-300">{typeof pyResult.solidificationKinetics.secondaryDendriteArmSpacing_SDAS_um === "number" ? `${pyResult.solidificationKinetics.secondaryDendriteArmSpacing_SDAS_um} μm` : "n/a"}</span>
+                  <span className="text-slate-400">SDAS:</span>
+                  <span className="font-bold text-fuchsia-300 text-right max-w-[58%]">{typeof pyResult.solidificationKinetics.secondaryDendriteArmSpacing_SDAS_um === "number" ? `${pyResult.solidificationKinetics.secondaryDendriteArmSpacing_SDAS_um} μm` : `n/a (${pyResult.solidificationKinetics.sdasUnavailableReason ?? "no sourced SDAS prefactor"})`}</span>
                 </div>
                 <div className="flex justify-between py-0.5 border-b border-slate-800/60">
                   <span className="text-slate-400">Predicted Microstructure:</span>
@@ -1313,7 +1314,7 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
                 </div>
                 <div className="flex items-center justify-between p-1.5 bg-[#050810] rounded-lg border border-slate-800">
                   <span className="text-slate-300" title={STRESS_PROXY_UNIT_NOTE}>{STRESS_PROXY_LABEL}:</span>
-                  <span className="font-bold text-amber-300">{pyResult.defectDiagnostics.effectiveResidualStress_MPa} MPa-eq.</span>
+                  <span className="font-bold text-amber-300 text-right max-w-[58%]">{typeof pyResult.defectDiagnostics.effectiveResidualStress_MPa === "number" ? `${pyResult.defectDiagnostics.effectiveResidualStress_MPa} MPa-eq.` : `n/a (${pyResult.defectDiagnostics.stressUnavailableReason ?? "no sourced stress model"})`}</span>
                 </div>
                 <p data-testid="distortion-heuristic-note" className="text-[10px] leading-snug text-slate-500">
                   {DISTORTION_HEURISTIC_NOTE}

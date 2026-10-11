@@ -36,7 +36,8 @@ import { isComputedMeltPoolExtent, meltPoolExtentInfo } from "../../utils/meltPo
 import { BuildJobKineticsPanel } from "./BuildJobKineticsPanel";
 import { MachineTileLine } from "./MachineTileLine";
 import { BuildJobMicrostructurePanel } from "./BuildJobMicrostructurePanel";
-import { stressProxyPresentation } from "../../utils/residualStressYieldCheck";
+import { STRESS_PROXY_LABEL, stressProxyPresentation } from "../../utils/residualStressYieldCheck";
+import { STRESS_UNAVAILABLE_NOTE } from "../../utils/distortionHeuristic";
 import { peakTemperatureBasisLabel } from "../../utils/peakTemperatureDisplay";
 import { PublishedTrackBands } from "../PublishedTrackBands";
 
@@ -456,7 +457,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
                 label="ΔH/hₛ"
                 value={keyholeNotEvaluated ? "not evaluated" : String(thermal.processParameters.normalizedEnthalpy)}
                 ok={keyholeGateOk(keyholeGateStatus)}
-                hint={keyholeNotEvaluated ? keyholeGate?.reason ?? "keyhole gate input is null" : "porosity unresolved: legacy screen ≥ 30 · regime keyhole ≥ 20 (provisional)"}
+                hint={keyholeNotEvaluated ? keyholeGate?.reason ?? "keyhole gate input is null" : "regime keyhole-mode cut 20 (13.6 IN625) drives risky · level 30 is an advisory (unsourced) · porosity unresolved"}
               />
               <Metric
                 label="P–v literature"
@@ -525,13 +526,14 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
               <div className="grid grid-cols-2 gap-2">
                 <Metric
                   label="Distortion screening index"
-                  value={thermal.defectDiagnostics.distortionIndex.toFixed(2)}
-                  ok={thermal.defectDiagnostics.distortionIndex < 0.65}
-                  hint="Screening threshold < 0.65"
+                  value={typeof thermal.defectDiagnostics.distortionIndex === "number" ? thermal.defectDiagnostics.distortionIndex.toFixed(2) : "n/a"}
+                  ok={typeof thermal.defectDiagnostics.distortionIndex === "number" ? thermal.defectDiagnostics.distortionIndex < 0.65 : null}
+                  hint={typeof thermal.defectDiagnostics.distortionIndex === "number" ? "legacy payload: screening threshold < 0.65" : (thermal.defectDiagnostics.stressUnavailableReason ?? STRESS_UNAVAILABLE_NOTE)}
                 />
                 <StressProxyMetric
                   stress_MPa={thermal.defectDiagnostics.effectiveResidualStress_MPa}
                   yieldStrength_MPa={specimen.yieldStrength_25C_MPa}
+                  reason={thermal.defectDiagnostics.stressUnavailableReason}
                 />
                 <Metric
                   label="Peak T (°C)"
@@ -542,7 +544,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
                 <Metric label="Preheat (°C)" value={String(lpbf.preheatTemp_C)} ok={lpbf.preheatTemp_C >= 80} />
               </div>
               <p className="text-[10px] text-slate-500">
-                Research screening only. The stress value is an elastic/inherent-strain proxy, not a resolved or measured residual-stress field. Plastic relaxation and mechanical equilibrium are unresolved; this is not a part acceptance criterion.
+                Research screening only. Since P7a (2026-10-11) no stress or distortion number is served: {STRESS_UNAVAILABLE_NOTE} This is not a part acceptance criterion.
               </p>
             </>
           ) : (
@@ -681,7 +683,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
 function ballingHint(screen: { lengthToWidth: number | null; band: string | null } | undefined): string {
   if (!screen) return "Eagar–Tsai L/W screen not returned";
   if (screen.band === null || screen.lengthToWidth === null) return "Eagar–Tsai extent not computed";
-  return `Eagar–Tsai L/W ${screen.lengthToWidth.toFixed(2)} · High > 5.5 (316L-calibrated) · Moderate advisory > 3.85`;
+  return `Eagar–Tsai L/W ${screen.lengthToWidth.toFixed(2)} · High > 5.5 advisory (316L only, unsourced threshold) · Moderate advisory > 3.85`;
 }
 
 function shortRisk(s: string): string {
@@ -841,7 +843,11 @@ const Metric: React.FC<{ label: string; value: string; ok?: boolean | null; hint
 );
 
 /** Stress proxy vs 0.7 Rp0.2: pass/fail only with a real yield strength, otherwise explicitly unavailable. */
-export const StressProxyMetric: React.FC<{ stress_MPa: number; yieldStrength_MPa: number | null | undefined }> = ({ stress_MPa, yieldStrength_MPa }) => {
+export const StressProxyMetric: React.FC<{ stress_MPa: number | null | undefined; yieldStrength_MPa: number | null | undefined; reason?: string | null }> = ({ stress_MPa, yieldStrength_MPa, reason }) => {
+  if (typeof stress_MPa !== "number" || !Number.isFinite(stress_MPa)) {
+    // P7a: the stress proxy is not served (null); show the reason, no number, no pass/fail.
+    return <Metric label={STRESS_PROXY_LABEL} value="n/a" ok={null} hint={reason ?? STRESS_UNAVAILABLE_NOTE} />;
+  }
   const p = stressProxyPresentation(stress_MPa, yieldStrength_MPa);
   return <Metric label={p.label} value={`${stress_MPa} MPa-eq.`} ok={p.check.ok} hint={p.hint} />;
 };

@@ -100,7 +100,7 @@ class TestBayesianOptimizerHonesty(unittest.TestCase):
         res = bo.run_bayesian_optimization("in718", n_iter=2, n_warmup=1)
         self.assertTrue(res["success"])
         keys = {"blockingGates", "riskGates", "advisoryGates", "reasons", "extentStatus",
-                "normalizedEnthalpy", "aspectRatio_L_over_W", "keyholeRisk", "keyholeHigh",
+                "normalizedEnthalpy", "aspectRatio_L_over_W", "keyholeRisk", "keyholeHigh", "keyholeMode",
                 "ballingBand", "ballingLengthToWidthEagarTsai"}
         for it in res["iterations"]:
             d = it["diagnostics"]

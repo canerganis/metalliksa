@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { keyholeMeshForBeam, missedPowerWarning } from "../src/components/KeyholeRaytracingLab";
-import { DISTORTION_HEURISTIC_CONSTANTS, DISTORTION_HEURISTIC_NOTE } from "../src/utils/distortionHeuristic";
+import { DISTORTION_HEURISTIC_NOTE, STRESS_UNAVAILABLE_NOTE, stressValueText } from "../src/utils/distortionHeuristic";
 
 const read = (path: string) => readFileSync(resolve(import.meta.dirname, "..", path), "utf8");
 
@@ -13,18 +13,20 @@ test("solidification status dot pulses only while loading", () => {
   assert.doesNotMatch(src, /isLoading \? '' : 'animate-pulse'/);
 });
 
-test("distortion heuristic and keyhole missed power are labelled", () => {
-  assert.equal(DISTORTION_HEURISTIC_CONSTANTS.stressKnockdown, 0.72);
-  assert.match(DISTORTION_HEURISTIC_NOTE, /not a stress or distortion solve/);
-  assert.match(DISTORTION_HEURISTIC_NOTE, /uncited constants/);
-  assert.match(DISTORTION_HEURISTIC_NOTE, /ΔT = max\(10 K, T_solidus − T_preheat\)/);
-  assert.match(DISTORTION_HEURISTIC_NOTE, /max\(0\.01, 1 − ν\)/);
-  assert.equal(DISTORTION_HEURISTIC_CONSTANTS.deltaTFloor_K, 10);
-  // Pin the constants to the frozen solver source so the label cannot drift from it.
+test("stress and distortion are labelled unavailable (P7a) and keyhole missed power is labelled", () => {
+  // P7a (2026-10-11): the 0.72 / 40 um / 420 MPa heuristic is gone; the note states the unavailability and its source.
+  assert.equal(DISTORTION_HEURISTIC_NOTE, STRESS_UNAVAILABLE_NOTE);
+  assert.match(STRESS_UNAVAILABLE_NOTE, /no sourced stress model/);
+  assert.match(STRESS_UNAVAILABLE_NOTE, /Mercelis and Kruth 2006/);
+  assert.match(STRESS_UNAVAILABLE_NOTE, /no longer served/);
+  assert.equal(stressValueText(null, "r"), "n/a (r)");
+  assert.equal(stressValueText(12.5), "12.5");
+  // Pin to the frozen solver source: the formula is deleted and the served values are null.
   const solver = read("python/lpbf_thermal_solver.py");
-  assert.match(solver, /delta_t_stress = max\(10\.0, T_sol - T_preheat\)/);
-  assert.match(solver, /max\(0\.01, 1\.0 - nu\)/);
-  assert.match(solver, /elastic_stress_max_mpa \* 0\.72/);
+  assert.doesNotMatch(solver, /elastic_stress_max_mpa \* 0\.72/);
+  assert.doesNotMatch(solver, /delta_t_stress = max\(10\.0, T_sol - T_preheat\)/);
+  assert.match(solver, /"effectiveResidualStress_MPa": None/);
+  assert.match(solver, /"distortionIndex": None/);
   assert.match(read("src/components/3d-distortion-lab/MeltPool3DCrossSectionLab.tsx"), /DISTORTION_HEURISTIC_NOTE/);
   const keyhole = read("src/components/KeyholeRaytracingLab.tsx");
   assert.match(keyhole, /Missed power \(outside mesh\)/);

@@ -36,26 +36,35 @@ function authorityBox(alloyId: AuthorityAlloyId, notes: string, sources: string[
   return { ...authorityPvWindow(alloyId), notes, sources };
 }
 
-/** Published P–v boxes (machine-class typical), intersected with dense coupons in the library. */
+/**
+ * Published P–v DISPLAY RANGES (machine-class typical). P7a (2026-10-11, G1 audit V03): outside the range is an
+ * advisory ("unsourced screening threshold"), never a verdict; no table or figure of any listed paper supplies an edge.
+ * Sources are related literature only; each DOI below resolved by Crossref to the named paper on 2026-10-11. Removed
+ * (G1 source sweep 1.4, the strings are listed in python/test_lpbf_p7a_rules_and_nulls.py): the Ti-6Al-4V "Acta Mater.
+ * 2010" DOI (an epoxy nanocomposite paper) and the Kasperovich and Hausmann 2015 fatigue paper; the 316L "Cherry" DOI
+ * (a 404; Cherry 2015 is 10.1007/s00170-014-6297-2) and the Liverani 2017 DOI (not Cherry); the AlSi10Mg Rapid
+ * Prototyping J. DOI (a 404) and the "Acta Mater. 2016" DOI (a CoFeB/MgO magnetics paper).
+ */
+const RELATED_LITERATURE_NOTE = "related literature, no edge of this display range is taken from it";
 export const LITERATURE_PV_WINDOWS: Record<LPBFAlloyId, LiteraturePvWindow> = {
   ti6al4v: authorityBox(
     "ti6al4v",
-    "30 µm EOS-class conduction; Gong LoF at low P / high v; Kasperovich keyhole at high P / low v.",
-    ["10.1016/j.actamat.2010.02.008", "10.1016/j.addma.2014.08.002", "10.1016/j.jmatprotec.2015.01.025"],
+    `30 µm EOS-class display range; Gong 2014 (Addit. Manuf.) is ${RELATED_LITERATURE_NOTE}.`,
+    ["10.1016/j.addma.2014.08.002"],
   ),
   ss316l: authorityBox(
     "ss316l",
-    "Renishaw / Concept Laser 30 µm; Cherry LoF ~100 W / 1100 mm/s; Kurzynowski keyhole ~240 W / 420 mm/s.",
-    ["10.1007/s00170-014-6721-3", "10.1016/j.jmatprotec.2017.05.042", "10.1016/j.msea.2018.01.103"],
+    `Renishaw / Concept Laser 30 µm display range; Cherry 2015 (Int. J. Adv. Manuf. Technol.) and Kurzynowski 2018 (Mater. Sci. Eng. A) are ${RELATED_LITERATURE_NOTE}.`,
+    ["10.1007/s00170-014-6297-2", "10.1016/j.msea.2018.01.103"],
   ),
   alsi10mg: authorityBox(
     "alsi10mg",
-    "High-k Al needs high P; 150–200 °C preheat typical; Aboulkhair balling at 200 W / 1800 mm/s.",
-    ["10.1016/j.matdes.2014.09.044", "10.1108/13552541211218112", "10.1016/j.actamat.2016.03.044"],
+    `High-k Al display range; 150–200 °C preheat typical; Read 2015 (Mater. Des.) is ${RELATED_LITERATURE_NOTE}.`,
+    ["10.1016/j.matdes.2014.09.044"],
   ),
   in718: authorityBox(
     "in718",
-    "Jia dense ~130 W / 600 mm/s; EOS-class ~285 W / 960 mm/s / 40 µm; LoF at 90 W / 1200 mm/s.",
+    `EOS-class display range (~285 W / 960 mm/s / 40 µm); Jia 2014 (J. Alloys Compd.), Chlebus 2015 (Mater. Sci. Eng. A) and Trosch 2016 (Mater. Lett.) are ${RELATED_LITERATURE_NOTE}.`,
     ["10.1016/j.jallcom.2013.09.171", "10.1016/j.msea.2015.05.035", "10.1016/j.matlet.2015.10.136"],
   ),
   in625: IN625_PV_WINDOW_TS_LOCAL,

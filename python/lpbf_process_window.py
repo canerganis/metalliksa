@@ -8,7 +8,9 @@ alloy and one (beam, layer, hatch, preheat) setting, exactly as the Bayesian opt
 published single-track measurements (geometry only, never print outcomes), each of which also gets a model
 verdict computed at its own P/v with the request's settings.
 
-Nothing here re-decides printability: verdicts, gates and reasons are the compose_verdict output verbatim.
+Nothing here re-decides printability: verdicts, gates and reasons are the compose_verdict output verbatim
+(P7a, 2026-10-11: do-not-print on the Tang unit criterion, risky in keyhole mode, otherwise printable; the
+literature box, balling, the level 30, the Tang margin and downskin are advisories).
 """
 from __future__ import annotations
 
@@ -228,8 +230,9 @@ def _cell(resolved: str, i_p: int, i_v: int, power: float, speed: float, norm: D
 
 
 def _grid_advisories(cells: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Parameter-independent advisory gates that are advisory in every evaluated cell are listed once."""
-    from lpbf_build_job_solver import ADVISORY_GATES, PARAMETER_INDEPENDENT_ADVISORY_NOTE
+    """Parameter-independent gates listed once: advisory in every evaluated cell (older payloads), or since P7a
+    not evaluated in every cell (recoater and distortion: no sourced stress model, listed in unavailableGates)."""
+    from lpbf_build_job_solver import ADVISORY_GATES, PARAMETER_INDEPENDENT_ADVISORY_NOTE, STRESS_GATES_NOT_EVALUATED_NOTE
     live = [c for c in cells if c["verdict"] != "error"]
     out = []
     if not live:
@@ -239,6 +242,8 @@ def _grid_advisories(cells: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             out.append({"gate": gate, "note": PARAMETER_INDEPENDENT_ADVISORY_NOTE, "cells": len(live)})
             for c in live:
                 c["advisoryGates"] = [g for g in c["advisoryGates"] if g != gate]
+        elif all(gate in c["unavailableGates"] for c in live):
+            out.append({"gate": gate, "note": STRESS_GATES_NOT_EVALUATED_NOTE, "cells": len(live)})
     return out
 
 

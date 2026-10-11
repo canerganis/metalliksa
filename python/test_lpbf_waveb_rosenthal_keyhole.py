@@ -166,10 +166,10 @@ class LatentHeatFactorLA5(unittest.TestCase):
 class IncrementAndRecoilLA8(unittest.TestCase):
     def test_model_id_is_fabbro_for_rosenthal_too(self):
         # P1 (2026-10-11): the Rosenthal increment heuristic-keyhole-increment-v1 was removed; every kernel serves the
-        # Fabbro leg with the ramp still labelled uncited.
+        # Fabbro leg with the ramp labelled unsourced (P7a wording; replacement is P3).
         kh = run(*IN718_285)["keyholeModel"]
         self.assertEqual(kh["modelId"], "fabbro-keyhole-v1")
-        self.assertIn("uncited", kh["basis"])
+        self.assertIn("unsourced linear dH/hs onset ramp 15 to 30", kh["basis"])
 
     def test_recoil_is_not_served(self):
         # P6 (2026-10-11): the Anisimov/Knight 0.54 p_sat recoil at the clipped T_vap (54.72 kPa in every saturated

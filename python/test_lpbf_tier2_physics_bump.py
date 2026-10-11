@@ -254,19 +254,22 @@ class PeakAnchoredExtentTest(unittest.TestCase):
 
 class DistortionLabelAndDoiTest(unittest.TestCase):
     def test_recoater_label_not_evaluated(self):
+        # P7a (2026-10-11): the index (7.59 here before P7a) is no longer served; the gate is not-evaluated.
         result, _ = run(*IN718_280)
         dd = result["defectDiagnostics"]
-        self.assertEqual(dd["distortionIndex"], 7.59)
-        self.assertTrue(dd["recoaterCrashRisk"].startswith("Not evaluated from scan parameters"))
-        self.assertIn("not evaluated from scan parameters", dd["distortionIndexBasis"])
-        # The advisory keeps its threshold on the unchanged index (never a verdict gate).
+        self.assertIsNone(dd["distortionIndex"])
+        self.assertIsNone(dd["effectiveResidualStress_MPa"])
+        self.assertTrue(dd["recoaterCrashRisk"].startswith("unavailable: no sourced stress model"))
+        self.assertIn("unavailable since P7a", dd["distortionIndexBasis"])
         verdict = compose_verdict(result, "in718")
         recoater = next(g for g in verdict["gates"] if g["id"] == "recoater")
-        self.assertEqual(recoater["status"], "advisory")
+        self.assertEqual(recoater["status"], "not-evaluated")
 
     def test_distortion_independent_of_scan(self):
+        # P7a: null for every scan setting (nothing is computed).
         a, _ = run(*IN718_280)
         b, _ = run("Inconel 718", 150.0, 600.0, 80.0, 80.0, 40.0, 120.0)
+        self.assertIsNone(a["defectDiagnostics"]["distortionIndex"])
         self.assertEqual(a["defectDiagnostics"]["distortionIndex"], b["defectDiagnostics"]["distortionIndex"])
         self.assertEqual(a["defectDiagnostics"]["recoaterCrashRisk"], b["defectDiagnostics"]["recoaterCrashRisk"])
 

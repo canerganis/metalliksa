@@ -224,7 +224,8 @@ test("unchanged card lines stay verbatim; only the enthalpy line differs by vari
     assert.ok(text.startsWith(`${rule}\n** METALLIX LPBF GOLDAK HEAT SOURCE CAE EXPORT CARD\n`));
     assert.ok(text.includes("** Material: Inconel 718 (Base: Ni)\n** Laser Power: 285 W | Scan Speed: 960 mm/s\n** Beam Diameter: 80 um | Wavelength: IR_1064nm\n** Volumetric Energy Density (VED): 67.47 J/mm3\n"));
     assert.ok(text.includes("*DFLUX, USER\n*GOLDAK_DOUBLE_ELLIPSOID\n"));
-    assert.ok(text.includes("** Solidification Kinetics (rear liquidus of the loss-free conduction field; null with a reason where that interface is not served, P6 2026-10-11):\n** G_avg: 18400000 K/m\n** R_solid: 0.03 m/s\n** Cooling Rate: 557000 K/s\n** Primary Spacing (PDAS): 0.67 um\n" + rule));
+    // P7a: a legacy payload with a PDAS scalar is written as such; served payloads carry the band or the reason.
+    assert.ok(text.includes("** Solidification Kinetics (rear liquidus of the loss-free conduction field; null with a reason where that interface is not served, P6 2026-10-11):\n** G_avg: 18400000 K/m\n** R_solid: 0.03 m/s\n** Cooling Rate: 557000 K/s\n** Primary Spacing (PDAS, legacy payload): 0.67 um\n" + rule));
     assert.ok(text.endsWith(rule));
   }
   assert.ok(!map.includes("Normalized Enthalpy"));

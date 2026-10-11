@@ -18,6 +18,7 @@ import { pythonComputationService } from '../services/pythonComputationService';
 import type { SolidificationMicrostructureAvailable } from '../services/pythonComputationService';
 import { GrSolidificationMapCard } from './GrSolidificationMapCard';
 import { solidificationOutcome } from '../utils/solidificationOutcome';
+import { PDAS_BAND_LABEL, pdasBandText } from '../utils/pdasBandText';
 import { createLatestRequestGate, settleLatestRequest } from '../utils/solidificationRequest';
 import {
   authorityAlloy, authorityThermalProvenance, solidificationMaterialInputs, type AuthorityAlloyId, type SolidificationMaterialInputs,
@@ -169,9 +170,10 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
   }, [laserPower, scanSpeed, hatch, layerThickness, beamDiameter, preheat, heatSource, selectedAlloy]);
 
   const grPoint = result ? [{ R_ms: result.R_m_s, G_K_m: result.G_K_m }] : [];
-  const spacingData = result ? [
-    { name: 'PDAS · λ₁', value: result.PDAS_um },
-    { name: 'SDAS · λ₂', value: result.SDAS_um },
+  // P7a: the PDAS scalar and SDAS are null; the chart shows the sourced Ni-Nb band members (Ghosh 2017) when served.
+  const spacingData = result && result.pdasBand_um ? [
+    { name: 'PDAS · Hunt (Eq. 7)', value: result.pdasBand_um.hunt },
+    { name: 'PDAS · Kurz-Fisher (Eq. 8)', value: result.pdasBand_um.kurzFisher },
   ] : [];
   const morphColor = morphologyColor(result?.morphology);
   const cellular = (result?.morphology ?? '').startsWith('Cellular');
@@ -379,8 +381,8 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
             <Metric label="Thermal gradient" value={result.G_K_m.toExponential(2)} unit="K/m" accent="#75b8ff" detail={provenance} />
             <Metric label="Solidification rate" value={result.R_m_s.toExponential(2)} unit="m/s" accent="#70d8b0" detail="screening field" />
             <Metric label="Cooling rate" value={result.coolingRate_K_s.toExponential(2)} unit="K/s" accent="#f08080" detail="median of G·R over front samples" />
-            <Metric label="Primary spacing · λ₁" value={result.PDAS_um.toFixed(2)} unit="µm" accent="#bba3f4" detail="Hunt–Lu 1996 PDAS" />
-            <Metric label="Secondary spacing · λ₂" value={result.SDAS_um.toFixed(2)} unit="µm" accent="#f0bd73" detail={cellular ? 'cells have no secondary arms · Kirkwood 1985' : 'Kirkwood 1985 SDAS'} />
+            <Metric label="Primary spacing · λ₁ band" value={result.pdasBand_um ? pdasBandText(result).replace(` (${PDAS_BAND_LABEL})`, '') : 'n/a'} unit={result.pdasBand_um ? '' : ''} accent="#bba3f4" detail={result.pdasBand_um ? `${PDAS_BAND_LABEL} (Hunt to Kurz-Fisher)` : (result.pdasUnavailableReason ?? 'no sourced PDAS parameters')} />
+            <Metric label="Secondary spacing · λ₂" value={typeof result.SDAS_um === 'number' ? result.SDAS_um.toFixed(2) : 'n/a'} unit={typeof result.SDAS_um === 'number' ? 'µm' : ''} accent="#f0bd73" detail={typeof result.SDAS_um === 'number' ? (cellular ? 'cells have no secondary arms · legacy payload' : 'legacy payload') : (result.sdasUnavailableReason ?? 'no sourced SDAS prefactor (P7a)')} />
             <Metric label="Morphology tendency" value={result.morphology} accent={morphColor} detail={result.heatSourceModel ?? 'screening field'} />
           </section>
 
@@ -456,7 +458,7 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
                     <h4 className="mb-3 text-[10px] font-semibold uppercase tracking-[.16em] text-cyan-100/70">Microstructure & provenance</h4>
                     <dl className="space-y-2">
                       {[
-                        ['PDAS · λ₁', `${result.PDAS_um.toFixed(2)} µm`], ['SDAS · λ₂', `${result.SDAS_um.toFixed(2)} µm`],
+                        ['PDAS · λ₁ band', pdasBandText(result)], ['SDAS · λ₂', typeof result.SDAS_um === 'number' ? `${result.SDAS_um.toFixed(2)} µm` : `n/a (${result.sdasUnavailableReason ?? 'no sourced SDAS prefactor'})`],
                         ['Morphology', result.morphology], ['Status', result.status],
                         ['Heat source', result.heatSourceModel ?? '—'], ['Gradient source', result.gradientSource ?? '—'],
                         ['Liquidus field map used', result.usedFieldMap == null ? '—' : String(result.usedFieldMap)],

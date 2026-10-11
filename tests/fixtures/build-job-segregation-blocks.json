@@ -282,7 +282,7 @@
    "R_m_s": 0.1384,
    "coolingRate_K_s": 3720925.0,
    "morphology": "Columnar dendritic (Hunt G/R screening)",
-   "PDAS_um": 0.38,
+   "PDAS_um": null,
    "source": "build job microstructure block (copied, not recomputed)",
    "usedInCalculation": false,
    "note": "G and R are copied for context: the equilibrium-k Scheil-type result depends on composition alone. R is used only by the separate rapidSolidification screening estimate (Aziz k(V)); back-diffusion at this solidification rate is not modelled."
@@ -1592,7 +1592,7 @@
    "R_m_s": 0.1384,
    "coolingRate_K_s": 3720925.0,
    "morphology": "Columnar dendritic (Hunt G/R screening)",
-   "PDAS_um": 0.38,
+   "PDAS_um": null,
    "source": "build job microstructure block (copied, not recomputed)",
    "usedInCalculation": false,
    "note": "G and R are copied for context: the equilibrium-k Scheil-type result depends on composition alone. R is used only by the separate rapidSolidification screening estimate (Aziz k(V)); back-diffusion at this solidification rate is not modelled."

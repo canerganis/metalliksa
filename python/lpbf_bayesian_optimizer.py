@@ -119,9 +119,11 @@ OBJECTIVE_DESCRIPTION = (
 
 
 KEYHOLE_GATE_NOTE = (
-    'The keyhole gate (normalised enthalpy dH/h_s: porosity screen High at >= 30, do-not-print when High and > 35) '
-    'comes from the frozen thermal solver (python/lpbf_thermal_solver.py) and is not relaxed or re-derived '
-    'here; the regime threshold moved to 20 in the keyhole-regime bump; the porosity screen stays a proxy (High >= 30).'
+    'The keyhole gate is the served regime classifier of the frozen thermal solver (python/lpbf_thermal_solver.py, '
+    'keyhole mode at normalised enthalpy dH/h_s >= 20, 13.6 for Inconel 625): keyhole mode scores risky (0.5) and '
+    'never do-not-print since P7a (2026-10-11); the former porosity level 30 is an advisory (unsourced screening '
+    'threshold) and the do-not-print edge 35 is removed. The cut is not relaxed or re-derived here; the regime threshold '
+    'moved to 20 in the keyhole-regime bump. Keyhole mode is a mode onset, not a porosity boundary.'
 )
 
 
@@ -141,9 +143,11 @@ def _iteration_diagnostics(vd, th):
         'extentStatus': geo.get('extentStatus', vd.get('extentStatus')),
         'normalizedEnthalpy': pp.get('normalizedEnthalpy'),
         'aspectRatio_L_over_W': geo.get('aspectRatio_L_over_W'),
+        # P7a: keyholeHigh is the legacy level-30 advisory flag (never a verdict input); the verdict reads the regime.
         'keyholeRisk': kh,
         'keyholeHigh': None if kh is None else str(kh).startswith('High'),
-        # Balling screen (Eagar-Tsai L/W): 'high' -> risky (warn gate), 'moderate' -> advisory only (scored as
+        'keyholeMode': str(geo.get('regime') or '').startswith('Keyhole Mode') if geo.get('regime') is not None else None,
+        # Balling screen (Eagar-Tsai L/W): 'high' (316L only since P7a) and 'moderate' are advisories (scored as
         # the verdict, i.e. not penalised), None -> Eagar-Tsai extent not computed.
         'ballingBand': bs.get('band'),
         'ballingLengthToWidthEagarTsai': bs.get('lengthToWidth'),

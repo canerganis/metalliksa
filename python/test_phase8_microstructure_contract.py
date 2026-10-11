@@ -61,8 +61,9 @@ class Phase8MicrostructureContractTest(unittest.TestCase):
         assert abs(result["G_K_m"] - 8.5e6) < 1.0
         assert abs(result["R_m_s"] - 0.032) < 1e-9
         assert result["frontCellCount"] == 42
-        assert 0.05 <= result["PDAS_um"] <= 500.0
-        assert 0.01 <= result["SDAS_um"] <= 200.0
+        # P7a: no spacing on the CFD path (unsourced prefactors deleted); the reason is served.
+        assert result["PDAS_um"] is None and result["SDAS_um"] is None
+        assert "no source" in result["spacingUnavailableReason"]
 
 
 if __name__ == "__main__":

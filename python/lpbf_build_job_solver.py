@@ -4,6 +4,9 @@ Single LPBF Build Job engine: Rosenthal melt-pool screening + STL slicer + print
 
 The industrial UI must display this verdict. TypeScript must not re-decide printability.
 Melt-pool geometry for the verdict is regularized Rosenthal. Eagar–Tsai (`eagar-tsai-v2`) is opt-in on the thermal / Melt Pool 3D lab only — it does not change this verdict.
+
+P7a (2026-10-11): the verdict uses sourced criteria, the regime classifier and validity guards only (ladder in
+compose_verdict); every unsourced edge is an advisory with the status text "unsourced screening threshold".
 """
 
 import json
@@ -39,7 +42,13 @@ from lpbf_thermal_solver import (
     ENTHALPY_KEYHOLE,
     ENTHALPY_KEYHOLE_IN625,
     ENTHALPY_TRANSITION,
+    KEYHOLE_MODE_ONSET_STATEMENT,
+    LOF_MARGIN_BASIS,
+    POROSITY_SCREEN_HIGH_AT,
+    STRESS_UNAVAILABLE_REASON,
     calculate_meltpool_physics,
+    keyhole_cut_basis,
+    regime_keyhole_cut,
 )
 from murakami_fatigue_screening import (
     build_qualification_block,
@@ -233,8 +242,8 @@ def build_job_kinetics(alloy_id, thermal):
     return block
 
 
-def _gate(gid, status, measured, required, unit, note):
-    return {
+def _gate(gid, status, measured, required, unit, note, basis=None):
+    out = {
         "id": gid,
         "status": status,
         "measured": measured,
@@ -242,6 +251,9 @@ def _gate(gid, status, measured, required, unit, note):
         "unit": unit,
         "note": note,
     }
+    if basis is not None:
+        out["basis"] = basis
+    return out
 
 
 # Number of power and speed levels per axis in the suggested-patch grid search over the literature box.
@@ -298,52 +310,70 @@ def _patch_candidates(thermal, alloy_id, dominant_gate):
 
 
 def _verified_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None):
-    """(patch, note). A patch is suggested only when the served solver, re-run at the suggested point, resolves the
-    melt-pool geometry and returns a printable verdict (Tang overlap pass, keyhole screen not High, balling not High,
-    inside the literature box). The literature box alone is not evidence: its keyhole corner fails Tang for all four
-    alloys. Without an evaluator (hand-built thermal input, UQ samples) no patch is offered."""
+    """(patch, note, advisories). A patch is suggested only when the served solver, re-run at the suggested point,
+    returns a printable verdict under the P7a ladder: Tang unit criterion passes, geometry resolved, below the keyhole-mode
+    cut. The literature box is only the search range (a display range, not a window); the box, balling, the keyhole
+    level 30, the Tang margin and downskin are advisories, reported for the suggested point in the third element.
+    Selection prefers the first printable candidate with zero advisories, else the first printable one. Without an
+    evaluator (hand-built thermal input, UQ samples) no patch is offered.
+    The downskin caveat of the note is added by _suggested_patch."""
     if verdict == "printable" or dominant_gate in (None, "none"):
         return None, (None if verdict == "printable" else
-                      "No gate fails or warns, so there is no parameter change to suggest.")
-    if dominant_gate == "downskin":
-        return None, ("The dominant gate is the downskin overhang angle, which no power, speed, hatch or layer "
-                      "change fixes; no parameter patch is suggested.")
+                      "No sourced gate fails or warns, so there is no parameter change to suggest."), []
     if evaluate is None:
-        return None, "No parameter patch: the solver was not available to verify a suggested point."
+        return None, "No parameter patch: the solver was not available to verify a suggested point.", []
+    first = None
     for cand in _patch_candidates(thermal, alloy_id, dominant_gate):
         th = evaluate(cand["laserPower_W"], cand["scanSpeed_mms"], cand["hatch_um"], cand["layer_um"],
                       cand["beamDiameter_um"])
         check = compose_verdict(th, alloy_id)
-        if check["verdict"] == "printable":
-            pp = th["processParameters"]
-            return cand, (
-                f"Verified by re-running the solver at the suggested point: Tang index {check['lofGeometry']['tangIndex']}, "
-                f"dH/hs {pp['normalizedEnthalpy']}, verdict {check['verdict']} under the same screening rules. "
-                "Downskin, if requested, is unchanged by these parameters."
-            )
+        if check["verdict"] != "printable":
+            continue
+        if not check["advisories"]:
+            first = (cand, check)
+            break
+        if first is None:
+            first = (cand, check)
+    if first is not None:
+        cand, check = first
+        advisories = list(check["advisories"])
+        keyhole_gate = next(g for g in check["gates"] if g["id"] == "keyhole")
+        note = (
+            f"Verified by re-running the solver at the suggested point: Tang unit criterion passes (index "
+            f"{check['lofGeometry']['tangIndex']}), geometry resolved, below the keyhole-mode cut (ΔH/hₛ "
+            f"{keyhole_gate['measured']} < {keyhole_gate['required']}); verdict {check['verdict']} under the P7a ladder. "
+            "The literature box is a search range (display range, not a window). Downskin, if requested, is unchanged "
+            "by these parameters. Advisories at the suggested point: "
+            + ("; ".join(advisories) if advisories else "none")
+        )
+        return cand, note, advisories
     return None, (
         "No parameter patch: no point of a "
-        f"{PATCH_GRID_LEVELS}x{PATCH_GRID_LEVELS} power-speed grid over the {alloy_id} literature box, with the "
-        "current or the per-alloy conduction hatch, layer and beam, passes the Tang overlap and keyhole screens "
-        "(printable verdict) in the served solver."
-    )
+        f"{PATCH_GRID_LEVELS}x{PATCH_GRID_LEVELS} power-speed grid over the {alloy_id} literature search range (display "
+        "range, not a window), with the current or the per-alloy conduction hatch, layer and beam, passes the Tang unit "
+        "criterion below the keyhole-mode cut with resolved geometry (printable verdict) in the served solver."
+    ), []
 
 
 def _suggested_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None, gates=None):
-    """(patch, note) from _verified_patch, plus a downskin caveat. When the downskin gate fails or warns but another
-    gate dominates, a power or speed patch cannot clear the overhang, so the note says the job stays do-not-print or
-    risky on downskin whatever the patch does."""
-    patch, note = _verified_patch(thermal, alloy_id, dominant_gate, verdict, evaluate)
+    """(patch, note, advisories) from _verified_patch, plus the downskin caveat (a6f57f66, kept under P7a). Since P7a
+    the downskin gate is an advisory (never fail or warn, never dominant), so when it is raised while another gate
+    drives the verdict, a power, speed, hatch or layer patch cannot clear the overhang: the note says the downskin
+    advisory stays whatever the patch does. Older payload gate statuses fail/warn get the former wording."""
+    patch, note, advisories = _verified_patch(thermal, alloy_id, dominant_gate, verdict, evaluate)
     if verdict == "printable" or dominant_gate == "downskin":
-        return patch, note
-    down = next((g for g in (gates or []) if g.get("id") == "downskin" and g.get("status") in ("fail", "warn")), None)
+        return patch, note, advisories
+    down = next((g for g in (gates or []) if g.get("id") == "downskin"
+                 and g.get("status") in ("advisory", "fail", "warn")), None)
     if down is not None:
-        stays = "do-not-print" if down["status"] == "fail" else "risky"
-        note = (f"{note or ''} The downskin gate is {down['status']}"
-                f"{'' if down.get('measured') is None else ' at ' + str(down['measured']) + ' deg'}, and no power, "
-                f"speed, hatch or layer change fixes an overhang: the job stays {stays} on downskin"
-                f"{' even with this patch' if patch else ''}.").strip()
-    return patch, note
+        where = "" if down.get("measured") is None else f" at {down['measured']} deg"
+        if down["status"] == "advisory":
+            stays = "the downskin advisory stays"
+        else:
+            stays = f"the job stays {'do-not-print' if down['status'] == 'fail' else 'risky'} on downskin"
+        note = (f"{note or ''} The downskin gate is {down['status']}{where}, and no power, speed, hatch or layer change "
+                f"fixes an overhang: {stays}{' even with this patch' if patch else ''}.").strip()
+    return patch, note, advisories
 
 
 # Gates whose result is a function of the melt-pool W/D/L extent. When the thermal solver
@@ -351,14 +381,48 @@ def _suggested_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None, g
 # these are unavailable: a verdict must not be built from screening-heuristic numbers.
 GEOMETRY_DEPENDENT_GATES = ("lof_tang", "lof_wh", "lof_dt", "balling")
 
-# Gates reported as advisories only: they never change the verdict, the dominant gate or an
-# optimizer score. The frozen solver's distortion index (and the recoater flag derived from it,
-# High when index > 2.0) is a function of alloy properties, preheat and layer thickness only,
-# not of P, v or hatch, so it cannot discriminate between process parameter sets.
+# P7a (2026-10-11, docs/research/SPEC_p7a_rules_and_nulls_2026-10-11.md): the verdict uses sourced criteria, the
+# regime classifier and validity guards only (verdictBasis "sourced-criteria-only"). Ladder: inconclusive (geometry
+# not resolved or a verdict-driving input null) > do-not-print (Tang unit criterion fails) > risky (served regime is
+# keyhole mode) > printable. Everything else is an advisory with the status text "unsourced screening threshold".
+VERDICT_BASIS = "sourced-criteria-only"
+UNSOURCED_SCREENING_THRESHOLD = "unsourced screening threshold"
+# Stress and distortion gates: not evaluated since P7a (no sourced stress model; G1 audit B08, B09). They are advisory
+# gates, listed in unavailableGates, and never make the verdict inconclusive.
 ADVISORY_GATES = ("recoater", "distortion")
+STRESS_GATES_NOT_EVALUATED_NOTE = (
+    "not evaluated since P7a (2026-10-11): " + STRESS_UNAVAILABLE_REASON + "; the former index 0.72 E alpha dT / (1 - nu) "
+    "x (layer / 40 um) / 420 MPa used unsourced constants and is not served; advisory gate, never a verdict input "
+    "(never counted as pass or fail)"
+)
+# Kept for older payloads and the process-window grid note (the former alloy/layer index, no longer served).
 PARAMETER_INDEPENDENT_ADVISORY_NOTE = (
-    "alloy/layer advisory independent of P, v and hatch: the frozen distortion index depends only on "
+    "alloy/layer advisory independent of P, v and hatch: the former distortion index depended only on "
     "alloy properties, preheat and layer thickness (not on P, v or hatch); it does not change the verdict"
+)
+TANG_CRITERION_BASIS = (
+    "Tang criterion as quoted in Harkin 2023 Eq. 5, primary not in the library; sourced for measured melt pool "
+    "geometry; with analytic geometry Harkin 2023 Eq. 9 to 11 and Conclusions find the unit value problematic "
+    "(Ti-6Al-4V, one machine); here applied to modelled geometry, a screening, not a prediction"
+)
+LOF_DIAGNOSTIC_BASIS = (UNSOURCED_SCREENING_THRESHOLD + " removed: the former required values 1.05 (W/h) and 1.15 "
+                        "(D/t) had no source, so required is null and the status is always pass; diagnostic ratio only, "
+                        "the Tang unit criterion is the gate (P7a, G1 audit V20)")
+KEYHOLE_LEVEL_30_ADVISORY_BASIS = (UNSOURCED_SCREENING_THRESHOLD + ", legacy porosity level kept for continuity, not a "
+                                   "porosity boundary")
+ZHAO_BAND_ADVISORY_BASIS = ("no pore condition below 15 in Zhao 2020 (0 of 35), not evidence of safety; Ti-6Al-4V pores "
+                            "at 16 to 28 for v <= 445 mm/s")
+LITERATURE_PV_ADVISORY_BASIS = (
+    UNSOURCED_SCREENING_THRESHOLD + ": P-v display range, no table or figure for any edge; windows depend on spot size "
+    "and layer thickness (Hofmann 2026 Fig. 5, PDF p.5); a single track window does not ensure bulk printing (Vaglio "
+    "and Totis 2020)"
+)
+DOWNSKIN_ADVISORY_BASIS = (UNSOURCED_SCREENING_THRESHOLD + ": no primary source with a locator retrieved (SWP 2.8); "
+                           "reported limits depend on alloy and exposure strategy")
+BALLING_HIGH_ADVISORY_BASIS = (
+    UNSOURCED_SCREENING_THRESHOLD + " 5.5, fitted in sample on Hofmann 2026 316L (677 tracks, Zenodo 16979848; 69 of 71 "
+    "above it balled), on the Eagar-Tsai geometry of the fitting commit; not validated elsewhere; reported as an "
+    "advisory for 316L only, not assigned for other alloys"
 )
 # P1 (2026-10-11): at dH/hs >= ENTHALPY_TRANSITION the served depth is the Fabbro leg with a flat absorptivity, so
 # transition and keyhole depth is biased low (keyhole absorptance A(R) not modelled).
@@ -370,7 +434,7 @@ BALLING_SCREEN_NOTE = (
     "Eagar-Tsai aspect-ratio screen calibrated on Hofmann 2026 316L single tracks (Zenodo 10.5281/zenodo.16979848; "
     "High threshold 5.5 chosen in-sample, model L/W uncertainty about +-10 %; low recall and spot-size dependent: "
     "69/216 balled tracks flagged overall, 3/38 at a 140 um spot, so a track below 5.5 is not balling-cleared); "
-    "not a demonstrated balling prediction for other alloys; reported as risky, never do-not-print"
+    "not a demonstrated balling prediction for other alloys; an advisory since P7a, never a verdict input"
 )
 BALLING_LITERATURE_NOTE = (
     "pi*sqrt(3/2) segmental-cylinder bound of Yadroitsev et al. 2010 (J. Mater. Process. Technol. 210:1624, "
@@ -395,6 +459,15 @@ def _balling_screen_of(def_):
         if risk.startswith(prefix):
             return band, {}
     return None, {}
+
+
+def _alloy_thermal_name(alloy_id):
+    return ALLOY_MATERIALS[alloy_id]["thermal"] if alloy_id in ALLOY_MATERIALS else str(alloy_id)
+
+
+def _keyhole_mode(geometry):
+    """True when the served regime classifier says keyhole mode (classify_enthalpy_regime label)."""
+    return str(geometry.get("regime") or "").startswith("Keyhole Mode")
 
 
 def compose_verdict(thermal, alloy_id, extras=None):
@@ -424,10 +497,23 @@ def compose_verdict(thermal, alloy_id, extras=None):
         for gid in ("lof_tang", "lof_wh", "lof_dt"):
             not_evaluated[gid] = "lack-of-fusion input (Tang index, width or depth) is null"
     lof_status = def_.get("lackOfFusionStatus")
-    lof_fail = lof_status == "Fail" and "lof_tang" not in not_evaluated
-    lof_warn = lof_status == "Warning" and "lof_tang" not in not_evaluated
-    keyhole_high = str(def_["keyholePorosityRisk"]).startswith("High")
-    keyhole_possible = str(def_["keyholePorosityRisk"]).startswith("Possible")
+    # P7a: one lack-of-fusion rule, the Tang unit criterion (served status Fail, or the index itself above 1.0 for a
+    # hand-built dict). The 0.80 margin is an advisory flag only (the former "Warning" status of older payloads too).
+    lof_fail = "lof_tang" not in not_evaluated and (lof_status == "Fail" or (tang is not None and tang > 1.0))
+    lof_margin = ("lof_tang" not in not_evaluated and not lof_fail
+                  and (bool(def_.get("lackOfFusionMarginAdvisory")) or lof_status == "Warning"
+                       or (tang is not None and tang > 0.80)))
+    dh = _finite_number(thermal["processParameters"].get("normalizedEnthalpy"))
+    keyhole_mode = _keyhole_mode(geometry)
+    keyhole_cut = _finite_number(geometry.get("regimeKeyholeThreshold"))
+    if keyhole_cut is None:
+        keyhole_cut = regime_keyhole_cut(_alloy_thermal_name(alloy_id))
+    keyhole_basis = geometry.get("regimeKeyholeCutBasis") or keyhole_cut_basis(_alloy_thermal_name(alloy_id))
+    if dh is None:
+        not_evaluated["keyhole"] = "normalised enthalpy is null"
+        keyhole_mode = False
+    keyhole_level30 = dh is not None and dh >= POROSITY_SCREEN_HIGH_AT
+    keyhole_band = dh is not None and ENTHALPY_TRANSITION <= dh < keyhole_cut
     balling_band, balling = _balling_screen_of(def_)
     balling_high = balling_band == "high"
     balling_moderate = balling_band == "moderate"
@@ -442,17 +528,6 @@ def compose_verdict(thermal, alloy_id, extras=None):
             f"thresholds were calibrated on {BALLING_CALIBRATION_ABSORPTION_MODEL} absorptivity (Eagar–Tsai L/W "
             "scales roughly as sqrt(A)); the band is reported unchanged."
         )
-    # The frozen solver no longer bands recoaterCrashRisk (alloy/layer/preheat-only index, not evaluated
-    # from scan parameters); the advisory keeps its documented threshold on the unchanged index.
-    distortion_index = _finite_number(def_.get("distortionIndex"))
-    if distortion_index is None:
-        not_evaluated["recoater"] = not_evaluated["distortion"] = "distortion index is null"
-    recoater_high = distortion_index is not None and distortion_index > 2.0
-    distortion_high = distortion_index is not None and distortion_index >= 0.65
-    dh = _finite_number(thermal["processParameters"].get("normalizedEnthalpy"))
-    if dh is None:
-        not_evaluated["keyhole"] = "normalised enthalpy is null"
-        keyhole_high = keyhole_possible = False
     win = evaluate_literature_pv(
         alloy_id,
         float(thermal["processParameters"]["laserPower_W"]),
@@ -460,19 +535,13 @@ def compose_verdict(thermal, alloy_id, extras=None):
     )
 
     downskin_angle = extras.get("downskinOverhang_deg")
-    downskin_fail = False
-    downskin_warn = False
-    if downskin_angle is not None:
-        # Overhang from vertical: >45° downskin needs support / parameter change in screening.
-        if float(downskin_angle) > 55.0:
-            downskin_fail = True
-        elif float(downskin_angle) > 45.0:
-            downskin_warn = True
+    # P7a: the downskin angles 45 and 55 are unsourced screening thresholds; one advisory above 45, no verdict effect.
+    downskin_advisory = downskin_angle is not None and float(downskin_angle) > 45.0
 
     if not geometry_resolved:
         # Geometry-derived flags are heuristic here: neutralise them so no reason, verdict or
         # dominant gate is built from screening-substitute W/D/L numbers.
-        lof_fail = lof_warn = balling_high = balling_moderate = False
+        lof_fail = lof_margin = balling_high = balling_moderate = False
 
     reasons = []
     if not geometry_resolved:
@@ -489,73 +558,71 @@ def compose_verdict(thermal, alloy_id, extras=None):
         )
     if lof_fail:
         reasons.append(
-            f"Lack of fusion (Tang): (h/W)²+(t/D)² = {tang:.3f} (need ≤1.0); "
-            f"W/h = {width_over_hatch:.2f}, D/t = {depth_over_layer:.2f}."
+            f"Lack of fusion (Tang unit criterion): (h/W)²+(t/D)² = {tang:.3f} (need ≤1.0); "
+            f"W/h = {width_over_hatch:.2f}, D/t = {depth_over_layer:.2f}. {TANG_CRITERION_BASIS}."
         )
         if dh is not None and dh >= ENTHALPY_TRANSITION:
             reasons[-1] += " " + KEYHOLE_DEPTH_BIAS_LOF_NOTE
-    elif lof_warn:
+    if keyhole_mode:
         reasons.append(
-            f"Tang overlap marginal: (h/W)²+(t/D)² = {tang:.3f} (pass ≤0.80)."
+            f"Keyhole mode by the served regime classifier: ΔH/hₛ = {dh} at or above the cut {keyhole_cut:g} "
+            f"({geometry.get('regime')}). A regime label, not a porosity claim: {keyhole_basis}."
         )
-    if keyhole_high:
-        reasons.append(f"Keyhole porosity screen High: ΔH/hₛ = {dh} (legacy screening level ≥ 30; porosity unresolved, not a porosity boundary).")
-    if balling_high:
-        reasons.append(
-            f"Balling screen High: Eagar–Tsai L/W = {balling_lw_text} (> {balling.get('highThreshold', 5.5)}; "
-            f"{balling.get('hofmannBalledFractionInBand') or 'n/a'} Hofmann 316L tracks above it balled) — "
-            f"{BALLING_SCREEN_NOTE}."
-        )
-    elif geometry_resolved and balling_unavailable:
+    if geometry_resolved and balling_unavailable:
         reasons.append(
             f"Balling screen unavailable: Eagar–Tsai melt-pool extent not resolved "
             f"({balling.get('extentStatus', 'not reported')}); no balling band is assigned and the verdict does "
             "not include a balling screen."
         )
     advisories = []
-    if keyhole_possible:
+    if lof_margin:
         advisories.append(
-            f"Advisory: keyhole porosity possible (legacy screening level, ΔH/hₛ {dh} in 15–30); Zhao 2020 "
-            "Ti-6Al-4V pores at 16–28 for v ≤ 445 mm/s; porosity unresolved, this index does not resolve it."
+            f"Advisory: Tang margin — (h/W)²+(t/D)² = {tang:.3f} is above 0.80 ({LOF_MARGIN_BASIS}). "
+            "It does not change the verdict."
+        )
+    if keyhole_level30:
+        advisories.append(
+            f"Advisory: keyhole porosity legacy level — ΔH/hₛ = {dh} ≥ {POROSITY_SCREEN_HIGH_AT:g} "
+            f"({KEYHOLE_LEVEL_30_ADVISORY_BASIS}; {KEYHOLE_MODE_ONSET_STATEMENT}). It does not change the verdict."
+        )
+    if keyhole_band:
+        advisories.append(
+            f"Advisory: transition band — ΔH/hₛ = {dh} in {ENTHALPY_TRANSITION:g} to {keyhole_cut:g} "
+            f"({ZHAO_BAND_ADVISORY_BASIS}); porosity unresolved, this index does not resolve it. It does not change "
+            "the verdict."
         )
     if balling_absorption_note and geometry_resolved:
         advisories.append("Advisory: " + balling_absorption_note)
+    if balling_high:
+        advisories.append(
+            f"Advisory: balling screen High — Eagar–Tsai L/W = {balling_lw_text} (> {balling.get('highThreshold', 5.5)}; "
+            f"{balling.get('hofmannBalledFractionInBand') or 'n/a'} Hofmann 316L tracks above it balled) — "
+            f"{BALLING_HIGH_ADVISORY_BASIS}; {BALLING_SCREEN_NOTE}. It does not change the verdict."
+        )
     if balling_moderate:
         advisories.append(
             f"Advisory: balling screen Moderate — Eagar–Tsai L/W = {balling_lw_text} > 3.85, the "
             f"{BALLING_LITERATURE_NOTE}; {balling.get('hofmannBalledFractionInBand') or 'n/a'} Hofmann 316L tracks "
             "in this band balled (316L only, L/W uncertainty about +-10 %). It does not change the verdict."
         )
-    if recoater_high:
+    if downskin_advisory:
         advisories.append(
-            f"Advisory: recoater crash / part curl flag High (distortion index {def_['distortionIndex']} > 2.0) — "
-            f"{PARAMETER_INDEPENDENT_ADVISORY_NOTE}."
-        )
-    if distortion_high:
-        advisories.append(
-            f"Advisory: inherent-strain distortion index {def_['distortionIndex']} (≥0.65) — "
-            f"{PARAMETER_INDEPENDENT_ADVISORY_NOTE}."
-        )
-    if downskin_fail:
-        reasons.append(
-            f"Downskin overhang {float(downskin_angle):.1f}° from vertical exceeds 55° screening gate."
-        )
-    elif downskin_warn:
-        reasons.append(
-            f"Downskin overhang {float(downskin_angle):.1f}° is marginal (45–55°); expect support or stripe reorient."
+            f"Advisory: downskin overhang {float(downskin_angle):.1f}° from vertical is above 45° "
+            f"({DOWNSKIN_ADVISORY_BASIS}); expect support or stripe reorient. It does not change the verdict."
         )
     if not win["inside"]:
         box = win["box"]
-        reasons.append(
-            f"P–v is outside the {alloy_id} literature box "
-            f"({box['powerMin_W']}–{box['powerMax_W']} W, {box['speedMin_mm_s']}–{box['speedMax_mm_s']} mm/s)."
+        advisories.append(
+            f"Advisory: P–v is outside the {alloy_id} literature display range "
+            f"({box['powerMin_W']}–{box['powerMax_W']} W, {box['speedMin_mm_s']}–{box['speedMax_mm_s']} mm/s): "
+            f"{LITERATURE_PV_ADVISORY_BASIS}. It does not change the verdict."
         )
 
-    # recoater_high / distortion_high are advisories (ADVISORY_GATES) and are deliberately absent here.
+    # P7a ladder: sourced criteria, the regime classifier and validity guards only.
     verdict = "printable"
-    if lof_fail or downskin_fail or (keyhole_high and dh is not None and dh > 35):
+    if lof_fail:
         verdict = "do-not-print"
-    elif lof_warn or keyhole_high or balling_high or downskin_warn or (not win["inside"]):
+    elif keyhole_mode:
         verdict = "risky"
     verdict_gate_not_evaluated = "lof_tang" in not_evaluated or "keyhole" in not_evaluated
     if not geometry_resolved or verdict_gate_not_evaluated:
@@ -563,18 +630,20 @@ def compose_verdict(thermal, alloy_id, extras=None):
 
     if not reasons:
         reasons.append(
-            "Conduction-mode melt pool with Tang hatch/layer overlap above LoF gates. "
+            f"Melt pool passes the Tang overlap criterion; regime: {geometry.get('regime') or 'not reported'}. "
             "VED is not used as the sole criterion."
         )
 
+    n_adv = len(advisories)
+    advisory_word = "advisory" if n_adv == 1 else "advisories"
     inconclusive_headline = (
         f"Inconclusive — melt-pool geometry not resolved ({extent_status}); see reasons" if not geometry_resolved
         else "Inconclusive — a verdict-driving gate was not evaluated (null input, never pass or fail); see reasons"
     )
     headline = {
-        "printable": "Printable — stay in the conduction window",
-        "risky": "Risky — qualify with coupon builds before flight hardware",
-        "do-not-print": "Do not print — change P, v, h, or t before a build",
+        "printable": f"Printable — no sourced gate fails ({n_adv} {advisory_word}); see advisories",
+        "risky": "Risky — keyhole mode by the regime classifier; qualify with coupon builds before flight hardware",
+        "do-not-print": "Do not print — Tang unit criterion fails; change P, v, h, or t before a build",
         "inconclusive": inconclusive_headline,
     }[verdict]
 
@@ -586,15 +655,12 @@ def compose_verdict(thermal, alloy_id, extras=None):
     lw = None if width_over_hatch is None else round(width_over_hatch, 3)
     dt = None if depth_over_layer is None else round(depth_over_layer, 3)
     tang_r = None if tang is None else round(tang, 3)
-    tang_status = "fail" if lof_fail else ("warn" if lof_warn else "pass")
-    kh_status = ("fail" if (keyhole_high and dh is not None and dh > 35) else "warn" if keyhole_high
-                 else "advisory" if keyhole_possible else "pass")
-    ball_status = ("warn" if balling_high else "advisory" if balling_moderate
+    tang_status = "fail" if lof_fail else "pass"
+    kh_status = ("warn" if keyhole_mode else "advisory" if (keyhole_band or keyhole_level30) else "pass")
+    ball_status = ("advisory" if (balling_high or balling_moderate)
                    else "unavailable" if balling_unavailable else "pass")
-    lit_status = "pass" if win["inside"] else "warn"
-    rec_status = "advisory" if recoater_high else "pass"
-    dist_status = "advisory" if distortion_high else "pass"
-    ds_status = "fail" if downskin_fail else ("warn" if downskin_warn else "pass")
+    lit_status = "pass" if win["inside"] else "advisory"
+    ds_status = "advisory" if downskin_advisory else "pass"
     ball_measured = None if balling_lw is None else round(float(balling_lw), 2)
 
     gates = [
@@ -604,32 +670,40 @@ def compose_verdict(thermal, alloy_id, extras=None):
             tang_r,
             1.0,
             "1",
-            "Tang LoF index (h/W)²+(t/D)² — pass ≤0.80, fail >1.0. Primary hatch/layer fusion gate.",
+            "Tang LoF unit criterion (h/W)²+(t/D)² — fail > 1.0 (do-not-print); the only verdict-driving fusion gate. "
+            "Index above 0.80: margin advisory only.",
+            basis=TANG_CRITERION_BASIS,
         ),
         _gate(
             "lof_wh",
-            tang_status,
+            "pass",
             lw,
-            1.05,
+            None,
             "1",
-            "Diagnostic melt-pool width / hatch (W/h). Informational; Tang index is the gate.",
+            "Diagnostic melt-pool width / hatch (W/h). Informational, never a gate; no sourced threshold; the Tang index "
+            "is the gate.",
+            basis=LOF_DIAGNOSTIC_BASIS,
         ),
         _gate(
             "lof_dt",
-            tang_status,
+            "pass",
             dt,
-            1.15,
+            None,
             "1",
-            "Diagnostic melt-pool depth / layer (D/t). Informational; Tang index is the gate.",
+            "Diagnostic melt-pool depth / layer (D/t). Informational, never a gate; no sourced threshold; the Tang index "
+            "is the gate.",
+            basis=LOF_DIAGNOSTIC_BASIS,
         ),
         _gate(
             "keyhole",
             kh_status,
             dh,
-            30.0,
+            keyhole_cut,
             "1",
-            "Keyhole-porosity legacy screening level on ΔH/hₛ (porosity unresolved, not a porosity boundary): High ≥ 30 → warn, "
-            "High and > 35 → fail, 15–30 → advisory. The regime keyhole-mode onset (ΔH/hₛ = 20) is separate.",
+            f"Keyhole mode by the served regime classifier on ΔH/hₛ (cut {keyhole_cut:g}): warn (risky), never "
+            f"do-not-print. Advisories: {ENTHALPY_TRANSITION:g} to cut transition band (Zhao 2020), legacy level "
+            f"≥ {POROSITY_SCREEN_HIGH_AT:g} (unsourced screening threshold). Porosity unresolved.",
+            basis=keyhole_basis,
         ),
         _gate(
             "balling",
@@ -638,9 +712,10 @@ def compose_verdict(thermal, alloy_id, extras=None):
             5.5,
             "1",
             "Eagar–Tsai liquidus L/W (beam-size aware, whatever kernel the job uses for W/D): High (> 5.5, "
-            "empirical, Hofmann 316L, in-sample) → warn (risky); Moderate (> 3.85 = π√(3/2), Yadroitsev et al. "
-            "2010 Eq. 13 / Gusarov et al. 2007 mechanism) → advisory, no verdict effect; Eagar–Tsai extent not computed → "
-            "unavailable. Aspect-ratio screen, not a demonstrated balling prediction.",
+            "empirical, Hofmann 316L, in-sample) → advisory, 316L only, not assigned for other alloys; Moderate (> 3.85 = "
+            "π√(3/2), Yadroitsev et al. 2010 Eq. 13 / Gusarov et al. 2007 mechanism) → advisory; Eagar–Tsai extent not "
+            "computed → unavailable. Aspect-ratio screen, not a demonstrated balling prediction; no verdict effect.",
+            basis=BALLING_HIGH_ADVISORY_BASIS,
         ),
         _gate(
             "literature_pv",
@@ -648,25 +723,27 @@ def compose_verdict(thermal, alloy_id, extras=None):
             1.0 if win["inside"] else 0.0,
             1.0,
             "inside",
-            "Inside four-alloy published P–v box (screening envelope, not OEM machine limits).",
+            "Four-alloy published P–v display range (screening envelope, not OEM machine limits); outside → advisory, "
+            "no verdict effect.",
+            basis=LITERATURE_PV_ADVISORY_BASIS,
         ),
         _gate(
             "recoater",
-            rec_status,
-            distortion_index,
+            "not-evaluated",
+            None,
             None,
             "index",
-            "Recoater-crash heuristic from residual-stress index (High when > 2.0) — not a blade FEA. "
-            "Advisory only: " + PARAMETER_INDEPENDENT_ADVISORY_NOTE + ".",
+            "Recoater-crash flag: not evaluated (no sourced stress model since P7a). Advisory gate, never a verdict input.",
+            basis=STRESS_UNAVAILABLE_REASON,
         ),
         _gate(
             "distortion",
-            dist_status,
-            distortion_index,
-            0.65,
+            "not-evaluated",
+            None,
+            None,
             "index",
-            "Inherent-strain distortion screening (≥0.65 advisory) — not Goldak FEA. "
-            "Advisory only: " + PARAMETER_INDEPENDENT_ADVISORY_NOTE + ".",
+            "Distortion index: not evaluated (no sourced stress model since P7a). Advisory gate, never a verdict input.",
+            basis=STRESS_UNAVAILABLE_REASON,
         ),
         _gate(
             "downskin",
@@ -674,7 +751,8 @@ def compose_verdict(thermal, alloy_id, extras=None):
             None if downskin_angle is None else round(float(downskin_angle), 1),
             45.0,
             "deg",
-            "Overhang from vertical: >45° warn, >55° fail. Omitted angle → pass.",
+            "Overhang from vertical: > 45° advisory (unsourced screening threshold), no verdict effect. Omitted angle → pass.",
+            basis=DOWNSKIN_ADVISORY_BASIS,
         ),
     ]
     unavailable_gates = []
@@ -683,6 +761,9 @@ def compose_verdict(thermal, alloy_id, extras=None):
             g["status"] = "not-evaluated"
             g["measured"] = None
             g["reason"] = f"not evaluated: {not_evaluated[g['id']]} (never counted as pass or fail)"
+        elif g["id"] in ADVISORY_GATES:
+            g["reason"] = STRESS_GATES_NOT_EVALUATED_NOTE
+            unavailable_gates.append(g["id"])
     if geometry_resolved and balling_unavailable:
         for g in gates:
             if g["id"] == "balling":
@@ -717,9 +798,11 @@ def compose_verdict(thermal, alloy_id, extras=None):
                 dominant = g["id"]
                 break
 
-    patch, patch_note = _suggested_patch(thermal, alloy_id, dominant, verdict, extras.get("patchEvaluator"), gates)
+    patch, patch_note, patch_advisories = _suggested_patch(
+        thermal, alloy_id, dominant, verdict, extras.get("patchEvaluator"), gates)
     return {
         "verdict": verdict,
+        "verdictBasis": VERDICT_BASIS,
         "headline": headline,
         "reasons": reasons,
         "lofGeometry": {
@@ -729,11 +812,13 @@ def compose_verdict(thermal, alloy_id, extras=None):
             "hOverW": None if W is None else round(h / max(1e-6, W), 3),
             "tOverD": None if D is None else round(t / max(1e-6, D), 3),
         },
+        "lackOfFusionMarginAdvisory": bool(lof_margin),
         "literatureWindow": win,
         "gates": gates,
         "dominantGate": dominant,
         "suggestedPatch": patch,
         "suggestedPatchNote": patch_note,
+        "suggestedPatchAdvisories": patch_advisories,
         "geometryResolved": geometry_resolved,
         "extentStatus": extent_status,
         "extentNote": extent_note,
@@ -742,14 +827,15 @@ def compose_verdict(thermal, alloy_id, extras=None):
         "ballingScreened": balling_screened,
         "ballingAbsorptionModel": absorption_model if balling_screened else None,
         "geometryIndependentFailGates": geometry_independent_fail_gates,
-        # Gates whose input was null: reported, never counted as pass or fail (P6 containment).
+        # Gates whose input was null (P6) or that have no sourced model (P7a stress gates): never pass or fail.
         "notEvaluatedGates": [g["id"] for g in gates if g["status"] == "not-evaluated"],
         # Verdict-driving gate ids ("fail" -> do-not-print, "warn" -> risky) and the advisory-only
-        # gates that never change the verdict (see ADVISORY_GATES).
+        # gates that never change the verdict.
         "blockingGates": [g["id"] for g in gates if g["status"] == "fail"],
         "riskGates": [g["id"] for g in gates if g["status"] == "warn"],
         "advisoryGates": [g["id"] for g in gates if g["status"] == "advisory"],
         "advisories": advisories,
+        "advisoryCount": n_adv,
     }
 
 
@@ -1065,14 +1151,19 @@ def _solve_lpbf_build_job_core(data):
         "LoF gate is Tang (h/W)²+(t/D)² ≤ 1; VED is not the sole criterion.",
         (
             f"Regime labels use ΔH/hs cuts: vapor-depression onset {ENTHALPY_TRANSITION:g} (Cunningham 2019) and a "
-            f"provisional keyhole-mode label at {ENTHALPY_KEYHOLE:g} ({ENTHALPY_KEYHOLE_IN625:g} for Inconel 625, "
-            "fitted on NIST mds2-2923 tracks). The Fabbro keyhole depth leg opens at the same onset "
-            f"({FABBRO_ENTHALPY_ONSET:g}) and reaches full weight at {FABBRO_ENTHALPY_KEYHOLE:g} through an uncited "
-            "linear ramp. The keyhole porosity screen (advisory 15 to 30, risky at 30, do-not-print above 35) is a "
-            "legacy level kept for verdict continuity, not a porosity boundary."
+            f"provisional keyhole-mode cut {ENTHALPY_KEYHOLE:g} ({ENTHALPY_KEYHOLE_IN625:g} for Inconel 625, fitted on "
+            "NIST mds2-2923 tracks), a mode onset and not a porosity boundary. The verdict (P7a, sourced criteria only) "
+            "is do-not-print on the Tang unit criterion, risky in keyhole mode, otherwise printable. The level "
+            f"{POROSITY_SCREEN_HIGH_AT:g}, the Tang margin 0.80, the literature box, the balling High band and the "
+            "downskin angles are unsourced screening thresholds reported as advisories. The Fabbro keyhole depth leg "
+            f"opens at the same onset ({FABBRO_ENTHALPY_ONSET:g}) and reaches full weight at "
+            f"{FABBRO_ENTHALPY_KEYHOLE:g} through an unsourced linear ramp (P3)."
         ),
         "Slicer uses live customTriangles when present; otherwise a demo CAD preset.",
         "No artificial peak-T / PDAS / residual-stress display ceilings; alloy M_molar drives recoil.",
+        "P7a (2026-10-11): residual stress and the distortion index are unavailable (no sourced stress model; Mercelis "
+        "and Kruth 2006 supports a yield cap only); the PDAS scalar is null and a sourced Ni-Nb band (Ghosh 2017 Hunt "
+        "to Kurz-Fisher) is served for IN625/IN718 inside its validity range; SDAS is null for every alloy.",
         "Marangoni characteristic length uses the same thermal melt-pool width (geometrySource=thermal).",
         f"Deterministic processSeed={process_seed} for reproducible screening extras.",
         "Request validated with Pydantic; customTriangles capped at maxTriangles (default 12000).",

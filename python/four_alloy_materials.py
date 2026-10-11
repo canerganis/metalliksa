@@ -96,6 +96,8 @@ _THERMAL = {
         "thermal_expansion_1_K": 13.0e-6,
         "youngs_modulus_GPa": 205.0,
         "poissons_ratio": 0.29,
+        # pdas_A1 / sdas_B1 (all four alloys): unused since P7a (2026-10-11); no sourced PDAS prefactor or SDAS B1
+        # exists, the solver no longer reads them, kept so canonical_material_source and materialPropertySha256 do not move.
         "pdas_A1": 80.0,
         "sdas_B1": 42.0,
     },

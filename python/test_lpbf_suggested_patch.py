@@ -2,7 +2,9 @@
 
 The old patch (box minimum power with maximum speed for a keyhole verdict) failed the served Tang overlap screen for
 all four locked alloys. A patch is now returned only when the solver, re-run at the suggested point, gives a
-printable verdict; otherwise suggestedPatch is None and suggestedPatchNote says why.
+printable verdict; otherwise suggestedPatch is None and suggestedPatchNote says why. P7a (2026-10-11): printable
+means the Tang unit criterion passes, the geometry is resolved and the point is below the keyhole-mode cut; the
+advisories at the suggested point are returned as the third element (suggestedPatchAdvisories).
 """
 import copy
 import os
@@ -52,11 +54,15 @@ class SuggestedPatchUnit(unittest.TestCase):
             th = copy.deepcopy(self.th)
             th["processParameters"].update(laserPower_W=p, scanSpeed_mm_s=v, hatchSpacing_um=h,
                                            layerThickness_um=t, beamDiameter_um=d)
+            ok = passing(p, v, h, t, d)
             th["defectDiagnostics"].update(
-                lackOfFusionStatus="Pass" if passing(p, v, h, t, d) else "Fail",
-                keyholePorosityRisk="Low (Conduction Mode)", ballingScreen=None,
-                ballingInstabilityRisk="Stable Continuous Track (No Balling)", distortionIndex=0.3)
-            th["processParameters"]["normalizedEnthalpy"] = 20.0
+                lackOfFusionStatus="Pass" if ok else "Fail", tangIndex_hW_tD=0.5 if ok else 1.2,
+                lackOfFusionOverlapIndex=0.5 if ok else 1.2, lackOfFusionMarginAdvisory=False,
+                keyholePorosityRisk="Negligible", ballingScreen=None,
+                ballingInstabilityRisk="Stable Continuous Track (No Balling)", distortionIndex=None)
+            # P7a: a conduction-regime stub (the real 280/940 result is keyhole mode and would be rejected).
+            th["processParameters"]["normalizedEnthalpy"] = 12.0
+            th["meltPoolGeometry"]["regime"] = "Conduction Mode (Stable)"
             return th
 
         evaluate.calls = calls
@@ -64,8 +70,9 @@ class SuggestedPatchUnit(unittest.TestCase):
 
     def test_every_candidate_failing_tang_drops_the_patch_with_a_reason(self):
         ev = self._evaluator(lambda *a: False)
-        patch, note = _suggested_patch(self.th, "in718", "keyhole", "do-not-print", ev)
+        patch, note, adv = _suggested_patch(self.th, "in718", "keyhole", "risky", ev)
         self.assertIsNone(patch)
+        self.assertEqual(adv, [])
         self.assertIn("No parameter patch", note)
         self.assertIn("Tang", note)
         self.assertGreater(len(ev.calls), 1)  # the box corner was tried and rejected, then the grid
@@ -73,32 +80,38 @@ class SuggestedPatchUnit(unittest.TestCase):
     def test_the_first_verified_candidate_is_returned_not_the_box_corner(self):
         corner_p, corner_v = self.box["powerMin_W"], self.box["speedMax_mm_s"]
         ev = self._evaluator(lambda p, v, h, t, d: not (p == corner_p and v == corner_v))
-        patch, note = _suggested_patch(self.th, "in718", "keyhole", "do-not-print", ev)
+        patch, note, adv = _suggested_patch(self.th, "in718", "keyhole", "risky", ev)
         self.assertIsNotNone(patch)
+        self.assertEqual(adv, [])  # the conduction stub inside the box carries no advisory
         self.assertNotEqual((patch["laserPower_W"], patch["scanSpeed_mms"]), (corner_p, corner_v))
         self.assertTrue(self.box["powerMin_W"] <= patch["laserPower_W"] <= self.box["powerMax_W"])
         self.assertTrue(self.box["speedMin_mm_s"] <= patch["scanSpeed_mms"] <= self.box["speedMax_mm_s"])
         self.assertIn("Verified", note)
 
     def test_no_evaluator_offers_no_patch(self):
-        patch, note = _suggested_patch(self.th, "in718", "lof_tang", "do-not-print", None)
+        patch, note, adv = _suggested_patch(self.th, "in718", "lof_tang", "do-not-print", None)
         self.assertIsNone(patch)
+        self.assertEqual(adv, [])
         self.assertIn("not available", note)
 
     def test_printable_and_no_gate_cases_have_no_patch(self):
         ev = self._evaluator(lambda *a: True)
-        self.assertEqual(_suggested_patch(self.th, "in718", "none", "printable", ev), (None, None))
-        patch, note = _suggested_patch(self.th, "in718", "none", "inconclusive", ev)
+        self.assertEqual(_suggested_patch(self.th, "in718", "none", "printable", ev), (None, None, []))
+        patch, note, adv = _suggested_patch(self.th, "in718", "none", "inconclusive", ev)
         self.assertIsNone(patch)
         self.assertTrue(note)
         self.assertEqual(ev.calls, [])
 
-    def test_downskin_dominant_gate_gets_no_parameter_patch(self):
-        ev = self._evaluator(lambda *a: True)
-        patch, note = _suggested_patch(self.th, "in718", "downskin", "do-not-print", ev)
-        self.assertIsNone(patch)
-        self.assertIn("downskin", note)
-        self.assertEqual(ev.calls, [])
+    def test_downskin_is_never_dominant_so_no_patch_is_triggered(self):
+        # P7a: downskin is an advisory; a verdict with downskin alone is printable and gets no patch.
+        from lpbf_build_job_solver import compose_verdict
+        th = self._evaluator(lambda *a: True)(280.0, 940.0, 100.0, 40.0, 80.0)
+        out = compose_verdict(th, "in718", extras={"downskinOverhang_deg": 60.0, "patchEvaluator": self._evaluator(lambda *a: True)})
+        self.assertEqual(out["verdict"], "printable")
+        self.assertEqual(out["dominantGate"], "none")
+        self.assertIsNone(out["suggestedPatch"])
+        self.assertEqual(out["suggestedPatchAdvisories"], [])
+        self.assertTrue(any(a.startswith("Advisory: downskin") for a in out["advisories"]))
 
 
 class SuggestedPatchEndToEnd(unittest.TestCase):
@@ -116,6 +129,9 @@ class SuggestedPatchEndToEnd(unittest.TestCase):
         self.assertEqual(gates["lof_tang"], "pass", (alloy, patch))
         self.assertIn(gates["keyhole"], ("pass", "advisory"), (alloy, patch))
         self.assertEqual(again["verdict"]["verdict"], "printable", (alloy, patch))
+        # P7a: the advisories of the re-run are the ones reported with the patch.
+        self.assertEqual(verdict["suggestedPatchAdvisories"], again["verdict"]["advisories"], (alloy, patch))
+        self.assertIn("Advisories at the suggested point:", verdict["suggestedPatchNote"])
         return True
 
     def test_keyhole_dominant_patches_pass_tang_and_keyhole_for_all_alloys(self):
@@ -145,28 +161,29 @@ class SuggestedPatchEndToEnd(unittest.TestCase):
                 verified += self._assert_verified(alloy, _job(alloy, *point))
         self.assertGreaterEqual(verified, 1)
 
-    def test_failing_downskin_with_lof_tang_dominant_says_the_job_stays_blocked_on_downskin(self):
+    def test_downskin_advisory_with_lof_tang_dominant_says_the_advisory_stays(self):
+        # P7a: downskin is an advisory (never fail); the a6f57f66 caveat still says a patch cannot clear the overhang.
         checked = 0
         for alloy in ALLOYS:
             p, v = LOF_POINT[alloy]
             job = _job(alloy, p, v, downskinOverhang_deg=70.0)
             gates = _gates(job)
-            self.assertEqual(gates["downskin"], "fail", alloy)
+            self.assertEqual(gates["downskin"], "advisory", alloy)
             if gates["lof_tang"] != "fail":
                 continue  # melt-pool extent not resolved for this alloy at this point (gate unavailable)
             checked += 1
             self.assertEqual(job["verdict"]["dominantGate"], "lof_tang", alloy)
             note = job["verdict"]["suggestedPatchNote"]
             self.assertIn("downskin", note, alloy)
-            self.assertIn("stays do-not-print on downskin", note, alloy)
+            self.assertIn("the downskin advisory stays", note, alloy)
             self.assertIn("no power, speed, hatch or layer change fixes an overhang", note, alloy)
         self.assertGreaterEqual(checked, 1)
 
-    def test_downskin_warning_note_says_risky(self):
+    def test_downskin_50_deg_note_says_the_advisory_stays(self):
         p, v = LOF_POINT["in718"]
         job = _job("in718", p, v, downskinOverhang_deg=50.0)
-        self.assertEqual(_gates(job)["downskin"], "warn")
-        self.assertIn("stays risky on downskin", job["verdict"]["suggestedPatchNote"])
+        self.assertEqual(_gates(job)["downskin"], "advisory")
+        self.assertIn("the downskin advisory stays", job["verdict"]["suggestedPatchNote"])
 
     def test_the_old_box_corner_is_never_returned_unless_it_passes(self):
         # The pre-fix keyhole patch: box minimum power, maximum speed, current hatch/layer.
@@ -182,10 +199,15 @@ class SuggestedPatchEndToEnd(unittest.TestCase):
                                     (box["powerMin_W"], box["speedMax_mm_s"], 100), alloy)
 
     def test_printable_job_has_no_patch_and_no_note(self):
-        job = _job("in718", 210, 775, 90.0, 30.0)
+        # P7a: 210/775 (dH/hs 25.3) is keyhole mode, so risky; 165/775/90/30 (dH/hs 19.84, Tang 0.996) is printable.
+        job = _job("in718", 165, 775, 90.0, 30.0)
         self.assertEqual(job["verdict"]["verdict"], "printable")
         self.assertIsNone(job["verdict"]["suggestedPatch"])
         self.assertIsNone(job["verdict"]["suggestedPatchNote"])
+        self.assertEqual(job["verdict"]["suggestedPatchAdvisories"], [])
+        risky = _job("in718", 210, 775, 90.0, 30.0)
+        self.assertEqual(risky["verdict"]["verdict"], "risky")
+        self.assertEqual(risky["verdict"]["dominantGate"], "keyhole")
 
 
 class StaleKeyholeAssumption(unittest.TestCase):
@@ -194,7 +216,8 @@ class StaleKeyholeAssumption(unittest.TestCase):
         text = " ".join(job["assumptions"])
         self.assertNotIn("Keyhole uses King", text)
         self.assertIn("13.6", text)
-        self.assertIn("provisional keyhole-mode label at 20", text)
+        self.assertIn("provisional keyhole-mode cut 20", text)  # P7a wording
+        self.assertIn("a mode onset and not a porosity boundary", text)
         self.assertIn("Fabbro keyhole depth leg opens at the same onset (15)", text)
         self.assertIn("not a porosity boundary", text)
 

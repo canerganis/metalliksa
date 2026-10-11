@@ -60,6 +60,7 @@ test("all-zero run shows the dominant blocking gates and the frozen keyhole note
   assert.match(t, /balling ×11/);
   assert.match(t, /frozen thermal solver/);
   assert.match(t, /the regime threshold moved to 20 in the keyhole-regime bump/);
+  assert.match(t, /never do-not-print since P7a/);
   // A backend without the summary is reported, not hidden.
   const bare = text(renderToStaticMarkup(<BlockingGateSummary result={{ ...result, gateSummary: undefined, keyholeGateNote: undefined }} />));
   assert.match(bare, /Gate summary not returned/);
@@ -104,8 +105,10 @@ test("Python advisory / balling-screen wording and the 'advisory' gate status re
   assert.match(py, /not a demonstrated balling/);
   assert.match(py, /Eagar-Tsai aspect-ratio screen calibrated on Hofmann 2026 316L single tracks/);
   assert.doesNotMatch(py, /> 3\.8\)/);
-  assert.match(py, /rec_status = "advisory" if recoater_high else "pass"/);
-  assert.match(py, /dist_status = "advisory" if distortion_high else "pass"/);
+  // P7a (2026-10-11): recoater and distortion are not-evaluated (no sourced stress model), never advisory numbers.
+  assert.match(py, /"recoater",\s*"not-evaluated"/);
+  assert.match(py, /"distortion",\s*"not-evaluated"/);
+  assert.match(py, /VERDICT_BASIS = "sourced-criteria-only"/);
   const ts = read("src/services/pythonComputationService.ts");
   // P6 containment (2026-10-11): "not-evaluated" for a null gate input, never counted as pass or fail.
   assert.match(ts, /export type PythonLpbfGateStatus = "pass" \| "warn" \| "fail" \| "unavailable" \| "advisory" \| "not-evaluated";/);

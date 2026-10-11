@@ -5,7 +5,7 @@ import sys
 from lpbf_thermal_solver import calculate_meltpool_physics
 from solidification_front import (
     GRADIENT_SOURCE_CONDUCTION_INTERFACE, MODEL_ID, UNAVAILABLE_FEW_SAMPLES, UNAVAILABLE_KEYHOLE_LEG,
-    evaluate_solidification, hunt_lu_pdas_um, hunt_morphology, phase_transformation_note)
+    evaluate_solidification, hunt_morphology, pdas_band_um, phase_transformation_note)
 
 
 def assert_true(cond, msg):
@@ -28,13 +28,16 @@ def main():
     G = kin["thermalGradient_G_K_m"]
     R = kin["solidificationRate_R_m_s"]
     Tdot = kin["coolingRate_K_s"]
-    pdas = kin["primaryDendriteArmSpacing_PDAS_um"]
+    # P7a (2026-10-11): no PDAS scalar; 316L has no sourced PDAS parameters, so the band is null with a reason.
+    assert_true(kin["primaryDendriteArmSpacing_PDAS_um"] is None, "no PDAS scalar since P7a")
+    assert_true(kin["secondaryDendriteArmSpacing_SDAS_um"] is None, "no SDAS since P7a")
+    assert_true(kin["pdasBand_um"] is None and "no sourced PDAS parameters" in kin["pdasUnavailableReason"], "316L: no band")
     # LPBF order of magnitude: G ~ 10^5-10^8 K/m, Tdot ~ 10^4-10^7 K/s.
     assert_true(1.0e5 <= G <= 5.0e8, f"Goldak G {G}")
     assert_true(0.02 <= R <= 1.0, f"Goldak R {R} vs v=0.8 m/s")
     assert_true(1.0e4 <= Tdot <= 2.0e8, f"Goldak cooling {Tdot}")
-    assert_true(0.1 <= pdas <= 15.0, f"Hunt-Lu PDAS should be LPBF um-scale, got {pdas}")
-    assert_true(abs(pdas - hunt_lu_pdas_um(G, R)) < 0.2, "PDAS matches Hunt-Lu helper")
+    band = pdas_band_um(1e6, 0.5, "Inconel 718")["pdasBand_um"]
+    assert_true(abs(band["hunt"] - 1.137) < 1e-3 and abs(band["kurzFisher"] - 3.092) < 1e-3, "Ghosh 2017 band at the anchor")
     assert_true(kin["phaseTransformation"]["alloyClass"] == "316L", "316L phase note")
     assert_true(gk["modelId"] == "goldak-half-space-v3", "Goldak half-space power normalization")
 

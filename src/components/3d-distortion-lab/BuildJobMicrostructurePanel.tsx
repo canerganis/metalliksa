@@ -1,6 +1,7 @@
 import React from "react";
 import { Layers } from "lucide-react";
 import { BuildJobSegregationPanel } from "./BuildJobSegregationPanel";
+import { PDAS_BAND_LABEL, pdasBandText } from "../../utils/pdasBandText";
 
 // Build-job solidification microstructure (python/lpbf_solidification_microstructure.py
 // project_build_job_microstructure). Python projects thermal.solidificationKinetics and decides the status:
@@ -24,8 +25,13 @@ export interface BuildJobMicrostructureLike {
   R_m_s?: number | null;
   g_over_r_ratio?: number | null;
   coolingRate_K_s?: number | null;
+  /** null since P7a; the sourced Ni-Nb band is pdasBand_um. */
   PDAS_um?: number | null;
+  pdasBand_um?: { hunt: number; kurzFisher: number } | null;
+  pdasUnavailableReason?: string | null;
+  /** null since P7a (no sourced SDAS prefactor). */
   SDAS_um?: number | null;
+  sdasUnavailableReason?: string | null;
   morphology?: string | null;
   disclaimer?: string | null;
 }
@@ -77,11 +83,15 @@ export const BuildJobMicrostructurePanel: React.FC<{
           )}
           {m.regimeNote && <p className="text-[10px] text-amber-300" data-micro-note="regime">{m.regimeNote}</p>}
           <div className="grid grid-cols-2 gap-2">
-            <MicroMetric label="PDAS (µm)" value={m.PDAS_um?.toFixed(2) ?? "—"} hint="Hunt–Lu 1996" />
+            <MicroMetric
+              label="PDAS band (µm)"
+              value={m.pdasBand_um ? pdasBandText(m).replace(` (${PDAS_BAND_LABEL})`, "") : (typeof m.PDAS_um === "number" ? m.PDAS_um.toFixed(2) : "—")}
+              hint={m.pdasBand_um ? `${PDAS_BAND_LABEL} · Hunt to Kurz-Fisher` : (m.pdasUnavailableReason ?? "no sourced PDAS parameters")}
+            />
             <MicroMetric
               label="SDAS (µm)"
-              value={m.SDAS_um?.toFixed(2) ?? "—"}
-              hint={cellular ? "cells have no secondary arms · Kirkwood 1985" : "Kirkwood 1985"}
+              value={typeof m.SDAS_um === "number" ? m.SDAS_um.toFixed(2) : "—"}
+              hint={typeof m.SDAS_um === "number" ? (cellular ? "cells have no secondary arms · legacy payload" : "legacy payload") : (m.sdasUnavailableReason ?? "no sourced SDAS prefactor (P7a)")}
             />
             <MicroMetric label="Morphology" value={m.morphology ?? "—"} hint={`G/R = ${gOverR}`} />
             <MicroMetric label="Cooling Rate" value={m.coolingRate_K_s?.toExponential(1) ?? "—"} hint="K/s · median of G·R over front samples" />

@@ -37,6 +37,7 @@ def _effective_thermal(thermal):
         ),
         "density_liquid_kg_m3": thermal.get("density_liquid_kg_m3", thermal["density_kg_m3"]),
         "M_molar_kg_mol": thermal.get("M_molar_kg_mol", 0.055),
+        # unused since P7a (2026-10-11): the solver reads neither; kept so materialPropertySha256 does not move.
         "pdas_A1": thermal.get("pdas_A1", 75.0),
         "sdas_B1": thermal.get("sdas_B1", 40.0),
     })

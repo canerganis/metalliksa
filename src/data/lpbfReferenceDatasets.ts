@@ -202,7 +202,7 @@ export const TI6AL4V_REFERENCE_DATASET: TraceableLPBFRecord[] = [
     authors: "L. Thijs, F. Verhaeghe, T. Craeghs, J. Van Humbeeck, J.-P. Kruth",
     journal: "Acta Materialia",
     year: 2010,
-    doi: "10.1016/j.actamat.2010.02.008",
+    doi: "10.1016/j.actamat.2010.02.004",
     testingStandards: ["ASTM B962", "ASTM E8/E8M", "ASTM E384"],
     labOrganization: "KU Leuven",
   }),
@@ -253,7 +253,7 @@ export const TI6AL4V_REFERENCE_DATASET: TraceableLPBFRecord[] = [
     authors: "L. Thijs, F. Verhaeghe, T. Craeghs, J. Van Humbeeck, J.-P. Kruth",
     journal: "Acta Materialia",
     year: 2010,
-    doi: "10.1016/j.actamat.2010.02.008",
+    doi: "10.1016/j.actamat.2010.02.004",
     testingStandards: ["ASTM B962", "ASTM E8/E8M", "ASTM E384"],
     labOrganization: "KU Leuven",
   }),
@@ -498,7 +498,7 @@ export const TI6AL4V_REFERENCE_DATASET: TraceableLPBFRecord[] = [
     authors: "L. Thijs, F. Verhaeghe, T. Craeghs, J. Van Humbeeck, J.-P. Kruth",
     journal: "Acta Materialia",
     year: 2010,
-    doi: "10.1016/j.actamat.2010.02.008",
+    doi: "10.1016/j.actamat.2010.02.004",
     testingStandards: ["ASTM B962", "ASTM E8/E8M"],
     labOrganization: "KU Leuven",
   }),
@@ -548,7 +548,7 @@ export const TI6AL4V_REFERENCE_DATASET: TraceableLPBFRecord[] = [
     authors: "L. Thijs, F. Verhaeghe, T. Craeghs, J. Van Humbeeck, J.-P. Kruth",
     journal: "Acta Materialia",
     year: 2010,
-    doi: "10.1016/j.actamat.2010.02.008",
+    doi: "10.1016/j.actamat.2010.02.004",
     testingStandards: ["ASTM B962", "ASTM E8/E8M"],
     labOrganization: "KU Leuven",
   }),
@@ -608,7 +608,7 @@ export const SS316L_REFERENCE_DATASET: TraceableLPBFRecord[] = [
     authors: "J. A. Cherry, H. M. Ramsden, F. Quintany, C. R. Factor, R. I. Campbell",
     journal: "The International Journal of Advanced Manufacturing Technology",
     year: 2015,
-    doi: "10.1007/s00170-014-6721-3",
+    doi: "10.1007/s00170-014-6297-2",
     testingStandards: ["ASTM B962", "ASTM E8/E8M", "ASTM E384"],
     labOrganization: "University of Sheffield",
   }),
@@ -708,7 +708,7 @@ export const SS316L_REFERENCE_DATASET: TraceableLPBFRecord[] = [
     authors: "J. A. Cherry, H. M. Ramsden, F. Quintany, C. R. Factor, R. I. Campbell",
     journal: "The International Journal of Advanced Manufacturing Technology",
     year: 2015,
-    doi: "10.1007/s00170-014-6721-3",
+    doi: "10.1007/s00170-014-6297-2",
     testingStandards: ["ASTM B962", "ASTM E8/E8M"],
     labOrganization: "University of Sheffield",
   }),
@@ -858,7 +858,7 @@ export const SS316L_REFERENCE_DATASET: TraceableLPBFRecord[] = [
     authors: "J. A. Cherry, H. M. Ramsden, F. Quintany, C. R. Factor, R. I. Campbell",
     journal: "The International Journal of Advanced Manufacturing Technology",
     year: 2015,
-    doi: "10.1007/s00170-014-6721-3",
+    doi: "10.1007/s00170-014-6297-2",
     testingStandards: ["ASTM B962", "ASTM E8/E8M"],
     labOrganization: "University of Sheffield",
   }),
@@ -868,8 +868,8 @@ export const SS316L_REFERENCE_DATASET: TraceableLPBFRecord[] = [
 // 3. DATASET 3: AlSi10Mg
 // Based on:
 // - Read et al. (Mater. Des. 65, 2015, pp. 417–424)
-// - Kempen et al. (Rapid Prototyping J. 18, 2012 / Phys. Procedia 39, pp. 439–446)
-// - Aboulkhair et al. (Acta Materialia 112, 2016, pp. 77–89)
+// - Kempen et al. (Phys. Procedia 39, 2012, pp. 439–446; the Rapid Prototyping J. DOI formerly cited was a 404)
+// - Aboulkhair et al. (cited as Acta Materialia 112, 2016, pp. 77–89; DOI not resolved, citation unverified)
 // =========================================================================
 export const ALSI10MG_REFERENCE_DATASET: TraceableLPBFRecord[] = [
   // Conduction Window (High Power required due to Al reflectivity and high thermal conductivity)
@@ -963,12 +963,13 @@ export const ALSI10MG_REFERENCE_DATASET: TraceableLPBFRecord[] = [
     defectMorphology: "Dense (<0.1% pores)",
     microstructureDescription: "Cellular-dendritic Al-Si eutectic after 300°C 2h stress relief with spheroidized Si precipitates.",
     sourceType: "literature",
-    citation: "Kempen, K., Thijs, L., Van Humbeeck, J., & Kruth, J. P. (2012). Rapid Prototyping Journal, 18(3), 198-208.",
+    // P7a (2026-10-11): the former Rapid Prototyping Journal DOI was a 404; this title resolves in Crossref to Physics Procedia 39 (2012).
+    citation: "Kempen, K., Thijs, L., Van Humbeeck, J., & Kruth, J. P. (2012). Physics Procedia, 39, 439-446.",
     title: "Mechanical properties of AlSi10Mg produced by Selective Laser Melting",
     authors: "K. Kempen, L. Thijs, J. Van Humbeeck, J.-P. Kruth",
-    journal: "Rapid Prototyping Journal",
+    journal: "Physics Procedia",
     year: 2012,
-    doi: "10.1108/13552541211218112",
+    doi: "10.1016/j.phpro.2012.10.059",
     testingStandards: ["ASTM B962", "ASTM E8/E8M", "ASTM E384"],
     labOrganization: "KU Leuven",
   }),
@@ -1013,12 +1014,14 @@ export const ALSI10MG_REFERENCE_DATASET: TraceableLPBFRecord[] = [
     defectMorphology: "Gas Porosity / Balling",
     microstructureDescription: "Plateau-Rayleigh capillary breakup causing balling tracks and severe inter-track un-melted gaps.",
     sourceType: "literature",
-    citation: "Aboulkhair, N. T., Maskery, I., Tuck, C., Ashcroft, I., & Everitt, N. M. (2016). Acta Materialia, 112, 77-89.",
+    // P7a (2026-10-11): the former Acta Materialia DOI resolved to a CoFeB/MgO magnetics paper and Crossref has no
+    // 2016 Acta Materialia entry for this citation; the DOI is left empty rather than guessed (bibliographic completion open).
+    citation: "Aboulkhair, N. T., Maskery, I., Tuck, C., Ashcroft, I., & Everitt, N. M. (2016). Acta Materialia, 112, 77-89 (DOI not resolved; citation unverified).",
     title: "The microstructure and mechanical properties of Additively Manufactured AlSi10Mg",
     authors: "N. T. Aboulkhair, I. Maskery, C. Tuck, I. Ashcroft, N. M. Everitt",
     journal: "Acta Materialia",
     year: 2016,
-    doi: "10.1016/j.actamat.2016.03.044",
+    doi: "",
     testingStandards: ["ASTM B962", "ASTM E8/E8M"],
     labOrganization: "University of Nottingham",
   }),
@@ -1109,12 +1112,13 @@ export const ALSI10MG_REFERENCE_DATASET: TraceableLPBFRecord[] = [
     defectMorphology: "Dense (<0.1% pores)",
     microstructureDescription: "HIP + SR spheroidizes eutectic Si; cellular Si network broken; anisotropy collapses.",
     sourceType: "literature",
-    citation: "Kempen, K., Thijs, L., Van Humbeeck, J., & Kruth, J. P. (2012). Rapid Prototyping Journal, 18(3), 198-208.",
+    // P7a (2026-10-11): the former Rapid Prototyping Journal DOI was a 404; this title resolves in Crossref to Physics Procedia 39 (2012).
+    citation: "Kempen, K., Thijs, L., Van Humbeeck, J., & Kruth, J. P. (2012). Physics Procedia, 39, 439-446.",
     title: "Mechanical properties of AlSi10Mg produced by Selective Laser Melting",
     authors: "K. Kempen, L. Thijs, J. Van Humbeeck, J.-P. Kruth",
-    journal: "Rapid Prototyping Journal",
+    journal: "Physics Procedia",
     year: 2012,
-    doi: "10.1108/13552541211218112",
+    doi: "10.1016/j.phpro.2012.10.059",
     testingStandards: ["ASTM B962", "ASTM E8/E8M"],
     labOrganization: "KU Leuven",
   }),

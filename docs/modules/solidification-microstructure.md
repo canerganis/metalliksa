@@ -71,13 +71,13 @@ Background work: none; resources: fetch.
 
 - `src/components/SolidificationMicrostructureLab.tsx::SolidificationMicrostructureLab`
 - `src/components/SolidificationMicrostructureLab.tsx::solidificationRequest`
-- `src/services/pythonComputationService.ts:416-423#lpbf-solidification-microstructure`
+- `src/services/pythonComputationService.ts:424-431#lpbf-solidification-microstructure`
 - `routes/lpbfSimulation.ts:22-36#solidification-microstructure`
 - `server/lpbfWorkerBridge.ts:58#requestTimeoutMs ?? 20000`
 - `python/lpbf_worker_rpc.py::_rpc_solidification_microstructure`
 - `python/lpbf_solidification_microstructure.py::compute_screening_field_microstructure`
-- `python/lpbf_solidification_microstructure.py:202-219#regime`
-- `python/lpbf_solidification_microstructure.py:267-284#status`
+- `python/lpbf_solidification_microstructure.py:185-202#regime`
+- `python/lpbf_solidification_microstructure.py:266-283#status`
 - `python/lpbf_gr_solidification.py::run_gr_solidification`
 - `src/components/GrSolidificationMapCard.tsx::GrSolidificationMapCard`
 - `routes/physics.ts:93-93#60000`

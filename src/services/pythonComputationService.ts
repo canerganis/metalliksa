@@ -294,8 +294,15 @@ export interface SolidificationMicrostructureAvailable {
   R_m_s: number;
   coolingRate_K_s: number;
   g_over_r_ratio?: number | null;
-  PDAS_um: number;
-  SDAS_um: number;
+  /** null since P7a; the sourced Ni-Nb band (IN625/IN718) is pdasBand_um. */
+  PDAS_um: number | null;
+  pdasBand_um?: { hunt: number; kurzFisher: number } | null;
+  pdasBasis?: string | null;
+  pdasOutOfRange?: boolean | null;
+  pdasUnavailableReason?: string | null;
+  /** null since P7a (no sourced SDAS prefactor). */
+  SDAS_um: number | null;
+  sdasUnavailableReason?: string | null;
   morphology: string;
   doi?: string | Record<string, string> | null;
   disclaimer: string;
@@ -955,6 +962,8 @@ export interface PythonLpbfScreeningGate {
   required: number | null;
   unit: string;
   note: string;
+  /** P7a (2026-10-11): provenance of the gate edge; demoted gates carry "unsourced screening threshold". */
+  basis?: string;
 }
 
 export interface PythonLpbfSuggestedPatch {
@@ -967,6 +976,8 @@ export interface PythonLpbfSuggestedPatch {
 
 export interface PythonLpbfBuildJobVerdict {
   verdict: "printable" | "risky" | "do-not-print" | "inconclusive";
+  /** "sourced-criteria-only" since P7a: do-not-print on the Tang unit criterion, risky in keyhole mode, else printable. */
+  verdictBasis?: string;
   headline: string;
   reasons: string[];
   /** Each ratio is null when its melt-pool extent or Tang input is null (gate "not-evaluated"; never pass or fail). */
@@ -987,6 +998,12 @@ export interface PythonLpbfBuildJobVerdict {
   suggestedPatch?: PythonLpbfSuggestedPatch | null;
   /** Why there is no suggestedPatch, or how the suggested point was verified by re-running the solver. */
   suggestedPatchNote?: string | null;
+  /** Advisories at the suggested point (P7a; empty when none or no patch). */
+  suggestedPatchAdvisories?: string[];
+  /** True when 0.80 < Tang index <= 1.0 (unsourced screening margin; advisory only since P7a). */
+  lackOfFusionMarginAdvisory?: boolean;
+  /** Number of advisories (P7a). */
+  advisoryCount?: number;
   /** false when meltPoolGeometry.extentStatus !== "computed": geometry gates are unavailable, verdict is inconclusive. */
   geometryResolved?: boolean;
   extentStatus?: string;
@@ -1210,7 +1227,9 @@ export interface PythonLPBFResult {
     /** Why the Marangoni number, velocity and Peclet are null (P6 containment); null when they are served. */
     marangoniUnavailableReason?: string | null;
     aspectNote?: string;
-    doi?: string;
+    /** null since P7a: the former DOI resolved to an unrelated paper; the band edges are unsourced screening values. */
+    doi?: string | null;
+    basis?: string;
   };
   computeTimeMs: number;
   proxyRoundtripMs?: number;
@@ -1261,6 +1280,8 @@ export interface PythonLPBFResult {
     regimeKeyholeThreshold?: number;
     /** Per-alloy note shown with the regime (threshold derived / IN625 per-alloy cut / not validated). */
     regimeMaterialNote?: string;
+    /** P7a: keyhole-mode onset statement with the per-alloy cut provenance (a mode onset, not a porosity boundary). */
+    regimeKeyholeCutBasis?: string;
     /** Reporting-only note on the direction the served depth is biased (src/utils/depthBiasWarning.ts). No depth or regime number depends on it. */
     depthBiasWarning?: { direction: "may-underestimate" | "may-overestimate" | null; text: string | null; basis: string | null };
     /** Only "computed" is a closed, unfloored liquidus isotherm (python/lpbf_thermal_solver.py). */
@@ -1321,7 +1342,11 @@ export interface PythonLPBFResult {
     powderDenudationUnavailableReason?: string | null;
   };
   defectDiagnostics: {
+    /** "Pass" | "Fail" since P7a (one Tang unit rule); "Warning" only in older payloads. */
     lackOfFusionStatus: "Pass" | "Warning" | "Fail";
+    /** P7a: 0.80 < Tang index <= 1.0 (unsourced screening margin, advisory only). */
+    lackOfFusionMarginAdvisory?: boolean;
+    lackOfFusionMarginBasis?: string;
     lackOfFusionRisk: string;
     lackOfFusionOverlapIndex: number;
     tangIndex_hW_tD?: number;
@@ -1336,13 +1361,14 @@ export interface PythonLPBFResult {
     ballingInstabilityRisk: string;
     /** Eagar–Tsai L/W balling screen (python lpbf_defect_diagnostics.balling_screen). */
     ballingScreen?: PythonLpbfBallingScreen;
-    /** "Not evaluated from scan parameters (...)" since the 2026-10-06 tier-2 bump: the index is alloy/layer/preheat-only. */
+    /** "unavailable: no sourced stress model (...)" since P7a (2026-10-11); older payloads: "Not evaluated from scan parameters (...)". */
     recoaterCrashRisk: string;
-    /** Heuristic 0.72·E·α·ΔT/(1−ν) with fixed uncited constants; not a stress solve. */
-    effectiveResidualStress_MPa: number;
-    /** Heuristic index σ_eff·(layer/40 µm)/420 MPa with fixed uncited constants. */
-    distortionIndex: number;
+    /** null since P7a: the former 0.72·E·α·ΔT/(1−ν) heuristic used unsourced constants and is not served. */
+    effectiveResidualStress_MPa: number | null;
+    /** null since P7a: the former σ_eff·(layer/40 µm)/420 MPa index is not served. */
+    distortionIndex: number | null;
     distortionIndexBasis?: string;
+    stressUnavailableReason?: string | null;
   };
   /** P6 containment (2026-10-11): G, R, cooling rate, PDAS, SDAS and morphology come from the rear liquidus of the
    *  loss-free conduction field ("conduction-field-interface") and are null with unavailableReason when the served
@@ -1365,8 +1391,16 @@ export interface PythonLPBFResult {
     coolingRate_log10: number | null;
     g_over_r_ratio: number | null;
     microstructureMorphology: string | null;
+    /** null since P7a (no sourced scalar); the sourced Ni-Nb band is pdasBand_um. */
     primaryDendriteArmSpacing_PDAS_um: number | null;
+    /** P7a: Ghosh 2017 Hunt (Eq. 7) to Kurz-Fisher (Eq. 8) band for IN625/IN718 inside the validity range, else null. */
+    pdasBand_um?: { hunt: number; kurzFisher: number } | null;
+    pdasBasis?: string | null;
+    pdasOutOfRange?: boolean | null;
+    pdasUnavailableReason?: string | null;
+    /** null since P7a (no sourced SDAS prefactor). */
     secondaryDendriteArmSpacing_SDAS_um: number | null;
+    sdasUnavailableReason?: string | null;
     phaseTransformation?: {
       alloyClass?: string;
       expected?: string;

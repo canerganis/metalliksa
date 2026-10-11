@@ -39,15 +39,31 @@ MODEL_ID = "elliptic-overlap-screening-v2"
 #   about +-10 % uncertainty (absorptivity is estimated). A 'risky' screen, not a demonstrated
 #   balling prediction, never a do-not-print gate.
 # No depth (D/W) exemption: an earlier D/W < 1.2 clause was fitted to two Hofmann rows. KU Leuven tracks
-# above 5.5 (regime-labelled, no balling label) are already do-not-print by the keyhole gate
-# (dH/h_s >= 53 > 35); not all of them are deep keyholes (Ti-6Al-4V 200 W / 2000 mm/s / 37.5 um:
-# measured D/W 62/90 = 0.69).
+# above 5.5 (regime-labelled, no balling label) are keyhole-mode cells (dH/h_s >= 53), risky by the regime
+# classifier since P7a (the former do-not-print edge 35 is gone); not all of them are deep keyholes
+# (Ti-6Al-4V 200 W / 2000 mm/s / 37.5 um: measured D/W 62/90 = 0.69).
+# P7a (2026-10-11, G1 audit V09): the High band is an unsourced screening threshold (5.5, fitted in sample on Hofmann
+# 2026 316L, 677 tracks, Zenodo 16979848; 69 of 71 above it balled, on the Eagar-Tsai geometry of the fitting commit
+# f3ba9896; not validated elsewhere). It is REPORTED AS AN ADVISORY for 316L only and is NOT ASSIGNED for any other
+# alloy (highBandApplicable False: the band is Moderate there). Moderate (3.85) and Stable are unchanged. A call
+# without a material name keeps the legacy behaviour (High applicable) for the unlabelled synthetic callers.
 # ---------------------------------------------------------------------------------------------
 BALLING_SCREEN_MODEL_ID = "eagar-tsai-aspect-balling-screen-v1"
 BALLING_SCREEN_KERNEL = "eagar-tsai-v2"
 BALLING_LW_MODERATE = math.pi * math.sqrt(1.5)
 BALLING_LW_HIGH = 5.5
 BALLING_LW_RELATIVE_UNCERTAINTY = 0.10
+BALLING_HIGH_BAND_BASIS = ("unsourced screening threshold 5.5, fitted in sample on Hofmann 2026 316L (677 tracks, Zenodo "
+                           "16979848; 69 of 71 above it balled), on the Eagar-Tsai geometry of the fitting commit; not "
+                           "validated elsewhere; reported as an advisory for 316L only, not assigned for other alloys "
+                           "(P7a)")
+
+
+def balling_high_band_applicable(material_name):
+    """True when the empirical High band may be reported: 316L, or an unlabelled call (material_name None)."""
+    if material_name is None:
+        return True
+    return "316" in str(material_name).lower()
 BALLING_SCREEN_SOURCES = (
     "Yadroitsev, Gusarov, Yadroitsava & Smurov 2010, J. Mater. Process. Technol. 210:1624 (doi "
     "10.1016/j.jmatprotec.2010.05.010), sec. 3.3 Eq. (12)-(13): segmental-cylinder capillary stability, full-cylinder "
@@ -91,15 +107,17 @@ def _balling_band_rate(lw):
     return rates["stable (<= 3.85)"]
 
 
-def balling_screen(length_um, width_um, depth_um, extent_status):
+def balling_screen(length_um, width_um, depth_um, extent_status, material_name=None):
     """Eagar-Tsai aspect-ratio balling screen (see the block comment above).
 
     ``length_um``/``width_um``/``depth_um`` are the liquidus extents of the Eagar-Tsai kernel and
     ``extent_status`` its meltPoolGeometry.extentStatus. Returns a JSON-compatible dict whose
     ``band`` is "high", "moderate", "stable", or None when the Eagar-Tsai extent is not a computed
-    isotherm (unavailable: no band is assigned).
+    isotherm (unavailable: no band is assigned). ``material_name`` (P7a) decides whether the empirical
+    High band is applicable (316L only; an unlabelled call keeps it); ``highBandApplicable`` reports it.
     """
     status = str(extent_status) if extent_status is not None else "not-reported"
+    high_applicable = balling_high_band_applicable(material_name)
     lw = None
     dw = None
     try:
@@ -121,7 +139,10 @@ def balling_screen(length_um, width_um, depth_um, extent_status):
         "relativeUncertainty": BALLING_LW_RELATIVE_UNCERTAINTY,
         "hofmannBalledFractionInBand": None,
         "verdictEffect": "none",
-        "basis": ("Eagar-Tsai liquidus L/W: High > 5.5 (empirical, Hofmann 316L, in-sample) -> risky; Moderate > "
+        "highBandApplicable": high_applicable,
+        "highBandBasis": BALLING_HIGH_BAND_BASIS,
+        "basis": ("Eagar-Tsai liquidus L/W: High > 5.5 (empirical, Hofmann 316L, in-sample; an unsourced screening "
+                  "threshold reported as an advisory for 316L only since P7a, not assigned for other alloys); Moderate > "
                   "pi*sqrt(3/2) = 3.85 (Yadroitsev et al. 2010 Eq. 13 cylinder bound, mechanism Gusarov et al. 2007; "
                   "a wavelength/cylinder-diameter bound applied to the model pool L/W) -> advisory only"),
         "sources": list(BALLING_SCREEN_SOURCES),
@@ -134,11 +155,19 @@ def balling_screen(length_um, width_um, depth_um, extent_status):
                          "computed Eagar-Tsai liquidus L/W only, so no band is assigned.")
         return out
     out["hofmannBalledFractionInBand"] = _balling_band_rate(lw)
-    if lw > BALLING_LW_HIGH:
+    if lw > BALLING_LW_HIGH and high_applicable:
         out["band"] = "high"
-        out["verdictEffect"] = "risky"
-        out["reason"] = (f"Eagar-Tsai L/W {lw:.2f} > {BALLING_LW_HIGH} (empirical 316L threshold; "
-                         f"{out['hofmannBalledFractionInBand']} Hofmann tracks above it balled).")
+        out["verdictEffect"] = "advisory"
+        out["reason"] = (f"Eagar-Tsai L/W {lw:.2f} > {BALLING_LW_HIGH} (empirical 316L threshold, an unsourced screening "
+                         f"threshold reported as an advisory; {out['hofmannBalledFractionInBand']} Hofmann tracks above "
+                         "it balled).")
+    elif lw > BALLING_LW_HIGH:
+        out["band"] = "moderate"
+        out["verdictEffect"] = "advisory"
+        out["reason"] = (f"Eagar-Tsai L/W {lw:.2f} > pi*sqrt(3/2) = {BALLING_LW_MODERATE:.2f} (Yadroitsev 2010 "
+                         "segmental-cylinder bound; Gusarov 2007 Plateau-Rayleigh mechanism). The empirical High band "
+                         f"(> {BALLING_LW_HIGH}, 316L in-sample) is not assigned for this alloy; "
+                         f"{out['hofmannBalledFractionInBand']} Hofmann 316L tracks in this L/W band balled. Advisory only.")
     elif lw > BALLING_LW_MODERATE:
         out["band"] = "moderate"
         out["verdictEffect"] = "advisory"

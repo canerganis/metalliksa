@@ -137,9 +137,9 @@ class GoldakMeltPoolPathIndependentTests(unittest.TestCase):
         ros = calculate_meltpool_physics("Inconel 718", 285, 960, 80, 80, 40, 110)
         self.assertEqual(ros["modelId"], "rosenthal-screening-v1", "Build Job default unchanged")
         # P1 (2026-10-11): the Rosenthal increment heuristic-keyhole-increment-v1 was removed; every kernel serves the
-        # Fabbro leg (the onset ramp is still labelled uncited).
+        # Fabbro leg (the onset ramp is labelled unsourced since P7a; replacement is P3).
         self.assertEqual(ros["keyholeModel"]["modelId"], "fabbro-keyhole-v1")
-        self.assertIn("uncited", ros["keyholeModel"]["basis"])
+        self.assertIn("unsourced linear dH/hs onset ramp", ros["keyholeModel"]["basis"])
         self.assertIn("lower bound", ros["keyholeModel"]["basis"])
 
 

@@ -5,8 +5,12 @@
   (> 3.85) is an advisory with no verdict effect; an unresolved Eagar-Tsai extent makes the gate unavailable.
 - Recoater / distortion flags are alloy/layer advisories independent of P, v and hatch: reported, never
   verdict-driving, never the dominant gate.
-- The keyhole rule (High and dH > 35 -> do-not-print) is unchanged; since the 2026-10-06 tier-2 bump dH uses
-  the flat-plate absorptivity on every machine, so the IN718 280/940 end-to-end case is risky everywhere.
+- P7a (2026-10-11): the verdict uses sourced criteria only: do-not-print on the Tang unit criterion, risky when the
+  served regime classifier says keyhole mode (cut 20, IN625 13.6), otherwise printable; balling High (316L only), the
+  level 30, the Tang margin 0.80, the literature box and downskin are advisories; recoater and distortion are
+  not-evaluated (no sourced stress model). Keyhole mode never gives do-not-print (the former 35 edge is gone). Since
+  the 2026-10-06 tier-2 bump dH uses the flat-plate absorptivity on every machine, so the IN718 280/940 end-to-end
+  case (dH/hs 30.58, keyhole mode) is risky everywhere.
 
 Thermal inputs are real calculate_meltpool_physics output (in-repo frozen solver); only the defect
 flags under test are overwritten so each case isolates one gate.
@@ -43,16 +47,25 @@ def _clean(**flags):
     th = _base_thermal()
     assert th["meltPoolGeometry"]["extentStatus"] == "computed", th["meltPoolGeometry"]["extentStatus"]
     dd = th["defectDiagnostics"]
-    dd.update(lackOfFusionStatus="Pass", keyholePorosityRisk="Low (Conduction Mode)",
+    # P7a: a clean case is a conduction-regime pool with Tang 0.5 (no margin advisory) and null stress values.
+    dd.update(lackOfFusionStatus="Pass", tangIndex_hW_tD=0.5, lackOfFusionOverlapIndex=0.5,
+              lackOfFusionMarginAdvisory=False, keyholePorosityRisk="Negligible (legacy screening level)",
               ballingInstabilityRisk="Stable Continuous Track (No Balling)", ballingScreen=STABLE_BALLING,
-              recoaterCrashRisk="Low (Safe Thermal Stress Window)", distortionIndex=0.3)
-    th["processParameters"]["normalizedEnthalpy"] = 20.0
+              recoaterCrashRisk="unavailable: no sourced stress model", distortionIndex=None,
+              effectiveResidualStress_MPa=None)
+    th["processParameters"]["normalizedEnthalpy"] = 12.0
+    th["meltPoolGeometry"]["regime"] = "Conduction Mode (Stable)"
     for k, v in flags.items():
         if k == "normalizedEnthalpy":
             th["processParameters"][k] = v
+        elif k == "regime":
+            th["meltPoolGeometry"][k] = v
         else:
             dd[k] = v
     return th
+
+
+KEYHOLE_MODE = "Keyhole Mode (melt-pool D/W > 0.5 screening onset)"
 
 
 # Eagar-Tsai L, W, D (um) chosen to land in each band of the screen.
@@ -70,15 +83,17 @@ class ComposeVerdictTier1(unittest.TestCase):
         self.assertEqual(out["blockingGates"], [])
         self.assertEqual(out["advisories"], [])
 
-    def test_only_balling_high_is_risky_with_screen_reason(self):
+    def test_only_balling_high_is_an_advisory_with_screen_reason(self):
+        # P7a: balling High is an advisory (unsourced screening threshold), never risky.
         out = compose_verdict(_clean(ballingScreen=HIGH_BALLING), "in718")
-        self.assertEqual(out["verdict"], "risky")
+        self.assertEqual(out["verdict"], "printable")
         gates = {g["id"]: g["status"] for g in out["gates"]}
-        self.assertEqual(gates["balling"], "warn")
+        self.assertEqual(gates["balling"], "advisory")
         self.assertEqual(out["blockingGates"], [])
-        self.assertEqual(out["riskGates"], ["balling"])
-        self.assertEqual(out["dominantGate"], "balling")
-        line = next(r for r in out["reasons"] if "alling" in r)
+        self.assertEqual(out["riskGates"], [])
+        self.assertEqual(out["dominantGate"], "none")
+        line = next(r for r in out["advisories"] if "alling" in r)
+        self.assertIn("unsourced screening threshold", line)
         self.assertIn("Eagar–Tsai L/W = 6.00 (> 5.5", line)
         self.assertIn("Eagar-Tsai aspect-ratio screen calibrated on Hofmann 2026 316L single tracks", line)
         self.assertIn("10.5281/zenodo.16979848", line)
@@ -107,7 +122,7 @@ class ComposeVerdictTier1(unittest.TestCase):
         gate = next(g for g in out["gates"] if g["id"] == "balling")
         self.assertEqual(gate["status"], "unavailable")
         self.assertIn("width-floor-applied", gate["reason"])
-        self.assertEqual(out["unavailableGates"], ["balling"])
+        self.assertEqual(out["unavailableGates"], ["recoater", "distortion", "balling"])  # P7a: stress gates listed too
         self.assertTrue(any(r.startswith("Balling screen unavailable") for r in out["reasons"]))
         # A printable verdict without the screen is not balling-cleared: the headline and flag say so.
         self.assertFalse(out["ballingScreened"])
@@ -122,7 +137,7 @@ class ComposeVerdictTier1(unittest.TestCase):
 
     def test_high_reason_discloses_recall_and_spot_dependence(self):
         out = compose_verdict(_clean(ballingScreen=HIGH_BALLING), "in718")
-        line = next(r for r in out["reasons"] if r.startswith("Balling screen High"))
+        line = next(r for r in out["advisories"] if r.startswith("Advisory: balling screen High"))
         self.assertIn("69/216 balled tracks flagged overall, 3/38 at a 140 um spot", line)
 
     def test_non_flat_plate_absorption_is_disclosed_not_rebanded(self):
@@ -141,32 +156,32 @@ class ComposeVerdictTier1(unittest.TestCase):
         th = _clean()
         del th["defectDiagnostics"]["ballingScreen"]
         th["defectDiagnostics"]["ballingInstabilityRisk"] = "High Balling Risk (legacy)"
-        self.assertEqual(compose_verdict(th, "in718")["riskGates"], ["balling"])
+        self.assertEqual(compose_verdict(th, "in718")["advisoryGates"], ["balling"])  # P7a: advisory, not risk
 
-    def test_only_recoater_distortion_high_keeps_printable(self):
+    def test_recoater_distortion_are_not_evaluated_and_keep_printable(self):
+        # P7a: no sourced stress model; the gates are not-evaluated even when an old payload carries a number.
         out = compose_verdict(_clean(recoaterCrashRisk=HIGH_RECOATER, distortionIndex=7.59), "in718")
         self.assertEqual(out["verdict"], "printable")
         self.assertEqual(out["dominantGate"], "none")
         self.assertIsNone(out["suggestedPatch"])
-        gates = {g["id"]: g["status"] for g in out["gates"]}
-        self.assertEqual(gates["recoater"], "advisory")
-        self.assertEqual(gates["distortion"], "advisory")
-        self.assertEqual(out["advisoryGates"], list(ADVISORY_GATES))
+        gates = {g["id"]: g for g in out["gates"]}
+        for gid in ADVISORY_GATES:
+            self.assertEqual(gates[gid]["status"], "not-evaluated", gid)
+            self.assertIsNone(gates[gid]["required"])
+            self.assertIn("no sourced stress model", gates[gid]["reason"])
+        self.assertEqual(out["notEvaluatedGates"], list(ADVISORY_GATES))
+        self.assertEqual(out["unavailableGates"], list(ADVISORY_GATES))
+        self.assertEqual(out["advisoryGates"], [])
+        self.assertEqual(out["advisories"], [])
         self.assertEqual(out["blockingGates"], [])
         self.assertEqual(out["riskGates"], [])
-        # Advisories are visible in reasons, last, and say why they do not change the verdict.
-        self.assertEqual(out["reasons"][-2:], out["advisories"])
-        self.assertTrue(out["reasons"][0].startswith("Conduction-mode melt pool"))
-        for a in out["advisories"]:
-            self.assertTrue(a.startswith("Advisory:"), a)
-            self.assertIn("not on P, v or hatch", a)
-            self.assertIn("does not change the verdict", a)
+        self.assertTrue(out["reasons"][0].startswith("Melt pool passes the Tang overlap criterion"), out["reasons"])
 
     def test_advisories_do_not_change_any_verdict(self):
         cases = [
             {}, {"ballingScreen": HIGH_BALLING}, {"ballingScreen": MODERATE_BALLING}, {"lackOfFusionStatus": "Warning"},
             {"lackOfFusionStatus": "Fail"}, {"keyholePorosityRisk": "High", "normalizedEnthalpy": 32.0},
-            {"keyholePorosityRisk": "High", "normalizedEnthalpy": 40.0},
+            {"keyholePorosityRisk": "High", "normalizedEnthalpy": 40.0, "regime": KEYHOLE_MODE},
         ]
         for flags in cases:
             plain = compose_verdict(_clean(**flags), "in718")
@@ -175,19 +190,22 @@ class ComposeVerdictTier1(unittest.TestCase):
             self.assertEqual(plain["dominantGate"], adv["dominantGate"], flags)
             self.assertEqual(plain["suggestedPatch"], adv["suggestedPatch"], flags)
 
-    def test_keyhole_rule_unchanged(self):
-        self.assertEqual(compose_verdict(_clean(keyholePorosityRisk="High", normalizedEnthalpy=35.0), "in718")["verdict"], "risky")
+    def test_keyhole_mode_is_risky_never_do_not_print(self):
+        # P7a: the served regime classifier drives risky; the level 30 and the former 35 edge drive nothing.
+        for dh in (20.0, 35.0, 35.01, 60.0):
+            out = compose_verdict(_clean(normalizedEnthalpy=dh, regime=KEYHOLE_MODE), "in718")
+            self.assertEqual(out["verdict"], "risky", dh)
+            self.assertEqual(out["blockingGates"], [])
+            self.assertEqual(out["riskGates"], ["keyhole"])
+            self.assertEqual(out["dominantGate"], "keyhole")
+        # The legacy level without the keyhole-mode regime label is an advisory only.
         out = compose_verdict(_clean(keyholePorosityRisk="High", normalizedEnthalpy=35.01), "in718")
-        self.assertEqual(out["verdict"], "do-not-print")
-        self.assertEqual(out["blockingGates"], ["keyhole"])
-        self.assertEqual(out["dominantGate"], "keyhole")
+        self.assertEqual(out["verdict"], "printable")
+        self.assertEqual({g["id"]: g["status"] for g in out["gates"]}["keyhole"], "advisory")
 
-    def test_keyhole_possible_band_is_an_advisory_without_verdict_effect(self):
-        # Keyhole-regime bump: the porosity screen "Possible" band (15 <= dH/hs < 30) is advisory only; the
-        # numeric gate (High at 30, do-not-print above 35) is unchanged and the regime threshold (20) is separate.
-        possible = ("Possible (15 <= dH/hs < 30; not resolved by this index: Zhao 2020 Ti-6Al-4V pores "
-                    "observed at dH/hs 16-28 for v <= 445 mm/s)")
-        out = compose_verdict(_clean(keyholePorosityRisk=possible, normalizedEnthalpy=25.0), "in718")
+    def test_transition_band_is_an_advisory_without_verdict_effect(self):
+        # P7a: the 15 to cut band (Zhao 2020) and the legacy level 30 are advisories; the gate's required is the cut.
+        out = compose_verdict(_clean(normalizedEnthalpy=17.0, regime="Transition Mode"), "in718")
         self.assertEqual(out["verdict"], "printable")
         gates = {g["id"]: g["status"] for g in out["gates"]}
         self.assertEqual(gates["keyhole"], "advisory")
@@ -195,19 +213,17 @@ class ComposeVerdictTier1(unittest.TestCase):
         self.assertEqual(out["riskGates"], [])
         self.assertEqual(out["blockingGates"], [])
         self.assertEqual(out["dominantGate"], "none")
-        adv = next(a for a in out["advisories"] if "keyhole porosity possible" in a)
-        self.assertTrue(adv.startswith("Advisory:"), adv)
-        self.assertIn("ΔH/hₛ 25.0 in 15–30", adv)
+        adv = next(a for a in out["advisories"] if a.startswith("Advisory: transition band"))
+        self.assertIn("ΔH/hₛ = 17.0 in 15 to 20", adv)
         self.assertIn("porosity unresolved", adv)
         gate = next(g for g in out["gates"] if g["id"] == "keyhole")
-        self.assertEqual((gate["measured"], gate["required"]), (25.0, 30.0))
-        self.assertIn("regime keyhole-mode onset (ΔH/hₛ = 20) is separate", gate["note"])
-        high = "High (screening proxy dH/hs >= 30; not a porosity boundary)"
-        self.assertEqual(compose_verdict(_clean(keyholePorosityRisk=high, normalizedEnthalpy=30.0), "in718")["verdict"], "risky")
-        self.assertEqual(compose_verdict(_clean(keyholePorosityRisk=high, normalizedEnthalpy=35.01), "in718")["verdict"], "do-not-print")
-        reason = next(r for r in compose_verdict(_clean(keyholePorosityRisk=high, normalizedEnthalpy=30.0), "in718")["reasons"]
-                      if r.startswith("Keyhole porosity screen High"))
-        self.assertIn("legacy screening level ≥ 30; porosity unresolved, not a porosity boundary", reason)
+        self.assertEqual((gate["measured"], gate["required"]), (17.0, 20.0))
+        self.assertIn("mode onset, not a porosity boundary", gate["basis"])
+        self.assertIn("never do-not-print", gate["note"])
+        high = compose_verdict(_clean(keyholePorosityRisk="High", normalizedEnthalpy=32.0), "in718")
+        self.assertEqual(high["verdict"], "printable")
+        adv = next(a for a in high["advisories"] if a.startswith("Advisory: keyhole porosity legacy level"))
+        self.assertIn("unsourced screening threshold, legacy porosity level kept for continuity", adv)
 
     def test_lof_fail_still_do_not_print(self):
         out = compose_verdict(_clean(lackOfFusionStatus="Fail"), "in718")
@@ -244,15 +260,16 @@ class In718EndToEnd(unittest.TestCase):
         gates = {g["id"]: g["status"] for g in v["gates"]}
         self.assertEqual(gates["balling"], "advisory")
         self.assertNotIn("balling", v["riskGates"])
-        self.assertEqual(gates["recoater"], "advisory")
-        self.assertEqual(gates["distortion"], "advisory")
-        self.assertTrue(set(v["blockingGates"]) <= {"keyhole"}, v["blockingGates"])
+        self.assertEqual(gates["recoater"], "not-evaluated")  # P7a: no sourced stress model
+        self.assertEqual(gates["distortion"], "not-evaluated")
+        self.assertEqual(v["blockingGates"], [])  # P7a: keyhole mode never blocks
         return v, dh
 
     def _assert_flat_risky(self, v, dh):
-        # Tier-2 bump (2026-10-06): dH uses the flat-plate absorptivity on every machine: ~30.6 -> risky.
+        # Tier-2 bump (2026-10-06): dH uses the flat-plate absorptivity on every machine: ~30.6, keyhole mode -> risky.
         self.assertAlmostEqual(dh, 30.58, delta=0.01)
         self.assertEqual(v["verdict"], "risky", (dh, v["reasons"]))
+        self.assertEqual(v["riskGates"], ["keyhole"])
         self.assertEqual(v["blockingGates"], [])
 
     def test_in718_280_940_keyhole_warns_but_does_not_block(self):

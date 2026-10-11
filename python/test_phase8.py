@@ -22,8 +22,6 @@ from pathlib import Path
 
 # ---- import Phase 8 module --------------------------------------------------
 from lpbf_solidification_microstructure import (
-    hunt_lu_pdas_um,
-    kirkwood_sdas_um,
     hunt_morphology,
     morphology_fractions,
     compute_solidification_microstructure,
@@ -31,45 +29,8 @@ from lpbf_solidification_microstructure import (
 
 
 class Phase8Correlations(unittest.TestCase):
-    # Test 1 -- Hunt-Lu PDAS physical range
-    def test_pdas_physical_range(self):
-        for G_Km, R_ms, expected_range in [
-            (1e6,  0.05,  (0.1, 500.0)),   # Moderate gradient, moderate speed
-            (1e7,  0.001, (0.1, 500.0)),   # High gradient, slow speed -> coarse PDAS
-            (5e5,  0.5,   (0.1, 500.0)),   # Low gradient, fast speed
-            (1e9,  1.0,   (0.1, 500.0)),   # Near upper bound clamp
-        ]:
-            with self.subTest(G_Km=G_Km, R_ms=R_ms):
-                pdas = hunt_lu_pdas_um(G_Km, R_ms)
-                self.assertTrue(
-                    expected_range[0] <= pdas <= expected_range[1],
-                    f"PDAS={pdas:.3f} µ outside [{expected_range[0]}, {expected_range[1]}] µ for G={G_Km:.1e}, R={R_ms}")
-
-    def test_pdas_monotonic_in_G(self):
-        """PDAS decreases as G increases (finer microstructure at higher gradient)."""
-        for G_Km, R_ms in [
-            (1e5,  0.05),  # Low gradient: PDAS ~ 80/(316)*1.67 = 0.42 um, monotonically testable
-            (1e6,  0.1),   # Moderate gradient, avoid clamp floor
-        ]:
-            with self.subTest(G_Km=G_Km, R_ms=R_ms):
-                pdas_lo = hunt_lu_pdas_um(G_Km * 0.5, R_ms)
-                pdas_hi = hunt_lu_pdas_um(G_Km * 2.0, R_ms)
-                self.assertLess(pdas_hi, pdas_lo, "PDAS must decrease with increasing thermal gradient G")
-
-    # Test 2 -- Kirkwood SDAS physical range
-    def test_sdas_physical_range(self):
-        for cooling_K_s in [100.0, 1e4, 1e6, 1e8]:
-            with self.subTest(cooling_K_s=cooling_K_s):
-                sdas = kirkwood_sdas_um(cooling_K_s)
-                self.assertTrue(
-                    0.05 <= sdas <= 200.0,
-                    f"SDAS={sdas:.3f} µ outside [0.05, 200] µ for T_dot={cooling_K_s:.1e} K/s")
-
-    def test_sdas_monotonic_in_cooling_rate(self):
-        """SDAS decreases with increasing cooling rate (faster -> finer)."""
-        sdas_slow = kirkwood_sdas_um(1e4)
-        sdas_fast = kirkwood_sdas_um(1e6)
-        self.assertLess(sdas_fast, sdas_slow, "SDAS must decrease with increasing cooling rate")
+    # Tests 1 and 2 (Hunt-Lu PDAS 80 and Kirkwood SDAS 64.5 ranges) removed in P7a (2026-10-11): the prefactors were
+    # unsourced and are deleted; the CFD path serves PDAS_um and SDAS_um as None (test_phase8_microstructure_contract).
 
     # Test 3 -- Hunt morphology criterion
     def test_morphology_columnar(self):

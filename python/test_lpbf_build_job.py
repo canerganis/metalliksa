@@ -531,15 +531,16 @@ def check_extent_status_consumers():
     reason = f"melt-pool geometry not resolved (heuristic-width-fallback): {geo['extentNote']}"
     assert v["verdictReason"] == reason
     by_id = {g["id"]: g for g in v["gates"]}
-    assert sorted(v["unavailableGates"]) == sorted(GEOMETRY_DEPENDENT_GATES)
+    # P7a: recoater and distortion are always listed (no sourced stress model) next to the geometry gates.
+    assert sorted(v["unavailableGates"]) == sorted(GEOMETRY_DEPENDENT_GATES + ("recoater", "distortion"))
     for gid in ("lof_tang", "lof_wh", "lof_dt", "balling"):
         assert by_id[gid]["status"] == "unavailable", (gid, by_id[gid])
         assert by_id[gid]["reason"] == reason and by_id[gid]["measured"] is None
     # Geometry-independent gates keep their result.
     assert by_id["keyhole"]["status"] == "pass" and by_id["keyhole"]["measured"] == heur["thermal"]["processParameters"]["normalizedEnthalpy"]
-    assert by_id["literature_pv"]["status"] == "warn" and by_id["downskin"]["status"] == "pass"
-    # Parameter-independent alloy/layer advisories: reported, never verdict-driving.
-    assert by_id["recoater"]["status"] == "advisory" and by_id["distortion"]["status"] == "advisory"
+    assert by_id["literature_pv"]["status"] == "advisory" and by_id["downskin"]["status"] == "pass"  # P7a: box is advisory
+    # P7a: recoater and distortion are not evaluated (no sourced stress model), never verdict-driving.
+    assert by_id["recoater"]["status"] == "not-evaluated" and by_id["distortion"]["status"] == "not-evaluated"
     assert v["verdict"] not in ("printable", "do-not-print", "risky")
     assert "do-not-print" not in json.dumps(v["headline"]).lower()
     assert not any(r.startswith("Lack of fusion (Tang)") or "Plateau" in r for r in v["reasons"]), v["reasons"]
@@ -555,7 +556,7 @@ def check_extent_status_consumers():
         out = compose_verdict(th, "in718")
         assert out["verdict"] == "inconclusive" and out["extentStatus"] == status, (status, out["verdict"])
         assert out["verdictReason"] == f"melt-pool geometry not resolved ({status}): note for {status}"
-        assert sorted(out["unavailableGates"]) == sorted(GEOMETRY_DEPENDENT_GATES)
+        assert sorted(out["unavailableGates"]) == sorted(GEOMETRY_DEPENDENT_GATES + ("recoater", "distortion"))
         assert all(g["status"] != "fail" for g in out["gates"] if g["id"] in GEOMETRY_DEPENDENT_GATES)
 
     # (b) A computed case keeps its verdict and gate statuses (no unavailable gate, no new reason).
@@ -568,19 +569,22 @@ def check_extent_status_consumers():
     dh = float(comp["thermal"]["processParameters"]["normalizedEnthalpy"])
     assert comp["thermal"]["processParameters"]["absorptionModel"] == "flat-plate"
     assert abs(dh - 30.8) < 0.05, dh
-    keyhole_blocks = dh > 35.0
-    assert cv["verdict"] == ("do-not-print" if keyhole_blocks else "risky"), (dh, cv["verdict"])
+    # P7a: keyhole mode (dH/hs 30.8 >= 20) is risky and never do-not-print; the level 30 is an advisory.
+    assert cv["verdict"] == "risky", (dh, cv["verdict"])
+    assert cv["verdictBasis"] == "sourced-criteria-only"
     assert cv["geometryResolved"] is True and cv["verdictReason"] is None
-    assert cv["unavailableGates"] == [] and cv["geometryIndependentFailGates"] == []
+    assert cv["unavailableGates"] == ["recoater", "distortion"] and cv["geometryIndependentFailGates"] == []
     assert {g["id"]: g["status"] for g in cv["gates"]} == {
-        "lof_tang": "pass", "lof_wh": "pass", "lof_dt": "pass", "keyhole": "fail" if keyhole_blocks else "warn",
-        "balling": "advisory", "literature_pv": "pass", "recoater": "advisory", "distortion": "advisory",
+        "lof_tang": "pass", "lof_wh": "pass", "lof_dt": "pass", "keyhole": "warn",
+        "balling": "advisory", "literature_pv": "pass", "recoater": "not-evaluated", "distortion": "not-evaluated",
         "downskin": "pass"}, cv["gates"]
     assert cv["dominantGate"] == "keyhole"
-    assert cv["blockingGates"] == (["keyhole"] if keyhole_blocks else []), (dh, cv["blockingGates"])
-    assert cv["advisoryGates"] == ["balling", "recoater", "distortion"]
+    assert cv["blockingGates"] == [], (dh, cv["blockingGates"])
+    assert cv["advisoryGates"] == ["balling"]
     assert comp["thermal"]["defectDiagnostics"]["ballingScreen"]["band"] == "moderate"
-    assert all("reason" not in g and g["measured"] is not None or g["id"] == "downskin" for g in cv["gates"])
+    assert all("reason" not in g and g["measured"] is not None or g["id"] in ("downskin", "recoater", "distortion")
+               for g in cv["gates"])
+    assert any(a.startswith("Advisory: keyhole porosity legacy level") for a in cv["advisories"])
     assert not any("not resolved" in r for r in cv["reasons"])
 
     # NIST AM-Bench: only computed rows enter the overall error.
@@ -674,8 +678,9 @@ def main():
         "lpbf-build-job-in625-regime-v20",
         "lpbf-build-job-p1-sourced-v21",
         "lpbf-build-job-p1-sourced-v22",
+        "lpbf-build-job-p6-containment-v23",
     ), BUILD_JOB_SOLVER_REVISION
-    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-p6-containment-v23"
+    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-p7a-rules-and-nulls-v24"
     assert ti["processSeed"] == 42
     assert ti["scanStrategy"]["id"] == "stripe"
     assert ti["uq"] is None  # lazy default
@@ -1080,9 +1085,10 @@ def main():
             "bypassCache": True,
         }
     )
-    assert ds["verdict"]["dominantGate"] == "downskin" or any(
-        g["id"] == "downskin" and g["status"] == "fail" for g in ds["verdict"]["gates"]
-    ), ds["verdict"]
+    # P7a: downskin is an advisory (unsourced screening threshold), never dominant, never a fail.
+    assert all(g["status"] == "advisory" for g in ds["verdict"]["gates"] if g["id"] == "downskin"), ds["verdict"]
+    assert ds["verdict"]["dominantGate"] != "downskin"
+    assert any(a.startswith("Advisory: downskin") for a in ds["verdict"]["advisories"])
 
     unsupported = run_job({"alloyId": "Inconel 625", "bypassCache": True})
     assert unsupported["success"] is False

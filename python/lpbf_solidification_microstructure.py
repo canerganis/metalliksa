@@ -20,14 +20,12 @@ Provides:
     → Build-job projection of thermal["solidificationKinetics"] (the conduction
       field G/R from solidification_front); numbers are copied, not recomputed.
 
-Legacy CFD-path correlations (unreachable today: no caller supplies a CFD result;
-they are NOT the model of record for any displayed number):
-    λ₁ [µm] = 80 · G^(-0.5) · R^(-0.25)        ("Hunt-Lu 1996" label; prefactor
-                                                 differs from solidification_front,
-                                                 see the S4 follow-up in the N1 handoff)
-    λ₂ [µm] = 64.5 · Ṫ^(-0.33)                 (Kirkwood 1985)
-The numbers shown by the build job and by the Microstructure Lab come from
-solidification_front via thermal["solidificationKinetics"].
+P7a (2026-10-11): the legacy CFD-path correlations λ₁ = 80 G^-0.5 R^-0.25 and λ₂ = 64.5 Ṫ^-0.33
+(unsourced prefactors, unreachable: no caller supplies a CFD result) are deleted; the CFD path
+serves PDAS_um and SDAS_um as None with a reason. The numbers shown by the build job and by the
+Microstructure Lab come from solidification_front via thermal["solidificationKinetics"]: the
+PDAS scalar is null, a sourced Ni-Nb band (pdasBand_um, Ghosh 2017) is served for IN625/IN718
+inside its validity range, SDAS is null.
 
 Hunt G/R morphology criterion:
     G/R > 1×10⁸  K·s/m²  → columnar
@@ -40,28 +38,15 @@ from typing import Any, Dict
 
 
 # ---------------------------------------------------------------------------
-# Hunt-Lu / Kirkwood microstructure correlations
+# Hunt G/R morphology (the former Hunt-Lu / Kirkwood prefactors 80 and 64.5 were unsourced and are deleted, P7a)
 # ---------------------------------------------------------------------------
 
-PDAS_COEFFICIENT = 80.0   # µm · (K/m)^0.5 · (m/s)^0.25
-SDAS_COEFFICIENT = 64.5   # µm · (K/s)^0.33
 G_OVER_R_COLUMNAR = 1.0e8   # K·s/m²  — above this: columnar
 G_OVER_R_EQUIAXED = 1.0e6   # K·s/m²  — below this: equiaxed
-
-
-def hunt_lu_pdas_um(G_Km: float, R_ms: float) -> float:
-    """Primary dendrite arm spacing [µm] via Hunt-Lu 1996."""
-    G_safe = max(G_Km, 1.0)
-    R_safe = max(R_ms, 1.0e-6)
-    pdas = PDAS_COEFFICIENT * (G_safe ** -0.5) * (R_safe ** -0.25)
-    return float(max(0.1, min(pdas, 500.0)))
-
-
-def kirkwood_sdas_um(cooling_rate_Ks: float) -> float:
-    """Secondary dendrite arm spacing [µm] via Kirkwood 1985."""
-    Tdot_safe = max(cooling_rate_Ks, 1.0)
-    sdas = SDAS_COEFFICIENT * (Tdot_safe ** -0.33)
-    return float(max(0.05, min(sdas, 200.0)))
+CFD_SPACING_UNAVAILABLE_REASON = (
+    "PDAS and SDAS are not served on the CFD path since P7a (2026-10-11): the former prefactors 80 um (K/m)^0.5 "
+    "(m/s)^0.25 and 64.5 um (K/s)^0.33 had no source"
+)
 
 
 def hunt_morphology(G_Km: float, R_ms: float) -> str:
@@ -129,7 +114,7 @@ _KEYHOLE_REGIME_NOTE = "Keyhole Mode: outside the conduction regime of the G/R f
 
 _MICROSTRUCTURE_DISCLAIMER = (
     "G from grad(T) at mushy-zone front; R from U·n_front. "
-    "PDAS/SDAS are semi-empirical correlations validated for LPBF dendrite scale. "
+    "PDAS/SDAS are not served on this path (unsourced prefactors deleted, P7a). "
     "Morphology is Hunt G/R criterion with soft transition band."
 )
 
@@ -211,8 +196,14 @@ def project_build_job_microstructure(thermal: Dict[str, Any], *, note: str = _BU
             "G_K_m": kin["thermalGradient_G_K_m"],
             "R_m_s": r_m_s,
             "coolingRate_K_s": kin["coolingRate_K_s"],
+            # P7a: the PDAS scalar is null; the sourced Ni-Nb band (IN625/IN718, Ghosh 2017) or the reason is carried.
             "PDAS_um": kin.get("primaryDendriteArmSpacing_PDAS_um"),
+            "pdasBand_um": kin.get("pdasBand_um"),
+            "pdasBasis": kin.get("pdasBasis"),
+            "pdasOutOfRange": kin.get("pdasOutOfRange"),
+            "pdasUnavailableReason": kin.get("pdasUnavailableReason"),
             "SDAS_um": kin.get("secondaryDendriteArmSpacing_SDAS_um"),
+            "sdasUnavailableReason": kin.get("sdasUnavailableReason"),
             "morphology": kin.get("microstructureMorphology"),
             "g_over_r_ratio": kin.get("g_over_r_ratio"),
             "doi": kin.get("doi"),
@@ -245,7 +236,10 @@ def project_build_job_microstructure(thermal: Dict[str, Any], *, note: str = _BU
         "R_m_s": None,
         "coolingRate_K_s": None,
         "PDAS_um": None,
+        "pdasBand_um": None,
+        "pdasUnavailableReason": (kin.get("pdasUnavailableReason") if isinstance(kin, dict) else None) or thermal_reason,
         "SDAS_um": None,
+        "sdasUnavailableReason": kin.get("sdasUnavailableReason") if isinstance(kin, dict) else None,
         "morphology": None,
     }
 
@@ -288,7 +282,7 @@ def _unavailable_screening(reason: str, heat_source: Any = None) -> Dict[str, An
 
 
 _MICROSTRUCTURE_DISCLAIMER_SCREENING = (
-    "Screening conduction-field G/R with Hunt G/R morphology bands, Hunt-Lu PDAS and Kirkwood SDAS. "
+    "Screening conduction-field G/R with Hunt G/R morphology bands; PDAS as the sourced Ni-Nb band or null, SDAS null (P7a). "
     "Not in-situ front tracking, not calibrated, not experimentally validated."
 )
 
@@ -446,17 +440,13 @@ def compute_solidification_microstructure(
     front_cells = int(cfd_solid.get("frontCellCount", 0))
     source = "openfoam-solidification-model-v1"
 
-    # ---- Microstructure correlations ---------------------------------------
-    pdas = hunt_lu_pdas_um(G, R)
-    sdas = kirkwood_sdas_um(Tdot)
+    # ---- Morphology (PDAS/SDAS not served: unsourced prefactors deleted, P7a) ----
     morph = hunt_morphology(G, R)
     fracs = morphology_fractions(G, R)
 
     # ---- Validate physical bounds (unit-test oracle; CFD path only) --------
     assert 1.0e3 <= G <= 1.0e10, f"G={G:.3e} K/m out of physical range [1e3, 1e10]"
     assert 1.0e-6 <= R <= 2.0,   f"R={R:.3e} m/s out of physical range [1e-6, 2]"
-    assert 0.05 <= pdas <= 500.0, f"PDAS={pdas:.2f} µm outside [0.05, 500]"
-    assert 0.01 <= sdas <= 200.0, f"SDAS={sdas:.2f} µm outside [0.01, 200]"
     total_frac = fracs["columnar"] + fracs["equiaxed"] + fracs["mixed"]
     assert abs(total_frac - 1.0) < 0.01, f"Morphology fractions sum {total_frac:.4f} ≠ 1"
 
@@ -468,8 +458,9 @@ def compute_solidification_microstructure(
         "R_m_s": round(R, 6),
         "maxR_m_s": round(maxR, 6),
         "coolingRate_K_s": round(Tdot, 2),
-        "PDAS_um": round(pdas, 3),
-        "SDAS_um": round(sdas, 3),
+        "PDAS_um": None,
+        "SDAS_um": None,
+        "spacingUnavailableReason": CFD_SPACING_UNAVAILABLE_REASON,
         "morphology": morph,
         "morphologyFractions": fracs,
         "frontCellCount": front_cells,

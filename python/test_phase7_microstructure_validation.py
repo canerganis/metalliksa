@@ -1,43 +1,21 @@
 import unittest
 from lpbf_solidification_microstructure import (
-    hunt_lu_pdas_um,
-    kirkwood_sdas_um,
     hunt_morphology,
     morphology_fractions
 )
 from kinetics_ttt_cct_solver import solve_phase_transformation_kinetics
 
 class TestPhase7MicrostructureValidation(unittest.TestCase):
-    def test_01_hunt_lu_pdas_lpbf_regime(self):
-        # Typical LPBF: G ~ 1e6 K/m, R ~ 1.0 m/s
-        # pdas = 80 * G^(-0.5) * R^(-0.25)
-        # pdas = 80 * (1e6)^(-0.5) * (1)^(-0.25) = 80 * 1e-3 * 1 = 0.08 um (bounded by 0.1 um)
-        G = 1.0e6
-        R = 1.0
-        pdas = hunt_lu_pdas_um(G, R)
-        self.assertGreaterEqual(pdas, 0.1) # Minimum bound
-        self.assertLess(pdas, 2.0)         # Expect sub-micron or low-micron
-        
-        # Slower casting regime: G ~ 1e4 K/m, R ~ 0.01 m/s
-        # pdas = 80 * (1e4)^(-0.5) * (1e-2)^(-0.25) = 80 * 1e-2 * 10^0.5 = 0.8 * 3.16 = 2.53 um
-        G_slow = 1.0e4
-        R_slow = 0.01
-        pdas_slow = hunt_lu_pdas_um(G_slow, R_slow)
-        self.assertGreater(pdas_slow, pdas, "Slower cooling must result in larger primary dendrite arm spacing")
-
-    def test_02_kirkwood_sdas(self):
-        # Typical LPBF cooling rate: 1e6 K/s
-        # sdas = 64.5 * Tdot^(-0.33)
-        # sdas = 64.5 * (1e6)^(-0.33) = 64.5 * 10^(-1.98) ~ 0.67 um
-        tdot = 1.0e6
-        sdas = kirkwood_sdas_um(tdot)
-        self.assertAlmostEqual(sdas, 0.67, delta=0.05)
-        
-        # Casting cooling rate: 1e2 K/s
-        tdot_slow = 1.0e2
-        sdas_slow = kirkwood_sdas_um(tdot_slow)
-        self.assertAlmostEqual(sdas_slow, 14.1, delta=0.2)
-        self.assertGreater(sdas_slow, sdas)
+    # P7a (2026-10-11): the CFD-path Hunt-Lu (80) and Kirkwood (64.5) prefactors were unsourced and are deleted;
+    # the former test_01 and test_02 on them are removed. PDAS/SDAS on that path are served as None.
+    def test_01_cfd_path_serves_no_spacing(self):
+        from lpbf_solidification_microstructure import compute_solidification_microstructure
+        cfd = {"solidificationMicrostructure": {"meanG_K_m": 1.0e6, "meanR_m_s": 0.5, "meanCoolingRate_K_s": 5.0e5}}
+        out = compute_solidification_microstructure({}, {}, cfd)
+        self.assertEqual(out["status"], "available")
+        self.assertIsNone(out["PDAS_um"])
+        self.assertIsNone(out["SDAS_um"])
+        self.assertIn("no source", out["spacingUnavailableReason"])
 
     def test_03_hunt_morphology(self):
         # Columnar: G/R > 1e8 K s/m^2

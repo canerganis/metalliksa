@@ -15,8 +15,14 @@ Fabbro keyhole leg (the conduction field does not describe that interface), give
 reason; PDAS, SDAS and morphology propagate null. An inclined surface needs the velocity
 vector and the normal in one frame, not a second multiplier.
 
-PDAS is Hunt–Lu λ1 ∝ G^{-1/2} R^{-1/4} with an LPBF-scale SI prefactor
-(µm cells), not unused welding pdas_A1. SDAS is Kirkwood λ2 ∝ Ṫ^{-1/3}.
+P7a (2026-10-11, G1 audit B10 and B12): the served PDAS scalar is null. For the Ni-Nb alloys
+(IN625, IN718) a sourced band λ1 = A G^{-1/2} R^{-1/4} is served with the two members of Ghosh et
+al. 2017 (Modelling Simul. Mater. Sci. Eng. 25, 065002) Fig. 6 caption, Eq. 7 (Hunt, A = 9.56e-4)
+and Eq. 8 (Kurz and Fisher, A = 2.6e-3), inside the validity range of those simulations; every
+other alloy serves null (no sourced coefficients). SDAS is null for every alloy (Kirkwood 1985
+gives the exponent form only; the per-alloy B1 values had no source). The former helpers
+hunt_lu_pdas_um (prefactor 1.19e-3, a chosen anchor) and kirkwood_sdas_um are kept only for the
+guarded parity-harness observations and are not read by the served path.
 
 Does not re-score Build Job printability.
 """
@@ -45,10 +51,78 @@ G_OVER_R_PLANAR = 1.0e10
 G_OVER_R_CELLULAR = 5.0e8
 G_OVER_R_COLUMNAR = 1.0e7
 
-# Hunt–Lu SI: λ1 = A G^{-1/2} R^{-1/4}. G=1e6 K/m, R=0.5 m/s → ~1 µm.
+# Former served prefactor (unused since P7a; a chosen anchor so that G=1e6 K/m, R=0.5 m/s gave about 1 um). Kept only
+# for the parity-harness observation `solidification.pdas`.
 HUNT_LU_A_SI = 1.19e-3
 
+# P7a: sourced PDAS band for the dilute binary Ni-Nb model alloy of Ghosh et al. 2017 (Table 2), λ1 = A G^-0.5 R^-0.25,
+# A in m^0.75 s^-0.25 K^0.5: Eq. 7 Hunt (9.56e-4) and Eq. 8 Kurz and Fisher (2.6e-3), Fig. 6 caption (PDF p.11). The
+# slope-only phase-field member (2.1e-3) is dropped: the Fig. 6 line of best fit has an intercept ("a nearly constant
+# offset", PDF p.12), so a slope without its intercept is not a PDAS law. Validity range of the Ghosh simulations:
+# x = G^-0.5 R^-0.25 in [4e-4, 1.2e-3] m^0.25 s^0.25 K^-0.5 and cooling rate 5e4 to 3e6 K/s (Fig. 6 abscissa and the
+# operating range in the text, PDF p.11, as read in the Opus gate review). Applied to IN625 and IN718 as the closest
+# sourced Ni-Nb system; not a measurement of those alloys; the coefficients are alloy specific.
+GHOSH2017_DOI = "10.1088/1361-651X/aa7369"
+PDAS_A_HUNT_SI = 9.56e-4
+PDAS_A_KURZ_FISHER_SI = 2.6e-3
+PDAS_X_RANGE = (4.0e-4, 1.2e-3)
+PDAS_COOLING_RANGE_K_S = (5.0e4, 3.0e6)
+PDAS_BASIS = ("Ni-Nb model alloy band, Ghosh et al. 2017 (Modelling Simul. Mater. Sci. Eng. 25, 065002, doi "
+              f"{GHOSH2017_DOI}) Fig. 6 caption: Eq. 7 Hunt A = 9.56e-4 and Eq. 8 Kurz-Fisher A = 2.6e-3 "
+              "(m^0.75 s^-0.25 K^0.5), λ1 = A G^-0.5 R^-0.25. The phase-field PDAS values lie near Hunt (p.11); the "
+              "line of best fit has a slope close to Kurz-Fisher with a constant offset (p.12), so the slope-only "
+              "member is not served. The system is a dilute binary Ni-Nb model alloy (Table 2), applied to IN625 and "
+              "IN718 as the closest sourced Ni-Nb system and not a measurement of those alloys; the coefficients are "
+              "alloy specific. Validity: x = G^-0.5 R^-0.25 in [4e-4, 1.2e-3] and cooling rate 5e4 to 3e6 K/s "
+              "(Fig. 6 abscissa and operating range, p.11); outside it the band is null (pdasOutOfRange)")
+PDAS_NO_COEFFICIENTS_REASON = ("no sourced PDAS parameters for this alloy (Hunt's coefficient needs k_e, Gamma, "
+                               "delta T0, D_l); only the Ni-Nb model alloy band of Ghosh 2017 is sourced (IN625, IN718)")
+SDAS_UNAVAILABLE_REASON = ("no sourced SDAS prefactor: Kirkwood 1985 gives the exponent form λ2 ∝ Ṫ^(-1/3) only and the "
+                           "former per-alloy B1 values had no source (P7a)")
+
 TI64_MARTENSITE_K_S = 410.0
+
+
+def pdas_alloy_sourced(alloy_id) -> bool:
+    """True for the Ni-Nb alloys that the Ghosh 2017 band is applied to (IN625, IN718)."""
+    name = str(alloy_id or "").lower().replace(" ", "").replace("-", "")
+    return "625" in name or "718" in name
+
+
+def pdas_band_um(G_K_m: float, R_m_s: float, alloy_id, cooling_K_s: Optional[float] = None) -> Dict[str, Any]:
+    """Sourced PDAS band (um) for IN625/IN718 inside the Ghosh 2017 validity range, else null with a reason.
+
+    Returns {"pdasBand_um": {"hunt", "kurzFisher"} | None, "pdasOutOfRange": bool | None,
+    "pdasUnavailableReason": str | None, "pdasBasis": str | None, "x": float | None}. ``cooling_K_s`` defaults to G R.
+    """
+    out: Dict[str, Any] = {"pdasBand_um": None, "pdasOutOfRange": None, "pdasUnavailableReason": None,
+                           "pdasBasis": None, "x": None}
+    if not pdas_alloy_sourced(alloy_id):
+        out["pdasUnavailableReason"] = PDAS_NO_COEFFICIENTS_REASON
+        return out
+    out["pdasBasis"] = PDAS_BASIS
+    try:
+        G, R = float(G_K_m), float(R_m_s)
+        Tdot = G * R if cooling_K_s is None else float(cooling_K_s)
+    except (TypeError, ValueError):
+        out["pdasUnavailableReason"] = "G, R or the cooling rate is not a finite number"
+        return out
+    if not (G > 0.0 and R > 0.0 and Tdot > 0.0 and math.isfinite(G) and math.isfinite(R) and math.isfinite(Tdot)):
+        out["pdasUnavailableReason"] = "G, R or the cooling rate is not a finite positive number"
+        return out
+    x = (G ** -0.5) * (R ** -0.25)
+    out["x"] = x
+    x_lo, x_hi = PDAS_X_RANGE
+    c_lo, c_hi = PDAS_COOLING_RANGE_K_S
+    if not (x_lo <= x <= x_hi and c_lo <= Tdot <= c_hi):
+        out["pdasOutOfRange"] = True
+        out["pdasUnavailableReason"] = (
+            f"outside the Ghosh 2017 validity range: x = G^-0.5 R^-0.25 = {x:.3e} (range {x_lo:g} to {x_hi:g}) and "
+            f"cooling rate {Tdot:.3e} K/s (range {c_lo:g} to {c_hi:g}); no band is served")
+        return out
+    out["pdasOutOfRange"] = False
+    out["pdasBand_um"] = {"hunt": PDAS_A_HUNT_SI * x * 1.0e6, "kurzFisher": PDAS_A_KURZ_FISHER_SI * x * 1.0e6}
+    return out
 
 
 def _t_scalar(T_fn: Callable, x: float, y: float, z: float) -> float:
@@ -101,12 +175,14 @@ def hunt_morphology(g_over_r: float) -> str:
 
 
 def hunt_lu_pdas_um(G_K_m: float, R_m_s: float) -> float:
+    """Former served scalar (unused since P7a; parity-harness observation only, not read by the served path)."""
     G = max(1.0e4, float(G_K_m))
     R = max(1.0e-5, float(R_m_s))
     return HUNT_LU_A_SI * (G ** -0.5) * (R ** -0.25) * 1.0e6
 
 
 def kirkwood_sdas_um(cooling_K_s: float, B: float) -> float:
+    """Former served scalar (unused since P7a; parity-harness observation only, not read by the served path)."""
     tdot = max(10.0, float(cooling_K_s))
     return abs(float(B)) * (tdot ** -0.33)
 
@@ -252,7 +328,12 @@ def _unavailable(reason: str) -> Dict[str, Any]:
         "g_over_r_ratio": None,
         "microstructureMorphology": None,
         "primaryDendriteArmSpacing_PDAS_um": None,
+        "pdasBand_um": None,
+        "pdasBasis": None,
+        "pdasOutOfRange": None,
+        "pdasUnavailableReason": reason,
         "secondaryDendriteArmSpacing_SDAS_um": None,
+        "sdasUnavailableReason": SDAS_UNAVAILABLE_REASON,
         "phaseTransformation": None,
         "doi": HUNT_DOI,
         "disclaimer": _DISCLAIMER,
@@ -267,8 +348,8 @@ def evaluate_solidification(
     x_rear: float,
     search_depth: float,
     r_beam: float,
-    sdas_B1: float,
     material_name: str,
+    sdas_B1: Optional[float] = None,
     depth_from_keyhole_leg: bool = False,
     T_sol: Optional[float] = None,
     t_surface: Optional[float] = None,
@@ -276,12 +357,11 @@ def evaluate_solidification(
     cos_theta: Optional[float] = None,
     pdas_A1: Optional[float] = None,
 ) -> Dict[str, Any]:
-    """Interface G, R, cooling rate and the Hunt-Lu / Kirkwood spacings, or null with a reason.
+    """Interface G, R, cooling rate, the sourced PDAS band (Ni-Nb alloys) and null SDAS, or null with a reason.
 
-    T_sol, t_surface, x_front, cos_theta and pdas_A1 are accepted for signature compatibility and ignored
-    (P6: no tail-length fallback from a surface temperature, no incline multiplier, Hunt-Lu SI replaces
-    the welding pdas_A1)."""
-    del T_sol, t_surface, x_front, cos_theta, pdas_A1
+    T_sol, t_surface, x_front, cos_theta, pdas_A1 and sdas_B1 are accepted for signature compatibility and ignored
+    (P6: no tail-length fallback from a surface temperature, no incline multiplier; P7a: no PDAS scalar, no SDAS)."""
+    del T_sol, t_surface, x_front, cos_theta, pdas_A1, sdas_B1
     if depth_from_keyhole_leg:
         return _unavailable(UNAVAILABLE_KEYHOLE_LEG)
     mapped = map_solidification_front(
@@ -301,6 +381,7 @@ def evaluate_solidification(
         return _unavailable(UNAVAILABLE_FEW_SAMPLES)
 
     g_over_r = G / R
+    band = pdas_band_um(G, R, material_name, Tdot)
     out: Dict[str, Any] = {
         "modelId": MODEL_ID,
         "gradientSource": GRADIENT_SOURCE_CONDUCTION_INTERFACE,
@@ -312,8 +393,13 @@ def evaluate_solidification(
         "coolingRate_K_s": Tdot,
         "g_over_r_ratio": g_over_r,
         "microstructureMorphology": hunt_morphology(g_over_r),
-        "primaryDendriteArmSpacing_PDAS_um": hunt_lu_pdas_um(G, R),
-        "secondaryDendriteArmSpacing_SDAS_um": kirkwood_sdas_um(Tdot, sdas_B1),
+        "primaryDendriteArmSpacing_PDAS_um": None,
+        "pdasBand_um": band["pdasBand_um"],
+        "pdasBasis": band["pdasBasis"],
+        "pdasOutOfRange": band["pdasOutOfRange"],
+        "pdasUnavailableReason": band["pdasUnavailableReason"],
+        "secondaryDendriteArmSpacing_SDAS_um": None,
+        "sdasUnavailableReason": SDAS_UNAVAILABLE_REASON,
         "phaseTransformation": phase_transformation_note(material_name, Tdot),
         "doi": HUNT_DOI,
         "disclaimer": _DISCLAIMER,
