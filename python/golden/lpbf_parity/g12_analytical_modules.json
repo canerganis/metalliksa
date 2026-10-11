@@ -4,9 +4,9 @@
  "group": "G12",
  "description": "Eagar-Tsai, Rosenthal, Goldak, Fabbro, Marangoni, solidification front",
  "slow": false,
- "recordedImplementationHash": "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede",
+ "recordedImplementationHash": "807d74b35239a6854ed7e5259f47711e01971b0fa3733f7aab73075e5a65faf8",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "6de85dd50276987a80cfd162f5840ef3347dc7f7",
+ "recordedGitHead": "2c6d1073cadec290767d279c1c437537aa23b12f",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -83,7 +83,7 @@
   "solidification.pdas": "6310041425088cc02995e3d4a8e0c28913327371dfb1bb47d45c706bb0f09507",
   "solidification.sdas": "8fc4b0101adb6ade0393cf83ce899c1e6b3ed5589cbb7a31c56c16e53fa1684a",
   "solidification.phaseNote": "9d343e9d8f2983094755b57e5484e42195afa49d418fb0029f73256b9bd584eb",
-  "solidification.evaluate": "1e135fff0402c5500ac3d2c2cd22d2c0d3934fe9bba51f78f0caeee440117dec",
+  "solidification.evaluate": "e24036a1ce2397c7068739559706854c650f4d1e5f63666431cfc71c155f0e73",
   "powderPacker.seeded": {
    "error": "NotImplementedError: Fabrication of powder bed via random packing is disabled. Use proper LPBF DEM coupling."
   }
@@ -425,24 +425,20 @@
   ],
   "solidification.evaluate": {
    "modelId": "solidification-front-v1",
-   "gradientSource": "tail-length-fallback",
+   "gradientSource": null,
    "usedFieldMap": false,
-   "thermalGradient_G_K_m": 1140000000.0,
-   "solidificationRate_R_m_s": 0.8,
-   "coolingRate_K_s": 912000000.0,
-   "g_over_r_ratio": 1425000000.0,
-   "microstructureMorphology": "Cellular (Hunt G/R screening)",
-   "primaryDendriteArmSpacing_PDAS_um": 0.03726679453578704,
-   "secondaryDendriteArmSpacing_SDAS_um": 0.05522957581559174,
-   "phaseTransformation": {
-    "alloyClass": "IN718",
-    "expected": "gamma_cellular_possible_laves",
-    "criterion": "interdendritic Laves possible; not quantified without Scheil/CALPHAD",
-    "source": "screening \u2014 no invented Laves fraction",
-    "doi": "10.1016/0025-5416(84)90201-5"
-   },
+   "interface": "rear liquidus isotherm of the loss-free conduction field in the y = 0 plane (conduction-field interface); G = |grad T|, R = v n_x, cooling = G R per sample, medians over the solidifying samples (n_x > 0)",
+   "unavailableReason": "fewer than 3 solidifying rear-liquidus samples (n_x > 0) in the conduction field: no interface statistic is served and the former tail-length fallback G = dT/x_rear was removed as uncited (P6 containment)",
+   "thermalGradient_G_K_m": null,
+   "solidificationRate_R_m_s": null,
+   "coolingRate_K_s": null,
+   "g_over_r_ratio": null,
+   "microstructureMorphology": null,
+   "primaryDendriteArmSpacing_PDAS_um": null,
+   "secondaryDendriteArmSpacing_SDAS_um": null,
+   "phaseTransformation": null,
    "doi": "10.1016/0025-5416(84)90201-5",
-   "disclaimer": "G,R from the conduction-field liquidus. Hunt G/R bands are not calibrated N0 CET. Does not re-score Build Job."
+   "disclaimer": "G,R from the rear liquidus of the loss-free conduction field (conduction-field interface). Hunt G/R bands are not calibrated N0 CET. Does not re-score Build Job. Null with unavailableReason where the interface is not described by that field (P6 containment)."
   },
   "solidification.hunt": [
    "Planar (Hunt G/R screening)",
