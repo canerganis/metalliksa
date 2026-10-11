@@ -163,8 +163,11 @@ class ComparisonToolTest(unittest.TestCase):
         docs = PYTHON_DIR.parent / "docs"
         # Current record (fingerprint cda80143, keyhole-regime bump; numbers equal the balling-screen record,
         # only the fingerprint differs); the earlier records are kept as history.
-        stem = "LPBF_NIST_2525_ABSORPTANCE_COMPARISON_2026-10-07_keyhole-regime"
-        doc = tool.build_document(False, "2026-10-07")
+        # Current record: fingerprint c61ab6a8 (P1 sourced-physics bump, 2026-10-11; the ray tracer and the flat
+        # absorptivity do not move, the eta_eff row is renamed "effective absorptivity (flat after P1)"). The earlier
+        # records are history. This stem was stale (red) on main since the in625-regime bump.
+        stem = "LPBF_NIST_2525_ABSORPTANCE_COMPARISON_2026-10-11_p1-sourced"
+        doc = tool.build_document(False, "2026-10-11")
         fresh_json = json.dumps(doc, sort_keys=True, indent=1, ensure_ascii=False) + "\n"
         self.assertEqual((docs / f"{stem}.json").read_bytes().replace(b"\r\n", b"\n"),
                          fresh_json.encode("utf-8"))

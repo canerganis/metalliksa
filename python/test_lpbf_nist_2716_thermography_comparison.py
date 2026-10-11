@@ -103,7 +103,9 @@ class ComparisonToolTest(unittest.TestCase):
     def test_e_fingerprint_field_equals_expected(self):
         expected = (PYTHON_DIR / "lpbf_implementation_fingerprint.expected").read_text(encoding="utf-8").strip()
         self.assertEqual(self.doc["implementationFingerprint"], expected)
-        self.assertTrue(expected.startswith("cda80143"))
+        # P1 sourced-physics bump pin (2026-10-11); this prefix was still cda80143 (keyhole-regime) on main and red
+        # since the la6-gusarov and in625-regime re-pins.
+        self.assertTrue(expected.startswith("c61ab6a8"))
         checks = {c["id"]: c for c in self.doc["checks"]}
         self.assertEqual(checks["A2-physics-fingerprint"]["result"], "skipped")  # --quick does not run the test
         self.assertIn("--quick", checks["A2-physics-fingerprint"]["detail"])
@@ -164,8 +166,11 @@ class ComparisonToolTest(unittest.TestCase):
         """The committed docs record equals a fresh full run (needs the fingerprint test; about 15 s)."""
         # The current record (fingerprint cda80143, keyhole-regime bump; numbers equal the balling-screen record,
         # only the fingerprint differs); the earlier records are kept as history.
-        committed = PYTHON_DIR.parent / "docs" / "LPBF_NIST_2716_THERMOGRAPHY_COMPARISON_2026-10-07_keyhole-regime.json"
-        doc = tool.build_document(False, "2026-10-07")
+        # Current record: fingerprint c61ab6a8 (P1 sourced-physics bump, 2026-10-11; the Rosenthal liquidus length and
+        # width columns moved). The earlier records are kept as history. This stem was last repointed here at the
+        # keyhole-regime bump and was stale (red) on main since the in625-regime bump.
+        committed = PYTHON_DIR.parent / "docs" / "LPBF_NIST_2716_THERMOGRAPHY_COMPARISON_2026-10-11_p1-sourced.json"
+        doc = tool.build_document(False, "2026-10-11")
         self.assertEqual(tool.serialize(doc), committed.read_text(encoding="utf-8"))
         self.assertEqual(tool.render_markdown(doc), committed.with_suffix(".md").read_text(encoding="utf-8"))
         self.assertEqual(doc["kernels"], list(tool.KERNELS))
