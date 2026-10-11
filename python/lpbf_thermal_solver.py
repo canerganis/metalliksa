@@ -7,9 +7,12 @@ Simulates:
 1. 3D Goldak double-ellipsoid moving laser heat source & Eagar-Tsai / Rosenthal thermal fields
 2. Multi-regime melt pool geometry (Conduction, Transition, Keyhole Mode)
 3. 3-View geometric contours (Top-Down X-Y, Longitudinal X-Z, Transverse Y-Z with Hatch Overlap)
-4. Hydrodynamic Marangoni convection, Knudsen recoil vapor pressure (flat absorptivity; no multiple-reflection term)
-5. Comprehensive defect analytics: Lack of Fusion (LoF), Keyhole Porosity, Plateau-Rayleigh Balling, Spatter Denudation
-6. Solidification kinetics: G(x,y,z), R(x,y,z), Cooling Rate G*R, Hunt CET morphology, PDAS & SDAS
+4. Marangoni screening from the served loss-free peak (null where unsupported); recoil pressure is not served
+   (P6 containment 2026-10-11: no wall closure), an onset status string is served instead
+5. Comprehensive defect analytics: Lack of Fusion (LoF), Keyhole Porosity, Plateau-Rayleigh Balling
+   (powder denudation width is served null: uncited heuristic, G1 audit B05)
+6. Solidification kinetics on the conduction-field interface: G, R, cooling rate G*R, Hunt morphology, PDAS & SDAS,
+   null with a reason where the served depth comes from the Fabbro keyhole leg or the interface is not sampled
 7. Full 2D Power-Velocity (P-V) Process Window map generation
 """
 
@@ -20,13 +23,15 @@ import time
 
 import numpy as np
 
-from eagar_tsai_solver import EagarTsaiField, MODEL_ID as EAGAR_TSAI_MODEL_ID
+from eagar_tsai_solver import (EagarTsaiField, MODEL_ID as EAGAR_TSAI_MODEL_ID, SURFACE_MAXIMUM_BASIS,
+                               eagar_tsai_surface_maximum)
 from fabbro_keyhole import MODEL_ID as FABBRO_MODEL_ID, fabbro_keyhole_depth_m
-from four_alloy_materials import four_alloy_thermophysical_db, thermal_props
+from four_alloy_materials import four_alloy_thermophysical_db, resolve_alloy_id, thermal_props
 from in625_thermal_material import LATENT_HEAT_J_KG as IN625_LATENT_HEAT_J_KG
 from goldak_solver import GoldakField, MODEL_ID as GOLDAK_MODEL_ID, seed_goldak_axes
 from solidification_front import MODEL_ID as SOLIDIFICATION_MODEL_ID, evaluate_solidification
-from marangoni_screening import MODEL_ID as MARANGONI_MODEL_ID, marangoni_screening
+from marangoni_screening import (MODEL_ID as MARANGONI_MODEL_ID, SURFACE_VELOCITY_DOI as MARANGONI_SURFACE_VELOCITY_DOI,
+                                 marangoni_flow_direction, marangoni_screening)
 from lpbf_defect_diagnostics import balling_screen, defect_diagnostics
 
 # Secondary alloys only. Ti-6Al-4V, 316L, AlSi10Mg, IN718 live in four_alloy_materials.py.
@@ -304,19 +309,65 @@ def rosenthal_temperature_C(x_m, y_m, z_m, T0_C, P_eff, k_th, v_scan, alpha_th, 
     return T0_C + (P_eff / (2.0 * math.pi * k_th * R_reg)) * math.exp(arg)
 
 
-def knight_recoil_pressure_kPa(T_surface_C, T_vap_C, delta_H_vap_J_mol, R_gas=8.314):
-    """Anisimov (1968) / Knight (1979) recoil p = 0.54 p_sat(T), p_sat from Clausius-Clapeyron referenced to
-    1 atm at T_vap. Continuous in T: no 0.8*T_vap gate (taken in degC before) and no fixed 0.1 kPa floor."""
-    T_surf_K = float(T_surface_C) + 273.15
-    T_vap_K = float(T_vap_C) + 273.15
-    recoil_exp = (delta_H_vap_J_mol / R_gas) * (1.0 / T_vap_K - 1.0 / max(500.0, T_surf_K))
-    if recoil_exp > 700.0:
-        p_recoil_atm = 1.0e200
-    elif recoil_exp < -700.0:
-        p_recoil_atm = 0.0
-    else:
-        p_recoil_atm = 0.54 * math.exp(recoil_exp)
-    return min(1.0e12, p_recoil_atm * 101.325)
+# P6 containment (2026-10-11, docs/research/SPEC_p6_containment_2026-10-11.md). The served peak is the loss-free
+# Eagar-Tsai surface maximum, served only below a SOURCED vapour temperature; the former regularised Rosenthal centre
+# value T0 + P/(2 pi k r_reg) and the clip surfaceTemperature = min(peak, T_vap) are removed (G1 audit B01). Recoil
+# pressure (former Anisimov/Knight 0.54 p_sat at the clipped T_vap, a constant 54.72 kPa in every saturated case; B03)
+# and the denudation width heuristic (B05) are served null with a reason. The material authority's boiling_C,
+# latent_heat_vap_J_kg and M_molar_kg_mol stay in use by the Fabbro leg (T_vap) and are UNSOURCED (G1 audit B04,
+# out of P6 scope); they never feed the served peak policy.
+SOURCED_VAPOR_TEMPERATURE_K = {
+    # Gan et al. 2021, Nat. Commun. 12:2379, doi 10.1038/s41467-021-22704-0, Supplementary Table 1 (SI p.20),
+    # "Vaporization point T_v (K)", Ti64 column: source-model effective value, not a species-resolved boiling point.
+    "ti6al4v": {"T_K": 3560.0, "source": "Gan et al. 2021 Nat. Commun. 12:2379, Supplementary Table 1, SI p.20",
+                "doi": "10.1038/s41467-021-22704-0"},
+    # Khairallah et al. 2016, Acta Mater. 108, 36-45, doi 10.1016/j.actamat.2016.02.014, Sec. 2.2, printed p.38:
+    # "T_b = 3086 K is the boiling temperature of 316L stainless steel".
+    "ss316l": {"T_K": 3086.0, "source": "Khairallah et al. 2016 Acta Mater. 108, Sec. 2.2, p.38",
+               "doi": "10.1016/j.actamat.2016.02.014"},
+}
+VAPOR_TEMPERATURE_UNSOURCED_NOTE = ("no sourced vapour temperature in the library for this alloy (no elemental "
+                                    "proxy is used; lead decision, P6 containment)")
+PEAK_TEMPERATURE_BASIS = SURFACE_MAXIMUM_BASIS
+PEAK_TEMPERATURE_NOTE = ("numerical maximum along the axis y = z = 0 of the loss-free Eagar & Tsai 1983 Gaussian "
+                         "surface field (printed p.347-s Eq. 6, 8 to 10, p.348-s Eq. 11, Appendix B) driven by the "
+                         "same field power, k/alpha blend and 1/e^2 radius as the requested kernel; conduction only, "
+                         "no evaporation, flow or recoil loss. Served only below the sourced vapour temperature: a "
+                         "centreline above boiling is an impossible situation for the loss-free solution (Eagar & "
+                         "Tsai 1983 p.348-s). The former regularised Rosenthal centre value was removed (P6).")
+PEAK_ABOVE_TV_REASON = ("the loss-free Eagar-Tsai surface maximum is at or above the sourced vapour temperature: a "
+                        "centreline above boiling is an impossible situation for the loss-free solution (Eagar & Tsai "
+                        "1983 p.348-s) and no wall closure is served (P6 containment)")
+RECOIL_UNAVAILABLE_REASON = ("recoil pressure needs a wall temperature from a surface or cavity closure; none is "
+                             "served (the former Anisimov/Knight 0.54 p_sat at the clipped T_vap, a constant 54.72 kPa, "
+                             "was removed; P6 containment)")
+RECOIL_ONSET_BELOW = "below Fabbro 2020 App A onset"
+RECOIL_ONSET_ABOVE = "above onset, no wall closure"
+RECOIL_ONSET_BASIS = ("Fabbro 2020 (doi 10.3390/app10041487) Appendix A Eq. A10 to A12: recoil p_r = (1 + beta)/2 "
+                      "p_sat(T), beta = 0.2, onset at p_r = p_amb, i.e. T_th = T_v / (1 - ln(2 p_amb / ((1 + beta) "
+                      "p0)) / c) with c = L_v M / (R T_v), 3.5 to 4.4 % above T_v for the Gan 2021 SI Table 1 "
+                      "alloys. The status compares the loss-free Eagar-Tsai maximum with the sourced T_v, a lower "
+                      "bound of T_th: below T_v the surface is below the onset; at or above T_v the loss-free "
+                      "solution is invalid and neither the wall temperature nor the onset margin is resolvable "
+                      "without a wall closure. Not evaluated where T_v is unsourced.")
+MARANGONI_UNAVAILABLE_REASON = ("the Marangoni temperature difference reads the served peak, which is unavailable: ")
+DENUDATION_UNAVAILABLE_REASON = ("the denudation width heuristic W (1 + 0.35 min(3, p_recoil / 30)) was uncited "
+                                 "(G1 audit B05) and recoil is not served; no sourced relation replaces it (P6 "
+                                 "containment)")
+AXIAL_MAXIMUM_ROSENTHAL_REASON = ("the Rosenthal axial maximum is the regularised singular-source value T0 + P/(2 pi "
+                                  "k r_reg), not a field maximum; removed (P6 containment)")
+AXIAL_MAXIMUM_ABOVE_TV_REASON = ("the kernel's axial field maximum is at or above the sourced vapour temperature; "
+                                 "the loss-free field is not a wall temperature there (Eagar & Tsai 1983 p.348-s; P6 "
+                                 "containment)")
+
+
+def sourced_vapor_temperature(material_name):
+    """Sourced vapour temperature (K and C, with source and DOI) for the alloy, or None (no proxy)."""
+    alloy_id = resolve_alloy_id(material_name)
+    entry = SOURCED_VAPOR_TEMPERATURE_K.get(alloy_id) if alloy_id else None
+    if entry is None:
+        return None
+    return {"T_K": entry["T_K"], "T_C": entry["T_K"] - 273.15, "source": entry["source"], "doi": entry["doi"]}
 
 
 def _binary_extent(pred, lo, hi, iters=18):
@@ -592,11 +643,12 @@ def calculate_meltpool_physics(
     T_preheat = float(preheat_temp_C)
     t_layer_m = float(layer_thickness_um) * 1e-6
     hatch_m = float(hatch_spacing_um) * 1e-6
-    theta_rad = math.radians(float(incline_angle_deg))
-    cos_theta = max(0.05, math.cos(theta_rad))  # avoid zero R on vertical walls
+    # The build-surface incline is echoed (inclineAngle_deg) but no longer multiplies R (P6 containment).
 
     T_liq = props["liquidus_C"]
     T_sol = props["solidus_C"]
+    # UNSOURCED authority value (G1 audit B04, out of P6 scope): drives the Fabbro leg only. The served peak policy
+    # reads sourced_vapor_temperature() instead.
     T_vap = props["boiling_C"]
     rho = props["density_kg_m3"]
     k_s = props["thermal_conductivity_W_mK"]
@@ -708,13 +760,47 @@ def calculate_meltpool_physics(
     search_len = max(d_beam * 3.0, w_analytical * 4.5, 80e-6)
     search_depth = max(d_beam * 2.2, w_analytical * 2.0, 40e-6, fabbro["depth_m"] * 1.35)
 
-    # Reported peak / surface proxy: beam-centre value T(0,0,0) as before the tier-2 bump (recoil,
-    # Marangoni and denudation read it). No artificial 3900 °C display ceiling (may exceed boiling).
-    t_peak_C = float(T_field(0.0, 0.0, 0.0))
-    # Axial field maximum: only the extent search and the cross-section plane are anchored there (it
-    # lies behind x = 0 at high speed); its value is reported separately as axialFieldMaximum_C.
+    # Axial field maximum of the requested kernel: the extent search and the cross-section plane are anchored there
+    # (it lies behind x = 0 at high speed). Its value is served as axialFieldMaximum_C under the P6 policy below.
+    T_field(0.0, 0.0, 0.0)
     x_peak = _axial_peak_x(T_field, -search_len * 1.4 * 8.0, search_len)
-    t_axial_max_C = max(t_peak_C, float(T_field(x_peak, 0.0, 0.0)))
+    t_axial_max_C = max(float(T_field(0.0, 0.0, 0.0)), float(T_field(x_peak, 0.0, 0.0)))
+
+    # P6 served peak: the loss-free Eagar-Tsai surface maximum at the kernel's inputs, served only below the sourced
+    # vapour temperature (SPEC_p6_containment item 1 to 3). The same value for every kernel.
+    loss_free = eagar_tsai_surface_maximum(T_preheat, P_geom, k_th, alpha_th, r_beam, v_scan)
+    t_lossfree_max_C = float(loss_free["T_C"])
+    tv_sourced = sourced_vapor_temperature(material_name)
+    if tv_sourced is None:
+        t_peak_C = None
+        peak_unavailable_reason = f"{VAPOR_TEMPERATURE_UNSOURCED_NOTE}: the loss-free maximum cannot be checked against boiling"
+        peak_exceeds_vaporization = None
+        recoil_onset_status = None
+        recoil_onset_reason = f"not evaluated: {VAPOR_TEMPERATURE_UNSOURCED_NOTE}"
+    elif t_lossfree_max_C < tv_sourced["T_C"]:
+        t_peak_C = t_lossfree_max_C
+        peak_unavailable_reason = None
+        peak_exceeds_vaporization = False
+        recoil_onset_status = RECOIL_ONSET_BELOW
+        recoil_onset_reason = None
+    else:
+        t_peak_C = None
+        peak_unavailable_reason = PEAK_ABOVE_TV_REASON
+        peak_exceeds_vaporization = True
+        recoil_onset_status = RECOIL_ONSET_ABOVE
+        recoil_onset_reason = None
+    if source == "rosenthal":
+        t_axial_served_C = None
+        axial_unavailable_reason = AXIAL_MAXIMUM_ROSENTHAL_REASON
+    elif tv_sourced is None:
+        t_axial_served_C = None
+        axial_unavailable_reason = f"{VAPOR_TEMPERATURE_UNSOURCED_NOTE}: the axial maximum cannot be checked against boiling"
+    elif t_axial_max_C < tv_sourced["T_C"]:
+        t_axial_served_C = t_axial_max_C
+        axial_unavailable_reason = None
+    else:
+        t_axial_served_C = None
+        axial_unavailable_reason = AXIAL_MAXIMUM_ABOVE_TV_REASON
 
     # 4. Liquidus extents from the conduction field (Rosenthal, Eagar–Tsai or Goldak): _liquidus_extent.
     ext = _liquidus_extent(T_field, T_liq, x_peak, search_len, search_half_w, search_depth, d_beam, r_beam,
@@ -756,39 +842,31 @@ def calculate_meltpool_physics(
     goldak_b_um = w_melt_um / 2.0
     goldak_c_um = d_melt_um
 
-    # 8. Recoil from evaporative surface T (Anisimov/Knight 0.54 Psat). Field peak stays
-    # uncapped (PROOF 015). Conduction singularities of 10^4 °C are not a wall temperature.
-    M_molar = float(props.get("M_molar_kg_mol", 0.055))
-    delta_H_vap = props["latent_heat_vap_J_kg"] * M_molar
-    t_surface_C = min(float(t_peak_C), float(T_vap))
-    # Wave B D1: label what the reported peak is. It is the beam-centre value T(0,0,0) of a conduction
-    # field with no evaporation sink, so above T_vap it is not a physical wall temperature.
-    if source in ("eagar-tsai", "goldak"):
-        peak_temperature_basis = "distributed-source-conduction-centre-value"
-        peak_temperature_note = ("beam-centre value T(0,0,0) of the uncapped Eagar-Tsai/Goldak conduction field "
-                                 "(no evaporation sink); above T_vap it is not a wall temperature. Recoil and "
-                                 "Marangoni use surfaceTemperature_C = min(peak, T_vap).")
+    # 8. Surface temperature equals the served peak (no clip); recoil pressure is not served (no wall closure); the
+    # Marangoni temperature difference reads the served peak or is unavailable (P6 containment).
+    M_molar = float(props.get("M_molar_kg_mol", 0.055))  # UNSOURCED authority value (B04), echoed only
+    t_surface_C = t_peak_C
+    surface_temperature_basis = ("equals the served loss-free Eagar-Tsai surface maximum (no clipping)"
+                                 if t_peak_C is not None else f"unavailable: {peak_unavailable_reason}")
+    if t_peak_C is not None:
+        ma = marangoni_screening(
+            props["d_gamma_dT_N_mK"],
+            props["viscosity_Pa_s"],
+            alpha_th,
+            float(props.get("density_liquid_kg_m3", rho)),
+            w_melt_m / 2.0,
+            t_peak_C,
+            T_liq,
+            sulfur_ppm=float(sulfur_ppm),
+        )
+        marangoni_number = ma["marangoniNumber"]
+        marangoni_unavailable_reason = None
     else:
-        peak_temperature_basis = "regularised-singular-source-value"
-        peak_temperature_note = ("beam-centre value T(0,0,0) of the Rosenthal (1946) point source with only the 1/R "
-                                 "prefactor regularised at r_reg (= axial maximum for Rosenthal after Wave B LA-2), "
-                                 "i.e. T0 + P/(2 pi k r_reg): a regularised singular-source value, not a wall "
-                                 "temperature. Recoil and Marangoni use surfaceTemperature_C = min(peak, T_vap).")
-    surface_temperature_basis = ("saturated at T_vap: " + peak_temperature_basis.replace("-", " ")
-                                 if float(t_peak_C) >= float(T_vap) else "beam-centre field value below T_vap")
-    p_recoil_kPa = knight_recoil_pressure_kPa(t_surface_C, T_vap, delta_H_vap)
-
-    ma = marangoni_screening(
-        props["d_gamma_dT_N_mK"],
-        props["viscosity_Pa_s"],
-        alpha_th,
-        float(props.get("density_liquid_kg_m3", rho)),
-        w_melt_m / 2.0,
-        t_surface_C,
-        T_liq,
-        sulfur_ppm=float(sulfur_ppm),
-    )
-    marangoni_number = ma["marangoniNumber"]
+        flow = marangoni_flow_direction(props["d_gamma_dT_N_mK"], float(sulfur_ppm))
+        ma = {**flow, "marangoniNumber": None, "surfaceVelocity_m_s": None, "pecletMarangoni": None,
+              "surfaceVelocityDoi": MARANGONI_SURFACE_VELOCITY_DOI, "doi": "10.1016/j.ijheatmasstransfer.2020.120801"}
+        marangoni_number = None
+        marangoni_unavailable_reason = MARANGONI_UNAVAILABLE_REASON + str(peak_unavailable_reason)
 
     # 9. Defect Diagnostics
     # A) Lack of Fusion — Tang et al.: (h/W)^2 + (t/D)^2 ≤ 1 for full consolidation
@@ -832,33 +910,32 @@ def calculate_meltpool_physics(
     else:
         balling_risk = f"Unavailable (Eagar-Tsai extent {balling['extentStatus']}; no balling band)"
 
-    # C) Powder Denudation & Spatter Entrainment Width
-    # Denudation width w_denude ~ W * (1 + 0.45 * (P_recoil / 50))
-    denudation_width_um = w_melt_um * (1.0 + 0.35 * min(3.0, min(1e6, p_recoil_kPa) / 30.0))
+    # C) Powder denudation width: served null (uncited heuristic, G1 audit B05; P6 containment).
 
-    # 10. Solidification kinetics from the liquidus isotherm (G = |∇T|, R = v n_x).
+    # 10. Solidification kinetics on the conduction-field interface (rear liquidus, G = |∇T|, R = v n_x); null with a
+    # reason where the served depth comes from the Fabbro keyhole leg or fewer than 3 samples exist (P6).
     sol = evaluate_solidification(
         T_field,
         T_liq=T_liq,
-        T_sol=T_sol,
-        t_surface=t_surface_C,
         v_scan=v_scan,
         x_rear=x_rear,
-        x_front=x_front,
         search_depth=search_depth,
         r_beam=r_beam,
-        cos_theta=cos_theta,
-        pdas_A1=float(props.get("pdas_A1", 75.0)),
         sdas_B1=float(props.get("sdas_B1", 40.0)),
         material_name=material_name,
+        depth_from_keyhole_leg=bool(fabbro["depth_m"] > d_iso),
     )
-    thermal_gradient_G_K_m = float(sol["thermalGradient_G_K_m"])
-    solidification_rate_R_m_s = float(sol["solidificationRate_R_m_s"])
-    cooling_rate_K_s = float(sol["coolingRate_K_s"])
-    g_over_r = float(sol["g_over_r_ratio"])
-    morphology = str(sol["microstructureMorphology"])
-    pdas_um = float(sol["primaryDendriteArmSpacing_PDAS_um"])
-    sdas_um = float(sol["secondaryDendriteArmSpacing_SDAS_um"])
+
+    def _opt(value, digits):
+        return None if value is None else round(float(value), digits)
+
+    thermal_gradient_G_K_m = sol["thermalGradient_G_K_m"]
+    solidification_rate_R_m_s = sol["solidificationRate_R_m_s"]
+    cooling_rate_K_s = sol["coolingRate_K_s"]
+    g_over_r = sol["g_over_r_ratio"]
+    morphology = sol["microstructureMorphology"]
+    pdas_um = sol["primaryDendriteArmSpacing_PDAS_um"]
+    sdas_um = sol["secondaryDendriteArmSpacing_SDAS_um"]
 
     # 11. Residual Stress & Recoater Crash Upper Bound (no artificial 1200 MPa ceiling)
     e_gpa = props["youngs_modulus_GPa"]
@@ -1088,7 +1165,8 @@ def calculate_meltpool_physics(
             "extentStatus": extent_status,
             "extentNote": extent_note,
             "peakOffset_um": round(x_peak * 1e6, 1),
-            "axialFieldMaximum_C": round(t_axial_max_C, 1),
+            "axialFieldMaximum_C": _opt(t_axial_served_C, 1),
+            "axialFieldMaximumUnavailableReason": axial_unavailable_reason,
             "goldakParameters": {
                 "semiAxis_af_front_um": round(goldak_af_um, 1),
                 "semiAxis_ar_rear_um": round(goldak_ar_um, 1),
@@ -1115,25 +1193,40 @@ def calculate_meltpool_physics(
             "flowDirection": ma["flowDirection"],
             "dGamma_dT_N_mK": round(ma["dGamma_dT_N_mK"], 6),
             "sulfur_ppm": round(ma["sulfur_ppm"], 1),
-            "surfaceVelocity_m_s": round(ma["surfaceVelocity_m_s"], 3),
+            "surfaceVelocity_m_s": _opt(ma["surfaceVelocity_m_s"], 3),
             "surfaceVelocityDoi": ma.get("surfaceVelocityDoi"),
-            "pecletMarangoni": round(ma["pecletMarangoni"], 2),
+            "pecletMarangoni": _opt(ma["pecletMarangoni"], 2),
+            "marangoniUnavailableReason": marangoni_unavailable_reason,
             "aspectNote": ma["aspectNote"],
             "doi": ma["doi"],
         },
         "hydrodynamicsAndRecoil": {
-            "peakTemperature_C": round(t_peak_C, 1),
-            "peakTemperatureBasis": peak_temperature_basis,
-            "peakTemperatureNote": peak_temperature_note,
-            "peakExceedsVaporization": bool(t_peak_C > float(T_vap)),
+            "peakTemperature_C": _opt(t_peak_C, 1),
+            "peakTemperatureBasis": PEAK_TEMPERATURE_BASIS,
+            "peakTemperatureModelId": loss_free["modelId"],
+            "peakTemperatureNote": PEAK_TEMPERATURE_NOTE,
+            "peakUnavailableReason": peak_unavailable_reason,
+            "peakLocation_x_um": None if t_peak_C is None else round(float(loss_free["x_m"]) * 1e6, 1),
+            "vaporTemperatureSourced_K": None if tv_sourced is None else tv_sourced["T_K"],
+            "vaporTemperatureSourced_C": None if tv_sourced is None else round(tv_sourced["T_C"], 2),
+            "vaporTemperatureSource": None if tv_sourced is None else tv_sourced["source"],
+            "vaporTemperatureDoi": None if tv_sourced is None else tv_sourced["doi"],
+            "vaporTemperatureUnavailableReason": VAPOR_TEMPERATURE_UNSOURCED_NOTE if tv_sourced is None else None,
+            "peakExceedsVaporization": peak_exceeds_vaporization,
             "surfaceTemperatureBasis": surface_temperature_basis,
-            "surfaceTemperature_C": round(t_surface_C, 1),
-            "knudsenRecoilPressure_kPa": round(p_recoil_kPa, 2),
-            "marangoniNumber": round(marangoni_number, 0),
+            "surfaceTemperature_C": _opt(t_surface_C, 1),
+            "knudsenRecoilPressure_kPa": None,
+            "recoilPressureUnavailableReason": RECOIL_UNAVAILABLE_REASON,
+            "recoilOnsetStatus": recoil_onset_status,
+            "recoilOnsetUnavailableReason": recoil_onset_reason,
+            "recoilOnsetBasis": RECOIL_ONSET_BASIS,
+            "marangoniNumber": _opt(marangoni_number, 0),
+            "marangoniUnavailableReason": marangoni_unavailable_reason,
             "marangoniGeometrySource": "thermal",
             "molarMass_kg_mol": round(M_molar, 5),
             "pecletThermalNumber": round(peclet_number, 2),
-            "powderDenudationWidth_um": round(denudation_width_um, 1)
+            "powderDenudationWidth_um": None,
+            "powderDenudationUnavailableReason": DENUDATION_UNAVAILABLE_REASON,
         },
         "geometricDefectScreen": defect_diagnostics(
             w_melt_um, d_melt_um, l_melt_um, float(hatch_spacing_um), float(layer_thickness_um), balling=balling),
@@ -1158,18 +1251,19 @@ def calculate_meltpool_physics(
             "modelId": SOLIDIFICATION_MODEL_ID,
             "gradientSource": sol.get("gradientSource"),
             "usedFieldMap": bool(sol.get("usedFieldMap")),
-            "thermalGradient_G_K_m": round(thermal_gradient_G_K_m, 0),
-            "thermalGradient_G_K_um": round(thermal_gradient_G_K_m * 1e-6, 3),
-            "thermalGradientTail_G_K_m": round(float(sol.get("G_tail_K_m") or thermal_gradient_G_K_m), 0),
-            "solidificationRate_R_m_s": round(solidification_rate_R_m_s, 3),
-            "solidificationRate_R_mm_s": round(solidification_rate_R_m_s * 1e3, 1),
-            "solidificationCosTheta": round(cos_theta, 4),
-            "coolingRate_K_s": round(cooling_rate_K_s, 0),
-            "coolingRate_log10": round(math.log10(max(10.0, cooling_rate_K_s)), 2),
-            "g_over_r_ratio": round(g_over_r, 0),
+            "interface": sol.get("interface"),
+            "unavailableReason": sol.get("unavailableReason"),
+            "thermalGradient_G_K_m": _opt(thermal_gradient_G_K_m, 0),
+            "thermalGradient_G_K_um": None if thermal_gradient_G_K_m is None else round(thermal_gradient_G_K_m * 1e-6, 3),
+            "thermalGradientTail_G_K_m": _opt(sol.get("G_tail_K_m"), 0),
+            "solidificationRate_R_m_s": _opt(solidification_rate_R_m_s, 3),
+            "solidificationRate_R_mm_s": None if solidification_rate_R_m_s is None else round(solidification_rate_R_m_s * 1e3, 1),
+            "coolingRate_K_s": _opt(cooling_rate_K_s, 0),
+            "coolingRate_log10": None if cooling_rate_K_s is None else round(math.log10(cooling_rate_K_s), 2),
+            "g_over_r_ratio": _opt(g_over_r, 0),
             "microstructureMorphology": morphology,
-            "primaryDendriteArmSpacing_PDAS_um": round(pdas_um, 2),
-            "secondaryDendriteArmSpacing_SDAS_um": round(sdas_um, 2),
+            "primaryDendriteArmSpacing_PDAS_um": _opt(pdas_um, 2),
+            "secondaryDendriteArmSpacing_SDAS_um": _opt(sdas_um, 2),
             "phaseTransformation": sol.get("phaseTransformation"),
             "frontPointCount": sol.get("frontPointCount"),
             "tail": sol.get("tail"),

@@ -114,9 +114,9 @@ _FALLBACK_REASON = (
     "not the liquidus field map; treat G/R/PDAS/SDAS as screening only"
 )
 
-# solidification_front.evaluate_solidification clamps R to >= 1e-4 m/s and the cooling rate to >= 1 K/s when
-# every rear liquidus sample has a non-positive scan-direction normal (n_x <= 0). A value on those floors is a
-# clamp, not a computed field value. solidification_front.py is frozen; the projection detects the floors.
+# Until P6 (2026-10-11) solidification_front.evaluate_solidification clamped R to >= 1e-4 m/s and the cooling rate
+# to >= 1 K/s; P6 removed the floors (null with a reason instead). The projection keeps detecting values at or
+# below those bounds (archived payloads, synthetic fixtures) and never shows them as a computed result.
 R_FLOOR_M_S = 1.0e-4
 COOLING_FLOOR_K_S = 1.0
 
@@ -233,9 +233,14 @@ def project_build_job_microstructure(thermal: Dict[str, Any], *, note: str = _BU
                 "and the PDAS/SDAS/morphology derived from them, are not a computed result."
             ).strip()
         return block
+    # P6 containment (2026-10-11): the thermal block serves null G/R with its own reason (served depth from the
+    # Fabbro keyhole leg, or fewer than 3 interface samples); carry that reason instead of a generic one.
+    thermal_reason = kin.get("unavailableReason") if isinstance(kin, dict) else None
     return {
         "status": "unavailable",
-        "reason": "thermal.solidificationKinetics missing or non-finite",
+        "reason": (f"thermal.solidificationKinetics unavailable: {thermal_reason}"
+                   if isinstance(thermal_reason, str) and thermal_reason
+                   else "thermal.solidificationKinetics missing or non-finite"),
         "G_K_m": None,
         "R_m_s": None,
         "coolingRate_K_s": None,

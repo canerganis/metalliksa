@@ -25,9 +25,9 @@ const text = (markup: string) =>
 const LABEL_PREFIX = "Literature estimate (screening)";
 
 test("available (IN718): label chip as text, k with citation, Nb band, risk class, ratio, copied G/R, validity, upper bound", () => {
-  const block = BLOCKS.available_in718_285_960;
+  const block = BLOCKS.available_in718_150_1200;
   assert.equal(block.status, "available");
-  const markup = html("available_in718_285_960");
+  const markup = html("available_in718_150_1200");
   const t = text(markup);
   assert.match(markup, /data-seg-status="available"/);
   assert.match(markup, /data-seg-label/);
@@ -116,11 +116,11 @@ test("available (IN625, Cieslak 1988 k + DuPont 1996 C_e): binary band, no risk 
 });
 
 test("rapid solidification k(V) (IN718): shown beside the unchanged upper bound with V_D range, label and notes", () => {
-  const block = BLOCKS.available_in718_285_960;
+  const block = BLOCKS.available_in718_150_1200;
   const rs = block.rapidSolidification;
   assert.equal(rs.status, "available");
   assert.equal(rs.replacesUpperBound, false);
-  const markup = html("available_in718_285_960");
+  const markup = html("available_in718_150_1200");
   const t = text(markup);
   assert.match(markup, /data-seg-rapid="available"/);
   assert.ok(rs.evidenceLabel.startsWith(LABEL_PREFIX));
@@ -198,7 +198,7 @@ test("not-applicable (316L): reason only, no numbers", () => {
 
 test("unknown status or malformed block is never shown as available", () => {
   const markup = renderToStaticMarkup(
-    <BuildJobSegregationPanel segregation={{ ...BLOCKS.available_in718_285_960, status: "ok" }} />,
+    <BuildJobSegregationPanel segregation={{ ...BLOCKS.available_in718_150_1200, status: "ok" }} />,
   );
   assert.match(markup, /data-seg-status="unavailable"/);
   assert.doesNotMatch(markup, /data-seg-band/);
@@ -207,9 +207,9 @@ test("unknown status or malformed block is never shown as available", () => {
 });
 
 test("rendered inside the microstructure panel via the optional prop, absent without it", () => {
-  const micro = MICRO.available_in718_285_960;
+  const micro = MICRO.available_in718_150_1200;
   const withSeg = renderToStaticMarkup(
-    <BuildJobMicrostructurePanel micro={micro} segregation={BLOCKS.available_in718_285_960} />,
+    <BuildJobMicrostructurePanel micro={micro} segregation={BLOCKS.available_in718_150_1200} />,
   );
   assert.match(withSeg, /data-micro-status="available"[\s\S]*data-seg-status="available"/);
   assert.match(withSeg, /<section[^>]*aria-labelledby="[^"]+"/);
@@ -217,7 +217,7 @@ test("rendered inside the microstructure panel via the optional prop, absent wit
   assert.doesNotMatch(without, /data-seg-status/);
   // Composition-only result is still shown when the microstructure block is missing (e.g. old payload).
   const noMicro = renderToStaticMarkup(
-    <BuildJobMicrostructurePanel micro={undefined} segregation={BLOCKS.available_in718_285_960} />,
+    <BuildJobMicrostructurePanel micro={undefined} segregation={BLOCKS.available_in718_150_1200} />,
   );
   assert.match(noMicro, /data-seg-status="available"/);
   assert.equal(renderToStaticMarkup(<BuildJobMicrostructurePanel micro={undefined} />), "");

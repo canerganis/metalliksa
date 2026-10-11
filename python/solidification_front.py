@@ -2,10 +2,18 @@
 """
 Solidification-front G, R, G·R from a conduction temperature field.
 
-Quasi-steady laser frame (+x travel, z ≥ 0 depth). On the liquidus isotherm,
-G = |∇T| and local growth R_n = v n_x with n = ∇T/|∇T| into the melt
-(Kou / Hunt geometry). Build-surface incline multiplies R by cos θ so
-vertical walls do not claim R = v. Not Gäumann–Trivedi–Kurz CET (no N0).
+Quasi-steady laser frame (+x travel, z ≥ 0 depth). On the rear liquidus isotherm of the
+conduction field (the "conduction-field interface"), G = |∇T| and local growth R = v n_x
+with n = ∇T/|∇T| into the melt (Kou / Hunt geometry; Ghosh et al. 2017 introduction;
+P6 derivation section 7 Eq. 13), cooling = G R per sample. Not Gäumann–Trivedi–Kurz CET (no N0).
+
+P6 containment (2026-10-11, docs/research/SPEC_p6_containment_2026-10-11.md item 6): the
+tail-length fallback (G = ΔT/x_rear from a clipped surface temperature), the build-surface
+incline multiplier max(0.05, cos θ) and the floors G >= 100 K/m, R >= 1e-4 m/s, Ṫ >= 1 K/s,
+G/R >= 1 are removed. Fewer than 3 solidifying samples, or a served depth that comes from the
+Fabbro keyhole leg (the conduction field does not describe that interface), give null with a
+reason; PDAS, SDAS and morphology propagate null. An inclined surface needs the velocity
+vector and the normal in one frame, not a second multiplier.
 
 PDAS is Hunt–Lu λ1 ∝ G^{-1/2} R^{-1/4} with an LPBF-scale SI prefactor
 (µm cells), not unused welding pdas_A1. SDAS is Kirkwood λ2 ∝ Ṫ^{-1/3}.
@@ -19,6 +27,16 @@ import math
 from typing import Any, Callable, Dict, List, Optional
 
 MODEL_ID = "solidification-front-v1"
+GRADIENT_SOURCE_CONDUCTION_INTERFACE = "conduction-field-interface"
+INTERFACE_LABEL = ("rear liquidus isotherm of the loss-free conduction field in the y = 0 plane "
+                   "(conduction-field interface); G = |grad T|, R = v n_x, cooling = G R per sample, "
+                   "medians over the solidifying samples (n_x > 0)")
+UNAVAILABLE_KEYHOLE_LEG = ("the served depth comes from the Fabbro keyhole leg (e_kh > d_iso): the conduction field "
+                           "does not describe the keyhole interface, so G, R, cooling rate, PDAS, SDAS and morphology "
+                           "are not served (P6 containment)")
+UNAVAILABLE_FEW_SAMPLES = ("fewer than 3 solidifying rear-liquidus samples (n_x > 0) in the conduction field: no "
+                           "interface statistic is served and the former tail-length fallback G = dT/x_rear was removed "
+                           "as uncited (P6 containment)")
 HUNT_DOI = "10.1016/0025-5416(84)90201-5"
 AHMED_RACK_DOI = "10.1016/S0921-5093(97)00802-2"
 
@@ -45,7 +63,12 @@ def _grad_T(T_fn: Callable, x: float, y: float, z: float, h: float) -> tuple[flo
     h = max(8e-8, float(h))
     dTdx = (_t_scalar(T_fn, x + h, y, z) - _t_scalar(T_fn, x - h, y, z)) / (2.0 * h)
     dTdy = (_t_scalar(T_fn, x, y + h, z) - _t_scalar(T_fn, x, y - h, z)) / (2.0 * h)
-    dTdz = (_t_scalar(T_fn, x, y, z + h) - _t_scalar(T_fn, x, y, max(0.0, z - h))) / (2.0 * h)
+    if z - h >= 0.0:
+        dTdz = (_t_scalar(T_fn, x, y, z + h) - _t_scalar(T_fn, x, y, z - h)) / (2.0 * h)
+    else:
+        # One-sided difference at the free surface over its own step (P6: the former form divided the one-sided
+        # difference by 2h and halved the surface derivative).
+        dTdz = (_t_scalar(T_fn, x, y, z + h) - _t_scalar(T_fn, x, y, z)) / h
     return dTdx, dTdy, dTdz
 
 
@@ -143,17 +166,18 @@ def map_solidification_front(
     x_rear: float,
     search_depth: float,
     h_m: float,
-    cos_theta: float = 1.0,
+    cos_theta: Optional[float] = None,
     n_samples: int = 9,
 ) -> Optional[Dict[str, Any]]:
     """Sample the rear liquidus in the x–z plane (y=0) and return G, R, Tdot stats.
 
     Only solidifying samples (n_x > 0, behind the deepest liquidus point) are kept, and every
-    median is taken over that same set; fewer than 3 such samples -> None (fallback path)."""
+    median is taken over that same set; fewer than 3 such samples -> None (served as unavailable).
+    cos_theta is accepted for signature compatibility and ignored (P6: no incline multiplier)."""
+    del cos_theta
     x_rear = max(4e-6, float(x_rear))
     z_hi = max(8e-6, float(search_depth))
     n_samples = max(5, min(16, int(n_samples)))
-    incline = max(0.05, float(cos_theta))
     # Solidifying part of the rear liquidus: from the deepest liquidus point (n_x = 0) back to the tail.
     scan = [-x_rear * (0.98 - 0.96 * j / 32.0) for j in range(33)]
     depths = [(_binary_z_liquidus(T_fn, xb, T_liq, z_hi), xb) for xb in scan]
@@ -176,14 +200,14 @@ def map_solidification_front(
             # Ahead of the deepest liquidus point the isotherm advances into solid (melting side):
             # R_n = v n_x is a solidification rate only where n_x > 0 (Kou §6.1 geometry).
             continue
-        R_loc = float(v_scan) * nx * incline
+        R_loc = float(v_scan) * nx
         samples.append({
             "x_um": round(x * 1e6, 1),
             "z_um": round(z * 1e6, 1),
             "G_K_m": g_mag,
             "R_m_s": R_loc,
             "coolingRate_K_s": g_mag * R_loc,
-            "g_over_r": g_mag / max(1e-6, R_loc),
+            "g_over_r": g_mag / R_loc,
             "n_x": nx,
         })
     if len(samples) < 3:
@@ -208,23 +232,58 @@ def map_solidification_front(
     }
 
 
+_DISCLAIMER = (
+    "G,R from the rear liquidus of the loss-free conduction field (conduction-field interface). Hunt G/R bands "
+    "are not calibrated N0 CET. Does not re-score Build Job. Null with unavailableReason where the interface is "
+    "not described by that field (P6 containment)."
+)
+
+
+def _unavailable(reason: str) -> Dict[str, Any]:
+    return {
+        "modelId": MODEL_ID,
+        "gradientSource": None,
+        "usedFieldMap": False,
+        "interface": INTERFACE_LABEL,
+        "unavailableReason": reason,
+        "thermalGradient_G_K_m": None,
+        "solidificationRate_R_m_s": None,
+        "coolingRate_K_s": None,
+        "g_over_r_ratio": None,
+        "microstructureMorphology": None,
+        "primaryDendriteArmSpacing_PDAS_um": None,
+        "secondaryDendriteArmSpacing_SDAS_um": None,
+        "phaseTransformation": None,
+        "doi": HUNT_DOI,
+        "disclaimer": _DISCLAIMER,
+    }
+
+
 def evaluate_solidification(
     T_fn: Callable,
     *,
     T_liq: float,
-    T_sol: float,
-    t_surface: float,
     v_scan: float,
     x_rear: float,
-    x_front: float,
     search_depth: float,
     r_beam: float,
-    cos_theta: float,
-    pdas_A1: float,
     sdas_B1: float,
     material_name: str,
+    depth_from_keyhole_leg: bool = False,
+    T_sol: Optional[float] = None,
+    t_surface: Optional[float] = None,
+    x_front: Optional[float] = None,
+    cos_theta: Optional[float] = None,
+    pdas_A1: Optional[float] = None,
 ) -> Dict[str, Any]:
-    del x_front, pdas_A1  # rear-wake map; Hunt–Lu SI replaces welding pdas_A1
+    """Interface G, R, cooling rate and the Hunt-Lu / Kirkwood spacings, or null with a reason.
+
+    T_sol, t_surface, x_front, cos_theta and pdas_A1 are accepted for signature compatibility and ignored
+    (P6: no tail-length fallback from a surface temperature, no incline multiplier, Hunt-Lu SI replaces
+    the welding pdas_A1)."""
+    del T_sol, t_surface, x_front, cos_theta, pdas_A1
+    if depth_from_keyhole_leg:
+        return _unavailable(UNAVAILABLE_KEYHOLE_LEG)
     mapped = map_solidification_front(
         T_fn,
         T_liq,
@@ -232,27 +291,22 @@ def evaluate_solidification(
         x_rear,
         search_depth,
         h_m=max(1.2e-7, 0.025 * max(8e-6, r_beam)),
-        cos_theta=cos_theta,
     )
-    used_field = mapped is not None
     if mapped is None:
-        # Screening G ~ ΔT / tail length, not T_liq / length (absolute T is not a gradient).
-        delta_T = max(10.0, float(t_surface) - float(T_sol))
-        G = max(100.0, delta_T / max(1e-6, float(x_rear)))
-        R = max(1e-4, v_scan * max(0.05, cos_theta))
-        Tdot = G * R
-        source = "tail-length-fallback"
-    else:
-        G = mapped["G_median_K_m"]
-        R = max(1e-4, mapped["R_median_m_s"])
-        Tdot = max(1.0, mapped["coolingRate_median_K_s"])
-        source = MODEL_ID
+        return _unavailable(UNAVAILABLE_FEW_SAMPLES)
+    G = mapped["G_median_K_m"]
+    R = mapped["R_median_m_s"]
+    Tdot = mapped["coolingRate_median_K_s"]
+    if not (G > 0.0 and R > 0.0 and Tdot > 0.0):
+        return _unavailable(UNAVAILABLE_FEW_SAMPLES)
 
-    g_over_r = max(1.0, G / max(1e-6, R))
+    g_over_r = G / R
     out: Dict[str, Any] = {
         "modelId": MODEL_ID,
-        "gradientSource": source,
-        "usedFieldMap": used_field,
+        "gradientSource": GRADIENT_SOURCE_CONDUCTION_INTERFACE,
+        "usedFieldMap": True,
+        "interface": INTERFACE_LABEL,
+        "unavailableReason": None,
         "thermalGradient_G_K_m": G,
         "solidificationRate_R_m_s": R,
         "coolingRate_K_s": Tdot,
@@ -262,10 +316,7 @@ def evaluate_solidification(
         "secondaryDendriteArmSpacing_SDAS_um": kirkwood_sdas_um(Tdot, sdas_B1),
         "phaseTransformation": phase_transformation_note(material_name, Tdot),
         "doi": HUNT_DOI,
-        "disclaimer": (
-            "G,R from the conduction-field liquidus. Hunt G/R bands are not calibrated N0 CET. "
-            "Does not re-score Build Job."
-        ),
+        "disclaimer": _DISCLAIMER,
     }
     if mapped is not None:
         out["G_tail_K_m"] = mapped["G_tail_K_m"]

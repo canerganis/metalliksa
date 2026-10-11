@@ -14,40 +14,52 @@ const html = (name: string) => {
 };
 const text = (markup: string) => markup.replace(/<[^>]+>/g, " ").replace(/&#x27;/g, "'").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/\s+/g, " ");
 
-test("available (field map): numbers, correlation names, modelId · gradientSource, keyhole regime note, no fallback note", () => {
-  const markup = html("available_in718_285_960");
+test("available (conduction-field interface): numbers, correlation names, provenance, no regime note, no fallback note", () => {
+  const markup = html("available_in718_150_1200");
   const t = text(markup);
   assert.match(markup, /data-micro-status="available"/);
-  // Wave B (LA-2 field, KS-1 solidifying-front samples): PDAS/SDAS 0.66/0.51 -> 0.67/0.47 um; P1 (2026-10-11, flat
-  // absorptivity and no latent factor on the Rosenthal field): 0.52/0.38 um.
-  assert.ok(t.includes("0.52") && t.includes("0.38"), t);
+  // P6 (2026-10-11): the available fixture is the conduction point 150 W / 1200 mm/s (the former 285 W / 960 mm/s
+  // point serves null G/R because its depth comes from the Fabbro keyhole leg): PDAS/SDAS 0.38/0.29 um.
+  assert.ok(t.includes("0.38") && t.includes("0.29"), t);
   assert.ok(t.includes("Hunt–Lu 1996"), t);
-  // modelId and gradientSource are the same string on the field-map path: the source is shown once, not repeated.
+  // modelId (solidification-front-v1) and gradientSource (conduction-field-interface) are both shown once.
   assert.equal(t.split("solidification-front-v1").length - 1, 1, t);
+  assert.equal(t.split("conduction-field-interface").length - 1, 1, t);
   assert.match(markup, /data-micro-provenance/);
-  assert.ok(t.includes("Source: solidification-front-v1"), t);
-  // The 285 W / 960 mm/s morphology is dendritic after the physics bump (was Cellular), so the
-  // cellular-only "no secondary arms" tooltip is absent; the SDAS correlation name is still shown.
+  assert.ok(t.includes("Source: solidification-front-v1 · conduction-field-interface"), t);
   assert.ok(t.includes("Kirkwood 1985") && !t.includes("cells have no secondary arms"), t);
   assert.ok(t.includes("median of G·R over front samples"), t);
   assert.ok(t.includes("Columnar dendritic (Hunt G/R screening)"), t);
-  assert.match(markup, /data-micro-note="regime"/);
-  assert.ok(t.includes("Keyhole Mode: outside the conduction regime of the G/R field"), t);
+  assert.doesNotMatch(markup, /data-micro-note="regime"/);
   assert.doesNotMatch(markup, /data-micro-note="screening-fallback"/);
   assert.ok(!t.includes("Unavailable"), t);
 });
 
-test("screening-fallback: amber note with Python's reason, tail-length-fallback shown, numbers still rendered", () => {
-  const markup = html("screening_fallback_in718_10_3000");
+test("unavailable with the thermal reason: keyhole-leg depth and unsampled interface (P6), no numbers", () => {
+  for (const [name, needle] of [
+    ["unavailable_keyhole_leg_in718_285_960", "Fabbro keyhole leg"],
+    ["unavailable_few_samples_in718_10_3000", "fewer than 3 solidifying rear-liquidus samples"],
+  ] as const) {
+    const block = BLOCKS[name];
+    assert.equal(block.status, "unavailable");
+    assert.equal(block.PDAS_um, null);
+    const markup = html(name);
+    const t = text(markup);
+    assert.match(markup, /data-micro-status="unavailable"/);
+    assert.ok(t.includes(`Unavailable — ${block.reason}`), t);
+    assert.ok(t.includes(needle), t);
+    assert.doesNotMatch(markup, /data-micro-metric=/);
+  }
+});
+
+test("screening-fallback (legacy payload shape, no fixture since P6): amber note with the reason, numbers rendered", () => {
+  const legacy = { ...BLOCKS.available_in718_150_1200, status: "screening-fallback", gradientSource: "tail-length-fallback", usedFieldMap: false, reason: "legacy tail-length heuristic" };
+  const markup = renderToStaticMarkup(<BuildJobMicrostructurePanel micro={legacy} />);
   const t = text(markup);
   assert.match(markup, /data-micro-status="screening-fallback"/);
   assert.match(markup, /data-micro-note="screening-fallback"[^>]*>/);
-  assert.ok(t.includes(BLOCKS.screening_fallback_in718_10_3000.reason), t);
-  assert.ok(t.includes("tail-length-fallback"), t);
-  assert.ok(t.includes("2.25"), t); // PDAS of the 10 W / 3000 mm/s fallback case (P1 fixture, 2026-10-11)
+  assert.ok(t.includes("legacy tail-length heuristic"), t);
   assert.ok(t.includes("Source: solidification-front-v1 · tail-length-fallback"), t);
-  assert.equal(t.split("tail-length-fallback").length - 1, 1, t); // only in the single source line
-  assert.doesNotMatch(markup, /data-micro-note="regime"/);
 });
 
 test("degenerate-floor: rendered like unavailable (reason, no PDAS/SDAS/morphology/cooling as results)", () => {
@@ -85,8 +97,8 @@ test("legacy block without status (old worker Rosenthal block) is not shown as a
 });
 
 test("G/R hint is Python's g_over_r_ratio, not recomputed from rounded G and R", () => {
-  // Recomputing G/R from the block's G and R would print 6.1e+8; the panel must print Python's value.
-  const block = { ...BLOCKS.available_in718_285_960, g_over_r_ratio: 1.23e9 };
+  // Recomputing G/R from the block's G and R would print the fixture's own ratio; the panel must print Python's value.
+  const block = { ...BLOCKS.available_in718_150_1200, g_over_r_ratio: 1.23e9 };
   const t = text(renderToStaticMarkup(<BuildJobMicrostructurePanel micro={block} />));
   assert.ok(t.includes("G/R = 1.2e+9"), t);
   assert.ok(!t.includes("6.1e+8"), t);

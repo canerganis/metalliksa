@@ -46,13 +46,21 @@ export interface GoldakCaeCardInput {
       seed_ar_um?: number;
     };
   };
+  /** P6 containment (2026-10-11): null with unavailableReason where the conduction-field interface is not served. */
   solidificationKinetics: {
-    thermalGradient_G_K_m: number;
-    solidificationRate_R_m_s: number;
-    coolingRate_K_s: number;
-    primaryDendriteArmSpacing_PDAS_um: number;
+    thermalGradient_G_K_m: number | null;
+    solidificationRate_R_m_s: number | null;
+    coolingRate_K_s: number | null;
+    primaryDendriteArmSpacing_PDAS_um: number | null;
+    unavailableReason?: string | null;
   };
 }
+
+/** "<value> <unit>" for a served number, else "unavailable" with the solver's reason when it carries one. */
+export const kineticsLine = (label: string, value: number | null | undefined, unit: string, reason?: string | null): string =>
+  typeof value === "number" && Number.isFinite(value)
+    ? `** ${label}: ${value} ${unit}`
+    : `** ${label}: unavailable${reason ? ` (${reason})` : ""}`;
 
 export interface GoldakCaeCard {
   filename: string;
@@ -158,11 +166,11 @@ export function buildGoldakCaeCard(
     "** a_front (m), a_rear (m), b_halfwidth (m), c_depth (m), Q_Goldak=eta_eff*P_laser (W, absorbed power deposited in the half-space body; f_f+f_r=2, do not halve), eta_eff (informational, ALREADY included in Q; do not apply again in DFLUX)",
     ` ${axis_m(goldak.semiAxis_af_front_um)}, ${axis_m(goldak.semiAxis_ar_rear_um)}, ${axis_m(goldak.semiAxis_b_halfwidth_um)}, ${axis_m(goldak.semiAxis_c_depth_um)}, ${Q_W}, ${params.effectiveAbsorptivity}`,
     `** f_f, f_r (continuity rule f_f = 2*a_f/(a_f+a_r), f_r = 2 - f_f): ${f_f.toFixed(4)}, ${f_r.toFixed(4)}`,
-    "** Solidification Kinetics:",
-    `** G_avg: ${kin.thermalGradient_G_K_m} K/m`,
-    `** R_solid: ${kin.solidificationRate_R_m_s} m/s`,
-    `** Cooling Rate: ${kin.coolingRate_K_s} K/s`,
-    `** Primary Spacing (PDAS): ${kin.primaryDendriteArmSpacing_PDAS_um} um`,
+    "** Solidification Kinetics (rear liquidus of the loss-free conduction field; null with a reason where that interface is not served, P6 2026-10-11):",
+    kineticsLine("G_avg", kin.thermalGradient_G_K_m, "K/m", kin.unavailableReason),
+    kineticsLine("R_solid", kin.solidificationRate_R_m_s, "m/s", kin.unavailableReason),
+    kineticsLine("Cooling Rate", kin.coolingRate_K_s, "K/s", kin.unavailableReason),
+    kineticsLine("Primary Spacing (PDAS)", kin.primaryDendriteArmSpacing_PDAS_um, "um", kin.unavailableReason),
     RULE,
   );
 

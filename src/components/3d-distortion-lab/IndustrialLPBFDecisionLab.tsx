@@ -541,7 +541,12 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
                   stress_MPa={thermal.defectDiagnostics.effectiveResidualStress_MPa}
                   yieldStrength_MPa={specimen.yieldStrength_25C_MPa}
                 />
-                <Metric label="Peak T (°C)" value={String(thermal.hydrodynamicsAndRecoil.peakTemperature_C)} ok hint={peakTemperatureBasisLabel(thermal) ?? undefined} />
+                <Metric
+                  label="Peak T (°C)"
+                  value={typeof thermal.hydrodynamicsAndRecoil.peakTemperature_C === "number" ? String(thermal.hydrodynamicsAndRecoil.peakTemperature_C) : "n/a"}
+                  ok={typeof thermal.hydrodynamicsAndRecoil.peakTemperature_C === "number" ? true : null}
+                  hint={thermal.hydrodynamicsAndRecoil.peakUnavailableReason ?? peakTemperatureBasisLabel(thermal) ?? undefined}
+                />
                 <Metric label="Preheat (°C)" value={String(lpbf.preheatTemp_C)} ok={lpbf.preheatTemp_C >= 80} />
               </div>
               <p className="text-[10px] text-slate-500">
@@ -624,7 +629,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
           <Tiny label="I0 MW/cm²" value={String(thermal.processParameters.peakIntensity_MW_cm2 ?? "-")} />
           <Tiny label="LED J/mm" value={(thermal.processParameters.linearEnergyDensity_J_m / 1000).toFixed(3)} />
           <Tiny label="VED J/mm³" value={String(thermal.processParameters.volumetricEnergyDensity_J_mm3)} />
-          <Tiny label="ε K/s" value={thermal.solidificationKinetics.coolingRate_K_s.toExponential(1)} />
+          <Tiny label="ε K/s" value={typeof thermal.solidificationKinetics.coolingRate_K_s === "number" ? thermal.solidificationKinetics.coolingRate_K_s.toExponential(1) : "n/a"} />
         </div>
       )}
       {thermal && <MeltPoolExtentNotice geometry={thermal.meltPoolGeometry} />}
@@ -765,7 +770,7 @@ export const VerdictBanner: React.FC<{
                 ? "border-rose-400/50 text-rose-100"
                 : g.status === "warn"
                   ? "border-amber-400/50 text-amber-100"
-                  : g.status === "unavailable"
+                  : g.status === "unavailable" || g.status === "not-evaluated"
                     ? "border-dashed border-slate-400/50 text-slate-300"
                     : g.status === "advisory"
                       ? "border-dotted border-sky-300/60 text-sky-100"

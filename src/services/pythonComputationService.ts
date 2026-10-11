@@ -941,8 +941,9 @@ export interface PythonSTLSlicerResult {
   };
 }
 
-/** "advisory": reported but never changes the verdict (recoater / distortion: alloy/layer index, independent of P, v and hatch). */
-export type PythonLpbfGateStatus = "pass" | "warn" | "fail" | "unavailable" | "advisory";
+/** "advisory": reported but never changes the verdict (recoater / distortion: alloy/layer index, independent of P, v and hatch).
+ *  "not-evaluated": the gate input was null (P6 containment, 2026-10-11); never counted as pass or fail. */
+export type PythonLpbfGateStatus = "pass" | "warn" | "fail" | "unavailable" | "advisory" | "not-evaluated";
 
 export interface PythonLpbfScreeningGate {
   id: string;
@@ -991,6 +992,8 @@ export interface PythonLpbfBuildJobVerdict {
   extentNote?: string | null;
   verdictReason?: string | null;
   unavailableGates?: string[];
+  /** Gate ids whose input was null (status "not-evaluated"); never counted as pass or fail (P6 containment). */
+  notEvaluatedGates?: string[];
   /** false when the Eagar–Tsai balling screen did not run (gate unavailable); a verdict is then not balling-cleared. */
   ballingScreened?: boolean;
   /** Absorption model of the screened L/W; thresholds were calibrated on "flat-plate". */
@@ -1199,10 +1202,12 @@ export interface PythonLPBFResult {
     flowDirection?: string;
     dGamma_dT_N_mK?: number;
     sulfur_ppm?: number;
-    /** DebRoy & David 1995 Eq. 8 order-of-magnitude estimate (Wave B LA-1). */
-    surfaceVelocity_m_s?: number;
-    surfaceVelocityDoi?: string;
-    pecletMarangoni?: number;
+    /** DebRoy & David 1995 Eq. 8 order-of-magnitude estimate (Wave B LA-1); null when the served peak is null (P6). */
+    surfaceVelocity_m_s?: number | null;
+    surfaceVelocityDoi?: string | null;
+    pecletMarangoni?: number | null;
+    /** Why the Marangoni number, velocity and Peclet are null (P6 containment); null when they are served. */
+    marangoniUnavailableReason?: string | null;
     aspectNote?: string;
     doi?: string;
   };
@@ -1262,8 +1267,10 @@ export interface PythonLPBFResult {
     extentNote: string | null;
     /** x of the axial field maximum the liquidus extent search and the yz cross-sections are anchored at (negative = behind the beam). */
     peakOffset_um?: number;
-    /** Axial (y = z = 0) field maximum at peakOffset_um; hydrodynamicsAndRecoil.peakTemperature_C stays T(0,0,0). */
-    axialFieldMaximum_C?: number;
+    /** Axial (y = z = 0) maximum of the kernel's own field at peakOffset_um (Eagar-Tsai, Goldak), served only below the
+     *  sourced vapour temperature; null with a reason otherwise and always null for Rosenthal (regularised value; P6). */
+    axialFieldMaximum_C?: number | null;
+    axialFieldMaximumUnavailableReason?: string | null;
     goldakParameters: {
       semiAxis_af_front_um: number;
       semiAxis_ar_rear_um: number;
@@ -1272,21 +1279,43 @@ export interface PythonLPBFResult {
     };
   };
   hydrodynamicsAndRecoil: {
-    /** Beam-centre value T(0,0,0) of the conduction field; can exceed T_vap by far (see peakTemperatureBasis). */
-    peakTemperature_C: number;
-    /** "regularised-singular-source-value" (Rosenthal) or "distributed-source-conduction-centre-value" (ET/Goldak). */
+    /** P6 containment (2026-10-11): the loss-free Eagar-Tsai surface maximum (same value for every kernel), served only
+     *  below a SOURCED vapour temperature; null with peakUnavailableReason otherwise. Older payloads carried the
+     *  beam-centre value T(0,0,0) of the kernel (see peakTemperatureBasis). */
+    peakTemperature_C: number | null;
+    /** "eagar-tsai-loss-free-surface-maximum" since P6; older: "regularised-singular-source-value" (Rosenthal) or
+     *  "distributed-source-conduction-centre-value" (ET/Goldak). */
     peakTemperatureBasis?: string;
+    peakTemperatureModelId?: string;
     peakTemperatureNote?: string;
-    peakExceedsVaporization?: boolean;
-    /** min(peak, T_vap); the value recoil and Marangoni read. */
-    surfaceTemperature_C?: number;
+    peakUnavailableReason?: string | null;
+    /** x of the loss-free maximum behind the beam centre (negative), null when the peak is null. */
+    peakLocation_x_um?: number | null;
+    vaporTemperatureSourced_K?: number | null;
+    vaporTemperatureSourced_C?: number | null;
+    vaporTemperatureSource?: string | null;
+    vaporTemperatureDoi?: string | null;
+    vaporTemperatureUnavailableReason?: string | null;
+    /** Loss-free maximum vs the sourced vapour temperature; null where no sourced value exists. */
+    peakExceedsVaporization?: boolean | null;
+    /** Equals the served peak (no clipping since P6); null when the peak is null. Older payloads: min(peak, T_vap). */
+    surfaceTemperature_C?: number | null;
     surfaceTemperatureBasis?: string;
-    knudsenRecoilPressure_kPa: number;
-    marangoniNumber: number;
+    /** Always null since P6 (no wall closure); older payloads carried the 0.54 p_sat value at the clipped T_vap. */
+    knudsenRecoilPressure_kPa: number | null;
+    recoilPressureUnavailableReason?: string | null;
+    /** "below Fabbro 2020 App A onset" | "above onset, no wall closure" | null (T_v unsourced). */
+    recoilOnsetStatus?: string | null;
+    recoilOnsetUnavailableReason?: string | null;
+    recoilOnsetBasis?: string;
+    marangoniNumber: number | null;
+    marangoniUnavailableReason?: string | null;
     marangoniGeometrySource?: string;
     molarMass_kg_mol?: number;
     pecletThermalNumber: number;
-    powderDenudationWidth_um: number;
+    /** Always null since P6 (uncited heuristic removed, G1 audit B05). */
+    powderDenudationWidth_um: number | null;
+    powderDenudationUnavailableReason?: string | null;
   };
   defectDiagnostics: {
     lackOfFusionStatus: "Pass" | "Warning" | "Fail";
@@ -1312,29 +1341,36 @@ export interface PythonLPBFResult {
     distortionIndex: number;
     distortionIndexBasis?: string;
   };
+  /** P6 containment (2026-10-11): G, R, cooling rate, PDAS, SDAS and morphology come from the rear liquidus of the
+   *  loss-free conduction field ("conduction-field-interface") and are null with unavailableReason when the served
+   *  depth comes from the Fabbro keyhole leg or fewer than 3 interface samples exist. No tail-length fallback, no
+   *  floors, no incline multiplier (solidificationCosTheta is no longer served). */
   solidificationKinetics: {
     modelId?: string;
-    gradientSource?: string;
+    gradientSource?: string | null;
     usedFieldMap?: boolean;
-    thermalGradient_G_K_m: number;
-    thermalGradient_G_K_um: number;
-    thermalGradientTail_G_K_m?: number;
-    solidificationRate_R_m_s: number;
-    solidificationRate_R_mm_s: number;
+    interface?: string | null;
+    unavailableReason?: string | null;
+    thermalGradient_G_K_m: number | null;
+    thermalGradient_G_K_um: number | null;
+    thermalGradientTail_G_K_m?: number | null;
+    solidificationRate_R_m_s: number | null;
+    solidificationRate_R_mm_s: number | null;
+    /** Older payloads only (removed by P6). */
     solidificationCosTheta?: number;
-    coolingRate_K_s: number;
-    coolingRate_log10: number;
-    g_over_r_ratio: number;
-    microstructureMorphology: string;
-    primaryDendriteArmSpacing_PDAS_um: number;
-    secondaryDendriteArmSpacing_SDAS_um: number;
+    coolingRate_K_s: number | null;
+    coolingRate_log10: number | null;
+    g_over_r_ratio: number | null;
+    microstructureMorphology: string | null;
+    primaryDendriteArmSpacing_PDAS_um: number | null;
+    secondaryDendriteArmSpacing_SDAS_um: number | null;
     phaseTransformation?: {
       alloyClass?: string;
       expected?: string;
       criterion?: string;
       source?: string | null;
       doi?: string | null;
-    };
+    } | null;
     frontPointCount?: number;
     tail?: { x_um: number; z_um: number; G_K_m: number; R_m_s: number };
     bottom?: { x_um: number; z_um: number; G_K_m: number; R_m_s: number };

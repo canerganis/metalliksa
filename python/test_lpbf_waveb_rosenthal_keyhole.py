@@ -47,7 +47,15 @@ class RosenthalExponentLA2(unittest.TestCase):
             r = run("Inconel 718", p, v, 80.0, 80.0, 40.0, 110.0)
             self.assertEqual(r["meltPoolGeometry"]["peakOffset_um"], 0.0)
             if r["meltPoolGeometry"]["extentStatus"] == "computed":
-                self.assertGreaterEqual(r["hydrodynamicsAndRecoil"]["peakTemperature_C"], tl)
+                # P6 (2026-10-11): the beam-centre value is no longer served; IN718 has no sourced T_v so the peak
+                # is null with that reason, and the field is above liquidus at the centre (the extent is computed).
+                self.assertIsNone(r["hydrodynamicsAndRecoil"]["peakTemperature_C"])
+                self.assertIn("no sourced vapour temperature", r["hydrodynamicsAndRecoil"]["peakUnavailableReason"])
+                self.assertGreaterEqual(solver.rosenthal_temperature_C(
+                    0.0, 0.0, 0.0, 80.0, r["processParameters"]["fieldPower_W"],
+                    r["processParameters"]["effectiveConductivity_W_mK"], v * 1e-3,
+                    r["processParameters"]["effectiveConductivity_W_mK"] / (8190.0 * r["processParameters"]["effectiveSpecificHeat_J_kgK"]),
+                    max(40e-6 / math.sqrt(2.0), 8e-6)), tl)
 
     def test_in718_150_1500_resolved(self):
         r = run("Inconel 718", 150.0, 1500.0, 80.0, 80.0, 40.0, 110.0)
@@ -59,30 +67,32 @@ class RosenthalExponentLA2(unittest.TestCase):
 
 
 class PeakTemperatureLabelD1(unittest.TestCase):
-    """Lead decision D1: the reported Rosenthal peak is shown, labelled as a regularised singular-source value."""
+    """Lead decision D1 (Wave B) labelled the served Rosenthal peak as a regularised singular-source value. P6
+    (2026-10-11) removed that value: the served peak is the loss-free Eagar-Tsai surface maximum, served only below a
+    sourced vapour temperature, with no clipping anywhere."""
 
-    def test_rosenthal_peak_is_labelled_regularised_singular_source(self):
-        r = run("Inconel 718", 200.0, 800.0, 80.0, 80.0, 40.0, 110.0)
-        h = r["hydrodynamicsAndRecoil"]
-        self.assertEqual(h["peakTemperatureBasis"], "regularised-singular-source-value")
-        self.assertIn("T(0,0,0)", h["peakTemperatureNote"])
-        self.assertIn("not a wall", h["peakTemperatureNote"])
-        boiling = solver.THERMOPHYSICAL_DB["Inconel 718"]["boiling_C"]
-        self.assertGreater(h["peakTemperature_C"], boiling)  # shown, not hidden
-        self.assertTrue(h["peakExceedsVaporization"])
-        self.assertEqual(h["surfaceTemperature_C"], round(boiling, 1))
-        self.assertTrue(h["surfaceTemperatureBasis"].startswith("saturated at T_vap"))
+    def test_regularised_peak_is_gone_for_every_kernel(self):
+        for src in ("rosenthal", "eagar-tsai", "goldak"):
+            h = run("Inconel 718", 200.0, 800.0, 80.0, 80.0, 40.0, 110.0, heat_source=src)["hydrodynamicsAndRecoil"]
+            self.assertEqual(h["peakTemperatureBasis"], "eagar-tsai-loss-free-surface-maximum")
+            self.assertIn("p.348-s", h["peakTemperatureNote"])
+            self.assertIsNone(h["peakTemperature_C"])             # IN718: no sourced T_v
+            self.assertIsNone(h["peakExceedsVaporization"])
+            self.assertIsNone(h["surfaceTemperature_C"])
+            self.assertTrue(h["surfaceTemperatureBasis"].startswith("unavailable"))
+            self.assertNotIn("saturated", h["surfaceTemperatureBasis"])
 
-    def test_et_goldak_peak_basis(self):
-        for src in ("eagar-tsai", "goldak"):
-            h = run(*NIST, heat_source=src)["hydrodynamicsAndRecoil"]
-            self.assertEqual(h["peakTemperatureBasis"], "distributed-source-conduction-centre-value")
-
-    def test_unsaturated_surface_basis(self):
-        h = run("Inconel 718", 10.0, 2000.0, 80.0, 80.0, 40.0, 110.0)["hydrodynamicsAndRecoil"]
-        self.assertFalse(h["peakExceedsVaporization"])
-        self.assertEqual(h["surfaceTemperatureBasis"], "beam-centre field value below T_vap")
-        self.assertEqual(h["surfaceTemperature_C"], h["peakTemperature_C"])
+    def test_sourced_alloy_peak_policy(self):
+        boiling = solver.THERMOPHYSICAL_DB["316L Stainless Steel"]["boiling_C"]   # unsourced authority value (B04)
+        high = run("316L Stainless Steel", 200.0, 800.0, 80.0, 80.0, 40.0, 110.0)["hydrodynamicsAndRecoil"]
+        self.assertIsNone(high["peakTemperature_C"])
+        self.assertIs(high["peakExceedsVaporization"], True)
+        self.assertEqual(high["vaporTemperatureSourced_K"], 3086.0)
+        self.assertNotEqual(high["surfaceTemperature_C"], round(boiling, 1))
+        low = run("316L Stainless Steel", 20.0, 2000.0, 80.0, 80.0, 40.0, 110.0)["hydrodynamicsAndRecoil"]
+        self.assertIs(low["peakExceedsVaporization"], False)
+        self.assertEqual(low["surfaceTemperature_C"], low["peakTemperature_C"])
+        self.assertIn("no clipping", low["surfaceTemperatureBasis"])
 
 
 class KeyholeScreenLA3(unittest.TestCase):
@@ -161,15 +171,17 @@ class IncrementAndRecoilLA8(unittest.TestCase):
         self.assertEqual(kh["modelId"], "fabbro-keyhole-v1")
         self.assertIn("uncited", kh["basis"])
 
-    def test_recoil_continuous(self):
-        dH = 6.4e6 * 0.0587
-        lo, hi = (solver.knight_recoil_pressure_kPa(t, 2850.0, dH) for t in (2279.0, 2280.0))
-        self.assertAlmostEqual(lo, 2.149, delta=0.005)
-        self.assertLess(hi - lo, 0.05)
-        temps = [500.0 + 50.0 * i for i in range(48)]
-        vals = [solver.knight_recoil_pressure_kPa(t, 2850.0, dH) for t in temps]
-        self.assertTrue(all(b >= a for a, b in zip(vals, vals[1:])))
-        self.assertAlmostEqual(solver.knight_recoil_pressure_kPa(2850.0, 2850.0, dH), 0.54 * 101.325, delta=1e-9)
+    def test_recoil_is_not_served(self):
+        # P6 (2026-10-11): the Anisimov/Knight 0.54 p_sat recoil at the clipped T_vap (54.72 kPa in every saturated
+        # case) was removed; recoil is null with a reason and an onset status string is served instead.
+        self.assertFalse(hasattr(solver, "knight_recoil_pressure_kPa"))
+        h = run(*IN718_285)["hydrodynamicsAndRecoil"]
+        self.assertIsNone(h["knudsenRecoilPressure_kPa"])
+        self.assertIn("54.72", h["recoilPressureUnavailableReason"])
+        self.assertIsNone(h["recoilOnsetStatus"])   # IN718: no sourced T_v
+        ti = run("Ti-6Al-4V", 280.0, 940.0, 80.0, 80.0, 40.0, 110.0)["hydrodynamicsAndRecoil"]
+        self.assertEqual(ti["recoilOnsetStatus"], "above onset, no wall closure")
+        self.assertIsNone(ti["knudsenRecoilPressure_kPa"])
 
 
 if __name__ == "__main__":

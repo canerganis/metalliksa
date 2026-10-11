@@ -221,54 +221,37 @@ class PointIntegrationTests(unittest.TestCase):
     def setUpClass(cls):
         cls.p718 = gr.run_gr_solidification(req(power_W=285, speed_mm_s=960))
         cls.cond = gr.run_gr_solidification(req(power_W=120, speed_mm_s=1000))
-        cls.p625 = gr.run_gr_solidification(req(alloy="in625", power_W=195, speed_mm_s=800))
+        cls.p625 = gr.run_gr_solidification(req(alloy="in625", power_W=120, speed_mm_s=1000))
 
     def rel(self, a, b, tol):
         self.assertAlmostEqual(a / b, 1.0, delta=tol)
 
     def test_in718_keyhole_point(self):
+        # P6 containment (2026-10-11): at 285 W / 960 mm/s the served depth comes from the Fabbro keyhole leg, so the
+        # thermal block serves null G/R with a reason and the point is unavailable (the pre-P6 pins were G 16981196 /
+        # R 0.0943 / cooling 1600948 at the median, from the conduction field on a keyhole-leg depth).
         r = self.p718
         self.assertTrue(r["success"])
         pt = r["point"]
-        self.assertEqual(pt["status"], "available")
-        self.assertIsNotNone(pt["regimeNote"])
-        # Pinned on the P1 tree (2026-10-11: the Rosenthal field power is A P, no ramp and no latent factor, so G, R
-        # and the centreline tail move; the pre-P1 pins were G 12135115 / R 0.0684 / cooling 830457 at the median).
+        self.assertEqual(pt["status"], "unavailable")
+        self.assertIn("Fabbro keyhole leg", pt["reason"])
         f = pt["front"]
-        self.assertEqual(f["median"]["G_K_m"], 16981196.0)
-        self.assertEqual(f["median"]["R_m_s"], 0.0943)
-        self.assertEqual(f["median"]["coolingRate_K_s"], 1600948.0)
-        self.rel(f["median"]["GoverR_K_s_m2"], 1.800763e8, 1e-5)
-        self.assertEqual(f["median"]["huntBand"], "Columnar dendritic (Hunt G/R screening)")
-        self.assertEqual(f["tail"]["G_K_m"], 5681582.0)
-        self.assertEqual(f["tail"]["R_m_s"], 0.3114)
-        self.rel(f["tail"]["GoverR_K_s_m2"], 1.8245286e7, 1e-6)
-        self.rel(f["tail"]["GtimesR_K_s"], 1769244.6, 1e-6)
-        self.assertEqual(f["tail"]["huntBand"], "Columnar dendritic (Hunt G/R screening)")
-        self.assertEqual(f["bottom"]["G_K_m"], 32016786.0)
-        self.assertEqual(f["bottom"]["R_m_s"], 0.0189)
-        self.rel(f["bottom"]["GoverR_K_s_m2"], 1.6940098e9, 1e-6)
-        self.rel(f["bottom"]["GtimesR_K_s"], 605117.3, 1e-6)
-        self.assertEqual(f["bottom"]["huntBand"], "Cellular (Hunt G/R screening)")
-        self.assertEqual(f["R_range_m_s"], [0.0189, 0.3114])
+        self.assertIsNone(f["median"])
+        self.assertIsNone(f["tail"])
+        self.assertIsNone(f["bottom"])
+        self.assertIsNone(f["R_range_m_s"])
         self.assertIn("not G_median", f["coolingBasis"])
-        rc = pt["rosenthalCenterline"]
-        self.assertEqual(rc["status"], "available")
-        self.rel(rc["G_K_m"], 1848766.5, 1e-6)
-        self.assertAlmostEqual(rc["xTail_um"], 679.37, delta=0.01)
-        self.assertAlmostEqual(rc["R_m_s"], 0.96, places=9)
-        self.assertAlmostEqual(rc["GoverR_K_s_m2"], 1925798.4, delta=0.5)
-        self.assertAlmostEqual(rc["GtimesR_K_s"], 1774815.8, delta=0.5)
-        lv = pt["laves"]
-        self.assertEqual(lv["equilibriumKBound"], 0.0647)
-        ub = lv["sampledArcUpperBound"]
-        self.assertEqual((ub["location"], ub["R_m_s"], ub["V_D_m_s"], ub["f"]), ("bottom", 0.0189, 0.31, 0.0548))
-        self.assertEqual(lv["atTail"]["f"], {"min": 0.0016, "max": 0.0041})
+        self.assertEqual(pt["rosenthalCenterline"]["status"], "unavailable")
+        self.assertEqual(pt["cet"]["status"], "unavailable")
+        self.assertEqual(pt["laves"]["status"], "unavailable")
         self.assertEqual(pt["morphology"]["basis"], "hunt-g-over-r-screening")
+        self.assertEqual(pt["morphology"]["bands"], {"bottom": None, "median": None, "tail": None})
         self.assertIn("not a CET prediction", pt["morphology"]["label"])
+        self.assertEqual(r["counts"], {"available": 0, "screening-fallback": 0, "degenerate-floor": 0,
+                                       "unavailable": 1, "error": 0})
 
     def test_response_envelope(self):
-        r = self.p718
+        r = self.cond   # P6: the 285/960 point is unavailable (keyhole leg); the envelope is checked on the conduction point
         self.assertEqual(r["schema"], gr.SCHEMA)
         self.assertEqual(r["engine"], gr.ENGINE)
         self.assertEqual(r["evidence"]["kind"], "screening-only")
@@ -304,11 +287,12 @@ class PointIntegrationTests(unittest.TestCase):
     def test_in625_point(self):
         r = self.p625
         f = r["point"]["front"]
-        # Pinned on the P1 tree (pre-P1: 14767610 / 0.0781, 4912793 / 0.2592, 27868995 / 0.0158).
-        self.assertEqual(f["median"]["G_K_m"], 19393766.0)
-        self.assertAlmostEqual(f["median"]["R_m_s"], 0.1005, places=12)
-        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (6701551.0, 0.3233))
-        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (36221417.0, 0.0196))
+        # P6 (2026-10-11): the former 195 W / 800 mm/s point now serves null G/R (Fabbro keyhole leg; its P1 pins were
+        # 19393766 / 0.1005, 6701551 / 0.3233, 36221417 / 0.0196), so a conduction point (120 W / 1000 mm/s) is pinned.
+        self.assertEqual(f["median"]["G_K_m"], 28457032.0)
+        self.assertAlmostEqual(f["median"]["R_m_s"], 0.1355, places=12)
+        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (11017877.0, 0.3972))
+        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (52031697.0, 0.0219))
         self.assertEqual(r["materialEvidence"]["provenanceClass"], "legacy-estimated-secondary")
         self.assertIn("not established", r["point"]["laves"]["note"])
         self.assertEqual(r["point"]["cet"]["status"], "unavailable")

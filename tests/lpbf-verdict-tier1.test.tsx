@@ -107,7 +107,8 @@ test("Python advisory / balling-screen wording and the 'advisory' gate status re
   assert.match(py, /rec_status = "advisory" if recoater_high else "pass"/);
   assert.match(py, /dist_status = "advisory" if distortion_high else "pass"/);
   const ts = read("src/services/pythonComputationService.ts");
-  assert.match(ts, /export type PythonLpbfGateStatus = "pass" \| "warn" \| "fail" \| "unavailable" \| "advisory";/);
+  // P6 containment (2026-10-11): "not-evaluated" for a null gate input, never counted as pass or fail.
+  assert.match(ts, /export type PythonLpbfGateStatus = "pass" \| "warn" \| "fail" \| "unavailable" \| "advisory" \| "not-evaluated";/);
   const banner = read("src/components/3d-distortion-lab/IndustrialLPBFDecisionLab.tsx");
   assert.match(banner, /g\.status === "advisory"/);
 });

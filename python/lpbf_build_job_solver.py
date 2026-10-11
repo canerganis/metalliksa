@@ -207,7 +207,10 @@ def build_job_kinetics(alloy_id, thermal):
         if kinetics_alloy is None:
             reason = f"no kinetics model for {alloy_name}"
         elif reported is None:
-            reason = "the build thermal result reports no finite cooling rate"
+            # P6 containment: the thermal block serves null with its own reason (keyhole leg, few samples).
+            thermal_reason = (thermal.get("solidificationKinetics") or {}).get("unavailableReason")
+            reason = "the build thermal result reports no finite cooling rate" + (
+                f": {thermal_reason}" if isinstance(thermal_reason, str) and thermal_reason else "")
         else:
             reason = DEGENERATE_FRONT_REASON
         return _unavailable_kinetics_block(alloy_id, reason, reported, degenerate)
@@ -406,22 +409,23 @@ def compose_verdict(thermal, alloy_id, extras=None):
             f"melt-pool geometry not resolved ({extent_status}): "
             f"{extent_note if extent_note else 'no extentNote reported'}"
         )
-    W = float(thermal["meltPoolGeometry"]["width_um"])
-    D = float(thermal["meltPoolGeometry"]["depth_um"])
+    # P6 containment (2026-10-11): a null gate input is "not evaluated", never pass or fail. Peak temperature, recoil,
+    # Marangoni, denudation and G/R are not verdict inputs; the inputs read here are geometry and defect numbers.
+    not_evaluated = {}
+    W = _finite_number(thermal["meltPoolGeometry"].get("width_um"))
+    D = _finite_number(thermal["meltPoolGeometry"].get("depth_um"))
     h = float(thermal["processParameters"]["hatchSpacing_um"])
     t = float(thermal["processParameters"]["layerThickness_um"])
-    width_over_hatch = W / max(1e-6, h)
-    depth_over_layer = D / max(1e-6, t)
-    tang = float(
-        thermal["defectDiagnostics"].get(
-            "tangIndex_hW_tD",
-            thermal["defectDiagnostics"].get("lackOfFusionOverlapIndex", 0.0),
-        )
-    )
-
+    width_over_hatch = None if W is None else W / max(1e-6, h)
+    depth_over_layer = None if D is None else D / max(1e-6, t)
     def_ = thermal["defectDiagnostics"]
-    lof_fail = def_["lackOfFusionStatus"] == "Fail"
-    lof_warn = def_["lackOfFusionStatus"] == "Warning"
+    tang = _finite_number(def_.get("tangIndex_hW_tD", def_.get("lackOfFusionOverlapIndex")))
+    if tang is None or W is None or D is None:
+        for gid in ("lof_tang", "lof_wh", "lof_dt"):
+            not_evaluated[gid] = "lack-of-fusion input (Tang index, width or depth) is null"
+    lof_status = def_.get("lackOfFusionStatus")
+    lof_fail = lof_status == "Fail" and "lof_tang" not in not_evaluated
+    lof_warn = lof_status == "Warning" and "lof_tang" not in not_evaluated
     keyhole_high = str(def_["keyholePorosityRisk"]).startswith("High")
     keyhole_possible = str(def_["keyholePorosityRisk"]).startswith("Possible")
     balling_band, balling = _balling_screen_of(def_)
@@ -440,9 +444,15 @@ def compose_verdict(thermal, alloy_id, extras=None):
         )
     # The frozen solver no longer bands recoaterCrashRisk (alloy/layer/preheat-only index, not evaluated
     # from scan parameters); the advisory keeps its documented threshold on the unchanged index.
-    recoater_high = float(def_["distortionIndex"]) > 2.0
-    distortion_high = float(def_["distortionIndex"]) >= 0.65
-    dh = float(thermal["processParameters"]["normalizedEnthalpy"])
+    distortion_index = _finite_number(def_.get("distortionIndex"))
+    if distortion_index is None:
+        not_evaluated["recoater"] = not_evaluated["distortion"] = "distortion index is null"
+    recoater_high = distortion_index is not None and distortion_index > 2.0
+    distortion_high = distortion_index is not None and distortion_index >= 0.65
+    dh = _finite_number(thermal["processParameters"].get("normalizedEnthalpy"))
+    if dh is None:
+        not_evaluated["keyhole"] = "normalised enthalpy is null"
+        keyhole_high = keyhole_possible = False
     win = evaluate_literature_pv(
         alloy_id,
         float(thermal["processParameters"]["laserPower_W"]),
@@ -471,12 +481,18 @@ def compose_verdict(thermal, alloy_id, extras=None):
             f"{geometry_reason.rstrip('.')}. "
             "No print / do-not-print verdict is issued from heuristic geometry."
         )
+    if not_evaluated:
+        reasons.append(
+            "Gate(s) not evaluated because their input is null (P6 containment): "
+            + "; ".join(f"{gid} ({why})" for gid, why in sorted(not_evaluated.items()))
+            + ". A null input is never counted as pass or fail."
+        )
     if lof_fail:
         reasons.append(
             f"Lack of fusion (Tang): (h/W)²+(t/D)² = {tang:.3f} (need ≤1.0); "
             f"W/h = {width_over_hatch:.2f}, D/t = {depth_over_layer:.2f}."
         )
-        if dh >= ENTHALPY_TRANSITION:
+        if dh is not None and dh >= ENTHALPY_TRANSITION:
             reasons[-1] += " " + KEYHOLE_DEPTH_BIAS_LOF_NOTE
     elif lof_warn:
         reasons.append(
@@ -537,11 +553,12 @@ def compose_verdict(thermal, alloy_id, extras=None):
 
     # recoater_high / distortion_high are advisories (ADVISORY_GATES) and are deliberately absent here.
     verdict = "printable"
-    if lof_fail or downskin_fail or (keyhole_high and dh > 35):
+    if lof_fail or downskin_fail or (keyhole_high and dh is not None and dh > 35):
         verdict = "do-not-print"
     elif lof_warn or keyhole_high or balling_high or downskin_warn or (not win["inside"]):
         verdict = "risky"
-    if not geometry_resolved:
+    verdict_gate_not_evaluated = "lof_tang" in not_evaluated or "keyhole" in not_evaluated
+    if not geometry_resolved or verdict_gate_not_evaluated:
         verdict = "inconclusive"
 
     if not reasons:
@@ -550,11 +567,15 @@ def compose_verdict(thermal, alloy_id, extras=None):
             "VED is not used as the sole criterion."
         )
 
+    inconclusive_headline = (
+        f"Inconclusive — melt-pool geometry not resolved ({extent_status}); see reasons" if not geometry_resolved
+        else "Inconclusive — a verdict-driving gate was not evaluated (null input, never pass or fail); see reasons"
+    )
     headline = {
         "printable": "Printable — stay in the conduction window",
         "risky": "Risky — qualify with coupon builds before flight hardware",
         "do-not-print": "Do not print — change P, v, h, or t before a build",
-        "inconclusive": f"Inconclusive — melt-pool geometry not resolved ({extent_status}); see reasons",
+        "inconclusive": inconclusive_headline,
     }[verdict]
 
     balling_screened = geometry_resolved and not balling_unavailable
@@ -562,11 +583,11 @@ def compose_verdict(thermal, alloy_id, extras=None):
         # A verdict without the balling screen is not balling-cleared: say so in the headline.
         headline += " (balling not screened: Eagar–Tsai extent not computed)"
 
-    lw = round(width_over_hatch, 3)
-    dt = round(depth_over_layer, 3)
-    tang_r = round(tang, 3)
+    lw = None if width_over_hatch is None else round(width_over_hatch, 3)
+    dt = None if depth_over_layer is None else round(depth_over_layer, 3)
+    tang_r = None if tang is None else round(tang, 3)
     tang_status = "fail" if lof_fail else ("warn" if lof_warn else "pass")
-    kh_status = ("fail" if (keyhole_high and dh > 35) else "warn" if keyhole_high
+    kh_status = ("fail" if (keyhole_high and dh is not None and dh > 35) else "warn" if keyhole_high
                  else "advisory" if keyhole_possible else "pass")
     ball_status = ("warn" if balling_high else "advisory" if balling_moderate
                    else "unavailable" if balling_unavailable else "pass")
@@ -632,7 +653,7 @@ def compose_verdict(thermal, alloy_id, extras=None):
         _gate(
             "recoater",
             rec_status,
-            float(def_["distortionIndex"]),
+            distortion_index,
             None,
             "index",
             "Recoater-crash heuristic from residual-stress index (High when > 2.0) — not a blade FEA. "
@@ -641,7 +662,7 @@ def compose_verdict(thermal, alloy_id, extras=None):
         _gate(
             "distortion",
             dist_status,
-            float(def_["distortionIndex"]),
+            distortion_index,
             0.65,
             "index",
             "Inherent-strain distortion screening (≥0.65 advisory) — not Goldak FEA. "
@@ -657,6 +678,11 @@ def compose_verdict(thermal, alloy_id, extras=None):
         ),
     ]
     unavailable_gates = []
+    for g in gates:
+        if g["id"] in not_evaluated:
+            g["status"] = "not-evaluated"
+            g["measured"] = None
+            g["reason"] = f"not evaluated: {not_evaluated[g['id']]} (never counted as pass or fail)"
     if geometry_resolved and balling_unavailable:
         for g in gates:
             if g["id"] == "balling":
@@ -700,8 +726,8 @@ def compose_verdict(thermal, alloy_id, extras=None):
             "widthOverHatch": lw,
             "depthOverLayer": dt,
             "tangIndex": tang_r,
-            "hOverW": round(h / max(1e-6, W), 3),
-            "tOverD": round(t / max(1e-6, D), 3),
+            "hOverW": None if W is None else round(h / max(1e-6, W), 3),
+            "tOverD": None if D is None else round(t / max(1e-6, D), 3),
         },
         "literatureWindow": win,
         "gates": gates,
@@ -716,6 +742,8 @@ def compose_verdict(thermal, alloy_id, extras=None):
         "ballingScreened": balling_screened,
         "ballingAbsorptionModel": absorption_model if balling_screened else None,
         "geometryIndependentFailGates": geometry_independent_fail_gates,
+        # Gates whose input was null: reported, never counted as pass or fail (P6 containment).
+        "notEvaluatedGates": [g["id"] for g in gates if g["status"] == "not-evaluated"],
         # Verdict-driving gate ids ("fail" -> do-not-print, "warn" -> risky) and the advisory-only
         # gates that never change the verdict (see ADVISORY_GATES).
         "blockingGates": [g["id"] for g in gates if g["status"] == "fail"],
@@ -1060,8 +1088,16 @@ def _solve_lpbf_build_job_core(data):
         )
     if abs(incline_deg) > 1e-6:
         assumptions.append(
-            f"Solidification rate R = v·cos(θ) with surface incline θ={incline_deg:.1f}°."
+            f"Surface incline θ={incline_deg:.1f}° is echoed only: since P6 (2026-10-11) R = v·n_x on the rear "
+            "liquidus of the conduction field with no incline multiplier (an inclined surface needs the velocity "
+            "vector and the normal in one frame)."
         )
+    assumptions.append(
+        "P6 containment (2026-10-11): peak temperature (loss-free Eagar-Tsai surface maximum, served only below a "
+        "sourced vapour temperature), recoil pressure (not served), Marangoni number, denudation width and the "
+        "interface G/R/cooling rate/PDAS/SDAS are null with a reason where unsupported; none of them is a verdict "
+        "input, and a null gate input is reported as not evaluated, never as pass or fail."
+    )
     if uq_block:
         assumptions.append(
             f"UQ: literature-default MC n={uq_block['nSamples']} "

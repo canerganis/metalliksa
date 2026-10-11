@@ -141,3 +141,79 @@ class EagarTsaiField:
 def eagar_tsai_temperature_C(x_m, y_m, z_m, T0_C, P_eff, k_th, v_scan, alpha_th, r0_m):
     field = EagarTsaiField(T0_C, P_eff, k_th, alpha_th, r0_m).bind_speed(v_scan)
     return field.temperature_C(x_m, y_m, z_m)
+
+
+# P6 containment (2026-10-11, docs/research/SPEC_p6_containment_2026-10-11.md item 1): the served peak is the
+# loss-free surface maximum of this Gaussian source (Eagar & Tsai 1983, printed p.347-s Eq. 6, 8 to 10, p.348-s
+# Eq. 11 and Appendix B), a numerical maximum along the axis y = z = 0. Every y != 0 and z > 0 lowers every
+# positive time-kernel term, so the surface maximum lies on the axis; for v > 0 it lies behind the beam centre.
+SURFACE_MAXIMUM_BASIS = "eagar-tsai-loss-free-surface-maximum"
+_SURFACE_MAXIMUM_GRID = 128
+_SURFACE_MAXIMUM_XTOL_M = 1e-11
+
+
+def _i0e(a: float) -> float:
+    """exp(-a) I0(a) for a >= 0 (the stationary Gaussian surface profile is proportional to i0e((x/r0)^2))."""
+    if a < 500.0:
+        return float(np.i0(a)) * math.exp(-a)
+    # Asymptotic series with positive terms (every truncation is a lower bound); the margin makes it an upper bound.
+    s = 1.0 + 1.0 / (8.0 * a) + 9.0 / (128.0 * a * a) + 225.0 / (3072.0 * a ** 3)
+    return s * (1.0 + 1e-6) / math.sqrt(2.0 * math.pi * a)
+
+
+def eagar_tsai_surface_maximum(T0_C: float, P_eff: float, k_th: float, alpha_th: float, r0_m: float,
+                               v_scan_m_s: float) -> dict:
+    """Loss-free surface maximum of the Eagar-Tsai field on the axis y = z = 0, with its x location.
+
+    Search: the beam centre T(0,0,0) and a rear bracket [x_left, 0] that is widened (doubling) until the
+    stationary surface bound T0 + P_eff/(sqrt(2 pi) k r0) i0e((x/r0)^2), which bounds every moving kernel
+    (every moving point kernel is below its stationary counterpart), falls below the centre value; a uniform
+    scan of the bracket, then a golden-section refinement of every interior candidate bracket. A numerical
+    maximisation, not a proof of unimodality. Conduction only: no evaporation, flow or recoil loss, so above
+    the boiling point it is not a wall temperature (Eagar & Tsai 1983 p.348-s: an impossible situation).
+    """
+    field = EagarTsaiField(T0_C, P_eff, k_th, alpha_th, r0_m).bind_speed(v_scan_m_s)
+    r0 = field.r0_m
+    centre = float(field.temperature_C(0.0, 0.0, 0.0))
+    stationary_scale = field.P_eff / (math.sqrt(2.0 * math.pi) * field.k_th * r0)
+    left = -2.0
+    while field.T0_C + stationary_scale * _i0e(left * left) >= centre:
+        left *= 2.0
+        if left < -1048576.0:
+            raise RuntimeError("could not bound the Eagar-Tsai surface maximum search")
+    n = _SURFACE_MAXIMUM_GRID
+    xs = np.array([left * (1.0 - i / n) for i in range(n + 1)]) * r0  # left ... 0, ascending
+    temps = field.temperature_C(xs, np.zeros_like(xs), np.zeros_like(xs))
+    temps = np.asarray(temps, dtype=np.float64).reshape(-1)
+    candidates = [(centre, 0.0), (float(temps[0]), float(xs[0]))]
+
+    def axis(x):
+        return float(field.temperature_C(x, 0.0, 0.0))
+
+    for i in range(1, n):
+        if temps[i] >= temps[i - 1] and temps[i] >= temps[i + 1]:
+            a, b = float(xs[i - 1]), float(xs[i + 1])
+            phi = (math.sqrt(5.0) - 1.0) / 2.0
+            c = b - phi * (b - a)
+            d = a + phi * (b - a)
+            fc, fd = axis(c), axis(d)
+            while b - a > _SURFACE_MAXIMUM_XTOL_M:
+                if fc > fd:
+                    b, d, fd = d, c, fc
+                    c = b - phi * (b - a)
+                    fc = axis(c)
+                else:
+                    a, c, fc = c, d, fd
+                    d = a + phi * (b - a)
+                    fd = axis(d)
+            x_best = 0.5 * (a + b)
+            candidates.append((axis(x_best), x_best))
+    T_max, x_max = max(candidates)
+    return {
+        "modelId": MODEL_ID,
+        "basis": SURFACE_MAXIMUM_BASIS,
+        "T_C": float(T_max),
+        "x_m": float(x_max),
+        "beamCentre_T_C": centre,
+        "searchStart_m": float(left * r0),
+    }

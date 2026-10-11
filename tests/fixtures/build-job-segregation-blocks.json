@@ -1,5 +1,5 @@
 {
- "available_in718_285_960": {
+ "available_in718_150_1200": {
   "schema": "lpbf-solidification-segregation-1",
   "modelId": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
   "status": "available",
@@ -278,11 +278,11 @@
   "processCoupling": {
    "status": "available",
    "reason": null,
-   "G_K_m": 16981196.0,
-   "R_m_s": 0.0943,
-   "coolingRate_K_s": 1600948.0,
+   "G_K_m": 26882120.0,
+   "R_m_s": 0.1384,
+   "coolingRate_K_s": 3720925.0,
    "morphology": "Columnar dendritic (Hunt G/R screening)",
-   "PDAS_um": 0.52,
+   "PDAS_um": 0.38,
    "source": "build job microstructure block (copied, not recomputed)",
    "usedInCalculation": false,
    "note": "G and R are copied for context: the equilibrium-k Scheil-type result depends on composition alone. R is used only by the separate rapidSolidification screening estimate (Aziz k(V)); back-diffusion at this solidification rate is not modelled."
@@ -348,34 +348,34 @@
   "rapidSolidification": {
    "status": "available",
    "reason": null,
-   "R_m_s": 0.0943,
+   "R_m_s": 0.1384,
    "R_source": "build job microstructure block (screening-field mean R, copied)",
    "k_e": 0.45,
    "kEff": {
-    "min": 0.5783,
-    "max": 0.6099
+    "min": 0.6198,
+    "max": 0.6566
    },
    "nominalBinaryFGammaLaves": {
-    "min": 0.0211,
-    "max": 0.0281
+    "min": 0.0125,
+    "max": 0.0191
    },
    "byVD": [
     {
      "V_D_m_s": 0.23,
-     "kEff": 0.6099,
+     "kEff": 0.6566,
      "band": [
       {
        "label": "min",
        "Nb_wt": 4.75,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0173
+        "fGammaLavesConstituent": 0.01
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0383,
+        "fGammaNbCConstituent": 0.0259,
         "fGammaLavesConstituent": 0.0,
-        "fEutecticTotal": 0.0383,
+        "fEutecticTotal": 0.0259,
         "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       },
@@ -384,13 +384,13 @@
        "Nb_wt": 5.125,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0211
+        "fGammaLavesConstituent": 0.0125
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0454,
+        "fGammaNbCConstituent": 0.0315,
         "fGammaLavesConstituent": 0.0,
-        "fEutecticTotal": 0.0454,
+        "fEutecticTotal": 0.0315,
         "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       },
@@ -399,32 +399,32 @@
        "Nb_wt": 5.5,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0252
+        "fGammaLavesConstituent": 0.0153
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0531,
+        "fGammaNbCConstituent": 0.0377,
         "fGammaLavesConstituent": 0.0,
-        "fEutecticTotal": 0.0531,
+        "fEutecticTotal": 0.0377,
         "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       }
      ],
      "segregation": {
       "Nb_wt": 5.125,
-      "coreRatioToNominal": 0.61,
-      "coreNb_wt": 3.126,
+      "coreRatioToNominal": 0.657,
+      "coreNb_wt": 3.365,
       "interdendritic": [
        {
         "fs": 0.9,
-        "liquidNb_wt": 12.582,
-        "ratioToNominal": 2.455,
+        "liquidNb_wt": 11.3,
+        "ratioToNominal": 2.205,
         "atEutecticComposition": false
        },
        {
         "fs": 0.95,
-        "liquidNb_wt": 16.489,
-        "ratioToNominal": 3.217,
+        "liquidNb_wt": 14.336,
+        "ratioToNominal": 2.797,
         "atEutecticComposition": false
        }
       ]
@@ -432,20 +432,20 @@
     },
     {
      "V_D_m_s": 0.31,
-     "kEff": 0.5783,
+     "kEff": 0.6198,
      "band": [
       {
        "label": "min",
        "Nb_wt": 4.75,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0235
+        "fGammaLavesConstituent": 0.0156
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0475,
+        "fGammaNbCConstituent": 0.0356,
         "fGammaLavesConstituent": 0.0,
-        "fEutecticTotal": 0.0475,
+        "fEutecticTotal": 0.0356,
         "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       },
@@ -454,13 +454,13 @@
        "Nb_wt": 5.125,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0281
+        "fGammaLavesConstituent": 0.0191
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0556,
+        "fGammaNbCConstituent": 0.0424,
         "fGammaLavesConstituent": 0.0,
-        "fEutecticTotal": 0.0556,
+        "fEutecticTotal": 0.0424,
         "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       },
@@ -469,32 +469,32 @@
        "Nb_wt": 5.5,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0333
+        "fGammaLavesConstituent": 0.023
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0642,
+        "fGammaNbCConstituent": 0.0497,
         "fGammaLavesConstituent": 0.0,
-        "fEutecticTotal": 0.0642,
+        "fEutecticTotal": 0.0497,
         "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       }
      ],
      "segregation": {
       "Nb_wt": 5.125,
-      "coreRatioToNominal": 0.578,
-      "coreNb_wt": 2.964,
+      "coreRatioToNominal": 0.62,
+      "coreNb_wt": 3.176,
       "interdendritic": [
        {
         "fs": 0.9,
-        "liquidNb_wt": 13.534,
-        "ratioToNominal": 2.641,
+        "liquidNb_wt": 12.301,
+        "ratioToNominal": 2.4,
         "atEutecticComposition": false
        },
        {
         "fs": 0.95,
-        "liquidNb_wt": 18.128,
-        "ratioToNominal": 3.537,
+        "liquidNb_wt": 16.01,
+        "ratioToNominal": 3.124,
         "atEutecticComposition": false
        }
       ]
@@ -502,6 +502,405 @@
     }
    ],
    "bandNote": "same formulas and band as the equilibrium-k result with k_Nb replaced by k(R) at each end of the V_D range; the lower V_D gives the higher k(R) and the smaller fraction",
+   "modelId": "aziz-continuous-growth-k-of-v-scheil-screening-v1",
+   "evidenceLabel": "Literature estimate (screening): Aziz continuous-growth k(V) with V_D 0.23-0.31 m/s, a range Ghosh et al. 2017 fitted to binary Ni-Nb phase-field results (not measured), applied to this module's equilibrium k_Nb at the build job's screening R; extrapolates weld-calibrated Scheil formulas; not a prediction of LPBF segregation",
+   "model": {
+    "equation": "k(V) = (k_e + V/V_D) / (1 + V/V_D)",
+    "source": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369",
+    "locator": "G17 Eq. 12 (Section 3.2.4), after Aziz 1982 (G17 ref. 66, not read here)",
+    "originalCitation": "M.J. Aziz, 'Model for solute redistribution during rapid solidification', J. Appl. Phys. 53 (1982) 1158"
+   },
+   "V_D_m_s": {
+    "min": 0.23,
+    "max": 0.31,
+    "unit": "m/s",
+    "values": [
+     {
+      "value": 0.23,
+      "unit": "m/s",
+      "source": "G17",
+      "locator": "G17 Section 3.2.4: Eq. 12 fitted to the 1D planar-front phase-field results (k_v = c0/c_max, Fig. 13); G18 uses the same 0.23 m/s for IN625 (text with Fig. 4)",
+      "verified": true,
+      "sourceCitation": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369"
+     },
+     {
+      "value": 0.31,
+      "unit": "m/s",
+      "source": "G17",
+      "locator": "G17 Section 3.2.4 and Fig. 12: Eq. 12 fitted to the 2D steady-state cell-tip values k_v = cs*/c_max",
+      "verified": true,
+      "sourceCitation": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369"
+     }
+    ],
+    "nature": "Modelling range, not a measurement. G17 fitted the Aziz function to the partitioning of its own phase-field model, in which the anti-trapping current does not remove trapping at these velocities (Section 3.2.4 and Summary), and states that no experimental V_D for Ni-Nb is available. K17 (lines 385-391) likewise says the diffuse interface artificially magnifies trapping at LPBF speeds. Both fits use k_e = 0.48 (binary Ni-Nb, G17 Table 2)."
+   },
+   "replacesUpperBound": false,
+   "extrapolationNote": "Extrapolation: the eutectic-fraction formulas (D96 Eq. 5; D97/D98 pseudo-ternary) were calibrated on GTA welds and DTA samples with the equilibrium k. Here k_Nb is replaced by k(R) and held constant over the whole solidification at the single build-job R, so the numbers show the direction and rough size of the trapping effect, not a validated LPBF fraction.",
+   "kTransferNote": "V_D was fitted with k_e = 0.48 (G17, G18); this module applies it with its own equilibrium k_Nb (D98 0.45 for IN718, C88 0.51 for IN625). No source gives V_D for these k_e or for multicomponent IN718/IN625.",
+   "notModelled": [
+    "velocity-dependent liquidus slope (G17 Eq. 14) and dendrite-tip undercooling / tip composition (G17 Eqs. 9-10, 15)",
+    "curvature correction of k (G17 Eq. 13)",
+    "trapping of carbon: k_C stays at its equilibrium value (no source V_D for C)",
+    "variation of R along the melt-pool boundary (one mean R from the build job; G17 Section 3.1: 0.01-0.3 m/s, K17 lines 243-246: 0.01-0.17 m/s)",
+    "solid-state back-diffusion of Nb"
+   ]
+  },
+  "lpbfObservations": {
+   "status": "unavailable",
+   "reason": "no as-built LPBF IN718 segregation measurement among the sources read: Z18, L17 and K17 are LPBF IN625, G17 is a binary Ni-Nb simulation",
+   "observations": []
+  }
+ },
+ "in718_unavailable_keyhole_leg_285_960": {
+  "schema": "lpbf-solidification-segregation-1",
+  "modelId": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+  "status": "available",
+  "alloyId": "in718",
+  "evidenceLabel": "Literature estimate (screening): Scheil-type pseudo-ternary gamma-Nb-C model, constants from DuPont, Robino & Marder 1998 (GTA welds of experimental alloys); not CALPHAD; LPBF is outside the source regime",
+  "source": {
+   "citation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+   "url": "https://doi.org/10.1016/S1359-6454(98)00123-2",
+   "read": true,
+   "note": "full text (journal article) read for this module; Table 2 gives the solidification constants used here. Its Section 3.2 (negligible Nb diffusion / infinitely fast C diffusion, Eqs. 13-21) is the same model as the equations implemented here (D97 Eqs. 1-8)"
+  },
+  "constantSet": "ni-base",
+  "constants": {
+   "k_gamma_Nb": {
+    "value": 0.45,
+    "unit": "-",
+    "source": "D98",
+    "locator": "D98 Table 2 (k_gamma,Nb, Ni base alloys)",
+    "verified": true,
+    "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+   },
+   "k_gamma_C": {
+    "value": 0.21,
+    "unit": "-",
+    "source": "D98",
+    "locator": "D98 Table 2 (k_gamma,C, Ni base alloys)",
+    "verified": true,
+    "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+   },
+   "a_wtC": {
+    "value": 1.13,
+    "unit": "wt% C",
+    "source": "D98",
+    "locator": "D98 Table 2 (a, Ni base alloys); Eq. 2",
+    "verified": true,
+    "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+   },
+   "b_wtC_per_wtNb": {
+    "value": -0.047,
+    "unit": "wt% C / wt% Nb",
+    "source": "D98",
+    "locator": "D98 Table 2 (b, Ni base alloys); Eq. 2",
+    "verified": true,
+    "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+   },
+   "C_Nb_laves": {
+    "value": 23.1,
+    "unit": "wt% Nb",
+    "source": "D98",
+    "locator": "D98 Table 2 (C_Nb,L->(gamma+Laves), Ni base alloys)",
+    "verified": true,
+    "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+   },
+   "C_C_laves": {
+    "value": 0.04,
+    "unit": "wt% C",
+    "source": "D98",
+    "locator": "D98 Table 2 (C_C,L->(gamma+Laves), Ni base alloys)",
+    "verified": true,
+    "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+   },
+   "C_NbC_Nb": {
+    "value": 90.5,
+    "unit": "wt% Nb",
+    "source": "D98",
+    "locator": "D98 Table 2 (C_NbC,Nb); text after Eq. 11",
+    "verified": true,
+    "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+   },
+   "C_NbC_C": {
+    "value": 9.5,
+    "unit": "wt% C",
+    "source": "D98",
+    "locator": "D98 Table 2 (C_NbC,C); text after Eq. 11",
+    "verified": true,
+    "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+   }
+  },
+  "k_Nb": {
+   "value": 0.45,
+   "citation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+   "locator": "D98 Table 2 (k_gamma,Nb, Ni base alloys)"
+  },
+  "composition": {
+   "source": "Special Metals Corporation, INCONEL alloy 718 technical bulletin, Publication Number SMC-045 (2007), Table 1 - Limiting Chemical Composition (conforms to AMS specifications)",
+   "locator": "Table 1 - Limiting Chemical Composition, %",
+   "Nb_wt": {
+    "min": 4.75,
+    "max": 5.5,
+    "nominal": 5.125,
+    "nominalIs": "midpoint of the specification range (not a measured composition)",
+    "note": "Niobium (plus Tantalum)"
+   },
+   "C_wt": {
+    "min": null,
+    "max": 0.08,
+    "note": "maximum only; C = 0 is the binary upper-bound end"
+   },
+   "balanceElement": "Fe",
+   "balanceByDifference_wt": {
+    "min": 11.13,
+    "max": 24.6
+   },
+   "appNominalNote": "The app's alloy_registry in718 composition_wt (Nb 5.1, C 0.04 wt%) has no cited source, so the band uses the SMC-045 specification limits instead. Nb 5.1 lies inside the band (4.75-5.50) and C 0.04 inside the C range covered by the C = 0 and C max columns."
+  },
+  "band": [
+   {
+    "label": "min",
+    "Nb_wt": 4.75,
+    "binaryUpperBound": {
+     "C_wt": 0.0,
+     "fGammaLavesConstituent": 0.0564,
+     "riskClass": "eutectic Laves expected (Scheil)"
+    },
+    "pseudoTernaryAtCmax": {
+     "C_wt": 0.08,
+     "fGammaNbCConstituent": 0.0692,
+     "fGammaLavesConstituent": 0.0198,
+     "fEutecticTotal": 0.089,
+     "fLiquidPrimaryEnd": 0.089,
+     "terminatedBy": "laves-point",
+     "riskClass": "eutectic Laves expected (Scheil)"
+    }
+   },
+   {
+    "label": "nominal",
+    "Nb_wt": 5.125,
+    "binaryUpperBound": {
+     "C_wt": 0.0,
+     "fGammaLavesConstituent": 0.0647,
+     "riskClass": "eutectic Laves expected (Scheil)"
+    },
+    "pseudoTernaryAtCmax": {
+     "C_wt": 0.08,
+     "fGammaNbCConstituent": 0.072,
+     "fGammaLavesConstituent": 0.0282,
+     "fEutecticTotal": 0.1003,
+     "fLiquidPrimaryEnd": 0.1003,
+     "terminatedBy": "laves-point",
+     "riskClass": "eutectic Laves expected (Scheil)"
+    }
+   },
+   {
+    "label": "max",
+    "Nb_wt": 5.5,
+    "binaryUpperBound": {
+     "C_wt": 0.0,
+     "fGammaLavesConstituent": 0.0736,
+     "riskClass": "eutectic Laves expected (Scheil)"
+    },
+    "pseudoTernaryAtCmax": {
+     "C_wt": 0.08,
+     "fGammaNbCConstituent": 0.0747,
+     "fGammaLavesConstituent": 0.0372,
+     "fEutecticTotal": 0.112,
+     "fLiquidPrimaryEnd": 0.112,
+     "terminatedBy": "laves-point",
+     "riskClass": "eutectic Laves expected (Scheil)"
+    }
+   }
+  ],
+  "bandNote": "gamma/Laves constituent fraction at C = 0 (binary; model upper bound over C only) and at the specification maximum C with the pseudo-ternary model; fractions are of the liquid, which D98 compares with measured volume %",
+  "quantity": "fGammaLavesConstituent and fGammaNbCConstituent are fractions of the gamma/Laves and gamma/NbC eutectic-type constituents (remaining liquid that transforms, eutectic gamma included; D97 terminology), not phase fractions of Laves or NbC.",
+  "feBaseSensitivity": {
+   "constantSet": "fe-base",
+   "constants": {
+    "k_gamma_Nb": {
+     "value": 0.25,
+     "unit": "-",
+     "source": "D98",
+     "locator": "D98 Table 2 (k_gamma,Nb, Fe base alloys)",
+     "verified": true,
+     "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+    },
+    "k_gamma_C": {
+     "value": 0.21,
+     "unit": "-",
+     "source": "D98",
+     "locator": "D98 Table 2 (k_gamma,C, Fe base alloys)",
+     "verified": true,
+     "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+    },
+    "a_wtC": {
+     "value": 1.37,
+     "unit": "wt% C",
+     "source": "D98",
+     "locator": "D98 Table 2 (a, Fe base alloys); Eq. 2",
+     "verified": true,
+     "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+    },
+    "b_wtC_per_wtNb": {
+     "value": -0.065,
+     "unit": "wt% C / wt% Nb",
+     "source": "D98",
+     "locator": "D98 Table 2 (b, Fe base alloys); Eq. 2",
+     "verified": true,
+     "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+    },
+    "C_Nb_laves": {
+     "value": 20.4,
+     "unit": "wt% Nb",
+     "source": "D98",
+     "locator": "D98 Table 2 (C_Nb,L->(gamma+Laves), Fe base alloys)",
+     "verified": true,
+     "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+    },
+    "C_C_laves": {
+     "value": 0.04,
+     "unit": "wt% C",
+     "source": "D98",
+     "locator": "D98 Table 2 (C_C,L->(gamma+Laves), Fe base alloys)",
+     "verified": true,
+     "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+    },
+    "C_NbC_Nb": {
+     "value": 90.5,
+     "unit": "wt% Nb",
+     "source": "D98",
+     "locator": "D98 Table 2 (C_NbC,Nb); text after Eq. 11",
+     "verified": true,
+     "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+    },
+    "C_NbC_C": {
+     "value": 9.5,
+     "unit": "wt% C",
+     "source": "D98",
+     "locator": "D98 Table 2 (C_NbC,C); text after Eq. 11",
+     "verified": true,
+     "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2"
+    }
+   },
+   "point": {
+    "label": "nominal",
+    "Nb_wt": 5.125,
+    "binaryUpperBound": {
+     "C_wt": 0.0,
+     "fGammaLavesConstituent": 0.1585,
+     "riskClass": "eutectic Laves expected (Scheil)"
+    },
+    "pseudoTernaryAtCmax": {
+     "C_wt": 0.08,
+     "fGammaNbCConstituent": 0.0675,
+     "fGammaLavesConstituent": 0.1245,
+     "fEutecticTotal": 0.1919,
+     "fLiquidPrimaryEnd": 0.1919,
+     "terminatedBy": "laves-point",
+     "riskClass": "eutectic Laves expected (Scheil)"
+    }
+   },
+   "note": "bracketing sensitivity with the D98 Fe-base constants; not an interpolation"
+  },
+  "segregation": {
+   "Nb_wt": 5.125,
+   "basis": "binary gamma-Nb Scheil (D97 Eq. 1), C = 0",
+   "coreNb_wt": 2.306,
+   "coreRatioToNominal": 0.45,
+   "interdendritic": [
+    {
+     "fs": 0.9,
+     "liquidNb_wt": 18.184,
+     "ratioToNominal": 3.548,
+     "atEutecticComposition": false
+    },
+    {
+     "fs": 0.95,
+     "liquidNb_wt": 23.1,
+     "ratioToNominal": 4.507,
+     "atEutecticComposition": true
+    }
+   ],
+   "note": "When the remaining liquid at fs is below the eutectic fraction the liquid has reached the gamma/Laves composition and the ratio is capped there (atEutecticComposition = true)."
+  },
+  "riskClass": "eutectic Laves expected (Scheil)",
+  "riskClassRule": "gamma/Laves constituent > 0 at any band point under the Scheil-type model; no fitted threshold. Binary Scheil without back-diffusion predicts a terminal gamma/Laves eutectic for any Nb > 0, so this class is positive by construction for every Nb-bearing composition and does not discriminate between compositions.",
+  "riskClassPositiveByConstruction": true,
+  "processCoupling": {
+   "status": "unavailable",
+   "reason": "microstructure unavailable: thermal.solidificationKinetics unavailable: the served depth comes from the Fabbro keyhole leg (e_kh > d_iso): the conduction field does not describe the keyhole interface, so G, R, cooling rate, PDAS, SDAS and morphology are not served (P6 containment)",
+   "G_K_m": null,
+   "R_m_s": null,
+   "coolingRate_K_s": null,
+   "morphology": null,
+   "PDAS_um": null,
+   "source": "build job microstructure block (copied, not recomputed)",
+   "usedInCalculation": false,
+   "note": "G and R are copied for context: the equilibrium-k Scheil-type result depends on composition alone. R is used only by the separate rapidSolidification screening estimate (Aziz k(V)); back-diffusion at this solidification rate is not modelled."
+  },
+  "upperBoundNote": "Upper bound with respect to effects that are not modelled and that all reduce segregation: solid-state back-diffusion of Nb, solute trapping at high solidification rate and dendrite-tip undercooling. It is not a bound with respect to the choice of k_Nb (see validity), and it is not an upper bound on measured Laves content (see sourceAgreementNote).",
+  "sourceAgreementNote": "Not conservative against measurement, even in the source's own weld regime: D97 Fig. 9b (measured vs calculated gamma/Laves) shows several alloys with measured gamma/Laves above the calculated value, including alloys for which the model predicts no gamma/Laves (measured about 0.5-1.5 vol%, e.g. Ni-base alloy 8 in Fig. 3), and low-C Ni-base alloys where the model is about 2-3x high (alloys 5 and 7: measured about 2-3 vol% in Fig. 3). D97 also reports that Fe and Si raise the gamma/Laves amount; IN718 contains about 18 wt% Fe plus Mo, which the source alloys do not.",
+  "binaryBoundNote": "Binary gamma-Nb Scheil (C = 0): carbon ties Nb up as NbC, so within this model the binary value is an upper bound over carbon content on the gamma/Laves constituent fraction (a model statement, not a bound on measurement).",
+  "notModelled": [
+   "solid-state back-diffusion of Nb",
+   "solute trapping in the equilibrium-k upper bound (screening k(V) is given separately in rapidSolidification)",
+   "dendrite-tip undercooling",
+   "Mo, Ti, Al and Si effects on the Laves reaction",
+   "mechanical consequences of Laves"
+  ],
+  "classIINote": "D98 Table 2 class II point (C_Nb, C_C) is not exactly on the regressed gamma/NbC line (a + b * C_Nb gives about 0.044 wt% C at 23.1 wt% Nb, against 0.04 tabulated); the eutectic-type integration stops when C_l,Nb reaches C_Nb,L->(gamma+Laves).",
+  "validity": {
+   "sourceCompositionRange_wt": {
+    "Fe": [
+     10.39,
+     11.12
+    ],
+    "Ni": [
+     63.93,
+     68.53
+    ],
+    "Cr": [
+     18.54,
+     19.3
+    ],
+    "Nb": [
+     1.82,
+     5.17
+    ],
+    "Si": [
+     0.03,
+     0.52
+    ],
+    "C": [
+     0.01,
+     0.17
+    ]
+   },
+   "sourceCompositionLocator": "D97 Table 1, alloys 1-8 (Ni base)",
+   "sourceAbsentElements": [
+    "Mo",
+    "Ti",
+    "Al",
+    "Co"
+   ],
+   "outsideSourceComposition": true,
+   "outsideSourceCompositionReasons": [
+    "Fe (balance, 11.13-24.6 wt% by difference) extends outside the source 10.39-11.12 wt%",
+    "Nb specification 4.75-5.5 wt% extends outside the source 1.82-5.17 wt%",
+    "Mo (2.8-3.3 wt% in the specification) is absent from the source alloys",
+    "Ti (0.65-1.15 wt% in the specification) is absent from the source alloys",
+    "Al (0.2-0.8 wt% in the specification) is absent from the source alloys"
+   ],
+   "sourceRegime": "gas tungsten arc (GTA) autogenous welds and DTA samples of investment-cast experimental alloys (D97 Experimental Procedure)",
+   "outsideSourceRegime": true,
+   "outsideSourceRegimeReason": "LPBF is not among the source processes (GTA welds, DTA samples); the k values and the Scheil assumption were not established at LPBF solidification rates",
+   "kTransferNote": "D98 reports k_Nb = 0.45 for its Ni base alloys (Fe about 11 wt%) and 0.25 for its Fe base alloys (Fe about 45 wt%) and attributes the drop to Fe. The source gives no k_Nb(Fe) relation here, so no interpolation is made; the Fe-base result is shown as a bracketing sensitivity."
+  },
+  "rapidSolidification": {
+   "status": "unavailable",
+   "reason": "no usable solidification rate R (microstructure status 'unavailable')",
+   "R_m_s": null,
    "modelId": "aziz-continuous-growth-k-of-v-scheil-screening-v1",
    "evidenceLabel": "Literature estimate (screening): Aziz continuous-growth k(V) with V_D 0.23-0.31 m/s, a range Ghosh et al. 2017 fitted to binary Ni-Nb phase-field results (not measured), applied to this module's equilibrium k_Nb at the build job's screening R; extrapolates weld-calibrated Scheil formulas; not a prediction of LPBF segregation",
    "model": {
@@ -1189,11 +1588,11 @@
   "processCoupling": {
    "status": "available",
    "reason": null,
-   "G_K_m": 16981196.0,
-   "R_m_s": 0.0943,
-   "coolingRate_K_s": 1600948.0,
+   "G_K_m": 26882120.0,
+   "R_m_s": 0.1384,
+   "coolingRate_K_s": 3720925.0,
    "morphology": "Columnar dendritic (Hunt G/R screening)",
-   "PDAS_um": 0.52,
+   "PDAS_um": 0.38,
    "source": "build job microstructure block (copied, not recomputed)",
    "usedInCalculation": false,
    "note": "G and R are copied for context: the equilibrium-k Scheil-type result depends on composition alone. R is used only by the separate rapidSolidification screening estimate (Aziz k(V)); back-diffusion at this solidification rate is not modelled."
@@ -1344,28 +1743,28 @@
   "rapidSolidification": {
    "status": "available",
    "reason": null,
-   "R_m_s": 0.0943,
+   "R_m_s": 0.1384,
    "R_source": "build job microstructure block (screening-field mean R, copied)",
    "k_e": 0.51,
    "kEff": {
-    "min": 0.6243,
-    "max": 0.6525
+    "min": 0.6612,
+    "max": 0.6941
    },
    "nominalBinaryFGammaLaves": {
-    "min": 0.0088,
-    "max": 0.0126
+    "min": 0.0046,
+    "max": 0.0078
    },
    "byVD": [
     {
      "V_D_m_s": 0.23,
-     "kEff": 0.6525,
+     "kEff": 0.6941,
      "band": [
       {
        "label": "min",
        "Nb_wt": 3.15,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0058
+        "fGammaLavesConstituent": 0.0029
        }
       },
       {
@@ -1373,7 +1772,7 @@
        "Nb_wt": 3.65,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0088
+        "fGammaLavesConstituent": 0.0046
        }
       },
       {
@@ -1381,25 +1780,25 @@
        "Nb_wt": 4.15,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0127
+        "fGammaLavesConstituent": 0.007
        }
       }
      ],
      "segregation": {
       "Nb_wt": 3.65,
-      "coreRatioToNominal": 0.652,
-      "coreNb_wt": 2.382,
+      "coreRatioToNominal": 0.694,
+      "coreNb_wt": 2.533,
       "interdendritic": [
        {
         "fs": 0.9,
-        "liquidNb_wt": 8.125,
-        "ratioToNominal": 2.226,
+        "liquidNb_wt": 7.383,
+        "ratioToNominal": 2.023,
         "atEutecticComposition": false
        },
        {
         "fs": 0.95,
-        "liquidNb_wt": 10.338,
-        "ratioToNominal": 2.832,
+        "liquidNb_wt": 9.126,
+        "ratioToNominal": 2.5,
         "atEutecticComposition": false
        }
       ]
@@ -1407,14 +1806,14 @@
     },
     {
      "V_D_m_s": 0.31,
-     "kEff": 0.6243,
+     "kEff": 0.6612,
      "band": [
       {
        "label": "min",
        "Nb_wt": 3.15,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0085
+        "fGammaLavesConstituent": 0.005
        }
       },
       {
@@ -1422,7 +1821,7 @@
        "Nb_wt": 3.65,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0126
+        "fGammaLavesConstituent": 0.0078
        }
       },
       {
@@ -1430,25 +1829,25 @@
        "Nb_wt": 4.15,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0177
+        "fGammaLavesConstituent": 0.0114
        }
       }
      ],
      "segregation": {
       "Nb_wt": 3.65,
-      "coreRatioToNominal": 0.624,
-      "coreNb_wt": 2.279,
+      "coreRatioToNominal": 0.661,
+      "coreNb_wt": 2.414,
       "interdendritic": [
        {
         "fs": 0.9,
-        "liquidNb_wt": 8.67,
-        "ratioToNominal": 2.375,
+        "liquidNb_wt": 7.963,
+        "ratioToNominal": 2.182,
         "atEutecticComposition": false
        },
        {
         "fs": 0.95,
-        "liquidNb_wt": 11.249,
-        "ratioToNominal": 3.082,
+        "liquidNb_wt": 10.07,
+        "ratioToNominal": 2.759,
         "atEutecticComposition": false
        }
       ]

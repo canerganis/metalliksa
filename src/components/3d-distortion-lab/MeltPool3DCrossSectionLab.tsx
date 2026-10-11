@@ -41,7 +41,7 @@ import {
   contourToCutFace,
   disposeObject3D,
 } from "./meltPool3DGeometry";
-import { colourScalePeak_C, peakTemperatureBasisLabel } from "../../utils/peakTemperatureDisplay";
+import { DISPLAY_CAP_LABEL, colourScaleIsDisplayCap, colourScalePeak_C, peakTemperatureBasisLabel, servedTemperatureText } from "../../utils/peakTemperatureDisplay";
 import {
   MELT_POOL_LITERATURE_CASES,
   isLoadableLiteratureCase,
@@ -1142,24 +1142,44 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
                     <span className="font-bold text-rose-400">{pyResult.meltPoolGeometry.keyholeVaporCavityDepth_um} μm</span>
                   </div>
                   <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                    <span className="text-slate-400">Field peak (conduction):</span>
-                    <span className="font-bold text-amber-300">{pyResult.hydrodynamicsAndRecoil.peakTemperature_C} °C</span>
+                    <span className="text-slate-400">Loss-free surface maximum (Eagar-Tsai):</span>
+                    <span className="font-bold text-amber-300" title={pyResult.hydrodynamicsAndRecoil.peakUnavailableReason ?? undefined}>
+                      {servedTemperatureText(pyResult.hydrodynamicsAndRecoil.peakTemperature_C)}
+                    </span>
                   </div>
+                  {pyResult.hydrodynamicsAndRecoil.peakUnavailableReason && (
+                    <div className="py-0.5 border-b border-slate-800/60 text-[10px] text-slate-500" data-testid="peak-temperature-reason">
+                      Peak not served: {pyResult.hydrodynamicsAndRecoil.peakUnavailableReason}
+                    </div>
+                  )}
                   {peakTemperatureBasisLabel(pyResult) && (
                     <div className="py-0.5 border-b border-slate-800/60 text-[10px] text-slate-500" data-testid="peak-temperature-basis">
-                      Field peak basis: {peakTemperatureBasisLabel(pyResult)}; colour scale capped at {Math.round(colourScalePeak_C(pyResult, pyResult.thermalSlices?.liquidus_C ?? 1336))} °C.
+                      Peak basis: {peakTemperatureBasisLabel(pyResult)}; colour scale top {Math.round(colourScalePeak_C(pyResult, pyResult.thermalSlices?.liquidus_C ?? 1336))} °C
+                      {colourScaleIsDisplayCap(pyResult, pyResult.thermalSlices?.liquidus_C ?? 1336) ? ` (${DISPLAY_CAP_LABEL})` : ""}.
                     </div>
                   )}
                   <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                    <span className="text-slate-400">Surface T proxy (screening cap):</span>
-                    <span className="font-bold text-amber-200">
-                      {pyResult.hydrodynamicsAndRecoil.surfaceTemperature_C ?? "—"} °C
+                    <span className="text-slate-400">Surface T (equals the served peak; no clip):</span>
+                    <span className="font-bold text-amber-200" title={pyResult.hydrodynamicsAndRecoil.surfaceTemperatureBasis}>
+                      {servedTemperatureText(pyResult.hydrodynamicsAndRecoil.surfaceTemperature_C)}
                     </span>
                   </div>
                   <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                    <span className="text-slate-400">Recoil proxy (screening; no momentum):</span>
-                    <span className="font-bold text-rose-300">{pyResult.hydrodynamicsAndRecoil.knudsenRecoilPressure_kPa} kPa</span>
+                    <span className="text-slate-400">Recoil pressure:</span>
+                    <span className="font-bold text-rose-300" title={pyResult.hydrodynamicsAndRecoil.recoilPressureUnavailableReason ?? undefined}>
+                      {typeof pyResult.hydrodynamicsAndRecoil.knudsenRecoilPressure_kPa === "number"
+                        ? `${pyResult.hydrodynamicsAndRecoil.knudsenRecoilPressure_kPa} kPa (legacy payload)`
+                        : "n/a (no wall closure)"}
+                    </span>
                   </div>
+                  {pyResult.hydrodynamicsAndRecoil.recoilOnsetStatus !== undefined && (
+                    <div className="flex justify-between py-0.5 border-b border-slate-800/60">
+                      <span className="text-slate-400">Recoil onset (Fabbro 2020 App A):</span>
+                      <span className="font-bold text-rose-200 text-right max-w-[58%]" title={pyResult.hydrodynamicsAndRecoil.recoilOnsetBasis}>
+                        {pyResult.hydrodynamicsAndRecoil.recoilOnsetStatus ?? `n/a (${pyResult.hydrodynamicsAndRecoil.recoilOnsetUnavailableReason ?? "not evaluated"})`}
+                      </span>
+                    </div>
+                  )}
                   {pyResult.marangoniModel && (
                     <div className="flex justify-between py-0.5 border-b border-slate-800/60">
                       <span className="text-slate-400">Marangoni tendency (screening):</span>
@@ -1203,41 +1223,46 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
             {pyResult && (
               <div className="space-y-1.5 text-[11px] text-slate-300">
                 <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">Field map (liquidus):</span>
+                  <span className="text-slate-400">Interface (rear liquidus, conduction field):</span>
                   <span className="font-bold text-white">
-                    {pyResult.solidificationKinetics.usedFieldMap ? "on" : "tail-length fallback"}
+                    {pyResult.solidificationKinetics.usedFieldMap ? "sampled" : "not served"}
                     {pyResult.solidificationKinetics.frontPointCount
                       ? ` · ${pyResult.solidificationKinetics.frontPointCount} stations`
                       : ""}
                   </span>
                 </div>
+                {pyResult.solidificationKinetics.unavailableReason && (
+                  <p className="text-[10px] text-amber-300 leading-snug" data-testid="solidification-unavailable-reason">
+                    G, R, cooling rate, PDAS, SDAS and morphology not served: {pyResult.solidificationKinetics.unavailableReason}
+                  </p>
+                )}
                 <div className="flex justify-between py-0.5 border-b border-slate-800/60">
                   <span className="text-slate-400">Thermal Gradient (G, median):</span>
-                  <span className="font-bold text-white">{pyResult.solidificationKinetics.thermalGradient_G_K_um} K/μm</span>
+                  <span className="font-bold text-white">{typeof pyResult.solidificationKinetics.thermalGradient_G_K_um === "number" ? `${pyResult.solidificationKinetics.thermalGradient_G_K_um} K/μm` : "n/a"}</span>
                 </div>
                 <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">Solidification Rate (R):</span>
-                  <span className="font-bold text-emerald-400">{pyResult.solidificationKinetics.solidificationRate_R_mm_s} mm/s</span>
+                  <span className="text-slate-400">Solidification Rate (R = v·n_x):</span>
+                  <span className="font-bold text-emerald-400">{typeof pyResult.solidificationKinetics.solidificationRate_R_mm_s === "number" ? `${pyResult.solidificationKinetics.solidificationRate_R_mm_s} mm/s` : "n/a"}</span>
                 </div>
                 <div className="flex justify-between py-0.5 border-b border-slate-800/60">
                   <span className="text-slate-400">Cooling Rate (dT/dt = G·R):</span>
-                  <span className="font-bold text-cyan-400">{pyResult.solidificationKinetics.coolingRate_K_s.toExponential(2)} K/s</span>
+                  <span className="font-bold text-cyan-400">{typeof pyResult.solidificationKinetics.coolingRate_K_s === "number" ? `${pyResult.solidificationKinetics.coolingRate_K_s.toExponential(2)} K/s` : "n/a"}</span>
                 </div>
                 <div className="flex justify-between py-0.5 border-b border-slate-800/60">
                   <span className="text-slate-400">G/R (Hunt class):</span>
-                  <span className="font-bold text-sky-300">{pyResult.solidificationKinetics.g_over_r_ratio.toExponential(2)} K·s/m²</span>
+                  <span className="font-bold text-sky-300">{typeof pyResult.solidificationKinetics.g_over_r_ratio === "number" ? `${pyResult.solidificationKinetics.g_over_r_ratio.toExponential(2)} K·s/m²` : "n/a"}</span>
                 </div>
                 <div className="flex justify-between py-0.5 border-b border-slate-800/60">
                   <span className="text-slate-400">PDAS (Hunt–Lu):</span>
-                  <span className="font-bold text-purple-300">{pyResult.solidificationKinetics.primaryDendriteArmSpacing_PDAS_um} μm</span>
+                  <span className="font-bold text-purple-300">{typeof pyResult.solidificationKinetics.primaryDendriteArmSpacing_PDAS_um === "number" ? `${pyResult.solidificationKinetics.primaryDendriteArmSpacing_PDAS_um} μm` : "n/a"}</span>
                 </div>
                 <div className="flex justify-between py-0.5 border-b border-slate-800/60">
                   <span className="text-slate-400">SDAS (Kirkwood):</span>
-                  <span className="font-bold text-fuchsia-300">{pyResult.solidificationKinetics.secondaryDendriteArmSpacing_SDAS_um} μm</span>
+                  <span className="font-bold text-fuchsia-300">{typeof pyResult.solidificationKinetics.secondaryDendriteArmSpacing_SDAS_um === "number" ? `${pyResult.solidificationKinetics.secondaryDendriteArmSpacing_SDAS_um} μm` : "n/a"}</span>
                 </div>
                 <div className="flex justify-between py-0.5 border-b border-slate-800/60">
                   <span className="text-slate-400">Predicted Microstructure:</span>
-                  <span className="font-bold text-emerald-300">{pyResult.solidificationKinetics.microstructureMorphology}</span>
+                  <span className="font-bold text-emerald-300">{pyResult.solidificationKinetics.microstructureMorphology ?? "n/a"}</span>
                 </div>
                 {pyResult.solidificationKinetics.phaseTransformation?.expected && (
                   <div className="flex justify-between py-0.5 border-b border-slate-800/60">

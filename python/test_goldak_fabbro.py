@@ -125,9 +125,11 @@ class GoldakMeltPoolPathIndependentTests(unittest.TestCase):
         D = gk["meltPoolGeometry"]["depth_um"]
         # For this NIST case: the same value (123.9 um) with and without the ray tracer.
         self.assertTrue(0.70 * NIST_DEPTH_UM <= D <= 1.40 * NIST_DEPTH_UM, f"Goldak+Fabbro NIST depth {D}")
-        recoil = gk["hydrodynamicsAndRecoil"]["knudsenRecoilPressure_kPa"]
-        self.assertTrue(20.0 <= recoil <= 120.0, f"Knight recoil at Tv {recoil}")
-        self.assertLessEqual(gk["hydrodynamicsAndRecoil"]["surfaceTemperature_C"], 2850.0 + 1.0, "surface T capped")
+        # P6 (2026-10-11): recoil is not served (no wall closure) and nothing is clipped at T_vap; IN718 has no
+        # sourced vapour temperature, so the peak and the surface temperature are null with a reason.
+        self.assertIsNone(gk["hydrodynamicsAndRecoil"]["knudsenRecoilPressure_kPa"], "recoil not served")
+        self.assertIsNone(gk["hydrodynamicsAndRecoil"]["surfaceTemperature_C"], "no T_vap clip, null where unsourced")
+        self.assertIn("no sourced vapour temperature", gk["hydrodynamicsAndRecoil"]["peakUnavailableReason"])
         self.assertEqual(gk["marangoniModel"]["modelId"], "marangoni-heiple-v1", "marangoni model")
         self.assertEqual(gk["marangoniModel"]["flowDirection"], "outward", "low-S outward")
 

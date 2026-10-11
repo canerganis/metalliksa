@@ -44,8 +44,15 @@ class SolverPassThroughTest(unittest.TestCase):
         import lpbf_thermal_solver as solver
         with mock.patch.dict(sys.modules, {"powder_bed_raytracer": None}), contextlib.redirect_stdout(io.StringIO()):
             r = solver.calculate_meltpool_physics("Inconel 718", 200.0, 800.0, 80.0, 80.0, 40.0, 110.0)
+            served = solver.calculate_meltpool_physics("316L Stainless Steel", 20.0, 2000.0, 80.0, 80.0, 40.0, 110.0)
+        # P6 (2026-10-11): the velocity reads the served peak; IN718 has no sourced vapour temperature, so it is null
+        # with a reason (the DOI of the method is still carried); a served 316L peak gives a positive velocity.
         self.assertEqual(r["marangoniModel"]["surfaceVelocityDoi"], "10.1103/RevModPhys.67.85")
-        self.assertGreater(r["marangoniModel"]["surfaceVelocity_m_s"], 1.0)
+        self.assertIsNone(r["marangoniModel"]["surfaceVelocity_m_s"])
+        self.assertIn("no sourced vapour temperature", r["marangoniModel"]["marangoniUnavailableReason"])
+        self.assertEqual(served["marangoniModel"]["surfaceVelocityDoi"], "10.1103/RevModPhys.67.85")
+        self.assertGreater(served["marangoniModel"]["surfaceVelocity_m_s"], 0.0)
+        self.assertIsNone(served["marangoniModel"]["marangoniUnavailableReason"])
 
 if __name__ == "__main__":
     unittest.main()

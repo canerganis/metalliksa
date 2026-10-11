@@ -22,10 +22,12 @@ DEGENERATE_FLOOR_REASON = (
     "(R <= 1e-4 m/s or cooling <= 1 K/s), not a computed value"
 )
 
+# P6 containment (2026-10-11): the former 285 W / 960 mm/s base case now serves null G/R (the served depth comes
+# from the Fabbro keyhole leg), so the available base case is the conduction point 150 W / 1200 mm/s.
 IN718_285 = {
     "materialName": "Inconel 718",
-    "power_W": 285,
-    "speed_mm_s": 960,
+    "power_W": 150,
+    "speed_mm_s": 1200,
     "beamDiameter_um": 80,
     "preheat_C": 80,
     "layerThickness_um": 40,
@@ -41,7 +43,7 @@ def rpc(params, **extra):
 class SolidificationMicrostructureRpcTest(unittest.TestCase):
     def test_available_field_map_equals_thermal_kinetics(self):
         out = rpc(IN718_285)
-        thermal = calculate_meltpool_physics("Inconel 718", 285, 960, 80, 80, 40, 110, heat_source="rosenthal")
+        thermal = calculate_meltpool_physics("Inconel 718", 150, 1200, 80, 80, 40, 110, heat_source="rosenthal")
         kin = thermal["solidificationKinetics"]
         self.assertEqual(out["status"], "available")
         self.assertIs(out["usedFieldMap"], True)
@@ -54,8 +56,9 @@ class SolidificationMicrostructureRpcTest(unittest.TestCase):
         self.assertEqual(out["morphology"], kin["microstructureMorphology"])
         self.assertEqual(out["heatSourceModel"], thermal["heatSourceModel"])
         self.assertEqual(out["regime"], thermal["meltPoolGeometry"]["regime"])
-        self.assertTrue(out["regime"].startswith("Keyhole"))
-        self.assertEqual(out["regimeNote"], "Keyhole Mode: outside the conduction regime of the G/R field")
+        self.assertTrue(out["regime"].startswith("Conduction"))
+        self.assertIsNone(out["regimeNote"])
+        self.assertEqual(out["gradientSource"], "conduction-field-interface")
         self.assertEqual(out["normalizedEnthalpy"], thermal["processParameters"]["normalizedEnthalpy"])
         self.assertEqual(out["absorptivity"]["conduction"], thermal["processParameters"]["conductionAbsorptivity"])
         self.assertEqual(out["absorptivity"]["effective"], thermal["processParameters"]["effectiveAbsorptivity"])
@@ -69,22 +72,31 @@ class SolidificationMicrostructureRpcTest(unittest.TestCase):
         self.assertIn("Screening-field projection of python/lpbf_thermal_solver solidificationKinetics", out["disclaimer"])
         self.assertNotIn("Build-job microstructure is a projection", out["disclaimer"])
         self.assertEqual(out["morphologyBands_G_over_R"], {"planar": 1.0e10, "cellular": 5.0e8, "columnar": 1.0e7})
-        self.assertEqual(out["inputs"]["power_W"], 285.0)
-        print("  rpc available IN718 285/960:", {k: out[k] for k in ("status", "G_K_m", "R_m_s", "PDAS_um", "SDAS_um", "morphology", "heatSourceModel", "gradientSource")})
+        self.assertEqual(out["inputs"]["power_W"], 150.0)
+        print("  rpc available IN718 150/1200:", {k: out[k] for k in ("status", "G_K_m", "R_m_s", "PDAS_um", "SDAS_um", "morphology", "heatSourceModel", "gradientSource")})
 
-    def test_screening_fallback_is_labelled(self):
-        # 10 W / 3000 mm/s: no closed liquidus field (after Wave B LA-2/KS-1 the 60 W case resolves; after P1,
-        # 2026-10-11, the latent-free Rosenthal field also resolves the former 20 W / 2000 mm/s case).
+    def test_unsampled_interface_is_unavailable_not_fallback(self):
+        # 10 W / 3000 mm/s: no closed liquidus field. Until P6 (2026-10-11) this served the tail-length heuristic as
+        # "screening-fallback"; P6 serves null with the thermal block's reason instead.
         out = rpc({**IN718_285, "power_W": 10, "speed_mm_s": 3000})
-        self.assertEqual(out["status"], "screening-fallback")
-        self.assertEqual(out["reason"], FALLBACK_REASON)
-        self.assertIs(out["usedFieldMap"], False)
-        self.assertEqual(out["gradientSource"], "tail-length-fallback")
-        self.assertTrue(math.isfinite(out["G_K_m"]))
+        self.assertEqual(out["status"], "unavailable")
+        self.assertIn("fewer than 3 solidifying rear-liquidus samples", out["reason"])
+        self.assertIsNone(out["G_K_m"])
+        self.assertIsNone(out["PDAS_um"])
+        self.assertNotEqual(out.get("gradientSource"), "tail-length-fallback")
 
-    def test_in718_100_960_is_available_after_waveb(self):
-        # This was the real degenerate-floor case at Tier 2. Wave B KS-1 samples only the solidifying
-        # (n_x > 0) part of the rear liquidus, so the clamp floors are no longer reached here.
+    def test_keyhole_leg_depth_is_unavailable_with_reason(self):
+        # 285 W / 960 mm/s: the served depth comes from the Fabbro keyhole leg (e_kh > d_iso), so the conduction
+        # field does not describe the interface (P6 containment).
+        out = rpc({**IN718_285, "power_W": 285, "speed_mm_s": 960})
+        self.assertEqual(out["status"], "unavailable")
+        self.assertIn("Fabbro keyhole leg", out["reason"])
+        self.assertIsNone(out["coolingRate_K_s"])
+        self.assertIsNone(out["morphology"])
+
+    def test_in718_100_1200_is_available_after_waveb(self):
+        # IN718 100 W / 960 mm/s was the real degenerate-floor case at Tier 2. Wave B KS-1 samples only the solidifying
+        # (n_x > 0) part of the rear liquidus; P6 (2026-10-11) removed the floors altogether (null with a reason).
         out = rpc({**IN718_285, "power_W": 100})
         self.assertEqual(out["status"], "available")
         self.assertGreater(out["R_m_s"], 1.0e-4)
@@ -106,7 +118,7 @@ class SolidificationMicrostructureRpcTest(unittest.TestCase):
 
         with mock.patch.object(lpbf_thermal_solver, "calculate_meltpool_physics", floored):
             out = rpc({**IN718_285, "power_W": 100})
-            kin = floored("Inconel 718", 100, 960, 80, 80, 40, 110, heat_source="rosenthal")["solidificationKinetics"]
+            kin = floored("Inconel 718", 100, 1200, 80, 80, 40, 110, heat_source="rosenthal")["solidificationKinetics"]
         self.assertEqual(out["status"], "degenerate-floor")
         self.assertEqual(out["reason"], DEGENERATE_FLOOR_REASON)
         self.assertIs(out["usedFieldMap"], True)
@@ -131,13 +143,18 @@ class SolidificationMicrostructureRpcTest(unittest.TestCase):
                     if block["status"] == "available":
                         self.assertGreater(block["R_m_s"], 1.0e-4, (name, power, speed))
                         self.assertGreater(block["coolingRate_K_s"], 1.0, (name, power, speed))
+                    if block["status"] == "unavailable":
+                        self.assertIn("Fabbro keyhole leg", block["reason"], (name, power, speed))
                     if block["status"] == "degenerate-floor":
                         self.assertEqual(block["reason"], DEGENERATE_FLOOR_REASON)
                         self.assertTrue(block["R_m_s"] <= 1.0e-4 * (1.0 + 1.0e-9) or block["coolingRate_K_s"] <= 1.0)
         print("  grid scan status counts:", dict(counts))
-        # Wave B KS-1: 84/9/7 available/degenerate/fallback at Tier 2 -> 97/0/3; the floor is unreachable here.
+        # Wave B KS-1: 84/9/7 available/degenerate/fallback at Tier 2 -> 97/0/3; P6 (2026-10-11): the keyhole-leg
+        # points are unavailable (64 available / 36 unavailable on this grid), no fallback, no floor.
         self.assertEqual(counts["degenerate-floor"], 0)
+        self.assertEqual(counts["screening-fallback"], 0)
         self.assertGreaterEqual(counts["available"], 1)
+        self.assertGreaterEqual(counts["unavailable"], 1)
 
     def test_heat_source_is_passed_through(self):
         out = rpc({**IN718_285, "heatSource": "goldak"})

@@ -179,9 +179,9 @@ class PeakAnchoredExtentTest(unittest.TestCase):
         self.assertAlmostEqual(g["width_um"], 116.5, delta=0.2)
         self.assertAlmostEqual(g["depth_um"], 71.6, delta=0.2)
         self.assertAlmostEqual(g["length_um"], 695.1, delta=0.5)
-        t_liq = solver.THERMOPHYSICAL_DB["Inconel 718"]["liquidus_C"]
-        self.assertGreater(result["hydrodynamicsAndRecoil"]["peakTemperature_C"], t_liq)
-        self.assertEqual(g["axialFieldMaximum_C"], result["hydrodynamicsAndRecoil"]["peakTemperature_C"])
+        # P6 (2026-10-11): IN718 has no sourced vapour temperature, so the peak and the Rosenthal axial maximum are null.
+        self.assertIsNone(result["hydrodynamicsAndRecoil"]["peakTemperature_C"])
+        self.assertIsNone(g["axialFieldMaximum_C"])
         self.assertNotEqual(compose_verdict(result, "in718")["verdict"], "inconclusive")
         # The distributed sources (Eagar-Tsai, Goldak) still peak behind the beam centre.
         for source in ("eagar-tsai", "goldak"):
@@ -212,25 +212,24 @@ class PeakAnchoredExtentTest(unittest.TestCase):
         result, _ = run("Inconel 718", 10.0, 2000.0, 80.0, 80.0, 40.0, 100.0)
         g = result["meltPoolGeometry"]
         self.assertEqual(g["extentStatus"], "heuristic-width-fallback")
-        self.assertLess(result["meltPoolGeometry"]["axialFieldMaximum_C"],
-                        solver.THERMOPHYSICAL_DB["Inconel 718"]["liquidus_C"])
+        # P6: the Rosenthal axial maximum is the regularised value and is served null; the field itself stays
+        # below liquidus at its axial peak (the extent status above says so).
+        self.assertIsNone(result["meltPoolGeometry"]["axialFieldMaximum_C"])
 
-    def test_reported_peak_stays_beam_centre(self):
-        # The reported peak is still T(0,0,0) (IN718 200/800/80 Rosenthal, G11 payload). Wave B LA-2 makes it the
-        # regularised point-source value T0 + P/(2 pi k r_reg): 2500.2 C at Tier 2 -> 35 097 C, labelled (D1).
+    def test_regularised_peak_is_no_longer_served(self):
+        # Until P6 the reported peak was T(0,0,0) of the Rosenthal field, the regularised point-source value
+        # T0 + P/(2 pi k r_reg) (21 250.8 C on the G11 IN718 200/800/80 payload after P1). P6 (2026-10-11) serves the
+        # loss-free Eagar-Tsai surface maximum only below a sourced vapour temperature; IN718 has none, so the peak,
+        # the surface temperature and the Rosenthal axial maximum are null with reasons, and nothing is clipped.
         result, _ = run("Inconel 718", 200.0, 800.0, 80.0, 80.0, 40.0, 110.0)
         h = result["hydrodynamicsAndRecoil"]
-        pp = result["processParameters"]
-        props = solver.THERMOPHYSICAL_DB["Inconel 718"]
-        r_reg = max(80e-6 / 2.0 / math.sqrt(2.0), 8e-6)
-        k_th = pp["effectiveConductivity_W_mK"]
-        expected = 80.0 + pp["fieldPower_W"] / (2.0 * math.pi * k_th * r_reg)
-        self.assertAlmostEqual(h["peakTemperature_C"], expected, delta=0.1 + 1e-4 * expected)
-        # P1 (2026-10-11): field power 0.38 x 200 W (no ramp, no latent factor), 35 097 C -> 21 250.8 C.
-        self.assertAlmostEqual(h["peakTemperature_C"], 21250.8, delta=1.0)
-        self.assertEqual(result["meltPoolGeometry"]["axialFieldMaximum_C"], h["peakTemperature_C"])
-        self.assertEqual(h["peakTemperatureBasis"], "regularised-singular-source-value")
-        self.assertEqual(h["surfaceTemperature_C"], props["boiling_C"])
+        self.assertIsNone(h["peakTemperature_C"])
+        self.assertIsNone(h["surfaceTemperature_C"])
+        self.assertIsNone(h["knudsenRecoilPressure_kPa"])
+        self.assertIsNone(result["meltPoolGeometry"]["axialFieldMaximum_C"])
+        self.assertEqual(h["peakTemperatureBasis"], "eagar-tsai-loss-free-surface-maximum")
+        self.assertIn("no sourced vapour temperature", h["peakUnavailableReason"])
+        self.assertNotEqual(h["surfaceTemperature_C"], solver.THERMOPHYSICAL_DB["Inconel 718"]["boiling_C"])
 
     def test_cross_sections_anchored_at_axial_peak(self):
         # Whenever the extent is computed, the transverse contour, the hatch-overlap contours and the

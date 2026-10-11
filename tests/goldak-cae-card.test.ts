@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { buildGoldakCaeCard, goldakAbsorbedPower_W, goldakFrontRearFractions, type GoldakCaeCardInput } from "../src/utils/goldakCaeCard";
+import { buildGoldakCaeCard, goldakAbsorbedPower_W, goldakFrontRearFractions, kineticsLine, type GoldakCaeCardInput } from "../src/utils/goldakCaeCard";
 
 // Solver-producible keyhole state: IN718, 285 W / 960 mm/s, beam 80 um, layer 40 um, hatch 110 um
 // (eta_eff 0.887 > eta_cond 0.38 because H* = 30.8 > 15; liquidus extents 17/267/42/108 um recorded under the retired goldak-total-power-v2 model, fixture values only;
@@ -224,7 +224,7 @@ test("unchanged card lines stay verbatim; only the enthalpy line differs by vari
     assert.ok(text.startsWith(`${rule}\n** METALLIX LPBF GOLDAK HEAT SOURCE CAE EXPORT CARD\n`));
     assert.ok(text.includes("** Material: Inconel 718 (Base: Ni)\n** Laser Power: 285 W | Scan Speed: 960 mm/s\n** Beam Diameter: 80 um | Wavelength: IR_1064nm\n** Volumetric Energy Density (VED): 67.47 J/mm3\n"));
     assert.ok(text.includes("*DFLUX, USER\n*GOLDAK_DOUBLE_ELLIPSOID\n"));
-    assert.ok(text.includes("** Solidification Kinetics:\n** G_avg: 18400000 K/m\n** R_solid: 0.03 m/s\n** Cooling Rate: 557000 K/s\n** Primary Spacing (PDAS): 0.67 um\n" + rule));
+    assert.ok(text.includes("** Solidification Kinetics (rear liquidus of the loss-free conduction field; null with a reason where that interface is not served, P6 2026-10-11):\n** G_avg: 18400000 K/m\n** R_solid: 0.03 m/s\n** Cooling Rate: 557000 K/s\n** Primary Spacing (PDAS): 0.67 um\n" + rule));
     assert.ok(text.endsWith(rule));
   }
   assert.ok(!map.includes("Normalized Enthalpy"));
@@ -263,4 +263,20 @@ test("P1 result (2026-10-11): effectiveAbsorptivity equals conductionAbsorptivit
   const gk = buildGoldakCaeCard(gkBase).text;
   assert.ok(gk.includes("so Q exceeds it by eta_eff/eta_cond = 1.00 here (1.00 means Q equals the field power, the case for every result since 2026-10-11)"));
   assert.ok(gk.includes("Q/P_field = 1.00"));
+});
+
+test("P6 containment (2026-10-11): null kinetics print 'unavailable' with the solver's reason, never a number", () => {
+  const base = input();
+  const reason = "the served depth comes from the Fabbro keyhole leg (e_kh > d_iso): the conduction field does not describe the keyhole interface";
+  const { text } = buildGoldakCaeCard({
+    ...base,
+    solidificationKinetics: { thermalGradient_G_K_m: null, solidificationRate_R_m_s: null, coolingRate_K_s: null, primaryDendriteArmSpacing_PDAS_um: null, unavailableReason: reason },
+  });
+  for (const label of ["G_avg", "R_solid", "Cooling Rate", "Primary Spacing (PDAS)"]) {
+    assert.ok(text.includes(`** ${label}: unavailable (${reason})`), label);
+  }
+  assert.ok(!text.includes("null K/m") && !text.includes("undefined"));
+  assert.equal(kineticsLine("G_avg", 1.5e7, "K/m"), "** G_avg: 15000000 K/m");
+  assert.equal(kineticsLine("G_avg", null, "K/m"), "** G_avg: unavailable");
+  assert.equal(kineticsLine("G_avg", Number.NaN, "K/m", "r"), "** G_avg: unavailable (r)");
 });

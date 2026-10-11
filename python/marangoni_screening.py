@@ -49,6 +49,25 @@ def heiple_roper_d_gamma_dT(d_gamma_pure_N_mK: float, sulfur_ppm: float) -> floa
     return low_s + (high_s - low_s) * blend
 
 
+def marangoni_flow_direction(d_gamma_pure_N_mK: float, sulfur_ppm: float) -> dict:
+    """Heiple–Roper direction and note from the blended dγ/dT alone (no temperature input).
+
+    P6 containment (2026-10-11): served when the Marangoni number is unavailable (no served peak), so the
+    direction never depends on a clipped or unsourced surface temperature."""
+    d_gamma = heiple_roper_d_gamma_dT(d_gamma_pure_N_mK, sulfur_ppm)
+    if d_gamma > 0.0:
+        direction = "inward"
+        aspect_note = "Heiple–Roper: inward jet — deeper / narrower pool expected (not applied to W/D)."
+    elif d_gamma < 0.0:
+        direction = "outward"
+        aspect_note = "Heiple–Roper: outward rolls — wider / shallower pool expected (not applied to W/D)."
+    else:
+        direction = "neutral"
+        aspect_note = "∂γ/∂T ≈ 0 in the 30–60 ppm inversion band."
+    return {"dGamma_dT_N_mK": float(d_gamma), "sulfur_ppm": float(sulfur_ppm), "flowDirection": direction,
+            "aspectNote": aspect_note}
+
+
 def marangoni_screening(
     d_gamma_pure_N_mK: float,
     viscosity_Pa_s: float,
@@ -60,7 +79,8 @@ def marangoni_screening(
     sulfur_ppm: float = 15.0,
 ) -> dict:
     """Dimensionless Ma / Pe_Ma and flow direction. Geometry stays thermal."""
-    d_gamma = heiple_roper_d_gamma_dT(d_gamma_pure_N_mK, sulfur_ppm)
+    flow = marangoni_flow_direction(d_gamma_pure_N_mK, sulfur_ppm)
+    d_gamma = flow["dGamma_dT_N_mK"]
     delta_T = max(10.0, float(T_surface_C) - float(T_liquidus_C))
     L = max(4e-6, float(half_width_m))
     mu = max(1e-6, float(viscosity_Pa_s))
@@ -72,26 +92,17 @@ def marangoni_screening(
     # (W = 2L). Order-of-magnitude only; replaces sqrt(|dγ/dT|ΔT/ρ), which had units of m^1.5/s.
     u_m_s = debroy_david_surface_velocity_m_s(d_gamma, delta_T / L, 2.0 * L, rho, mu)
     Pe_Ma = (u_m_s * L) / alpha
-    if d_gamma > 0.0:
-        direction = "inward"
-        aspect_note = "Heiple–Roper: inward jet — deeper / narrower pool expected (not applied to W/D)."
-    elif d_gamma < 0.0:
-        direction = "outward"
-        aspect_note = "Heiple–Roper: outward rolls — wider / shallower pool expected (not applied to W/D)."
-    else:
-        direction = "neutral"
-        aspect_note = "∂γ/∂T ≈ 0 in the 30–60 ppm inversion band."
 
     return {
         "modelId": MODEL_ID,
         "dGamma_dT_N_mK": float(d_gamma),
         "sulfur_ppm": float(sulfur_ppm),
-        "flowDirection": direction,
+        "flowDirection": flow["flowDirection"],
         "marangoniNumber": float(Ma),
         "surfaceVelocity_m_s": float(u_m_s),
         "surfaceVelocityDoi": SURFACE_VELOCITY_DOI,
         "pecletMarangoni": float(Pe_Ma),
         "geometrySource": "thermal",
-        "aspectNote": aspect_note,
+        "aspectNote": flow["aspectNote"],
         "doi": "10.1016/j.ijheatmasstransfer.2020.120801",
     }

@@ -9,11 +9,21 @@ const BLOCKS = JSON.parse(readFileSync(new URL("./fixtures/build-job-microstruct
 const as = (block: unknown) => block as SolidificationMicrostructureResult;
 
 test("available and screening-fallback pass through with their status", () => {
-  const ok = solidificationOutcome(as(BLOCKS.available_in718_285_960));
+  const ok = solidificationOutcome(as(BLOCKS.available_in718_150_1200));
   assert.ok("result" in ok && ok.result.status === "available");
-  const fb = solidificationOutcome(as(BLOCKS.screening_fallback_in718_10_3000));
+  // P6 (2026-10-11): the solver no longer serves "screening-fallback" (the tail-length heuristic was removed); the
+  // status is kept for legacy payloads, exercised on a synthetic block.
+  const fb = solidificationOutcome(as({ ...BLOCKS.available_in718_150_1200, status: "screening-fallback", reason: "legacy tail-length heuristic" }));
   assert.ok("result" in fb && fb.result.status === "screening-fallback");
-  assert.equal(fb.result.reason, BLOCKS.screening_fallback_in718_10_3000.reason);
+  assert.equal(fb.result.reason, "legacy tail-length heuristic");
+});
+
+test("P6 unavailable blocks (keyhole-leg depth, unsampled interface) yield the thermal reason, never a result", () => {
+  for (const name of ["unavailable_keyhole_leg_in718_285_960", "unavailable_few_samples_in718_10_3000"]) {
+    const out = solidificationOutcome(as(BLOCKS[name]));
+    assert.deepEqual(out, { error: BLOCKS[name].reason });
+    assert.ok(!("result" in out));
+  }
 });
 
 test("degenerate-floor yields Python's reason flagged degenerate and never a result", () => {
@@ -23,7 +33,7 @@ test("degenerate-floor yields Python's reason flagged degenerate and never a res
   assert.deepEqual(out, { error: block.reason, degenerate: true });
   assert.ok(!("result" in out));
   // A numeric block with finite G/R/PDAS/SDAS is still not a result when its status says degenerate-floor.
-  assert.ok("error" in solidificationOutcome(as({ ...BLOCKS.available_in718_285_960, status: "degenerate-floor", reason: "r" })));
+  assert.ok("error" in solidificationOutcome(as({ ...BLOCKS.available_in718_150_1200, status: "degenerate-floor", reason: "r" })));
 });
 
 test("unavailable yields Python's reason and never a result", () => {
@@ -35,8 +45,8 @@ test("unavailable yields Python's reason and never a result", () => {
 test("a block without status, null, or non-finite numbers is an error, not a result", () => {
   assert.deepEqual(solidificationOutcome(as({ source: "rosenthal-analytical-screening", G_K_m: 1e4, R_m_s: 0.6, coolingRate_K_s: 6788, PDAS_um: 0.9, SDAS_um: 3.5 })), { error: "legacy result without status" });
   assert.deepEqual(solidificationOutcome(null), { error: "legacy result without status" });
-  assert.ok("error" in solidificationOutcome(as({ ...BLOCKS.available_in718_285_960, G_K_m: null })));
-  assert.ok("error" in solidificationOutcome(as({ ...BLOCKS.available_in718_285_960, PDAS_um: Number.NaN })));
+  assert.ok("error" in solidificationOutcome(as({ ...BLOCKS.available_in718_150_1200, G_K_m: null })));
+  assert.ok("error" in solidificationOutcome(as({ ...BLOCKS.available_in718_150_1200, PDAS_um: Number.NaN })));
 });
 
 test("the Lab routes every result through the guard", () => {

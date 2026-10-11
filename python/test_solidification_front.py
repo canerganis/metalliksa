@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Field G/R on the liquidus (PROOF 021). Does not change Build Job verdict."""
+"""Field G/R on the rear liquidus (PROOF 021; P6 containment 2026-10-11). Does not change Build Job verdict."""
 import sys
 
 from lpbf_thermal_solver import calculate_meltpool_physics
-from solidification_front import MODEL_ID, evaluate_solidification, hunt_lu_pdas_um, hunt_morphology, phase_transformation_note
+from solidification_front import (
+    GRADIENT_SOURCE_CONDUCTION_INTERFACE, MODEL_ID, UNAVAILABLE_FEW_SAMPLES, UNAVAILABLE_KEYHOLE_LEG,
+    evaluate_solidification, hunt_lu_pdas_um, hunt_morphology, phase_transformation_note)
 
 
 def assert_true(cond, msg):
@@ -12,31 +14,47 @@ def assert_true(cond, msg):
 
 
 def main():
+    # Conduction case (316L 200 W / 800 mm/s / 70 um, Goldak): the served depth is the conduction isotherm, so the
+    # conduction-field interface is served.
     gk = calculate_meltpool_physics(
-        "Inconel 718", 285, 960, 67, 23.5, 40, 110, heat_source="goldak"
+        "316L Stainless Steel", 200, 800, 70, 80, 30, 100, heat_source="goldak"
     )
+    assert_true(gk["meltPoolGeometry"]["keyholeVaporCavityDepth_um"] == 0.0, "conduction case: no keyhole leg")
     kin = gk["solidificationKinetics"]
     assert_true(kin["modelId"] == MODEL_ID, "solidification model id")
-    assert_true(kin["usedFieldMap"] is True, "Goldak uses field G/R, not tail ΔT/L")
+    assert_true(kin["usedFieldMap"] is True, "Goldak uses field G/R")
+    assert_true(kin["gradientSource"] == GRADIENT_SOURCE_CONDUCTION_INTERFACE, "labelled conduction-field interface")
+    assert_true(kin["unavailableReason"] is None, "available")
     G = kin["thermalGradient_G_K_m"]
     R = kin["solidificationRate_R_m_s"]
     Tdot = kin["coolingRate_K_s"]
     pdas = kin["primaryDendriteArmSpacing_PDAS_um"]
-    # LPBF order of magnitude (Promoppatum / typical IN718): G ~ 10^5–10^8 K/m, Tdot ~ 10^4–10^7 K/s.
+    # LPBF order of magnitude: G ~ 10^5-10^8 K/m, Tdot ~ 10^4-10^7 K/s.
     assert_true(1.0e5 <= G <= 5.0e8, f"Goldak G {G}")
-    assert_true(0.02 <= R <= 1.2, f"Goldak R {R} vs v=0.96 m/s")
+    assert_true(0.02 <= R <= 1.0, f"Goldak R {R} vs v=0.8 m/s")
     assert_true(1.0e4 <= Tdot <= 2.0e8, f"Goldak cooling {Tdot}")
-    assert_true(0.1 <= pdas <= 15.0, f"Hunt–Lu PDAS should be LPBF µm-scale, got {pdas}")
-    assert_true(abs(pdas - hunt_lu_pdas_um(G, R)) < 0.2, "PDAS matches Hunt–Lu helper")
-    assert_true(kin["phaseTransformation"]["alloyClass"] == "IN718", "IN718 phase note")
+    assert_true(0.1 <= pdas <= 15.0, f"Hunt-Lu PDAS should be LPBF um-scale, got {pdas}")
+    assert_true(abs(pdas - hunt_lu_pdas_um(G, R)) < 0.2, "PDAS matches Hunt-Lu helper")
+    assert_true(kin["phaseTransformation"]["alloyClass"] == "316L", "316L phase note")
     assert_true(gk["modelId"] == "goldak-half-space-v3", "Goldak half-space power normalization")
 
+    # Keyhole-leg case (IN718 285 W / 960 mm/s / 67 um, Goldak): the served depth is the Fabbro leg, so G/R are null.
+    kh = calculate_meltpool_physics("Inconel 718", 285, 960, 67, 23.5, 40, 110, heat_source="goldak")
+    assert_true(kh["meltPoolGeometry"]["keyholeVaporCavityDepth_um"] > 0.0, "keyhole-leg case")
+    kk = kh["solidificationKinetics"]
+    assert_true(kk["thermalGradient_G_K_m"] is None and kk["coolingRate_K_s"] is None, "null on the keyhole leg")
+    assert_true(kk["primaryDendriteArmSpacing_PDAS_um"] is None and kk["microstructureMorphology"] is None, "PDAS/morphology null")
+    assert_true(kk["unavailableReason"] == UNAVAILABLE_KEYHOLE_LEG, kk["unavailableReason"])
+    assert_true(kk["gradientSource"] is None and kk["usedFieldMap"] is False, "no interface label on the keyhole leg")
+
     slow = calculate_meltpool_physics(
-        "Inconel 718", 285, 400, 67, 23.5, 40, 110, heat_source="goldak"
+        "316L Stainless Steel", 100, 600, 70, 80, 30, 100, heat_source="goldak"
     )
     fast = calculate_meltpool_physics(
-        "Inconel 718", 285, 1600, 67, 23.5, 40, 110, heat_source="goldak"
+        "316L Stainless Steel", 100, 1600, 70, 80, 30, 100, heat_source="goldak"
     )
+    for name, r in (("slow", slow), ("fast", fast)):
+        assert_true(r["solidificationKinetics"]["solidificationRate_R_m_s"] is not None, f"{name} case served")
     assert_true(
         fast["solidificationKinetics"]["solidificationRate_R_m_s"]
         > slow["solidificationKinetics"]["solidificationRate_R_m_s"] * 0.9,
@@ -44,8 +62,9 @@ def main():
     )
 
     ti = calculate_meltpool_physics(
-        "Ti-6Al-4V", 200, 900, 80, 150, 30, 100, heat_source="eagar-tsai"
+        "Ti-6Al-4V", 150, 1200, 80, 150, 30, 100, heat_source="eagar-tsai"
     )
+    assert_true(ti["meltPoolGeometry"]["keyholeVaporCavityDepth_um"] == 0.0, "Ti64 conduction case")
     note = ti["solidificationKinetics"]["phaseTransformation"]
     assert_true(note["expected"] == "beta_to_alpha_prime_martensite", note)
     assert_true(ti["solidificationKinetics"]["coolingRate_K_s"] >= 410.0, "Ti64 LPBF >> 410 K/s")
@@ -54,15 +73,15 @@ def main():
     def _cold(_x, _y, _z):
         return 0.0
 
-    x_rear = 2.0e-4
-    t_surface, T_sol = 2000.0, 1260.0
+    # P6: a field without a sampled rear liquidus gives null with a reason; the former tail-length fallback
+    # G = (T_surface - T_sol) / x_rear is gone (its keywords are still accepted and ignored).
     fb = evaluate_solidification(
         _cold,
         T_liq=1336.0,
-        T_sol=T_sol,
-        t_surface=t_surface,
+        T_sol=1260.0,
+        t_surface=2000.0,
         v_scan=0.96,
-        x_rear=x_rear,
+        x_rear=2.0e-4,
         x_front=8.0e-5,
         search_depth=2.0e-4,
         r_beam=3.35e-5,
@@ -71,21 +90,22 @@ def main():
         sdas_B1=40.0,
         material_name="Inconel 718",
     )
-    expect_G = (t_surface - T_sol) / x_rear
-    assert_true(fb["usedFieldMap"] is False, "cold field uses tail-length fallback")
-    assert_true(fb["gradientSource"] == "tail-length-fallback", "fallback source id")
-    assert_true(abs(fb["thermalGradient_G_K_m"] - expect_G) < 1.0, f"fallback G {fb['thermalGradient_G_K_m']} vs ΔT/L {expect_G}")
-    wrong_abs = 1336.0 / x_rear
-    assert_true(abs(fb["thermalGradient_G_K_m"] - wrong_abs) > 1.0e5, "must not use T_liq/x_rear")
+    assert_true(fb["usedFieldMap"] is False, "cold field: no interface")
+    assert_true(fb["gradientSource"] is None, "no fallback source id")
+    assert_true(fb["thermalGradient_G_K_m"] is None, "no fallback G")
+    assert_true(fb["unavailableReason"] == UNAVAILABLE_FEW_SAMPLES, fb["unavailableReason"])
+    assert_true("tail-length" in fb["unavailableReason"], "the reason names the removed fallback")
 
-    ros = calculate_meltpool_physics("Inconel 718", 285, 960, 80, 80, 40, 110)
+    ros = calculate_meltpool_physics("Inconel 718", 150, 1200, 80, 80, 40, 110)
     assert_true(ros["modelId"] == "rosenthal-screening-v1", "Build Job heat source unchanged")
     assert_true(ros["solidificationKinetics"]["modelId"] == MODEL_ID, "Rosenthal also reports field G")
+    assert_true(ros["solidificationKinetics"]["gradientSource"] == GRADIENT_SOURCE_CONDUCTION_INTERFACE, "Rosenthal interface")
+    assert_true("solidificationCosTheta" not in ros["solidificationKinetics"], "no incline multiplier key")
 
     assert_true("Columnar" in hunt_morphology(1.0e8), "Hunt columnar bin")
     mart = phase_transformation_note("Ti-6Al-4V", 1.0e5)
     assert_true(mart["doi"] == "10.1016/S0921-5093(97)00802-2", "Ahmed & Rack DOI helper")
-    print("PASS: solidification-front G/R")
+    print("PASS: solidification-front G/R (conduction-field interface, P6)")
     return 0
 
 

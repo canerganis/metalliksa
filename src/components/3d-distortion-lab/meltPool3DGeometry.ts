@@ -79,7 +79,8 @@ export function buildLoftedMeltPoolGeometry(
   const Tliq = result.thermalSlices?.liquidus_C ?? 1336;
   const Tsol = result.thermalSlices?.solidus_C ?? 1260;
   const Thaz = result.thermalSlices?.haz_C ?? Tsol * 0.7;
-  // Colour-scale top, capped (D10); the uncapped peak is displayed as text elsewhere.
+  // Colour-scale top (D10, P6): the served peak when below the display cap, else the display cap (a display
+  // quantity labelled as such in the panel, not a temperature claim; the served peak is null where unsupported).
   const Tpeak = colourScalePeak_C(result, Tliq);
   const xz = result.thermalSlices?.xz;
   const isKeyhole = isLoftKeyhole(result);
