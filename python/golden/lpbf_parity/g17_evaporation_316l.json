@@ -4,9 +4,9 @@
  "group": "G17",
  "description": "evaporationModel=True 316L 80 W: L_v passed to the inversion (today IN718's 6.4e6)",
  "slow": false,
- "recordedImplementationHash": "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32",
+ "recordedImplementationHash": "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "a486ac085786d4af07188cf8042c541d646f3fb1",
+ "recordedGitHead": "6de85dd50276987a80cfd162f5840ef3347dc7f7",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,8 +68,8 @@
   }
  },
  "recordedRuns_s": [
-  3.8,
-  3.8
+  4.1,
+  3.7
  ],
  "recordedTwice": true,
  "observations": {
