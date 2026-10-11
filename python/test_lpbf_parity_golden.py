@@ -45,8 +45,10 @@ PRE_BUMP_REVISION = "520903802a5cb89e368af60f68e53f232c99046d"
 # re-recorded all goldens: 10 G11/G18 observations changed numerically (Rosenthal field power A P with no ramp and no
 # latent factor, depth = max(d_iso, Fabbro leg), effectiveAbsorptivity flat for Eagar-Tsai and Goldak), the rest
 # recording metadata.
-GOLDEN_FINGERPRINT = "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
-GOLDEN_REVISION = "a486ac085786d4af07188cf8042c541d646f3fb1"
+# P1 follow-on (2026-10-11, c61ab6a8 -> 7870aae6, re-pin commit 6de85dd5): additive process-map cell keys
+# keyholeIndexLackOfFusion / lackOfFusionNote; content drift in the 7 G11/G18 digest keys, the rest recording metadata.
+GOLDEN_FINGERPRINT = "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
+GOLDEN_REVISION = "6de85dd50276987a80cfd162f5840ef3347dc7f7"
 SLOW = os.environ.get("LPBF_PARITY_SLOW") == "1"
 # Off the reference machine every case test is skipped (the goldens are bit-exact for one
 # environment). METALLIKSA_REQUIRE_PARITY=1 turns such a "NOT VERIFIED" skip into a failure,

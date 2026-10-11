@@ -39,11 +39,13 @@ BASE_REF = BASE_REF_CANDIDATES[0]
 # (316L input: only the regimeBasis text and the new regimeKeyholeThreshold key changed, in both blocks; undoing them
 # reproduces the previous digests); re-pinned at the P1 sourced-physics bump (2026-10-11, c61ab6a8: all three digests
 # change, the Rosenthal field numbers move, Eagar-Tsai and Goldak carry the flat effectiveAbsorptivity, the new basis
-# keys, the Fabbro model id and basis for every kernel and the P1 process-map grid).
+# keys, the Fabbro model id and basis for every kernel and the P1 process-map grid); re-pinned again at the P1
+# follow-on (7870aae6: every grid cell gains keyholeIndexLackOfFusion, plus lackOfFusionNote where true; all three
+# digests change, nothing else).
 HTTP_GOLDEN = {
-    "eagar-tsai": "57c2fc4edcafc8646371c5cba289745c51e8d6dc6e0a2c9992c5c19921f392f4",
-    "goldak": "cdca682a3c30b53a0c10adaf4459e8a8c8f1bcf466f20fa135173c95987bec7d",
-    "rosenthal": "0715118930ea7b9b59b7be3f7de7a59b438e65d3011b72b7a27282f77843ba11",
+    "eagar-tsai": "0b56facd35fb11d21f16c8fe8da37c9767beeb1e21832c185a8c66b0a667db2a",
+    "goldak": "a9b29cb4cc4bc283887b72e143b626099289df7ddee8fd82133a9b7812faa581",
+    "rosenthal": "d0a381f156d0db838c93824dfefa611178e77cec515b28eacff9238c8f8979d4",
 }
 HTTP_INPUT = {"material": "316L Stainless Steel", "laserPower_W": 200, "scanSpeed_mm_s": 900, "beamDiameter_um": 80,
               "preheatTemp_C": 20, "layerThickness_um": 30, "hatchSpacing_um": 100}

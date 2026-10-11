@@ -105,7 +105,7 @@ class ComparisonToolTest(unittest.TestCase):
         self.assertEqual(self.doc["implementationFingerprint"], expected)
         # P1 sourced-physics bump pin (2026-10-11); this prefix was still cda80143 (keyhole-regime) on main and red
         # since the la6-gusarov and in625-regime re-pins.
-        self.assertTrue(expected.startswith("c61ab6a8"))
+        self.assertTrue(expected.startswith("7870aae6"))
         checks = {c["id"]: c for c in self.doc["checks"]}
         self.assertEqual(checks["A2-physics-fingerprint"]["result"], "skipped")  # --quick does not run the test
         self.assertIn("--quick", checks["A2-physics-fingerprint"]["detail"])
