@@ -53,7 +53,8 @@ class RosenthalExponentLA2(unittest.TestCase):
         r = run("Inconel 718", 150.0, 1500.0, 80.0, 80.0, 40.0, 110.0)
         g = r["meltPoolGeometry"]
         self.assertEqual(g["extentStatus"], "computed")
-        self.assertAlmostEqual(g["width_um"], 68.3, delta=0.2)
+        # P1 (2026-10-11): no latent factor on the Rosenthal field, 68.3 -> 75.4 um.
+        self.assertAlmostEqual(g["width_um"], 75.4, delta=0.2)
         self.assertGreater(r["solidificationKinetics"]["coolingRate_K_s"], 1.0e5)
 
 
@@ -141,17 +142,23 @@ class LatentHeatFactorLA5(unittest.TestCase):
             self.assertAlmostEqual(pp["fieldPower_W"], pp["conductionAbsorptivity"] * 285.0, delta=0.2)
 
     def test_rosenthal_factor_exported(self):
+        # P1 (2026-10-11): the uncited 1/(1 + 0.55 St) Rosenthal factor was removed; the field is exactly A P.
         pp = run(*IN718_285)["processParameters"]
-        self.assertAlmostEqual(pp["latentHeatPowerFactor"], 1.0 / (1.0 + 0.55 * pp["stefanNumber"]), delta=1e-4)
+        self.assertEqual(pp["latentHeatPowerFactor"], 1.0)
+        self.assertGreater(pp["stefanNumber"], 0.0)
+        self.assertAlmostEqual(pp["fieldPower_W"], pp["conductionAbsorptivity"] * 285.0, delta=0.2)
+        self.assertIn("1/(1+0.55 St)", pp["latentHeatPowerFactorBasis"])
 
     def test_nist_goldak_width(self):
         self.assertAlmostEqual(run(*NIST, heat_source="goldak")["meltPoolGeometry"]["width_um"], 128.5, delta=0.5)
 
 
 class IncrementAndRecoilLA8(unittest.TestCase):
-    def test_model_id_is_heuristic(self):
+    def test_model_id_is_fabbro_for_rosenthal_too(self):
+        # P1 (2026-10-11): the Rosenthal increment heuristic-keyhole-increment-v1 was removed; every kernel serves the
+        # Fabbro leg with the ramp still labelled uncited.
         kh = run(*IN718_285)["keyholeModel"]
-        self.assertEqual(kh["modelId"], "heuristic-keyhole-increment-v1")
+        self.assertEqual(kh["modelId"], "fabbro-keyhole-v1")
         self.assertIn("uncited", kh["basis"])
 
     def test_recoil_continuous(self):

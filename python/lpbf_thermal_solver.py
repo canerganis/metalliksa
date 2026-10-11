@@ -7,7 +7,7 @@ Simulates:
 1. 3D Goldak double-ellipsoid moving laser heat source & Eagar-Tsai / Rosenthal thermal fields
 2. Multi-regime melt pool geometry (Conduction, Transition, Keyhole Mode)
 3. 3-View geometric contours (Top-Down X-Y, Longitudinal X-Z, Transverse Y-Z with Hatch Overlap)
-4. Hydrodynamic Marangoni convection, Knudsen recoil vapor pressure, & multiple-reflection absorptivity
+4. Hydrodynamic Marangoni convection, Knudsen recoil vapor pressure (flat absorptivity; no multiple-reflection term)
 5. Comprehensive defect analytics: Lack of Fusion (LoF), Keyhole Porosity, Plateau-Rayleigh Balling, Spatter Denudation
 6. Solidification kinetics: G(x,y,z), R(x,y,z), Cooling Rate G*R, Hunt CET morphology, PDAS & SDAS
 7. Full 2D Power-Velocity (P-V) Process Window map generation
@@ -180,7 +180,7 @@ ENTHALPY_KEYHOLE = 20.0
 # 0 errors, balanced accuracy 1.00 (the shared cut 20: 3 errors, 0.70). The held-out data only place the onset in
 # (12.67, 13.94]; 13.6 is the fit-split point estimate. Weaver, Heigel and Lane 2022 "about 30" is 21.73 in app units
 # (factor 0.7243) and makes the same 3 errors. docs/research/PREDECLARED_ / RESULTS_in625_regime_2026-10-11.*.
-# The transition cut 15 is not moved (it also starts the multi-reflection absorptivity and the depth increment), so
+# The transition cut 15 is not moved (it also starts the Fabbro leg onset ramp, fabbro_keyhole.ENTHALPY_ONSET), so
 # IN625 has no transition band: < 13.6 conduction, >= 13.6 keyhole mode. No width or depth number changes.
 ENTHALPY_KEYHOLE_IN625 = 13.6
 REGIME_THRESHOLD_BASIS = ("dH/hs < 15 conduction, 15-20 transition, >= 20 keyhole mode (melt-pool D/W > 0.5 "
@@ -225,9 +225,6 @@ def regime_material_note(material_name: str) -> str:
     return REGIME_MATERIAL_NOTE_UNVALIDATED
 
 
-# Legacy band edges of the uncited Rosenthal depth increment and of the process-map depth proxy. They are the
-# heuristic's own constants (numerically unchanged by the keyhole-regime bump), not the regime threshold.
-KEYHOLE_INCREMENT_FULL_AT = 30.0
 # Keyhole-porosity screen (proxy, not a porosity boundary; Zhao 2020 shows no single index cut exists).
 POROSITY_SCREEN_NEGLIGIBLE_BELOW = 15.0
 POROSITY_SCREEN_HIGH_AT = 30.0
@@ -237,12 +234,6 @@ KEYHOLE_POROSITY_BASIS = ("Porosity unresolved; legacy screening level on the no
                           "safety. >= 30 is the legacy screen kept for verdict continuity, not a porosity boundary "
                           "(Zhao 2020 stable keyholes up to dH/hs 62 at high speed). Keyhole mode (>= 20) does not "
                           "imply porosity.")
-KEYHOLE_INCREMENT_MODEL_ID = "heuristic-keyhole-increment-v1"
-KEYHOLE_INCREMENT_BASIS = ("uncited screening heuristic: extra depth = d_iso*(0.15+0.55*t) for 15<=dH/hs<30, "
-                           "d_iso*(0.85+0.55*log10(1+(dH/hs-30)/10)) above; the 15/30 band edges are the "
-                           "heuristic's own legacy constants (formerly King et al. 2014 316L numbers applied in a "
-                           "different convention, doi 10.1016/j.jmatprotec.2014.06.005), not the regime "
-                           "threshold (20)")
 KEYHOLE_DEPTH_BENCHMARK_NOTE = ("vs x-ray vapor-depression depths (keyhole benchmark 2026-10-07): under-predicts "
                                 "Ti-6Al-4V (median ratio 0.62 at 95 um, 0.12 at 140 um) and exceeds the measured "
                                 "316L melt depth in 176/677 Hofmann tracks; no single A(R) or ramp change fixes "
@@ -251,15 +242,32 @@ KEYHOLE_DEPTH_BENCHMARK_NOTE = ("vs x-ray vapor-depression depths (keyhole bench
                                 "95 um Gaussian; the app passes the 1/e^2 diameter), model validity range 2<=Pe<=10 / "
                                 "deep cylindrical keyhole, flat keyhole absorptivity (no A(R) multiple-reflection "
                                 "term), no vaporisation heat sink; tracked as a later bump")
-FABBRO_BASIS = ("Fabbro 2020 eq. 2 with the flat-surface absorptivity as a calibrated effective value (not the "
-                "keyhole A(R)); m=2.4, n=3 fitted for 2<=Pe<=10; uncited linear dH/hs onset ramp 15->30; "
-                + KEYHOLE_DEPTH_BENCHMARK_NOTE)
+# P1 planned bump (2026-10-11, docs/research/SPEC_p1_sourced_served_physics_2026-10-11.md): one depth path for every
+# kernel, depth = max(conduction isotherm depth, Fabbro leg). The former Rosenthal-only increment
+# (heuristic-keyhole-increment-v1, uncited) and its 30 band edge were removed.
+FABBRO_BASIS = ("Fabbro 2020 eq. 2 (A(R) P distributed by multiple reflection) with the keyhole absorptivity A(R) "
+                "UNMODELLED: the flat-surface value is passed, a disclosed lower bound. Measured absorptance rises at "
+                "the keyhole threshold R = 1 and with R (Trapp 2017 Fig. 3a 316L 0.3 to 0.78; Deisenroth 2020 Fig. 7 "
+                "IN625 0.34 to 0.90; Fabbro 2020 Sec. 4.1 and A(1) about 0.6), so transition and keyhole depth from "
+                "this leg is biased low. m=2.4, n=3 fitted for 2<=Pe<=10 and served outside that band for every kernel "
+                "(see pecletInFitRange); uncited linear dH/hs onset ramp 15->30 (P2); k_s is the room-temperature solid "
+                "value (Fabbro's constants imply a high-temperature K; P2). Depth served as max(conduction isotherm "
+                "depth, this leg) for every kernel; " + KEYHOLE_DEPTH_BENCHMARK_NOTE)
+EFFECTIVE_ABSORPTIVITY_BASIS = ("flat absorptivity of the material authority for the conduction field (Eagar-Tsai 1983 "
+                                "and Goldak 1984 take Q as absorbed power; Knapp 2022 finds the IN625 conduction-mode "
+                                "effective absorption near Fresnel 0.30, HT 0.29 to 0.32, HTFF 0.27 to 0.29). No kernel "
+                                "represents the measured absorptance rise in transition and keyhole mode (0.6 to 0.9: "
+                                "Deisenroth 2020 Fig. 7, Trapp 2017 Fig. 3a). The former multi-reflection ramp 1-(1-A)^n "
+                                "(uncited) was removed 2026-10-11.")
+LATENT_HEAT_POWER_FACTOR_BASIS = ("1.0 for every kernel; latent heat of fusion is excluded from the conduction field "
+                                  "(Rubenchik 2018 Sec. 3.1, Gan 2021 SI Method 3), from the index hs and from the "
+                                  "Fabbro leg; the former 1/(1+0.55 St) factor (uncited) was removed.")
 
 # Absorption model of the screening kernels. "flat-plate" (default, every machine): the material
-# authority's flat absorptivity feeds ΔH/hs, the multiple-reflection η_eff, the conduction power and
-# the process map. "powder-raytrace": the GPU powder-bed ray tracer (Warp + CUDA) supplies the
-# conduction absorptivity; it runs ONLY when requested explicitly and its errors propagate (no
-# silent import-success branch, so results do not depend on whether CUDA is installed).
+# authority's flat absorptivity feeds ΔH/hs, the conduction power of every kernel and the process map
+# (no multiple-reflection term anywhere since P1). "powder-raytrace": the GPU powder-bed ray tracer
+# (Warp + CUDA) supplies the conduction absorptivity; it runs ONLY when requested explicitly and its
+# errors propagate (no silent import-success branch, so results do not depend on whether CUDA is installed).
 ABSORPTION_MODEL_FLAT = "flat-plate"
 ABSORPTION_MODEL_POWDER_RAYTRACE = "powder-raytrace"
 ABSORPTION_MODELS = (ABSORPTION_MODEL_FLAT, ABSORPTION_MODEL_POWDER_RAYTRACE)
@@ -425,15 +433,19 @@ def _liquidus_extent(T_field, T_liq, x_peak, search_len, search_half_w, search_d
     # meltPoolGeometry.extentStatus, never presented as a computed isotherm.
     extent_status = "computed"
     extent_note = None
+    d_iso_isotherm = d_iso
     if half_w < 8e-6 or d_iso < 3e-6:
         extent_status = "heuristic-width-fallback"
         extent_note = ("The conduction field has no resolvable liquidus extent at these inputs (half-width "
                        f"{half_w*1e6:.1f} um, depth {d_iso*1e6:.1f} um before substitution); width/depth/length are "
-                       "the screening heuristic sqrt(w_analytical^2 + (0.65 d_beam)^2) and its depth ratio, not a "
-                       "computed isotherm. Treat this geometry as not resolved.")
+                       "the screening heuristic sqrt(w_analytical^2 + (0.65 d_beam)^2) with the depth set equal to the "
+                       "half width (Rosenthal symmetry: the point-source field is symmetric in y and z, so its liquidus "
+                       "depth equals its half width; an upper bound for distributed sources, King 2014 Sec. 5.2 "
+                       "d <= w/2 in conduction mode), not a computed isotherm. Treat this geometry as not resolved.")
         w_fb = math.sqrt(max(1e-12, w_analytical ** 2 + (0.65 * d_beam) ** 2))
         half_w = max(half_w, w_fb / 2.0)
-        d_iso = max(d_iso, half_w * (0.38 + 0.10 * min(1.0, normalized_enthalpy / ENTHALPY_TRANSITION)))
+        # P1 (2026-10-11): floor ratio 1.0 replaces the uncited 0.38 + 0.10 min(1, dH/hs / 15).
+        d_iso = max(d_iso, half_w)
         if x_front < 1e-6:
             x_front = r_beam * 0.45
         if x_rear < 1e-6:
@@ -456,16 +468,19 @@ def _liquidus_extent(T_field, T_liq, x_peak, search_len, search_half_w, search_d
     x_front = max(x_front, r_beam * 0.35)
     x_rear = max(r_beam * 0.8, l_melt_m - x_front)
     l_melt_m = x_front + x_rear
+    # d_iso_isotherm_m (depth before any floor) and half_w_m (after the fallback width substitution) are internal
+    # diagnostics for the frozen pre-P1 research kernel; nothing served reads them.
     return {"extent_status": extent_status, "extent_note": extent_note, "w_melt_m": w_melt_m, "d_iso": d_iso,
-            "x_front": x_front, "x_rear": x_rear, "l_melt_m": l_melt_m}
+            "x_front": x_front, "x_rear": x_rear, "l_melt_m": l_melt_m,
+            "d_iso_isotherm_m": d_iso_isotherm, "half_w_m": half_w}
 
 
 def _eagar_tsai_companion(T_preheat, P_laser, eta_base, k_th, alpha_th, rho, cp, r_beam, d_beam, v_scan, T_liq,
                           fabbro_depth_m, normalized_enthalpy):
     """Eagar–Tsai liquidus L/W/D for the balling screen when the requested kernel is not Eagar–Tsai.
 
-    Same inputs as an eagar-tsai run of calculate_meltpool_physics (absorbed power eta_base*P, no latent
-    factor, mushy-blend k/alpha, Fabbro depth floor) and the same evaluation sequence on a fresh field, so
+    Same inputs as an eagar-tsai run of calculate_meltpool_physics (absorbed power eta_base*P, mushy-blend
+    k/alpha, depth = max(isotherm depth, Fabbro leg)) and the same evaluation sequence on a fresh field, so
     the numbers equal that run's meltPoolGeometry. Returns (length_um, width_um, depth_um, extentStatus).
     """
     P_geom = eta_base * P_laser
@@ -482,7 +497,7 @@ def _eagar_tsai_companion(T_preheat, P_laser, eta_base, k_th, alpha_th, rho, cp,
     ext = _liquidus_extent(T_field, T_liq, x_peak, search_len, search_half_w, search_depth, d_beam, r_beam,
                            w_analytical, normalized_enthalpy)
     d_iso = max(ext["d_iso"], 4e-6)
-    d_melt_m = d_iso + max(0.0, fabbro_depth_m - d_iso)
+    d_melt_m = max(d_iso, fabbro_depth_m)
     return ext["l_melt_m"] * 1e6, ext["w_melt_m"] * 1e6, d_melt_m * 1e6, ext["extent_status"]
 
 
@@ -635,32 +650,22 @@ def calculate_meltpool_physics(
     peak_intensity_W_m2 = (8.0 * P_laser) / (math.pi * d_beam ** 2)
     peak_intensity_MW_cm2 = peak_intensity_W_m2 * 1e-10
 
-    # 3. Multi-reflection absorptivity once a vapor depression can form (ΔH/hs > 15)
-    if normalized_enthalpy > ENTHALPY_TRANSITION:
-        cavity_aspect = min(4.0, (normalized_enthalpy - ENTHALPY_TRANSITION) / 8.0)
-        n_reflections = 1.0 + 1.8 * cavity_aspect
-        eta_eff = 1.0 - (1.0 - eta_base) ** n_reflections
-    else:
-        eta_eff = eta_base
-        cavity_aspect = 0.0
-
-    effective_power = eta_eff * P_laser
+    # 3. Field power, every kernel (P1, 2026-10-11): P_field = A P with the flat (or, on explicit opt-in,
+    # ray-traced) conduction absorptivity. Eagar & Tsai (1983) and Goldak (1984) take the absorbed power as Q;
+    # Rubenchik 2018 Sec. 3.1 and Gan 2021 SI Method 3 use one absorptivity in the conduction scaling. The former
+    # Rosenthal-only multi-reflection ramp eta_eff = 1 - (1 - A)^n (uncited) is removed: no kernel represents the
+    # measured absorptance rise in transition and keyhole mode (EFFECTIVE_ABSORPTIVITY_BASIS).
+    eta_eff = eta_base
+    # Latent heat of fusion is excluded from the conduction field of every kernel (Rubenchik 2018 Sec. 3.1,
+    # Gan 2021 SI Method 3), from the index hs and from the Fabbro leg; the former Rosenthal-only factor
+    # 1/(1 + 0.55 St) (uncited) is removed. stefanNumber stays served as a descriptive number only.
     Lf = props["latent_heat_fusion_J_kg"]
     stefan = Lf / max(1.0, cp * max(50.0, T_liq - T_preheat))
-    # ET/Goldak are conduction fields driven by the conduction (flat / ray-traced) absorptivity only.
-    # Fabbro gets the FLAT absorptivity as a calibrated effective value: Fabbro (Appl. Sci. 2020, eq. 2)
-    # defines A(R), the aspect-ratio-dependent keyhole absorptivity, which is NOT modelled here.
-    if source in ("eagar-tsai", "goldak"):
-        P_absorbed = eta_base * P_laser
-        A_fabbro = eta_base_flat
-        # Eagar & Tsai (1983) and Goldak et al. (1984) take the absorbed power as Q: no latent-heat cut.
-        latent_heat_power_factor = 1.0
-    else:
-        P_absorbed = effective_power
-        A_fabbro = eta_base_flat
-        # rosenthal-screening-v1 only: uncited screening factor 1/(1 + 0.55 St) on the field power
-        # (no published source for the 0.55 coefficient or the form); exported as latentHeatPowerFactor.
-        latent_heat_power_factor = 1.0 / (1.0 + 0.55 * stefan)
+    latent_heat_power_factor = 1.0
+    P_absorbed = eta_base * P_laser
+    # Fabbro (Appl. Sci. 2020, eq. 2) defines A(R), the aspect-ratio-dependent keyhole absorptivity, which is NOT
+    # modelled here: the flat value is passed, a disclosed lower bound (FABBRO_BASIS).
+    A_fabbro = eta_base_flat
     P_geom = P_absorbed * latent_heat_power_factor
     r_reg = max(r_beam / math.sqrt(2.0), 8e-6)
 
@@ -718,23 +723,11 @@ def calculate_meltpool_physics(
     x_rear = ext["x_rear"]
     l_melt_m = ext["l_melt_m"]
 
-    # Keyhole extra: Fabbro on Melt Pool lab fields. The Rosenthal Build Job increment below is an
-    # uncited screening heuristic: King et al. 2014 supply only the 15/30 dH/hs thresholds it is
-    # keyed to, not this depth law (coefficients 0.15/0.55/0.85 and /10 have no source).
-    if source in ("eagar-tsai", "goldak"):
-        extra = max(0.0, fabbro["depth_m"] - d_iso)
-        keyhole_depth_um = extra * 1e6
-    elif normalized_enthalpy < ENTHALPY_TRANSITION:
-        extra = 0.0
-        keyhole_depth_um = 0.0
-    elif normalized_enthalpy < KEYHOLE_INCREMENT_FULL_AT:
-        trans = (normalized_enthalpy - ENTHALPY_TRANSITION) / (KEYHOLE_INCREMENT_FULL_AT - ENTHALPY_TRANSITION)
-        extra = d_iso * (0.15 + 0.55 * trans)
-        keyhole_depth_um = extra * 1e6
-    else:
-        over = (normalized_enthalpy - KEYHOLE_INCREMENT_FULL_AT) / 10.0
-        extra = d_iso * (0.85 + 0.55 * math.log10(1.0 + max(0.0, over)))
-        keyhole_depth_um = extra * 1e6
+    # One depth path for every kernel (P1): depth = max(d_iso, e_kh), Fabbro 2020 eq. 6 to 7 / Sec. 3 reading
+    # (below the threshold the pool is the conduction pool, above it the keyhole depth). The former Rosenthal-only
+    # increment d_iso*(0.15+0.55 t) / d_iso*(0.85+0.55 log10(...)) (uncited) is removed.
+    extra = max(0.0, fabbro["depth_m"] - d_iso)
+    keyhole_depth_um = extra * 1e6
 
     if normalized_enthalpy < POROSITY_SCREEN_NEGLIGIBLE_BELOW:
         keyhole_porosity_risk = ("Negligible (legacy screening level, dH/hs < 15; porosity unresolved: Zhao 2020 "
@@ -746,7 +739,7 @@ def calculate_meltpool_physics(
         keyhole_porosity_risk = ("High (legacy screening level, dH/hs >= 30; porosity unresolved, not a porosity "
                                  "boundary: Zhao 2020 Ti-6Al-4V stable keyholes up to dH/hs 62 at high speed)")
 
-    d_melt_m = d_iso + extra
+    d_melt_m = max(d_iso, fabbro["depth_m"])
     regime = classify_enthalpy_regime(normalized_enthalpy, material_name)
 
     w_melt_um = w_melt_m * 1e6
@@ -876,7 +869,8 @@ def calculate_meltpool_physics(
     recoater_risk = (f"Not evaluated from scan parameters (alloy/layer/preheat-only distortion index "
                      f"{distortion_index:.2f})")
 
-    # 12. Geometric 2D contours from liquidus isolines (plus keyhole extra depth)
+    # 12. Geometric 2D contours from liquidus isolines, scaled by depth / d_iso (1 below the Fabbro leg, e_kh / d_iso
+    # where the leg exceeds the isotherm depth)
     depth_scale = d_melt_m / max(1e-9, d_iso)
     num_pts = 48
     top_down_contour = []
@@ -910,11 +904,9 @@ def calculate_meltpool_physics(
         # Cross-section plane at the axial peak x_peak (x = 0 when the field peaks at the beam centre),
         # consistent with the anchored extent search; a pool behind the beam is otherwise missed.
         z_iso = _binary_extent(lambda z: T_field(x_peak, y_m, z) >= T_liq, 0.0, search_depth)
-        # Contour shape keeps the legacy 30 band edge (numerically unchanged by the keyhole-regime bump).
-        if normalized_enthalpy >= KEYHOLE_INCREMENT_FULL_AT:
-            z_pt = z_iso * depth_scale * (max(0.05, math.sin(phi)) ** 0.75)
-        else:
-            z_pt = z_iso * depth_scale
+        # P1: the contour follows depth_scale alone (the former sin(phi)^0.75 taper above dH/hs 30 went with the
+        # removed increment constant).
+        z_pt = z_iso * depth_scale
         transverse_contour.append({
             "y_um": round(float(y_m * 1e6), 1),
             "z_depth_um": round(float(z_pt * 1e6), 1)
@@ -990,18 +982,18 @@ def calculate_meltpool_physics(
             denom_th = rho * cp_s * (T_liq - T_preheat) * math.sqrt(math.pi * alpha_solid * v_m * (r_beam ** 3))
             enth = (eta_base_flat * float(p_val)) / max(1e-9, denom_th)
             
-            # Width & Depth proxy
-            eff_p = (1.0 - (1.0 - eta_base) ** 2.2) * float(p_val) if enth > ENTHALPY_TRANSITION else eta_base * float(p_val)
+            # Width proxy (P1): the flat conduction absorptivity for every cell (the former 1-(1-A)^2.2 ramp above
+            # the transition cut was uncited).
+            eff_p = eta_base * float(p_val)
             w_m = math.sqrt(max(1e-12, (8.0 / (math.pi * math.e)) * (eff_p / (rho * cp * max(50.0, T_liq - T_preheat) * v_m))) + d_beam ** 2)
             w_um = w_m * 1e6
-            
-            # Depth proxy keeps the legacy 15/30 band edges (numerically unchanged by the keyhole-regime bump).
-            if enth < ENTHALPY_TRANSITION:
-                d_um = w_um * 0.45
-            elif enth > KEYHOLE_INCREMENT_FULL_AT:
-                d_um = w_um * 1.15
-            else:
-                d_um = w_um * 0.70
+
+            # Depth proxy (P1): max(conduction bound w/2, Fabbro leg) with the same leg and onset ramp as the operating
+            # point. King et al. 2014 Sec. 5.2 define keyhole mode by d > w/2, so a conduction pool has d <= w/2 and
+            # the leg takes over where it exceeds that bound. The former 0.45 / 0.70 / 1.15 width multiples were uncited.
+            cell_fabbro = fabbro_keyhole_depth_m(float(p_val), v_m, d_beam, k_s, alpha_solid, T_vap, T_preheat,
+                                                 A_fabbro, enth)
+            d_um = max(0.5 * w_um, cell_fabbro["depth_m"] * 1e6)
             # Same per-alloy cuts as classify_enthalpy_regime (Inconel 625: keyhole from 13.6, no transition band).
             if enth >= keyhole_cut:
                 pt_regime = "Keyhole Mode"
@@ -1051,6 +1043,7 @@ def calculate_meltpool_physics(
             "inclineAngle_deg": round(float(incline_angle_deg), 2),
             "processSeed": int(process_seed),
             "effectiveAbsorptivity": round(eta_eff, 3),
+            "effectiveAbsorptivityBasis": EFFECTIVE_ABSORPTIVITY_BASIS,
             "conductionAbsorptivity": round(eta_base, 3),
             "fabbroAbsorptivity": round(A_fabbro, 3),
             "effectiveConductivity_W_mK": round(k_th, 3),
@@ -1067,6 +1060,7 @@ def calculate_meltpool_physics(
             "thermalSliceBackend": thermal_slice_backend,
             "stefanNumber": round(stefan, 4),
             "latentHeatPowerFactor": round(latent_heat_power_factor, 4),
+            "latentHeatPowerFactorBasis": LATENT_HEAT_POWER_FACTOR_BASIS,
             "fieldPower_W": round(P_geom, 2),
         },
         "meltPoolGeometry": {
@@ -1094,14 +1088,14 @@ def calculate_meltpool_physics(
             }
         },
         "keyholeModel": {
-            "modelId": FABBRO_MODEL_ID if source in ("eagar-tsai", "goldak") else KEYHOLE_INCREMENT_MODEL_ID,
-            "basis": FABBRO_BASIS if source in ("eagar-tsai", "goldak") else KEYHOLE_INCREMENT_BASIS,
+            "modelId": FABBRO_MODEL_ID,
+            "basis": FABBRO_BASIS,
             "fabbroDepth_um": round(fabbro["depth_m"] * 1e6, 1),
             "aspectRatio_e_over_d": round(fabbro["aspectRatio_e_over_d"], 2),
             "peclet": round(fabbro["peclet"], 2),
             "pecletInFitRange": fabbro["pecletInFitRange"],
             "absorptivity": round(A_fabbro, 3),
-            "absorptivityBasis": "flat-surface effective (not Fabbro keyhole A(R))",
+            "absorptivityBasis": "flat-surface value, a disclosed lower bound (not Fabbro keyhole A(R), unmodelled)",
             "doi": fabbro["doi"],
             "depthBenchmarkNote": KEYHOLE_DEPTH_BENCHMARK_NOTE,
         },

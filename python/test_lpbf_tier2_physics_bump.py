@@ -80,7 +80,8 @@ class FlatDefaultTest(unittest.TestCase):
         self.assertEqual(pp["thermalSliceBackend"], "cpu")
         self.assertEqual(pp["conductionAbsorptivity"], 0.38)
         self.assertAlmostEqual(pp["normalizedEnthalpy"], 30.58, delta=0.01)
-        self.assertAlmostEqual(pp["effectiveAbsorptivity"], 0.884, delta=0.001)
+        # P1 (2026-10-11): the multi-reflection ramp is gone, effectiveAbsorptivity is the flat value (was 0.884).
+        self.assertAlmostEqual(pp["effectiveAbsorptivity"], 0.38, delta=0.001)
         self.assertTrue(result["defectDiagnostics"]["keyholePorosityRisk"].startswith("High"))
 
     def test_enthalpy_formula_pi_inside_root(self):
@@ -173,9 +174,11 @@ class PeakAnchoredExtentTest(unittest.TestCase):
         # (x_peak = 0), so the reported T(0,0,0) is the axial maximum and is above liquidus. Tier 2 values
         # were 148.3 / 116.6 / 1191.7 um with x_peak < 0 (exponent damped by r_reg).
         self.assertEqual(g["peakOffset_um"], 0.0)
-        self.assertAlmostEqual(g["width_um"], 158.5, delta=0.2)
-        self.assertAlmostEqual(g["depth_um"], 123.5, delta=0.2)
-        self.assertAlmostEqual(g["length_um"], 1266.3, delta=0.5)
+        # P1 (2026-10-11): flat absorptivity, no latent factor, depth = max(d_iso, Fabbro leg); Wave B values were
+        # 158.5 / 123.5 / 1266.3 um.
+        self.assertAlmostEqual(g["width_um"], 116.5, delta=0.2)
+        self.assertAlmostEqual(g["depth_um"], 71.6, delta=0.2)
+        self.assertAlmostEqual(g["length_um"], 695.1, delta=0.5)
         t_liq = solver.THERMOPHYSICAL_DB["Inconel 718"]["liquidus_C"]
         self.assertGreater(result["hydrodynamicsAndRecoil"]["peakTemperature_C"], t_liq)
         self.assertEqual(g["axialFieldMaximum_C"], result["hydrodynamicsAndRecoil"]["peakTemperature_C"])
@@ -190,10 +193,10 @@ class PeakAnchoredExtentTest(unittest.TestCase):
         result, _ = run(*IN718_280)
         g = result["meltPoolGeometry"]
         self.assertEqual(g["extentStatus"], "computed")
-        # Wave B LA-2 (Tier 2: 175.2 / 159.7 / 1250.5 um).
-        self.assertAlmostEqual(g["width_um"], 183.8, delta=0.2)
-        self.assertAlmostEqual(g["depth_um"], 166.4, delta=0.2)
-        self.assertAlmostEqual(g["length_um"], 1306.8, delta=0.5)
+        # P1 (2026-10-11): 131.3 / 108.0 / 680.6 um (Wave B LA-2: 183.8 / 166.4 / 1306.8; Tier 2: 175.2 / 159.7 / 1250.5).
+        self.assertAlmostEqual(g["width_um"], 131.3, delta=0.2)
+        self.assertAlmostEqual(g["depth_um"], 108.0, delta=0.2)
+        self.assertAlmostEqual(g["length_um"], 680.6, delta=0.5)
 
     def test_axial_peak_locator(self):
         def field(x, y, z):
@@ -223,7 +226,8 @@ class PeakAnchoredExtentTest(unittest.TestCase):
         k_th = pp["effectiveConductivity_W_mK"]
         expected = 80.0 + pp["fieldPower_W"] / (2.0 * math.pi * k_th * r_reg)
         self.assertAlmostEqual(h["peakTemperature_C"], expected, delta=0.1 + 1e-4 * expected)
-        self.assertAlmostEqual(h["peakTemperature_C"], 35097.0, delta=1.0)
+        # P1 (2026-10-11): field power 0.38 x 200 W (no ramp, no latent factor), 35 097 C -> 21 250.8 C.
+        self.assertAlmostEqual(h["peakTemperature_C"], 21250.8, delta=1.0)
         self.assertEqual(result["meltPoolGeometry"]["axialFieldMaximum_C"], h["peakTemperature_C"])
         self.assertEqual(h["peakTemperatureBasis"], "regularised-singular-source-value")
         self.assertEqual(h["surfaceTemperature_C"], props["boiling_C"])

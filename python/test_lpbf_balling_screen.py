@@ -112,8 +112,11 @@ class ThermalSolverWiring(unittest.TestCase):
             self.assertAlmostEqual(s["lengthToWidth"], lw, delta=0.002)
             self.assertTrue(r["defectDiagnostics"]["ballingInstabilityRisk"].startswith(band.capitalize()))
             self.assertEqual(r["geometricDefectScreen"]["balling"]["screen"], s)
-        # The Rosenthal L/W of the first case is far above the old 3.8 flag; it no longer drives balling.
-        self.assertGreater(_run("Inconel 718", 280, 940, 80)["meltPoolGeometry"]["aspectRatio_L_over_W"], 7.0)
+        # The Rosenthal L/W of the first case is above the old 3.8 flag and no longer drives balling (P1, 2026-10-11:
+        # 5.18 with the flat-absorptivity, latent-free field; before P1 it was above 7).
+        ros_lw = _run("Inconel 718", 280, 940, 80)["meltPoolGeometry"]["aspectRatio_L_over_W"]
+        self.assertAlmostEqual(ros_lw, 5.18, delta=0.01)
+        self.assertGreater(ros_lw, 3.8)
 
     def test_process_map_has_no_balling_zone(self):
         r = _run("Inconel 718", 280, 940, 80)

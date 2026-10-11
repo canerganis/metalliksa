@@ -8,6 +8,11 @@ python/test_lpbf_regime_absorptivity_config.py, so any edit shows up as a test f
 Neither this file nor the harness (python/tools/lpbf_regime_absorptivity_eval.py, python/lpbf_regime_absorptivity_kernel.py)
 is in lpbf_simulation.IMPLEMENTATION_SOURCE_FILES, and no frozen file imports them. SCREENING ONLY, NOT VALIDATION:
 experimentalValidation=false, validationStatus=unvalidated, productionReady=false stay as they are.
+
+Note (P1 planned bump, 2026-10-11): the placement block below names the Rosenthal multi-reflection ramp, the latent-heat
+factor and the "Rosenthal keyhole increment heuristic" as unchanged. That is the pre-P1 baseline the evaluation ran
+against; P1 removed all three from the served path (docs/research/SPEC_p1_sourced_served_physics_2026-10-11.md). CONFIG
+is not edited (its sha256 is pinned), the kernel stays frozen as the pre-P1 copy.
 """
 
 from __future__ import annotations

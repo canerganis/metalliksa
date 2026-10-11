@@ -73,8 +73,9 @@ class SolidificationMicrostructureRpcTest(unittest.TestCase):
         print("  rpc available IN718 285/960:", {k: out[k] for k in ("status", "G_K_m", "R_m_s", "PDAS_um", "SDAS_um", "morphology", "heatSourceModel", "gradientSource")})
 
     def test_screening_fallback_is_labelled(self):
-        # 20 W / 2000 mm/s: no closed liquidus field (after Wave B LA-2/KS-1 the 60 W case resolves).
-        out = rpc({**IN718_285, "power_W": 20, "speed_mm_s": 2000})
+        # 10 W / 3000 mm/s: no closed liquidus field (after Wave B LA-2/KS-1 the 60 W case resolves; after P1,
+        # 2026-10-11, the latent-free Rosenthal field also resolves the former 20 W / 2000 mm/s case).
+        out = rpc({**IN718_285, "power_W": 10, "speed_mm_s": 3000})
         self.assertEqual(out["status"], "screening-fallback")
         self.assertEqual(out["reason"], FALLBACK_REASON)
         self.assertIs(out["usedFieldMap"], False)

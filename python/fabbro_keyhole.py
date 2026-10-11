@@ -11,8 +11,8 @@ Pe = V d / (2 α), m ≈ 2.4, n ≈ 3 for 2 ≤ Pe ≤ 10 (Fabbro §2.1). Outsid
 linear g(Pe) fit is extrapolated and the result carries pecletInFitRange = False.
 In Fabbro eq. 2 A(R) is the keyhole absorptivity, which depends on the aspect ratio R = e/d
 through multiple reflection. It is NOT modelled here: callers pass the flat-surface (Fresnel)
-absorptivity, used as a calibrated effective value (NIST AMB2022-03 285 W / 960 mm/s / 67 µm:
-123.9 µm vs measured 139.7 µm; a keyhole A(R) of 0.6-0.75 would give 196-245 µm).
+absorptivity, a disclosed lower bound (measured absorptance rises at R about 1: Trapp 2017,
+Deisenroth 2020, Fabbro 2020 Sec. 4.1), so the depth from this leg is biased low.
 The dH/hs 15 -> 30 linear onset ramp ("blend") is an uncited screening heuristic, not Fabbro.
 Not CFD, not a collapse simulation.
 """

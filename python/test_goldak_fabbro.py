@@ -134,9 +134,11 @@ class GoldakMeltPoolPathIndependentTests(unittest.TestCase):
     def test_rosenthal_build_job_default_unchanged(self):
         ros = calculate_meltpool_physics("Inconel 718", 285, 960, 80, 80, 40, 110)
         self.assertEqual(ros["modelId"], "rosenthal-screening-v1", "Build Job default unchanged")
-        self.assertEqual(ros["keyholeModel"]["modelId"], "heuristic-keyhole-increment-v1",
-                         "Rosenthal keeps the labelled (uncited) heuristic increment")
+        # P1 (2026-10-11): the Rosenthal increment heuristic-keyhole-increment-v1 was removed; every kernel serves the
+        # Fabbro leg (the onset ramp is still labelled uncited).
+        self.assertEqual(ros["keyholeModel"]["modelId"], "fabbro-keyhole-v1")
         self.assertIn("uncited", ros["keyholeModel"]["basis"])
+        self.assertIn("lower bound", ros["keyholeModel"]["basis"])
 
 
 class GoldakNistWidthGpuRayTracingTests(unittest.TestCase):

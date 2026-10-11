@@ -81,10 +81,12 @@ class ProcessWindowTests(unittest.TestCase):
             self.assertEqual(c["advisoryGates"], [g for g in vd["advisoryGates"] if g not in hoisted])
 
     def test_width_depth_null_unless_extent_computed(self):
-        r = pw.run_process_window(request("in718"))
+        # Own grid: 10 W cells have no resolvable liquidus extent (after P1, 2026-10-11, the latent-free Rosenthal
+        # field resolves every cell of the default in718 grid, which this test used before).
+        r = pw.run_process_window(request("in718", powers=[10, 150, 300], speeds=[500, 1500, 3000]))
         non_computed = [c for c in r["cells"] if c["extentStatus"] != "computed"]
         computed = [c for c in r["cells"] if c["extentStatus"] == "computed"]
-        self.assertTrue(non_computed, "the default in718 grid is expected to contain unresolved-geometry cells")
+        self.assertTrue(non_computed, "the 10 W cells are expected to be unresolved-geometry cells")
         self.assertTrue(computed)
         for c in non_computed:
             self.assertIsNone(c["width_um"])

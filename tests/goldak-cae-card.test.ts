@@ -107,8 +107,9 @@ test("card states that axes and Q are NOT a calibrated pair and prints eta_cond*
   for (const variant of ["thermal-map", "cross-section"] as const) {
     const { text } = buildGoldakCaeCard(input(), variant);
     assert.ok(text.includes("** axes and Q are NOT a calibrated pair: the screening field was driven by P_field = P_absorbed*latentHeatPowerFactor"));
-    assert.ok(text.includes("factor 1 for goldak/eagar-tsai sources"));
-    assert.ok(text.includes("1/(1+0.55*Stefan) (uncited screening factor) for rosenthal"));
+    // P1 bump wording (2026-10-11): factor 1.0 for every source; the old rosenthal ramp and factor are named as removed.
+    assert.ok(text.includes("factor 1.0 for every source since 2026-10-11"));
+    assert.ok(text.includes("the uncited factor 1/(1+0.55*Stefan), both removed"));
     assert.ok(text.includes("** fieldPower_W not present in this result (older worker); P_field is not recomputed here."));
     assert.ok(!text.includes("Stefan not exported"));
     assert.ok(text.includes("the field power is eta_cond*P_laser, so Q exceeds it by eta_eff/eta_cond = 2.33 here"));
@@ -164,20 +165,21 @@ test("rosenthal fixture: absorbed power is eta_eff*P, conductionAbsorptivity is 
   for (const variant of ["thermal-map", "cross-section"] as const) {
     const { text } = buildGoldakCaeCard(rosenthalInput(), variant);
     const lines = text.split("\n");
-    assert.ok(lines.includes("** field absorbed power before the latent-heat factor (rosenthal source), P_absorbed = eta_eff*P_laser: 252.795 W"));
+    assert.ok(lines.includes("** field absorbed power (rosenthal source; before the latent-heat factor in results older than 2026-10-11), P_absorbed = eta_eff*P_laser: 252.795 W"));
     assert.ok(lines.some((l) => l.startsWith("** conductionAbsorptivity (") && l.includes("informational, NOT used by the rosenthal source") && l.endsWith("): 0.38")));
     assert.ok(!text.includes("used by the screening conduction field"));
     assert.ok(!text.includes("eta_cond*P_laser: 108.3 W"), "eta_cond*P is not the rosenthal field power");
     assert.ok(!text.includes("equal in conduction cases"));
-    assert.ok(!text.includes("eta_eff/eta_cond = 2.33"));
+    // This old-style fixture (eta_eff 0.887 over eta_cond 0.38) prints its ratio 2.33 on the Q line; a P1 result prints 1.00.
+    assert.ok(!text.includes("Q exceeds it by eta_eff/eta_cond = 2.33"));
     assert.ok(lines.some((l) => l.startsWith("** axes and Q are NOT a calibrated pair: the screening field was driven by P_field = P_absorbed*latentHeatPowerFactor")));
-    assert.ok(lines.some((l) => l.startsWith("** Q = eta_eff*P_laser = 252.795 W is the rosenthal P_absorbed") && l.includes("latent-heat factor only")));
+    assert.ok(lines.some((l) => l.startsWith("** Q = eta_eff*P_laser = 252.795 W is the rosenthal P_absorbed, eta_eff/eta_cond = 2.33; since 2026-10-11 the field power equals it (factor 1.0, ratio 1.00)") && l.includes("latent-heat factor only")));
     assert.ok(lines.includes("** Heat source used by the screening solver: rosenthal-screening-v1. *GOLDAK_DOUBLE_ELLIPSOID above is only the TARGET source type of the DFLUX."));
     assert.deepEqual(dataLine(text).trim().split(",").map((f) => f.trim()), ["1.4000e-5", "1.1560e-3", "8.7000e-5", "1.5500e-4", "252.795", "0.887"]);
   }
   // modelId alone (heatSourceModel absent) is still recognised as rosenthal.
   const viaModelId = buildGoldakCaeCard({ ...rosenthalInput(), heatSourceModel: undefined, modelId: "rosenthal-screening-v1" }).text;
-  assert.ok(viaModelId.includes("(rosenthal source), P_absorbed = eta_eff*P_laser: 252.795 W"));
+  assert.ok(viaModelId.includes("(rosenthal source; before the latent-heat factor in results older than 2026-10-11), P_absorbed = eta_eff*P_laser: 252.795 W"));
   // Without conductionAbsorptivity the rosenthal absorbed-power line still prints and the informational line is dropped.
   const noEta = buildGoldakCaeCard({ ...rosenthalInput(), processParameters: { ...rosenthalInput().processParameters, conductionAbsorptivity: undefined } }).text;
   assert.ok(noEta.includes("P_absorbed = eta_eff*P_laser: 252.795 W"));
@@ -194,7 +196,7 @@ test("goldak and eagar-tsai sources keep eta_cond*P as the field absorbed power"
 
 test("unidentified heat source makes no claim about which absorptivity drove the field", () => {
   const { text } = buildGoldakCaeCard({ ...input(), heatSourceModel: undefined });
-  assert.ok(text.includes("depends on the heat source, which is not identified here: eta_cond*P_laser = 108.3 W (goldak/eagar-tsai) or eta_eff*P_laser = 252.795 W (rosenthal, before its latent-heat factor)"));
+  assert.ok(text.includes("depends on the heat source, which is not identified here: eta_cond*P_laser = 108.3 W (goldak/eagar-tsai) or eta_eff*P_laser = 252.795 W (rosenthal; before its latent-heat factor in results older than 2026-10-11)"));
   assert.ok(!text.includes("used by the screening conduction field"));
   assert.ok(!text.includes("equal in conduction cases"));
 });
@@ -242,10 +244,23 @@ test("call sites pass the correct card variant (a swap must fail)", () => {
 });
 
 test("Wave B LA-5: the exported field power, factor and Stefan number are printed when the result carries them", () => {
-  // Rosenthal: field power = P_absorbed * 1/(1+0.55*St); goldak/eagar-tsai: factor 1, field power = eta_cond*P.
+  // Old-style fixtures: rosenthal field power = P_absorbed * 1/(1+0.55*St) (removed by P1, 2026-10-11, factor 1.0 since);
+  // goldak/eagar-tsai: factor 1, field power = eta_cond*P. The card prints whatever the result carries.
   const ros = buildGoldakCaeCard({ ...rosenthalInput(), processParameters: { ...rosenthalInput().processParameters, fieldPower_W: 210.4, latentHeatPowerFactor: 0.8323, stefanNumber: 0.3664 } }).text;
   assert.ok(ros.includes("** exported by the solver: fieldPower_W = 210.4 W, latentHeatPowerFactor = 0.8323, stefanNumber = 0.3664; Q/P_field = 1.20"));
   assert.ok(!ros.includes("fieldPower_W not present"));
   const gk = buildGoldakCaeCard(input({ fieldPower_W: 108.3, latentHeatPowerFactor: 1, stefanNumber: 0.3664 })).text;
   assert.ok(gk.includes("** exported by the solver: fieldPower_W = 108.3 W, latentHeatPowerFactor = 1, stefanNumber = 0.3664; Q/P_field = 2.33"));
+});
+
+test("P1 result (2026-10-11): effectiveAbsorptivity equals conductionAbsorptivity, factor 1.0, Q equals the field power", () => {
+  // A post-P1 rosenthal payload: IN718 285 W, flat 0.38 on every field, fieldPower_W = 0.38 * 285 = 108.3 W.
+  const base = rosenthalInput();
+  const p1 = buildGoldakCaeCard({ ...base, processParameters: { ...base.processParameters, effectiveAbsorptivity: 0.38, conductionAbsorptivity: 0.38, fieldPower_W: 108.3, latentHeatPowerFactor: 1, stefanNumber: 0.3664 } }).text;
+  assert.ok(p1.includes("** exported by the solver: fieldPower_W = 108.3 W, latentHeatPowerFactor = 1, stefanNumber = 0.3664; Q/P_field = 1.00"));
+  assert.ok(p1.includes("** Q = eta_eff*P_laser = 108.3 W is the rosenthal P_absorbed, eta_eff/eta_cond = 1.00; since 2026-10-11 the field power equals it (factor 1.0, ratio 1.00)"));
+  const gkBase = input({ effectiveAbsorptivity: 0.38, fieldPower_W: 108.3, latentHeatPowerFactor: 1, stefanNumber: 0.3664 });
+  const gk = buildGoldakCaeCard(gkBase).text;
+  assert.ok(gk.includes("so Q exceeds it by eta_eff/eta_cond = 1.00 here (1.00 means Q equals the field power, the case for every result since 2026-10-11)"));
+  assert.ok(gk.includes("Q/P_field = 1.00"));
 });

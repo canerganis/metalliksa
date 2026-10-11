@@ -1,7 +1,10 @@
 """Keyhole-regime planned physics bump: regime threshold 30 -> 20, porosity screen decoupled.
 
-Self-contained: every pre-bump number is pinned inline (recorded from 6f6f58f5 before the edit); nothing is read
-from a mock set. Run from python/ with the locked interpreter:
+Self-contained: every number is pinned inline; nothing is read from a mock set. The geometry and grid fixtures were
+re-recorded after the P1 planned bump (2026-10-11, flat absorptivity, no latent factor, depth = max(d_iso, Fabbro leg)
+for every kernel; docs/research/SPEC_p1_sourced_served_physics_2026-10-11.md): the keyhole-regime and in625-regime bumps
+kept every number, P1 moves the Rosenthal numbers and the grid, so the former "unchanged" fixtures now pin the post-P1
+served values (recorded on the P1 tree, not re-fitted). Run from python/ with the locked interpreter:
     python -B -m unittest test_lpbf_keyhole_regime_bump
 """
 import contextlib
@@ -24,31 +27,33 @@ def _run(*args, **kwargs):
         return solver.calculate_meltpool_physics(*args, **kwargs)
 
 
-# Pre-bump (6f6f58f5) Rosenthal results:
+# Post-P1 Rosenthal results (recorded on the P1 tree, 2026-10-11; before P1, at 6f6f58f5 through 393cdbd1, they were
+# 166.4/77.1/183.8/1306.8, 138.9/52.7/177.4/1010.5 and 109.6/35.6/152.3/718.4):
 # (material, P_W, v_mm_s, d_um, preheat_C) -> (depth_um, vapor cavity depth_um, width_um, length_um, dH/hs)
-PRE_BUMP_ROSENTHAL = {
-    ("Inconel 718", 280, 940, 80, 80): (166.4, 77.1, 183.8, 1306.8, 30.58),
-    ("Ti-6Al-4V", 200, 900, 80, 150): (138.9, 52.7, 177.4, 1010.5, 27.58),
-    ("316L Stainless Steel", 200, 800, 70, 80): (109.6, 35.6, 152.3, 718.4, 24.02),
+P1_ROSENTHAL = {
+    ("Inconel 718", 280, 940, 80, 80): (108.0, 44.2, 131.3, 680.6, 30.58),
+    ("Ti-6Al-4V", 200, 900, 80, 150): (84.5, 24.3, 124.1, 511.1, 27.58),
+    ("316L Stainless Steel", 200, 800, 70, 80): (58.2, 1.0, 117.9, 443.0, 24.02),
 }
-# Pre-bump process-map grid of IN718 200/800/80 (49 cells, P 80..540 W x v 300..2400 mm/s)
-PRE_GRID_DEPTH_UM = [
-    128.2, 53.9, 48.6, 45.8, 43.6, 42.2, 41.2,
-    167.5, 124.9, 107.0, 52.9, 49.2, 46.9, 45.3,
-    327.3, 240.4, 123.8, 110.8, 99.9, 92.8, 87.8,
-    378.1, 275.2, 230.9, 124.9, 111.7, 103.0, 96.8,
-    422.9, 306.0, 255.5, 226.0, 201.0, 112.3, 105.0,
-    463.4, 334.1, 277.9, 245.0, 217.1, 198.5, 185.1,
-    500.6, 359.9, 298.6, 262.7, 232.1, 211.6, 196.8,
+# Post-P1 process-map grid of IN718 200/800/80 (49 cells, P 80..540 W x v 300..2400 mm/s): width from the flat
+# absorptivity, depth = max(w/2, Fabbro leg); the enthalpy column is unchanged by every bump.
+P1_GRID_DEPTH_UM = [
+    74.6, 59.8, 54.0, 50.9, 48.4, 46.8, 45.8,
+    140.3, 72.9, 63.8, 58.8, 54.7, 52.1, 50.3,
+    220.6, 126.1, 72.3, 65.7, 60.4, 56.9, 54.4,
+    300.8, 171.9, 120.3, 86.4, 66.2, 61.9, 58.8,
+    381.1, 217.7, 152.4, 117.2, 89.7, 66.5, 62.9,
+    461.3, 263.6, 184.5, 141.9, 108.5, 87.9, 73.8,
+    541.5, 309.4, 216.6, 166.6, 127.4, 103.1, 86.6,
 ]
-PRE_GRID_WIDTH_UM = [
-    183.1, 119.7, 108.1, 101.8, 96.8, 93.7, 91.5,
-    239.3, 178.4, 152.8, 117.6, 109.4, 104.2, 100.6,
-    284.6, 209.0, 176.8, 158.3, 142.8, 132.6, 125.4,
-    328.8, 239.3, 200.8, 178.4, 159.6, 147.2, 138.3,
-    367.8, 266.1, 222.1, 196.5, 174.8, 160.4, 150.0,
-    403.0, 290.5, 241.6, 213.1, 188.8, 172.6, 160.9,
-    435.3, 313.0, 259.7, 228.4, 201.8, 184.0, 171.1,
+P1_GRID_WIDTH_UM = [
+    149.1, 119.7, 108.1, 101.8, 96.8, 93.7, 91.5,
+    190.0, 145.8, 127.7, 117.6, 109.4, 104.2, 100.6,
+    223.5, 167.9, 144.6, 131.5, 120.7, 113.7, 108.8,
+    256.5, 190.0, 161.9, 145.8, 132.4, 123.7, 117.6,
+    285.7, 209.8, 177.4, 158.8, 143.2, 133.0, 125.7,
+    312.2, 227.9, 191.7, 170.8, 153.2, 141.6, 133.4,
+    336.7, 244.7, 205.1, 182.0, 162.6, 149.8, 140.6,
 ]
 PRE_GRID_ENTHALPY = [
     15.46, 10.93, 8.93, 7.73, 6.7, 5.99, 5.47,
@@ -59,10 +64,9 @@ PRE_GRID_ENTHALPY = [
     88.92, 62.87, 51.34, 44.46, 38.5, 34.44, 31.44,
     104.38, 73.81, 60.26, 52.19, 45.2, 40.43, 36.9,
 ]
-# Pre-bump labels: T = Transition, L = Lack of Fusion Zone, K = Keyhole Defect Zone
-PRE_GRID_REGIME = [{'T': 'Transition', 'L': 'Lack of Fusion Zone', 'K': 'Keyhole Defect Zone'}[c] for c in (
-    "TLLLLLLTTTLLLLKKTTTTTKKKTTTTKKKKKTTKKKKKKKKKKKKKK"
-)]
+# Post-P1 labels: T = Transition, L = Lack of Fusion Zone, K = Keyhole Mode (the lack-of-fusion cells follow the
+# P1 grid depth; before P1 the string was TLLLLLLTTTLLLLKKTTTTTKKKTTTTKKKKKTTKKKKKKKKKKKKKK with the pre-bump labels)
+P1_GRID_REGIME = "TLLLLLLKKLLLLLKKKKLLLKKKKKLLKKKKKKLKKKKKKKKKKKKKK"
 
 
 class RegimeThresholds(unittest.TestCase):
@@ -75,7 +79,8 @@ class RegimeThresholds(unittest.TestCase):
         self.assertTrue(c(30.0).startswith("Keyhole Mode"))
         self.assertEqual(solver.ENTHALPY_TRANSITION, 15.0)
         self.assertEqual(solver.ENTHALPY_KEYHOLE, 20.0)
-        self.assertEqual(solver.KEYHOLE_INCREMENT_FULL_AT, 30.0)
+        # P1 (2026-10-11) removed the Rosenthal increment and its 30 band edge.
+        self.assertFalse(hasattr(solver, "KEYHOLE_INCREMENT_FULL_AT"))
         self.assertEqual(solver.POROSITY_SCREEN_NEGLIGIBLE_BELOW, 15.0)
         self.assertEqual(solver.POROSITY_SCREEN_HIGH_AT, 30.0)
 
@@ -108,9 +113,11 @@ class RegimeThresholds(unittest.TestCase):
         self.assertGreaterEqual(solver.ENTHALPY_KEYHOLE, median)
 
 
-class UnchangedNumerics(unittest.TestCase):
-    def test_rosenthal_increment_unchanged(self):
-        for (mat, p, v, d, t0), (depth, cavity, width, length, enth) in PRE_BUMP_ROSENTHAL.items():
+class PinnedNumerics(unittest.TestCase):
+    """Served numbers pinned at the P1 tree (the keyhole-regime and in625-regime label bumps changed no number)."""
+
+    def test_rosenthal_geometry_pinned_post_p1(self):
+        for (mat, p, v, d, t0), (depth, cavity, width, length, enth) in P1_ROSENTHAL.items():
             res = _run(mat, p, v, d, t0)
             geo = res["meltPoolGeometry"]
             self.assertEqual(geo["depth_um"], depth, mat)
@@ -118,27 +125,26 @@ class UnchangedNumerics(unittest.TestCase):
             self.assertEqual(geo["width_um"], width, mat)
             self.assertEqual(geo["length_um"], length, mat)
             self.assertEqual(res["processParameters"]["normalizedEnthalpy"], enth, mat)
+            # P1: depth is the conduction isotherm depth or the Fabbro leg, whichever is larger, for every kernel.
+            self.assertEqual(geo["depth_um"], max(round(depth - cavity, 1), res["keyholeModel"]["fabbroDepth_um"]), mat)
 
-    def test_process_map_depth_proxy_unchanged(self):
+    def test_process_map_grid_pinned_post_p1(self):
         grid = _run("Inconel 718", 200, 800, 80, 80)["processWindowMap"]["grid"]
         self.assertEqual([c["normalizedEnthalpy"] for c in grid], PRE_GRID_ENTHALPY)
-        # the Tang/LoF override reads the unchanged d_um, so lack-of-fusion cells keep their depth
-        self.assertEqual([c["depth_um"] for c in grid], PRE_GRID_DEPTH_UM)
-        self.assertEqual([c["width_um"] for c in grid], PRE_GRID_WIDTH_UM)
-        moved = []
-        for c, old in zip(grid, PRE_GRID_REGIME):
-            if old == "Lack of Fusion Zone":
-                self.assertEqual(c["regime"], old)
-            elif c["normalizedEnthalpy"] < 15.0:
-                self.assertEqual((c["regime"], c["color"]), ("Optimal Conduction", "#10b981"))
-            elif c["normalizedEnthalpy"] >= 20.0:
-                self.assertEqual((c["regime"], c["color"]), ("Keyhole Mode", "#ef4444"))
-                if old == "Transition":
-                    moved.append(c["normalizedEnthalpy"])
-            else:
-                self.assertEqual((c["regime"], c["color"]), ("Transition", "#38bdf8"))
-        # exactly the cells with 20 <= dH/hs <= 30 moved from Transition to Keyhole Mode
-        self.assertTrue(moved and all(20.0 <= x <= 30.0 for x in moved), moved)
+        self.assertEqual([c["depth_um"] for c in grid], P1_GRID_DEPTH_UM)
+        self.assertEqual([c["width_um"] for c in grid], P1_GRID_WIDTH_UM)
+        labels = {"T": ("Transition", "#38bdf8"), "L": ("Lack of Fusion Zone", "#f59e0b"), "K": ("Keyhole Mode", "#ef4444"),
+                  "C": ("Optimal Conduction", "#10b981")}
+        self.assertEqual("".join(next(k for k, lab in labels.items() if lab[0] == c["regime"]) for c in grid), P1_GRID_REGIME)
+        for c, want in zip(grid, P1_GRID_REGIME):
+            self.assertEqual((c["regime"], c["color"]), labels[want], c)
+            # the Tang lack-of-fusion override reads the pinned grid width and depth (hatch 100 um, layer 40 um)
+            tang = (100.0 / c["width_um"]) ** 2 + (40.0 / c["depth_um"]) ** 2
+            self.assertEqual(want == "L", tang > 1.0, c)
+            if want != "L":
+                self.assertEqual(want, "C" if c["normalizedEnthalpy"] < 15.0 else ("K" if c["normalizedEnthalpy"] >= 20.0 else "T"), c)
+        # the regime label still uses the 15 / 20 cuts: cells with 20 <= dH/hs <= 30 are Keyhole Mode, not Transition
+        self.assertTrue(all(c["regime"] != "Transition" for c in grid if c["normalizedEnthalpy"] >= 20.0))
 
     def test_regime_basis_text(self):
         res = _run("Inconel 718", 280, 940, 80, 80)
@@ -173,28 +179,32 @@ class UnchangedNumerics(unittest.TestCase):
         self.assertIn(model["depthBenchmarkNote"], model["basis"])
 
 
-# IN625 per-alloy cut (planned bump in625-regime, 2026-10-11). Pre-bump (pin ec7e1f7a, commit f8c2f3b9) IN625 Rosenthal
-# results at 80 C preheat: (P_W, v_mm_s, d_um) -> (dH/hs, pre-bump family, depth_um, width_um, length_um, cavity_um)
-PRE_BUMP_IN625 = {
-    (195, 1200, 100): (14.6, "Conduction", 41.1, 85.1, 389.9, 0.0),
-    (150, 400, 100): (19.45, "Transition", 104.0, 163.1, 501.2, 24.8),
-    (195, 800, 100): (17.88, "Transition", 76.5, 125.7, 562.5, 15.6),
-    (100, 400, 100): (12.96, "Conduction", 47.3, 97.6, 209.9, 0.0),
-    (195, 800, 170): (8.06, "Conduction", 48.4, 100.9, 388.2, 0.0),
+# IN625 per-alloy cut (planned bump in625-regime, 2026-10-11). IN625 Rosenthal results at 80 C preheat, recorded on the
+# P1 tree (before P1 the rows were 41.1/85.1/389.9/0.0, 104.0/163.1/501.2/24.8, 76.5/125.7/562.5/15.6, 47.3/97.6/209.9/0.0,
+# 48.4/100.9/388.2/0.0): (P_W, v_mm_s, d_um) -> (dH/hs, pre-in625-bump family, depth_um, width_um, length_um, cavity_um)
+P1_IN625 = {
+    (195, 1200, 100): (14.6, "Conduction", 45.7, 94.5, 473.9, 0.0),
+    (150, 400, 100): (19.45, "Transition", 67.6, 139.3, 379.1, 0.0),
+    (195, 800, 100): (17.88, "Transition", 55.8, 115.2, 478.1, 0.0),
+    (100, 400, 100): (12.96, "Conduction", 53.4, 110.1, 254.9, 0.0),
+    (195, 800, 170): (8.06, "Conduction", 54.4, 113.1, 473.1, 0.0),
 }
-# Pre-bump process-map grid of IN625 195/800/100 (C conduction, T transition, K keyhole, L lack of fusion)
+# Process-map grid of IN625 195/800/100 (C conduction, T transition, K keyhole, L lack of fusion); enthalpy unchanged by
+# every bump, depth and labels recorded on the P1 tree.
 PRE_IN625_GRID_ENTHALPY = [
     11.98, 8.47, 6.91, 5.99, 5.19, 4.64, 4.23, 22.45, 15.88, 12.96, 11.23, 9.72, 8.7, 7.94,
     32.93, 23.29, 19.01, 16.47, 14.26, 12.76, 11.64, 44.91, 31.76, 25.93, 22.45, 19.45, 17.39, 15.88,
     56.88, 40.22, 32.84, 28.44, 24.63, 22.03, 20.11, 68.86, 48.69, 39.76, 34.43, 29.82, 26.67, 24.35,
     80.84, 57.16, 46.67, 40.42, 35.0, 31.31, 28.58,
 ]
-PRE_IN625_GRID_REGIME = "CLLLLLLKTCLLLLKKTTLLLKKKKTTTKKKKKKKKKKKKKKKKKKKKK"
-PRE_IN625_GRID_DEPTH_UM = [
-    71.5, 59.8, 55.3, 52.9, 51.0, 49.9, 49.1, 170.1, 130.0, 62.9, 58.9, 55.8, 53.8, 52.4,
-    329.1, 150.1, 129.0, 117.1, 60.2, 57.4, 55.6, 378.0, 279.4, 144.6, 130.0, 117.9, 110.0, 104.4,
-    421.3, 308.8, 260.7, 141.8, 127.7, 118.4, 111.8, 460.5, 335.6, 282.0, 250.9, 136.8, 126.3, 118.8,
-    496.6, 360.4, 301.7, 267.5, 238.7, 219.6, 125.3,
+# Before the in625-regime bump the labels were CLLLLLLKTCLLLLKKTTLLLKKKKTTTKKKKKKKKKKKKKKKKKKKKK; after P1 (grid depth
+# changed, so the lack-of-fusion cells move too) they are:
+P1_IN625_GRID_REGIME = "CCLLLLLKKCCLLLKKKKKLLKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+P1_IN625_GRID_DEPTH_UM = [
+    79.5, 66.4, 61.4, 58.8, 56.7, 55.4, 54.6, 98.3, 78.0, 69.9, 65.5, 62.0, 59.8, 58.3,
+    193.9, 88.0, 77.5, 71.6, 66.8, 63.8, 61.7, 264.4, 146.2, 85.3, 78.0, 72.0, 68.2, 65.5,
+    334.9, 185.1, 127.9, 87.6, 76.8, 72.2, 69.0, 405.4, 224.1, 154.9, 118.3, 88.9, 76.1, 72.4,
+    476.0, 263.1, 181.8, 138.9, 105.6, 85.2, 75.6,
 ]
 # The 13 held-out units of the declared run (docs/research/RESULTS_in625_regime_2026-10-11.md section 5):
 # (unit, app index at 20 C, measured depth over half width). Truth: keyhole when the ratio > 1.
@@ -223,7 +233,7 @@ class In625RegimeCut(unittest.TestCase):
             self.assertEqual(c(15.0, mat), "Transition Mode")
             self.assertEqual(c(19.99, mat), "Transition Mode")
             self.assertEqual(c(20.0, mat), KEYHOLE_LABEL)
-        # the transition cut is shared and not moved (it also starts eta_eff and the depth increment)
+        # the transition cut is shared and not moved (it also starts the Fabbro leg ramp)
         self.assertEqual(solver.ENTHALPY_TRANSITION, 15.0)
 
     def test_held_out_scores_pinned(self):
@@ -234,8 +244,8 @@ class In625RegimeCut(unittest.TestCase):
         self.assertEqual((errors_in625, errors_shared), (0, 3))
         self.assertEqual(sum(r > 1.0 for _, _, r in HELD_OUT_IN625), 5)
 
-    def test_geometry_bit_equal_only_label_moves(self):
-        for (p, v, d), (h, fam, depth, width, length, cavity) in PRE_BUMP_IN625.items():
+    def test_geometry_pinned_post_p1_and_label_follows_the_cut(self):
+        for (p, v, d), (h, fam, depth, width, length, cavity) in P1_IN625.items():
             res = _run("Inconel 625", p, v, d, 80, heat_source="rosenthal")
             g = res["meltPoolGeometry"]
             self.assertEqual(res["processParameters"]["normalizedEnthalpy"], h)
@@ -248,22 +258,26 @@ class In625RegimeCut(unittest.TestCase):
             self.assertEqual(res["processWindowMap"]["regimeKeyholeThreshold"], 13.6)
         self.assertEqual(_run("Inconel 718", 200, 800, 80, 80)["meltPoolGeometry"]["regimeKeyholeThreshold"], 20.0)
 
-    def test_in625_grid_labels_follow_the_cut_numbers_unchanged(self):
+    def test_in625_grid_labels_follow_the_cut_numbers_pinned_post_p1(self):
         grid = _run("Inconel 625", 195, 800, 100, 80, heat_source="rosenthal")["processWindowMap"]["grid"]
         self.assertEqual([c["normalizedEnthalpy"] for c in grid], PRE_IN625_GRID_ENTHALPY)
-        self.assertEqual([c["depth_um"] for c in grid], PRE_IN625_GRID_DEPTH_UM)
-        moved = []
-        for c, old in zip(grid, PRE_IN625_GRID_REGIME):
-            if old == "L":
+        self.assertEqual([c["depth_um"] for c in grid], P1_IN625_GRID_DEPTH_UM)
+        got = []
+        for c, want in zip(grid, P1_IN625_GRID_REGIME):
+            tang = (100.0 / c["width_um"]) ** 2 + (40.0 / c["depth_um"]) ** 2
+            if tang > 1.0:
                 self.assertEqual(c["regime"], "Lack of Fusion Zone")
+                got.append("L")
             elif c["normalizedEnthalpy"] >= 13.6:
                 self.assertEqual((c["regime"], c["color"]), ("Keyhole Mode", "#ef4444"))
-                if old != "K":
-                    moved.append(c["normalizedEnthalpy"])
+                got.append("K")
             else:
                 self.assertEqual((c["regime"], c["color"]), ("Optimal Conduction", "#10b981"))
+                got.append("C")
+        self.assertEqual("".join(got), P1_IN625_GRID_REGIME)
         self.assertNotIn("Transition", [c["regime"] for c in grid])
-        self.assertTrue(moved and all(13.6 <= x < 20.0 for x in moved), moved)
+        # the IN625 cut: every non-lack-of-fusion cell with 13.6 <= dH/hs < 20 is Keyhole Mode (shared cut would say Transition)
+        self.assertTrue(any(13.6 <= c["normalizedEnthalpy"] < 20.0 and c["regime"] == "Keyhole Mode" for c in grid))
 
     def test_lane_conditions_at_20c(self):
         # Lane et al. 2020 conditions as served by the app at 20 C: CBM (100 um) keyhole, AMMT (170 um) conduction.

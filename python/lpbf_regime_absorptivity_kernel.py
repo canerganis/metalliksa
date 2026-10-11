@@ -1,12 +1,18 @@
 """Regime-dependent absorptivity: candidate law and read-only kernel recomposition (research, SCREENING ONLY).
 
-Pre-registered in docs/research/PREDECLARED_regime_absorptivity_2026-10-09.md. This module is NOT part of
+FROZEN AS THE PRE-P1 BASELINE (served path before 2026-10-11). Pre-registered in
+docs/research/PREDECLARED_regime_absorptivity_2026-10-09.md. This module is NOT part of
 ``lpbf_simulation.IMPLEMENTATION_SOURCE_FILES`` and no frozen file imports it. It rebuilds the geometry part of
-``lpbf_thermal_solver.calculate_meltpool_physics`` from the frozen building blocks (EagarTsaiField, GoldakField,
-rosenthal_temperature_C, _liquidus_extent, _axial_peak_x, fabbro_keyhole_depth_m) with the absorptivity passed in as
-an input, so a candidate A(H) can be evaluated without editing any frozen file. In baseline mode (policy None) it must
-reproduce the frozen function's width, depth and extent status exactly; the evaluation harness checks that on every
-row before any candidate number is trusted.
+``lpbf_thermal_solver.calculate_meltpool_physics`` as served before the P1 planned bump
+(docs/research/SPEC_p1_sourced_served_physics_2026-10-11.md) from the building blocks EagarTsaiField, GoldakField,
+rosenthal_temperature_C, _liquidus_extent, _axial_peak_x and fabbro_keyhole_depth_m, with the absorptivity passed in
+as an input. The pre-P1 constants that P1 removed from the served solver are copied here (PRE_P1_*: the Rosenthal
+multi-reflection ramp, the 1/(1 + 0.55 St) latent-heat factor, the Rosenthal depth increment with its 30 band edge
+and the fallback floor ratio), so the baseline mode (policy None) keeps reproducing the committed
+RESULTS_regime_absorptivity_2026-10-09, RESULTS_depth_path_stage1 and _stage1b numbers, which were run against that
+served path. It no longer equals the live solver: after P1 the served path is P_field = A_flat P, depth = max(d_iso,
+Fabbro leg) for every kernel. python/test_lpbf_regime_absorptivity_eval.py pins the baseline against served outputs
+recorded at the pre-P1 revision (a self-contained fixture, not a live call).
 
 Nothing here is a validated model. Outputs are 'Screening' only.
 """
@@ -24,8 +30,15 @@ from goldak_solver import GoldakField, seed_goldak_axes
 
 KERNELS = ("eagar-tsai", "goldak", "rosenthal")
 
+# Pre-P1 served constants (lpbf_thermal_solver.py at 393cdbd1, pin 0d52d7f7), copied locally so this baseline stays
+# frozen while the served solver moved on (P1, 2026-10-11).
+PRE_P1_ENTHALPY_TRANSITION = 15.0          # start of the ramp and of the increment (ts.ENTHALPY_TRANSITION, unchanged)
+PRE_P1_KEYHOLE_INCREMENT_FULL_AT = 30.0    # former ts.KEYHOLE_INCREMENT_FULL_AT (removed from the served solver)
+PRE_P1_LATENT_FACTOR_COEFF = 0.55          # former 1/(1 + 0.55 St) Rosenthal field-power factor
+PRE_P1_FALLBACK_FLOOR = (0.38, 0.10)       # former d_iso floor half_w * (0.38 + 0.10 min(1, dH/hs / 15))
+
 # Policy specs are plain tuples so they pickle into worker processes and hash into cache keys.
-#   None                                  baseline: frozen behaviour (flat A; Rosenthal multi-reflection ramp)
+#   None                                  baseline: pre-P1 served behaviour (flat A; Rosenthal multi-reflection ramp)
 #   ("law", A_kh, H_on, H_s, fabbro)      saturating-exponential law A(H); fabbro=True feeds A(H) to Fabbro (ET/Goldak)
 #   ("gan", eta_max, rate, Am, floor_K)   Gan 2021 Eq. 6, ADAPTED (floor, app properties, 1/e2 radius), Am
 Policy = Optional[Tuple]
@@ -69,9 +82,9 @@ def meltpool_wd(material: str, P_W: float, v_mm_s: float, d_um: float, preheat_C
                 hatch_um: float, kernel: str, policy: Policy = None) -> Dict[str, Any]:
     """Width, depth (um, rounded to 0.1 um like the frozen output) and extent status of one kernel.
 
-    The arithmetic order follows ``calculate_meltpool_physics`` so that the baseline policy is bit-identical.
-    Returns {'W_um', 'D_um', 'status', 'H', 'A_cond', 'A_fabbro'}; 'A_cond' is the absorptivity that scaled the
-    conduction-field power (Rosenthal: eta_eff before the latent-heat factor)."""
+    The arithmetic order follows the pre-P1 ``calculate_meltpool_physics`` so that the baseline policy is bit-identical
+    to the served path before 2026-10-11. Returns {'W_um', 'D_um', 'status', 'H', 'A_cond', 'A_fabbro'}; 'A_cond' is
+    the absorptivity that scaled the conduction-field power (Rosenthal: eta_eff before the latent-heat factor)."""
     if kernel not in KERNELS:
         raise ValueError(f"unsupported kernel {kernel!r}")
     props = resolve_props(material)
@@ -112,9 +125,9 @@ def meltpool_wd(material: str, P_W: float, v_mm_s: float, d_um: float, preheat_C
         else:
             raise ValueError(f"unsupported absorptivity policy {policy!r}")
 
-    # Baseline multi-reflection ramp of the Rosenthal path (replaced, not stacked, by a candidate).
-    if normalized_enthalpy > ts.ENTHALPY_TRANSITION:
-        cavity_aspect = min(4.0, (normalized_enthalpy - ts.ENTHALPY_TRANSITION) / 8.0)
+    # Pre-P1 multi-reflection ramp of the Rosenthal path (replaced, not stacked, by a candidate).
+    if normalized_enthalpy > PRE_P1_ENTHALPY_TRANSITION:
+        cavity_aspect = min(4.0, (normalized_enthalpy - PRE_P1_ENTHALPY_TRANSITION) / 8.0)
         n_reflections = 1.0 + 1.8 * cavity_aspect
         eta_eff = 1.0 - (1.0 - eta_base) ** n_reflections
     else:
@@ -133,7 +146,7 @@ def meltpool_wd(material: str, P_W: float, v_mm_s: float, d_um: float, preheat_C
         a_cond = eta_eff
         P_absorbed = eta_eff * P_laser
         A_fabbro = eta_base_flat
-        latent_heat_power_factor = 1.0 / (1.0 + 0.55 * stefan)
+        latent_heat_power_factor = 1.0 / (1.0 + PRE_P1_LATENT_FACTOR_COEFF * stefan)
     P_geom = P_absorbed * latent_heat_power_factor
     r_reg = max(r_beam / math.sqrt(2.0), 8e-6)
 
@@ -168,16 +181,24 @@ def meltpool_wd(material: str, P_W: float, v_mm_s: float, d_um: float, preheat_C
                               w_analytical, normalized_enthalpy)
     w_melt_m = ext["w_melt_m"]
     d_iso = ext["d_iso"]
+    if ext["extent_status"] == "heuristic-width-fallback":
+        # Pre-P1 fallback floor (the served _liquidus_extent now floors at half_w; rebuild the old floor from the
+        # isotherm depth and the substituted half width it returns).
+        a, b = PRE_P1_FALLBACK_FLOOR
+        d_iso = max(ext["d_iso_isotherm_m"],
+                    ext["half_w_m"] * (a + b * min(1.0, normalized_enthalpy / PRE_P1_ENTHALPY_TRANSITION)))
+        d_iso = max(d_iso, 4e-6)
 
     if kernel in ("eagar-tsai", "goldak"):
         extra = max(0.0, fabbro["depth_m"] - d_iso)
-    elif normalized_enthalpy < ts.ENTHALPY_TRANSITION:
+    elif normalized_enthalpy < PRE_P1_ENTHALPY_TRANSITION:
         extra = 0.0
-    elif normalized_enthalpy < ts.KEYHOLE_INCREMENT_FULL_AT:
-        trans = (normalized_enthalpy - ts.ENTHALPY_TRANSITION) / (ts.KEYHOLE_INCREMENT_FULL_AT - ts.ENTHALPY_TRANSITION)
+    elif normalized_enthalpy < PRE_P1_KEYHOLE_INCREMENT_FULL_AT:
+        trans = ((normalized_enthalpy - PRE_P1_ENTHALPY_TRANSITION)
+                 / (PRE_P1_KEYHOLE_INCREMENT_FULL_AT - PRE_P1_ENTHALPY_TRANSITION))
         extra = d_iso * (0.15 + 0.55 * trans)
     else:
-        over = (normalized_enthalpy - ts.KEYHOLE_INCREMENT_FULL_AT) / 10.0
+        over = (normalized_enthalpy - PRE_P1_KEYHOLE_INCREMENT_FULL_AT) / 10.0
         extra = d_iso * (0.85 + 0.55 * math.log10(1.0 + max(0.0, over)))
     d_melt_m = d_iso + extra
     return {"W_um": round(w_melt_m * 1e6, 1), "D_um": round(d_melt_m * 1e6, 1), "status": ext["extent_status"],

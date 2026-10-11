@@ -560,14 +560,38 @@ def unique_tasks(rows: Sequence[Dict[str, Any]], policy: Optional[Tuple], kernel
     return out
 
 
+PRE_P1_FINGERPRINT = "0d52d7f707b98fc588c0972c1c198315d3c1071ed1c7ad7ab91616e69b5248e8"
+
+
+def _live_is_pre_p1() -> Tuple[bool, str]:
+    from lpbf_simulation import implementation_fingerprint
+    live = implementation_fingerprint()
+    return live == PRE_P1_FINGERPRINT, live
+
+
 def run_baseline(stage1: Dict[str, Any], jobs: int = 1) -> Dict[str, Any]:
     rows = stage1["rows"]
     tasks = unique_tasks(rows, None)
     ptasks = [(k, a) for (_, k, a) in tasks]
-    par = pmap(_parity_task, ptasks, jobs)
     rtol = CFG["parity"]["rtol"]
     fails, max_rel = [], 0.0
     res_by: Dict[Tuple, Tuple] = {}
+    # The kernel is frozen as the pre-P1 served path (P1 planned bump, 2026-10-11). Parity against the live solver
+    # only holds on a tree at the pre-P1 fingerprint; on any later tree the baseline is computed from the frozen
+    # kernel alone and the parity block records why no live check was made (it is not a pass against the live solver).
+    pre_p1, live = _live_is_pre_p1()
+    if not pre_p1:
+        for t in tasks:
+            res_by[(t[1], t[2])] = _solve(t)[:3]
+        baseline_only: Dict[str, Any] = {}
+        for r in rows:
+            baseline_only[r["rowId"]] = {vk: {k: list(res_by[(k, args_of(r, vk))]) for k in KERNELS} for vk in r["variants"]}
+        return {"baseline": baseline_only,
+                "parity": {"ok": True, "nChecked": 0, "maxRelErr": 0.0, "rtol": rtol, "failures": [], "nFailures": 0,
+                           "skipped": ("live-solver parity not applicable: the kernel is frozen as the pre-P1 served path "
+                                       f"(fingerprint {PRE_P1_FINGERPRINT[:8]}); live fingerprint {live[:8]} is post-P1 "
+                                       "(2026-10-11), the baseline comes from the frozen kernel alone")}}
+    par = pmap(_parity_task, ptasks, jobs)
     for (kernel, a), (mine, frozen) in zip(ptasks, par):
         ok = mine[2] == frozen[2]
         if mine[0] is not None and frozen[0] is not None:

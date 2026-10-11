@@ -10,11 +10,12 @@ from lpbf_thermal_solver import calculate_meltpool_physics
 
 TS_FILE = Path(__file__).resolve().parent.parent / "src" / "utils" / "depthBiasWarning.ts"
 
-# Observed Lane et al. Table 3 mean depths (um) and the served/observed ratio pinned per kernel (this repo, 2026-10-11).
+# Observed Lane et al. Table 3 mean depths (um) and the served/observed ratio pinned per kernel (this repo, P1 bump
+# 2026-10-11; the Rosenthal row before P1 was 0.686, 0.838, 1.271, 1.276: CBM moves further under, AMMT further over).
 LANE_ROWS = (("CBM-A", 150.0, 400.0, 100.0, 151.53), ("CBM-B", 195.0, 800.0, 100.0, 91.25),
              ("AMMT-A", 137.9, 400.0, 170.0, 42.63), ("AMMT-B", 179.2, 800.0, 170.0, 35.98))
 PINNED_RATIO = {
-    "rosenthal": (0.686, 0.838, 1.271, 1.276),
+    "rosenthal": (0.446, 0.612, 1.450, 1.437),
     "eagar-tsai": (0.424, 0.564, 1.248, 1.145),
     "goldak": (0.461, 0.635, 1.494, 1.440),
 }

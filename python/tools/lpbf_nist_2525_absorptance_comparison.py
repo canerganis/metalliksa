@@ -421,7 +421,7 @@ def build_document(quick: bool, generated_at: str, root: Path = SOURCE_DIR) -> D
                  "material": TI64_MATERIAL, "measured": key, "measuredStd": summary["keyhole_std_pct"], "measuredUnit": "%",
                  "model": None, "modelId": None, "difference": None, "status": "unavailable",
                  "reason": rt["directPrediction"]["reason"] if rt["status"] == "success" else rt["reason"]})
-    rows.append({"id": "ti64-spot-thermal-solver-eta-eff", "quantity": "multi-reflection eta_eff, Ti-6Al-4V stationary pulse",
+    rows.append({"id": "ti64-spot-thermal-solver-eta-eff", "quantity": "effective absorptivity (flat after P1), Ti-6Al-4V stationary pulse",
                  "material": TI64_MATERIAL, "measured": key, "measuredUnit": "%", "model": None,
                  "modelId": "lpbf_thermal_solver.calculate_meltpool_physics", "difference": None,
                  "status": "unavailable", "reason": thermal_spot["reason"]})

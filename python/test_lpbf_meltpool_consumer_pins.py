@@ -69,11 +69,12 @@ class MeltPoolConsumerPins(unittest.TestCase):
 
     def test_search_box_grows_until_the_isotherm_closes(self):
         # rr1 S1: these lengths were capped by the search box (836.2 / 1535.3 / 1011.7 / 373.1 um);
-        # the box now grows and the extents equal the reviewer's unbounded search. Values after the Wave B
-        # LA-2/LA-5 bump (Tier 2: 1009.9 / 1849.5 / 1011.7 / 391.1 um).
+        # the box now grows and the extents equal the reviewer's unbounded search. Rosenthal values after the P1 bump
+        # (2026-10-11, flat absorptivity and no latent factor; Wave B: 1896.2 / 1033.5; Tier 2: 1849.5 / 1011.7 um);
+        # Eagar-Tsai and Goldak unchanged by P1.
         for source, args, length in (("eagar-tsai", ("Inconel 718", 500.0, 1500.0, 40.0, 80.0, 40, 110), 1211.7),
-                                     ("rosenthal", ("Inconel 718", 370.0, 800.0, 80.0, 80.0, 40, 110), 1896.2),
-                                     ("rosenthal", ("Inconel 718", 200.0, 1500.0, 40.0, 80.0, 40, 110), 1033.5),
+                                     ("rosenthal", ("Inconel 718", 370.0, 800.0, 80.0, 80.0, 40, 110), 898.9),
+                                     ("rosenthal", ("Inconel 718", 200.0, 1500.0, 40.0, 80.0, 40, 110), 486.0),
                                      ("goldak", ("Inconel 718", 200.0, 3000.0, 40.0, 80.0, 40, 110), 472.4)):
             g, _ = _geometry(source, *args)
             self.assertEqual(g["extentStatus"], "computed", (source, args))

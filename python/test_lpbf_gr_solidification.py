@@ -232,36 +232,38 @@ class PointIntegrationTests(unittest.TestCase):
         pt = r["point"]
         self.assertEqual(pt["status"], "available")
         self.assertIsNotNone(pt["regimeNote"])
+        # Pinned on the P1 tree (2026-10-11: the Rosenthal field power is A P, no ramp and no latent factor, so G, R
+        # and the centreline tail move; the pre-P1 pins were G 12135115 / R 0.0684 / cooling 830457 at the median).
         f = pt["front"]
-        self.assertEqual(f["median"]["G_K_m"], 12135115.0)
-        self.assertEqual(f["median"]["R_m_s"], 0.0684)
-        self.assertEqual(f["median"]["coolingRate_K_s"], 830457.0)
-        self.rel(f["median"]["GoverR_K_s_m2"], 1.774140e8, 1e-5)
+        self.assertEqual(f["median"]["G_K_m"], 16981196.0)
+        self.assertEqual(f["median"]["R_m_s"], 0.0943)
+        self.assertEqual(f["median"]["coolingRate_K_s"], 1600948.0)
+        self.rel(f["median"]["GoverR_K_s_m2"], 1.800763e8, 1e-5)
         self.assertEqual(f["median"]["huntBand"], "Columnar dendritic (Hunt G/R screening)")
-        self.assertEqual(f["tail"]["G_K_m"], 3939882.0)
-        self.assertEqual(f["tail"]["R_m_s"], 0.2318)
-        self.rel(f["tail"]["GoverR_K_s_m2"], 1.6996903e7, 1e-6)
-        self.rel(f["tail"]["GtimesR_K_s"], 913264.6, 1e-6)
+        self.assertEqual(f["tail"]["G_K_m"], 5681582.0)
+        self.assertEqual(f["tail"]["R_m_s"], 0.3114)
+        self.rel(f["tail"]["GoverR_K_s_m2"], 1.8245286e7, 1e-6)
+        self.rel(f["tail"]["GtimesR_K_s"], 1769244.6, 1e-6)
         self.assertEqual(f["tail"]["huntBand"], "Columnar dendritic (Hunt G/R screening)")
-        self.assertEqual(f["bottom"]["G_K_m"], 23048024.0)
-        self.assertEqual(f["bottom"]["R_m_s"], 0.014)
-        self.rel(f["bottom"]["GoverR_K_s_m2"], 1.6462874e9, 1e-6)
-        self.rel(f["bottom"]["GtimesR_K_s"], 322672.3, 1e-6)
+        self.assertEqual(f["bottom"]["G_K_m"], 32016786.0)
+        self.assertEqual(f["bottom"]["R_m_s"], 0.0189)
+        self.rel(f["bottom"]["GoverR_K_s_m2"], 1.6940098e9, 1e-6)
+        self.rel(f["bottom"]["GtimesR_K_s"], 605117.3, 1e-6)
         self.assertEqual(f["bottom"]["huntBand"], "Cellular (Hunt G/R screening)")
-        self.assertEqual(f["R_range_m_s"], [0.014, 0.2318])
+        self.assertEqual(f["R_range_m_s"], [0.0189, 0.3114])
         self.assertIn("not G_median", f["coolingBasis"])
         rc = pt["rosenthalCenterline"]
         self.assertEqual(rc["status"], "available")
-        self.rel(rc["G_K_m"], 953208.3, 1e-6)
-        self.assertAlmostEqual(rc["xTail_um"], 1317.66, delta=0.01)
+        self.rel(rc["G_K_m"], 1848766.5, 1e-6)
+        self.assertAlmostEqual(rc["xTail_um"], 679.37, delta=0.01)
         self.assertAlmostEqual(rc["R_m_s"], 0.96, places=9)
-        self.assertAlmostEqual(rc["GoverR_K_s_m2"], 992925.3, delta=0.5)
-        self.assertAlmostEqual(rc["GtimesR_K_s"], 915080.0, delta=0.5)
+        self.assertAlmostEqual(rc["GoverR_K_s_m2"], 1925798.4, delta=0.5)
+        self.assertAlmostEqual(rc["GtimesR_K_s"], 1774815.8, delta=0.5)
         lv = pt["laves"]
         self.assertEqual(lv["equilibriumKBound"], 0.0647)
         ub = lv["sampledArcUpperBound"]
-        self.assertEqual((ub["location"], ub["R_m_s"], ub["V_D_m_s"], ub["f"]), ("bottom", 0.014, 0.31, 0.0572))
-        self.assertEqual(lv["atTail"]["f"], {"min": 0.0041, "max": 0.0084})
+        self.assertEqual((ub["location"], ub["R_m_s"], ub["V_D_m_s"], ub["f"]), ("bottom", 0.0189, 0.31, 0.0548))
+        self.assertEqual(lv["atTail"]["f"], {"min": 0.0016, "max": 0.0041})
         self.assertEqual(pt["morphology"]["basis"], "hunt-g-over-r-screening")
         self.assertIn("not a CET prediction", pt["morphology"]["label"])
 
@@ -293,18 +295,20 @@ class PointIntegrationTests(unittest.TestCase):
     def test_conduction_point(self):
         pt = self.cond["point"]
         f = pt["front"]
-        self.assertEqual((f["median"]["G_K_m"], f["median"]["R_m_s"]), (30629747.0, 0.1479))
-        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (12380206.0, 0.4204))
-        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (55295265.0, 0.0214))
+        # Pinned on the P1 tree (pre-P1: 30629747 / 0.1479, 12380206 / 0.4204, 55295265 / 0.0214).
+        self.assertEqual((f["median"]["G_K_m"], f["median"]["R_m_s"]), (27593695.0, 0.1387))
+        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (10657436.0, 0.4076))
+        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (50434919.0, 0.0226))
         self.assertIsNone(pt["regimeNote"])
 
     def test_in625_point(self):
         r = self.p625
         f = r["point"]["front"]
-        self.assertEqual(f["median"]["G_K_m"], 14767610.0)
-        self.assertAlmostEqual(f["median"]["R_m_s"], 0.0781, places=12)
-        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (4912793.0, 0.2592))
-        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (27868995.0, 0.0158))
+        # Pinned on the P1 tree (pre-P1: 14767610 / 0.0781, 4912793 / 0.2592, 27868995 / 0.0158).
+        self.assertEqual(f["median"]["G_K_m"], 19393766.0)
+        self.assertAlmostEqual(f["median"]["R_m_s"], 0.1005, places=12)
+        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (6701551.0, 0.3233))
+        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (36221417.0, 0.0196))
         self.assertEqual(r["materialEvidence"]["provenanceClass"], "legacy-estimated-secondary")
         self.assertIn("not established", r["point"]["laves"]["note"])
         self.assertEqual(r["point"]["cet"]["status"], "unavailable")

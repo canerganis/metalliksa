@@ -208,8 +208,10 @@ def fabbro_fwhm_diagnostic(material: str, power_W: float, speed_mm_s: float, spo
                                              heat_source=heat_source, absorption_model="flat-plate")
     finally:
         solver.fabbro_keyhole_depth_m = original
-    if len(captured) != 1:
-        raise RuntimeError(f"expected one fabbro_keyhole_depth_m call, saw {len(captured)}")
+    # Since P1 (2026-10-11) the solver also evaluates the leg for the 49 process-map grid cells after the operating
+    # point; the operating-point call is the first one and the only one at the requested power and speed.
+    if not captured or captured[0][0] != float(power_W) or captured[0][1] != float(speed_mm_s) * 1e-3:
+        raise RuntimeError(f"expected the first fabbro_keyhole_depth_m call at the operating point, saw {captured[:1]}")
     args = list(captured[0])
     served = fabbro_fn(*args)
     args[2] = args[2] * FWHM_OVER_1E2

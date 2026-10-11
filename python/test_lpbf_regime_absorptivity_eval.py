@@ -23,6 +23,18 @@ import lpbf_thermal_solver as ts  # noqa: E402
 
 A0 = E.ARM_LAW["A0"]
 
+# Served meltPoolGeometry (width_um, depth_um, extentStatus) recorded at the pre-P1 revision 393cdbd1 (fingerprint
+# 0d52d7f7) with the locked interpreter, before the P1 planned bump of 2026-10-11 edited the solver. Self-contained pin
+# of the frozen pre-P1 baseline that lpbf_regime_absorptivity_kernel keeps reproducing.
+PRE_P1_SERVED = {
+    (("316L Stainless Steel", 300.0, 800.0, 80.0, 20.0, 30.0, 100.0), "eagar-tsai"): (148.4, 111.7, "computed"),
+    (("316L Stainless Steel", 300.0, 800.0, 80.0, 20.0, 30.0, 100.0), "goldak"): (142.4, 111.7, "computed"),
+    (("316L Stainless Steel", 300.0, 800.0, 80.0, 20.0, 30.0, 100.0), "rosenthal"): (192.5, 152.8, "computed"),
+    (("Ti-6Al-4V", 150.0, 1200.0, 95.0, 20.0, 30.0, 100.0), "eagar-tsai"): (109.4, 37.9, "computed"),
+    (("Ti-6Al-4V", 150.0, 1200.0, 95.0, 20.0, 30.0, 100.0), "goldak"): (88.3, 44.4, "computed"),
+    (("Ti-6Al-4V", 150.0, 1200.0, 95.0, 20.0, 30.0, 100.0), "rosenthal"): (82.0, 39.6, "computed"),
+}
+
 
 class LawAndParity(unittest.TestCase):
     def test_law_properties(self):
@@ -36,14 +48,22 @@ class LawAndParity(unittest.TestCase):
         self.assertEqual(K.absorptivity_law(30.0, 0.75, 0.70, 15.0, 5.0), 0.75)  # A_flat >= A_kh
 
     def test_baseline_mode_reproduces_the_frozen_function(self):
-        cases = [("316L Stainless Steel", 300.0, 800.0, 80.0, 20.0, 30.0, 100.0),
-                 ("Ti-6Al-4V", 150.0, 1200.0, 95.0, 20.0, 30.0, 100.0)]
-        for args in cases:
-            for k in K.KERNELS:
-                mine = K.meltpool_wd(*args, kernel=k)
-                ref = ts.calculate_meltpool_physics(*args, heat_source=k, absorption_model="flat-plate")["meltPoolGeometry"]
-                self.assertEqual((mine["W_um"], mine["D_um"], mine["status"]),
-                                 (ref["width_um"], ref["depth_um"], ref["extentStatus"]), (args, k))
+        # The kernel is frozen as the PRE-P1 served path (P1 planned bump 2026-10-11): the reference is a self-contained
+        # fixture of calculate_meltpool_physics outputs recorded at 393cdbd1 / pin 0d52d7f7 (width_um, depth_um,
+        # extentStatus), not a live call. The live solver differs from it on purpose after P1 (Rosenthal rows).
+        for (args, k), ref in PRE_P1_SERVED.items():
+            mine = K.meltpool_wd(*args, kernel=k)
+            self.assertEqual((mine["W_um"], mine["D_um"], mine["status"]), ref, (args, k))
+
+    def test_baseline_differs_from_the_live_solver_after_p1(self):
+        args = ("316L Stainless Steel", 300.0, 800.0, 80.0, 20.0, 30.0, 100.0)
+        mine = K.meltpool_wd(*args, kernel="rosenthal")
+        live = ts.calculate_meltpool_physics(*args, heat_source="rosenthal", absorption_model="flat-plate")["meltPoolGeometry"]
+        self.assertEqual((mine["W_um"], mine["D_um"]), PRE_P1_SERVED[(args, "rosenthal")][:2])
+        self.assertNotEqual((mine["W_um"], mine["D_um"]), (live["width_um"], live["depth_um"]))
+        self.assertEqual(live["width_um"], 142.2)  # A P field, no ramp, no latent factor (P1 tree)
+        self.assertEqual(K.PRE_P1_KEYHOLE_INCREMENT_FULL_AT, 30.0)
+        self.assertFalse(hasattr(ts, "KEYHOLE_INCREMENT_FULL_AT"))
 
     def test_candidate_pinned_numbers(self):
         args = ("316L Stainless Steel", 300.0, 800.0, 80.0, 20.0, 30.0, 100.0)

@@ -186,7 +186,7 @@ For additive manufacturing engineering alloys:
 - **AlSi10Mg**: $T_m = 873\text{ K}$, $T_b = 2743\text{ K} \implies \frac{\Delta H}{h_s} \ge 28.0$.
 
 ### 4.4 Defect Formation Mechanics: Keyhole Pore Collapse
-1. **Multiple Internal Reflections**: Inside the keyhole cavity, multiple reflections trap laser light, causing effective optical absorptivity to jump from $\eta \approx 0.35$ up to $\eta > 0.85$.
+1. **Multiple Internal Reflections**: Inside the keyhole cavity, multiple reflections trap laser light, causing effective optical absorptivity to jump from $\eta \approx 0.35$ up to $\eta > 0.85$ (measured: Trapp et al. 2017 Fig. 3a, Deisenroth et al. 2020 Fig. 7). This is the measured phenomenon; the served screening model does **not** represent it. Since the P1 planned bump (2026-10-11) every kernel uses the flat absorptivity in the conduction field and in the Fabbro keyhole leg, so transition and keyhole depth is biased low in all three kernels (`docs/LPBF_ENGINEERING.md`, model scope after P1).
 2. **Capillary Tip Pinch-Off**: Fluctuations in scan speed or local powder mass induce Marangoni shear and Kelvin-Helmholtz surface waves along the keyhole wall. When the keyhole depth-to-width aspect ratio exceeds $D/W > 1.5 - 2.0$, the keyhole tip pinches off, trapping high-pressure metal vapor and inert Argon gas as spherical pores at the bottom of the fusion zone.
 ---
 
