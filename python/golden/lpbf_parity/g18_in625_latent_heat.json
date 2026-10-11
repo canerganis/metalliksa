@@ -4,9 +4,9 @@
  "group": "G18",
  "description": "IN625 fusion latent heat per path: Rosenthal melt pool (260 kJ/kg), screening (290), transient spec (227)",
  "slow": false,
- "recordedImplementationHash": "0d52d7f707b98fc588c0972c1c198315d3c1071ed1c7ad7ab91616e69b5248e8",
+ "recordedImplementationHash": "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "e5c8614b53d06aae7b409e9db10c9ab8c329024d",
+ "recordedGitHead": "a486ac085786d4af07188cf8042c541d646f3fb1",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,12 +68,12 @@
   }
  },
  "recordedRuns_s": [
-  0.2,
+  0.1,
   0.1
  ],
  "recordedTwice": true,
  "observations": {
-  "meltpool.in625": "aa71cf7b5ee97856e8b8f1ee3c77bd04c49810b7ac4db3aab90236e87743b0dc",
+  "meltpool.in625": "09f4fb5b7ce1139f08f7e653fdb3a5ea65452685f5716d068e1681a947841fe6",
   "meltpool.in625.materialEvidence": {
    "propertySource": "lpbf_thermal_solver.SECONDARY_THERMOPHYSICAL_DB.Inconel 625",
    "provenanceClass": "legacy-estimated-secondary",
@@ -81,7 +81,7 @@
    "scope": "direct-meltpool-screening",
    "usesBoundedIN625Snapshot": false
   },
-  "meltpool.in625.geometry_um": "57c3ebb1713436753737484bd0567a59dc0ed3ae6969de3b37bdcb517582fe94",
+  "meltpool.in625.geometry_um": "5f651554eb9d9666886a0bf9376e96e714203acca2ce1f7949dde58ce0384393",
   "meltpool.in625.equalWithLatentHeatFusion.227000": false,
   "meltpool.in625.equalWithLatentHeatFusion.260000": false,
   "meltpool.in625.equalWithLatentHeatFusion.290000": true,
@@ -116,10 +116,10 @@
  },
  "rawValues": {
   "meltpool.in625.geometry_um": [
-   155.9,
-   116.5,
-   846.5,
-   40.8
+   117.2,
+   65.1,
+   491.6,
+   8.3
   ]
  }
 }
