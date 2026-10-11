@@ -6,7 +6,7 @@
   "numpy": "2.2.6",
   "platform": "Windows-11-10.0.26300-SP0"
  },
- "pinnedExpectedFingerprint": "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32",
+ "pinnedExpectedFingerprint": "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede",
  "parityGoldens": {
   "g10_openfoam_case_generation": {
    "group": "G10",
@@ -3427,7 +3427,7 @@
   "revision": "worktree",
   "version": "enthalpy-fv-6",
   "fingerprintSchema": "lpbf-thermal-implementation-manifest-v3-canonical-utf8-crlf",
-  "implementationHash": "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32",
+  "implementationHash": "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede",
   "manifestCount": 36,
   "manifest": [
    "four_alloy_materials.py",
@@ -3619,10 +3619,10 @@
     "rawBytes": 5205
    },
    "lpbf_thermal_solver.py": {
-    "canonicalSha256": "26f2d82f3b12b0890805c7f2be5e68c6c97ddaff513162db7e675076c0cc8fd1",
-    "canonicalBytes": 65840,
-    "rawSha256": "c4f31130e8da21fdaa4dd79a6d7ea1c2a3cf245a462093dd31caf201d5714e4a",
-    "rawBytes": 67086
+    "canonicalSha256": "e41c7e54c3e0c9b33cd98c1f2dd3c3089f1d363e0b0991d0028d8ae17f5234a3",
+    "canonicalBytes": 66570,
+    "rawSha256": "87b6f64a1faf54144ebef131b559b665f75ead68202afaf55f59f86348c45be6",
+    "rawBytes": 67827
    },
    "lpbf_transient_3d_gpu.py": {
     "canonicalSha256": "a7b07dea293dcfbea9bbad7c2f0a73e5158b0ef6e179fd7a7f2fbe0a97007f88",
@@ -3686,10 +3686,10 @@
    }
   },
   "rawSchema": "lpbf-thermal-implementation-manifest-v2",
-  "rawByteImplementationHash": "05e00bb22ab557999914d31c29ea2069ce771addbac3b840644325de5c8a5f10"
+  "rawByteImplementationHash": "e05f16c4ebb7f36acecae7f14c21bffd37b95fcddc4a6850014bcffc21818559"
  },
  "fromHash": "0d52d7f707b98fc588c0972c1c198315d3c1071ed1c7ad7ab91616e69b5248e8",
- "toHash": "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32",
+ "toHash": "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede",
  "dryRunSameHash": false,
  "versionUnchanged": true,
  "pinMatchesToHash": true,
@@ -3739,7 +3739,7 @@
  },
  "commits": {
   "fromRevision": "b8115db9376ae00fbaecfd72f636fc1c98f6dc62",
-  "toRevision": "a486ac085786d4af07188cf8042c541d646f3fb1",
+  "toRevision": "6de85dd50276987a80cfd162f5840ef3347dc7f7",
   "worktreeDirty": false
  },
  "expectDrift": [
@@ -3750,9 +3750,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 13.8,
+   "elapsed_s": 11.0,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "b3df11a7ce324d4102db161ce3061123ffce397eaa177bd7af2b08da15c55948"
   },
@@ -3760,9 +3760,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 72.6,
+   "elapsed_s": 75.3,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "416f940609e3dc0a30af0c9e7fea26e3709e33562bfa72201dc5ff739f4c567a"
   },
@@ -3770,9 +3770,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 2.4,
+   "elapsed_s": 3.6,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "a9f8fa33a3f55dc65596bcdbadb982dff7e73b9307bfd78eb05141111dfb9c31"
   },
@@ -3780,9 +3780,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 1.6,
+   "elapsed_s": 2.3,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "c4033dcea86bd5f2d84e8967f698f3098e85a2ee3780e963071ff66ceb1873c4"
   },
@@ -3790,9 +3790,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 4.4,
+   "elapsed_s": 6.5,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "1029f54a243c3357a7d144790f3250262113c35fbc88212d14ef2d305a23a20b"
   },
@@ -3800,9 +3800,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 3.8,
+   "elapsed_s": 4.3,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "04057f7745f532b6ace055adfbd94ee6b62f5c1440449723c2b7f37381cd4317"
   },
@@ -3810,9 +3810,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 6.1,
+   "elapsed_s": 6.3,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "9f68a6d2c3b1d664d9b97861d82f1705e1650d46adffc79151a6b5885e1e3936"
   },
@@ -3820,9 +3820,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 3.5,
+   "elapsed_s": 4.0,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "c1d466102b9932e56fd924e585e7a8bd77a858e24ad3a643bc28b0fbfd7a1cdd"
   },
@@ -3832,7 +3832,7 @@
    "drift": [],
    "elapsed_s": 2.4,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "3cfbfd92845015d576f3a7f1e5aa63703743cb9ef435d10030486b7cdf053af9"
   },
@@ -3840,9 +3840,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 4.3,
+   "elapsed_s": 4.7,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "67516b4a7a3fc9b0b91c523396271cd3a544c0260deabbcebac2d7de821e0337"
   },
@@ -3858,9 +3858,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 3.7,
+   "elapsed_s": 3.6,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "014e04774f81ba5067b9eefc58df546ac136db98d3293d7b5c406445cd906b57"
   },
@@ -3868,9 +3868,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 0.5,
+   "elapsed_s": 0.6,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "fca47633eaa24d1794a3285d3842abfd42337886d9d4ed40f9058ef986e9d768"
   },
@@ -3878,9 +3878,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 4.9,
+   "elapsed_s": 5.0,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "a71cf5beac55565fdcccb8430c2451509c11ac84db2ba0c9249f8ab6770629c0"
   },
@@ -3888,9 +3888,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 5.6,
+   "elapsed_s": 5.9,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "f0f5a718d54a2bb06e48ba71c9373b0d5d5763988df478818cea8a151383e4c4"
   },
@@ -3898,9 +3898,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 4.7,
+   "elapsed_s": 5.1,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "6358e79bb7a738ace4a4064682b216b9f7b6759919fcc8f49fb59302124b0dfb"
   },
@@ -3910,7 +3910,7 @@
    "drift": [],
    "elapsed_s": 4.9,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "0ca484a4d53ddfa9f53f0f82ba58f58b20c1e4161a402727577bd81e5fa3a7e1"
   },
@@ -3921,7 +3921,7 @@
     {
      "key": "meltpool.in625",
      "before": "aa71cf7b5ee97856e8b8f1ee3c77bd04c49810b7ac4db3aab90236e87743b0dc",
-     "after": "09f4fb5b7ce1139f08f7e653fdb3a5ea65452685f5716d068e1681a947841fe6"
+     "after": "e1fa525dcc9d401e969d8f3c1f86cbf5a731d99c18a1c3427331ea804f19ef8d"
     },
     {
      "key": "meltpool.in625.geometry_um",
@@ -3949,15 +3949,15 @@
    ],
    "elapsed_s": 0.2,
    "implementationHashes": [],
-   "observationsSha256": "db55d1f91cb9ea1c4a06f0c83ecf785bdcbc3709831aaf8efdd7fbab7d233cb4"
+   "observationsSha256": "97ccf7173630be15e0adba9fee799d37d6307d8e3e11d36255c4b0b89534528d"
   },
   "g19_emissivity_echo": {
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 5.6,
+   "elapsed_s": 4.2,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "4bed09f07944de064dfb24c5dbbece5ce82479c3f36525be6efe48adaaa595b5"
   },
@@ -3965,9 +3965,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 28.3,
+   "elapsed_s": 22.7,
    "implementationHashes": [
-    "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+    "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
    ],
    "observationsSha256": "3cf9c6ffb4ef32721e9a309aea3aad51d9f26e9fae82afab8cd4ccae41d8d522"
   },
@@ -3975,7 +3975,7 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 0.2,
+   "elapsed_s": 0.1,
    "implementationHashes": [],
    "observationsSha256": "968f6466ecc66b405882b2b447e977ba084e13c72c56b7a0e0ef4b306b14b0fb"
   },
@@ -3983,7 +3983,7 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 0.6,
+   "elapsed_s": 0.8,
    "implementationHashes": [],
    "observationsSha256": "02683c67d2fd424fbb454e4bdd826e516d904f8d5237cef751c3edd0c8f09b08"
   },
@@ -3994,7 +3994,7 @@
     {
      "key": "meltpool.0.canonicalSha256",
      "before": "b37564869f1971f6247254423f9455df9f979697774b9eb291d1f34af373d2df",
-     "after": "7bb05e18e6515e2a178f5df770985c38d86d5a47e1949e7de83e88b9f67cc790"
+     "after": "2ec74272cc8ed8f1a5dbdb5e3d619bb41813d04ccd8eae0fdee5a39147efe705"
     },
     {
      "key": "meltpool.0.geometry_um",
@@ -4032,32 +4032,32 @@
     {
      "key": "meltpool.0.typedSha256",
      "before": "ff773765d8f6cf65e039b3024b5f44d99beac4163d1ea028643228e9e1c617a8",
-     "after": "4c931fab79befb56595c51d845d0da9038be5e181c8a84c293decc4c8b16a45d"
+     "after": "8e2b96cdb09ccc42a4c727fa8610bfe8ae22a9cd4fbc9e980d9d9713115ec5c2"
     },
     {
      "key": "meltpool.1.canonicalSha256",
      "before": "9e87ec8f29167e00638415ea5591d4b75679792abf1173cf42d5c65c7b1e4dc0",
-     "after": "059e2c67e9034343f7045d620650c8bc291f357c049483825703c26e308ea9a7"
+     "after": "615397bd0f29200490b9eb2456ae69edea2c0fa734ca61dc5956fc61f642a82b"
     },
     {
      "key": "meltpool.1.typedSha256",
      "before": "052164e603c617ecfbdbdd364076371a26fd32c57c07feef442bc12a1e404fec",
-     "after": "2f60d3b0d331f0166d90e8bbb355482c7942cbc2b4c461192712acdae277f91b"
+     "after": "7388c6da03e7a25fa8c3044a0611e8eb835b3e3c190971d8e0379f46647dc4a3"
     },
     {
      "key": "meltpool.2.canonicalSha256",
      "before": "b28ef5422185a33aff0d5c188d5d3535a26363ce2d56e8160e76b7aa3d4244b1",
-     "after": "4c2ae20edbf989b809f168ef2b2a7f7d435a88a4aeee8b604a55d020f1d1b566"
+     "after": "6a789e53646af7fa893799ca12b408ff8701bd0fdf75a40c3ab08cdd5cdfe602"
     },
     {
      "key": "meltpool.2.typedSha256",
      "before": "671f44034e8e9296eba40789784e530a8823bf424f54b10ae902b5e0c19c58f8",
-     "after": "bc3292cce034e053a229fea55170a7d728ef51b73db61bc1c2063d6c09bc71db"
+     "after": "0addf681594c3f75af68bd857abf727a332517303e626497d89ce659e65db940"
     }
    ],
-   "elapsed_s": 0.7,
+   "elapsed_s": 0.5,
    "implementationHashes": [],
-   "observationsSha256": "05237778d12e223dfab33333b339f9d7e86dd5a77a4651c2f48b382ede4b0641"
+   "observationsSha256": "f027c320b8ea3e70a53fe8e7c1cb61d401b05a13f93109acbdb2f0e00e8c26b4"
   },
   "g12_analytical_modules": {
    "status": "PASS",
