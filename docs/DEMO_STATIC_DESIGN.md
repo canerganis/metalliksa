@@ -12,7 +12,7 @@ Goal: a visitor can look at the main screens without Python, Node or a server. E
 - Engine calls go through `src/services/pythonComputationService.ts` (`fetch("/api/python/...")`, `/api/lpbf/jobs`) and a few direct services (`lpbfGrSolidificationService`, `lpbfSimulationService`).
 - Already static: the calibration scorecard record (`src/data/lpbfCalibrationScorecardRecord`) and the error bands (`src/data/lpbfErrorBands.ts`), built from `data/calibration/lpbf-meltpool-error-bands-v1*.json` and `docs/LPBF_CALIBRATION_SCORECARD_v2_2026-10-07*.json`.
 - Core flow (`src/data/workspaces.ts`): `3d-distortion-lab` (set up and run), `lpbf-optimizer` (process window), `lpbf-dataset-comparison`, `lpbf-calibration-scorecard`.
-- Fingerprint: the error bands carry an `implementationHash` starting `ec7e1f7a` (full value in `data/calibration/lpbf-meltpool-error-bands-v1.summary.json`).
+- Fingerprint: the error bands carry an `implementationHash` equal to the current pin (`c61ab6a8` since the P1 bump of 2026-10-11; `ec7e1f7a` when this design was written; full value in `data/calibration/lpbf-meltpool-error-bands-v1.summary.json`).
 
 ## 2. Build mode and flag
 
@@ -36,7 +36,7 @@ Covered features (the snapshot set is exactly these):
 | Feature | Endpoint(s) | Snapshot |
 | --- | --- | --- |
 | Process window map | `POST /api/python/lpbf-process-window` | one entry per preset (IN718 guided case first, other presets if the budget allows) at the recorded P x v grid |
-| Error bands | none (bundled TS data) | no snapshot; the build must embed the `ec7e1f7a` data |
+| Error bands | none (bundled TS data) | no snapshot; the build must embed the data of the current pin (`c61ab6a8` since 2026-10-11) |
 | Calibration scorecard v2 | none (bundled TS record) | no snapshot; shown as is (0 of 30 cells pass) |
 | Guided NIST IN718 case | `/api/python/lpbf-calibrated-meltpool`, `/api/python/lpbf-thermal-solver`, `/api/lpbf/jobs` and `/api/lpbf/jobs/:id`, `/api/python/lpbf-process-window` | the chain recorded at 285 W, 960 mm/s |
 | Engine status | `/api/python/status`, `/api/health`, `/api/runtime-config` | fixed fixtures: engine "static snapshot" and a dedicated `staticDemo: true` flag in the runtime-config fixture (the demo UI reads it to suppress network features; `airgapped` is a security flag and is not reused) |
@@ -54,7 +54,7 @@ Script: `scripts/demo/generate-demo-snapshots.mjs` (Node orchestration over the 
   - `manifest.json`: file list, byte sizes, sha256 per file.
 - Provenance in `index.json`:
   - `appVersion` from `package.json` (`0.1.0` today) plus short git commit.
-  - `fingerprint`: the LPBF implementation hash from the engine (the value the pin test checks, `ec7e1f7a...` today). The generator refuses to run if it differs from `python/lpbf_implementation_fingerprint.expected`. At load the app compares `index.json.fingerprint` with the bundled error-bands `implementationHash`; a mismatch hides the process window and calibration cards and puts the banner in a warning state.
+  - `fingerprint`: the LPBF implementation hash from the engine (the value the pin test checks, `c61ab6a8...` since the P1 bump of 2026-10-11; `ec7e1f7a...` when this design was written). The generator refuses to run if it differs from `python/lpbf_implementation_fingerprint.expected`. At load the app compares `index.json.fingerprint` with the bundled error-bands `implementationHash`; a mismatch hides the process window and calibration cards and puts the banner in a warning state.
   - The generator reads the pin and never writes it.
 - Determinism: fixed seeds, sorted keys, no rounding beyond the engine's own output, no timestamps inside responses (`generatedAt` only in `index.json`). Two runs give byte-identical `<hash>.json` files.
 - Size budget: `demo/snapshots/` at most 6 MB raw and 1.5 MB gzip, one file at most 1 MB, `dist-demo/` at most 12 MB gzip excluding the already budgeted `vendor-*` chunks. The generator fails over budget. Grids keep the recorded resolution; no extra resolution to fill space.
