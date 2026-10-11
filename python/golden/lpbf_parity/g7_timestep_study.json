@@ -4,9 +4,9 @@
  "group": "G7",
  "description": "study='timestep' (2x and sqrt(2)x maxDt)",
  "slow": false,
- "recordedImplementationHash": "807d74b35239a6854ed7e5259f47711e01971b0fa3733f7aab73075e5a65faf8",
+ "recordedImplementationHash": "0e1599b463fdd68165df40c0fb73cd852190b7b65e629b3a02662a6b25369736",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "2c6d1073cadec290767d279c1c437537aa23b12f",
+ "recordedGitHead": "31c146489cd62b2f350c30dc6e2aa91d0cd1af8c",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,7 +68,7 @@
   }
  },
  "recordedRuns_s": [
-  2.6,
+  2.5,
   2.6
  ],
  "recordedTwice": true,
