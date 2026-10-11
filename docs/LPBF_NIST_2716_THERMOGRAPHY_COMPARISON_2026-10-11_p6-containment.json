@@ -1,0 +1,2176 @@
+{
+ "checks": [
+  {
+   "detail": "derived table size and SHA-256 equal the tool pin; manifest raw-input pins equal NERDm v1.3.1",
+   "id": "A1-input-pins",
+   "result": "pass"
+  },
+  {
+   "detail": "test_lpbf_implementation_fingerprint.py run; recorded fingerprint read from lpbf_implementation_fingerprint.expected",
+   "id": "A2-physics-fingerprint",
+   "result": "pass"
+  },
+  {
+   "detail": "measured and comparison blocks scanned for temperature/cooling-rate keys: 0 found (model inputs such as the liquidus are model assumptions, not DL-derived)",
+   "id": "A9-no-temperature",
+   "result": "pass"
+  },
+  {
+   "detail": "labels equal LABELS (experimentalValidation false, modelAcceptance false, nistResidual null); every row status in ['sensitivity-only', 'unavailable'] and every unavailable row has a reason",
+   "id": "A10-labels",
+   "result": "pass"
+  },
+  {
+   "detail": "document built twice in this run with the same --generated-at; serialised bytes compared",
+   "id": "A11-determinism",
+   "result": "pass"
+  },
+  {
+   "detail": "both builds finished within the 300 s limit; the exact wall time is printed to stdout only, so the record stays byte-deterministic",
+   "id": "A12-runtime",
+   "result": "pass"
+  }
+ ],
+ "comparison": {
+  "rankRows": [
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-lsatTemporal_um-rosenthal",
+    "kernel": "rosenthal",
+    "measuredDescription": "saturated-region length, temporal (TAT_4095 x v)",
+    "measuredMetric": "lsatTemporal_um",
+    "modelQuantity": "liquidusLength_um",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.928571,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-lsatTemporal_um-eagar-tsai",
+    "kernel": "eagar-tsai",
+    "measuredDescription": "saturated-region length, temporal (TAT_4095 x v)",
+    "measuredMetric": "lsatTemporal_um",
+    "modelQuantity": "liquidusLength_um",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.964286,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-lsatTemporal_um-goldak",
+    "kernel": "goldak",
+    "measuredDescription": "saturated-region length, temporal (TAT_4095 x v)",
+    "measuredMetric": "lsatTemporal_um",
+    "modelQuantity": "liquidusLength_um",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.928571,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-lsatSpatial_um-rosenthal",
+    "kernel": "rosenthal",
+    "measuredDescription": "saturated-region length, spatial (blob extent x inferred pitch)",
+    "measuredMetric": "lsatSpatial_um",
+    "modelQuantity": "liquidusLength_um",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.928571,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-lsatSpatial_um-eagar-tsai",
+    "kernel": "eagar-tsai",
+    "measuredDescription": "saturated-region length, spatial (blob extent x inferred pitch)",
+    "measuredMetric": "lsatSpatial_um",
+    "modelQuantity": "liquidusLength_um",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.964286,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-lsatSpatial_um-goldak",
+    "kernel": "goldak",
+    "measuredDescription": "saturated-region length, spatial (blob extent x inferred pitch)",
+    "measuredMetric": "lsatSpatial_um",
+    "modelQuantity": "liquidusLength_um",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.928571,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-tat4095_frames-rosenthal",
+    "kernel": "rosenthal",
+    "measuredDescription": "time at 4095 DL saturation",
+    "measuredMetric": "tat4095_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.964286,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-tat4095_frames-eagar-tsai",
+    "kernel": "eagar-tsai",
+    "measuredDescription": "time at 4095 DL saturation",
+    "measuredMetric": "tat4095_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 1.0,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-tat4095_frames-goldak",
+    "kernel": "goldak",
+    "measuredDescription": "time at 4095 DL saturation",
+    "measuredMetric": "tat4095_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.964286,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-tat2000_frames-rosenthal",
+    "kernel": "rosenthal",
+    "measuredDescription": "time above 2000 DL",
+    "measuredMetric": "tat2000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.882919,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-tat2000_frames-eagar-tsai",
+    "kernel": "eagar-tsai",
+    "measuredDescription": "time above 2000 DL",
+    "measuredMetric": "tat2000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.936975,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-tat2000_frames-goldak",
+    "kernel": "goldak",
+    "measuredDescription": "time above 2000 DL",
+    "measuredMetric": "tat2000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.882919,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-tat1000_frames-rosenthal",
+    "kernel": "rosenthal",
+    "measuredDescription": "time above 1000 DL",
+    "measuredMetric": "tat1000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.857143,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-tat1000_frames-eagar-tsai",
+    "kernel": "eagar-tsai",
+    "measuredDescription": "time above 1000 DL",
+    "measuredMetric": "tat1000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.892857,
+    "status": "sensitivity-only"
+   },
+   {
+    "cases": [
+     "0",
+     "1.1",
+     "1.2",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2"
+    ],
+    "id": "rank-tat1000_frames-goldak",
+    "kernel": "goldak",
+    "measuredDescription": "time above 1000 DL",
+    "measuredMetric": "tat1000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "n": 7,
+    "reason": "rank agreement over 7 cases (n = 7, no significance claimed); different isotherms, ranks only",
+    "spearmanRho": 0.857143,
+    "status": "sensitivity-only"
+   }
+  ],
+  "trendRows": [
+   {
+    "caseId": "1.1",
+    "id": "trend-1.1-lsatTemporal_um",
+    "measured": {
+     "changeResolved": false,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0555556,
+     "ratio": 0.962964,
+     "ratioSd": 0.032075
+    },
+    "measuredDescription": "saturated-region length, temporal (TAT_4095 x v)",
+    "measuredMetric": "lsatTemporal_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.999406,
+      "ratioDifference": 0.036442,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.00633,
+      "ratioDifference": 0.0433637,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     },
+     "rosenthal": {
+      "ratio": 1.00151,
+      "ratioDifference": 0.0385473,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "spot D4s 67 -> 49"
+    ]
+   },
+   {
+    "caseId": "1.1",
+    "id": "trend-1.1-lsatSpatial_um",
+    "measured": {
+     "changeResolved": false,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0352944,
+     "ratio": 0.989067,
+     "ratioSd": 0.0195869
+    },
+    "measuredDescription": "saturated-region length, spatial (blob extent x inferred pitch)",
+    "measuredMetric": "lsatSpatial_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.999406,
+      "ratioDifference": 0.0103387,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.00633,
+      "ratioDifference": 0.0172604,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     },
+     "rosenthal": {
+      "ratio": 1.00151,
+      "ratioDifference": 0.012444,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "spot D4s 67 -> 49"
+    ]
+   },
+   {
+    "caseId": "1.1",
+    "id": "trend-1.1-tat4095_frames",
+    "measured": {
+     "changeResolved": false,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0555556,
+     "ratio": 0.962961,
+     "ratioSd": 0.032075
+    },
+    "measuredDescription": "time at 4095 DL saturation",
+    "measuredMetric": "tat4095_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.999406,
+      "ratioDifference": 0.0364444,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.00633,
+      "ratioDifference": 0.0433661,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     },
+     "rosenthal": {
+      "ratio": 1.00151,
+      "ratioDifference": 0.0385497,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "spot D4s 67 -> 49"
+    ]
+   },
+   {
+    "caseId": "1.1",
+    "id": "trend-1.1-tat2000_frames",
+    "measured": {
+     "changeResolved": false,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.038961,
+     "ratio": 0.961039,
+     "ratioSd": 0.031198
+    },
+    "measuredDescription": "time above 2000 DL",
+    "measuredMetric": "tat2000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.999406,
+      "ratioDifference": 0.0383665,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.00633,
+      "ratioDifference": 0.0452882,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     },
+     "rosenthal": {
+      "ratio": 1.00151,
+      "ratioDifference": 0.0404718,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "spot D4s 67 -> 49"
+    ]
+   },
+   {
+    "caseId": "1.1",
+    "id": "trend-1.1-tat1000_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.027027,
+     "ratio": 0.909911,
+     "ratioSd": 0.0156041
+    },
+    "measuredDescription": "time above 1000 DL",
+    "measuredMetric": "tat1000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.999406,
+      "ratioDifference": 0.0894947,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.00633,
+      "ratioDifference": 0.0964164,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     },
+     "rosenthal": {
+      "ratio": 1.00151,
+      "ratioDifference": 0.0916,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "spot D4s 67 -> 49"
+    ]
+   },
+   {
+    "caseId": "1.2",
+    "id": "trend-1.2-lsatTemporal_um",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0555556,
+     "ratio": 0.888889,
+     "ratioSd": 0.0
+    },
+    "measuredDescription": "saturated-region length, temporal (TAT_4095 x v)",
+    "measuredMetric": "lsatTemporal_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.997176,
+      "ratioDifference": 0.108288,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.989907,
+      "ratioDifference": 0.101018,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.99864,
+      "ratioDifference": 0.109751,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "spot D4s 67 -> 82"
+    ]
+   },
+   {
+    "caseId": "1.2",
+    "id": "trend-1.2-lsatSpatial_um",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0352944,
+     "ratio": 0.882244,
+     "ratioSd": 0.0174733
+    },
+    "measuredDescription": "saturated-region length, spatial (blob extent x inferred pitch)",
+    "measuredMetric": "lsatSpatial_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.997176,
+      "ratioDifference": 0.114932,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.989907,
+      "ratioDifference": 0.107662,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.99864,
+      "ratioDifference": 0.116396,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "spot D4s 67 -> 82"
+    ]
+   },
+   {
+    "caseId": "1.2",
+    "id": "trend-1.2-tat4095_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0555556,
+     "ratio": 0.888889,
+     "ratioSd": 0.0
+    },
+    "measuredDescription": "time at 4095 DL saturation",
+    "measuredMetric": "tat4095_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.997176,
+      "ratioDifference": 0.108288,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.989907,
+      "ratioDifference": 0.101018,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.99864,
+      "ratioDifference": 0.109751,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "spot D4s 67 -> 82"
+    ]
+   },
+   {
+    "caseId": "1.2",
+    "id": "trend-1.2-tat2000_frames",
+    "measured": {
+     "changeResolved": false,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.038961,
+     "ratio": 1.0,
+     "ratioSd": 0.0318115
+    },
+    "measuredDescription": "time above 2000 DL",
+    "measuredMetric": "tat2000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.997176,
+      "ratioDifference": -0.0028236,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     },
+     "goldak": {
+      "ratio": 0.989907,
+      "ratioDifference": -0.0100934,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     },
+     "rosenthal": {
+      "ratio": 0.99864,
+      "ratioDifference": -0.00135972,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "spot D4s 67 -> 82"
+    ]
+   },
+   {
+    "caseId": "1.2",
+    "id": "trend-1.2-tat1000_frames",
+    "measured": {
+     "changeResolved": false,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.027027,
+     "ratio": 1.01802,
+     "ratioSd": 0.0156041
+    },
+    "measuredDescription": "time above 1000 DL",
+    "measuredMetric": "tat1000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.997176,
+      "ratioDifference": -0.0208425,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     },
+     "goldak": {
+      "ratio": 0.989907,
+      "ratioDifference": -0.0281123,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     },
+     "rosenthal": {
+      "ratio": 0.99864,
+      "ratioDifference": -0.0193786,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": false
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "spot D4s 67 -> 82"
+    ]
+   },
+   {
+    "caseId": "2.1",
+    "id": "trend-2.1-lsatTemporal_um",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0694444,
+     "ratio": 0.902778,
+     "ratioSd": 0.0
+    },
+    "measuredDescription": "saturated-region length, temporal (TAT_4095 x v)",
+    "measuredMetric": "lsatTemporal_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.992272,
+      "ratioDifference": 0.0894945,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.988701,
+      "ratioDifference": 0.0859236,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.996072,
+      "ratioDifference": 0.0932941,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "speed 960 -> 1200"
+    ]
+   },
+   {
+    "caseId": "2.1",
+    "id": "trend-2.1-lsatSpatial_um",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0352944,
+     "ratio": 0.893227,
+     "ratioSd": 0.0272326
+    },
+    "measuredDescription": "saturated-region length, spatial (blob extent x inferred pitch)",
+    "measuredMetric": "lsatSpatial_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.992272,
+      "ratioDifference": 0.099045,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.988701,
+      "ratioDifference": 0.0954742,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.996072,
+      "ratioDifference": 0.102845,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "speed 960 -> 1200"
+    ]
+   },
+   {
+    "caseId": "2.1",
+    "id": "trend-2.1-tat4095_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0555556,
+     "ratio": 0.722222,
+     "ratioSd": 0.0
+    },
+    "measuredDescription": "time at 4095 DL saturation",
+    "measuredMetric": "tat4095_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.793818,
+      "ratioDifference": 0.0715956,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.790961,
+      "ratioDifference": 0.0687389,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.796858,
+      "ratioDifference": 0.0746353,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "speed 960 -> 1200"
+    ]
+   },
+   {
+    "caseId": "2.1",
+    "id": "trend-2.1-tat2000_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.038961,
+     "ratio": 0.753244,
+     "ratioSd": 0.0281615
+    },
+    "measuredDescription": "time above 2000 DL",
+    "measuredMetric": "tat2000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.793818,
+      "ratioDifference": 0.0405733,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.790961,
+      "ratioDifference": 0.0377167,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.796858,
+      "ratioDifference": 0.0436131,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "speed 960 -> 1200"
+    ]
+   },
+   {
+    "caseId": "2.1",
+    "id": "trend-2.1-tat1000_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.027027,
+     "ratio": 0.765765,
+     "ratioSd": 0.0156041
+    },
+    "measuredDescription": "time above 1000 DL",
+    "measuredMetric": "tat1000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.793818,
+      "ratioDifference": 0.0280529,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.790961,
+      "ratioDifference": 0.0251963,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.796858,
+      "ratioDifference": 0.0310927,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "speed 960 -> 1200"
+    ]
+   },
+   {
+    "caseId": "2.2",
+    "id": "trend-2.2-lsatTemporal_um",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0462963,
+     "ratio": 1.06481,
+     "ratioSd": 0.0
+    },
+    "measuredDescription": "saturated-region length, temporal (TAT_4095 x v)",
+    "measuredMetric": "lsatTemporal_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 1.00565,
+      "ratioDifference": -0.059167,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.00829,
+      "ratioDifference": -0.0565286,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 1.00378,
+      "ratioDifference": -0.0610372,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "speed 960 -> 800"
+    ]
+   },
+   {
+    "caseId": "2.2",
+    "id": "trend-2.2-lsatSpatial_um",
+    "measured": {
+     "changeResolved": false,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0352944,
+     "ratio": 1.02348,
+     "ratioSd": 0.0202666
+    },
+    "measuredDescription": "saturated-region length, spatial (blob extent x inferred pitch)",
+    "measuredMetric": "lsatSpatial_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 1.00565,
+      "ratioDifference": -0.0178307,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.00829,
+      "ratioDifference": -0.0151923,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 1.00378,
+      "ratioDifference": -0.0197009,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "speed 960 -> 800"
+    ]
+   },
+   {
+    "caseId": "2.2",
+    "id": "trend-2.2-tat4095_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0555556,
+     "ratio": 1.27778,
+     "ratioSd": 0.0
+    },
+    "measuredDescription": "time at 4095 DL saturation",
+    "measuredMetric": "tat4095_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 1.20678,
+      "ratioDifference": -0.0710011,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.20994,
+      "ratioDifference": -0.067835,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 1.20453,
+      "ratioDifference": -0.0732454,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "speed 960 -> 800"
+    ]
+   },
+   {
+    "caseId": "2.2",
+    "id": "trend-2.2-tat2000_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.038961,
+     "ratio": 1.24675,
+     "ratioSd": 0.0280446
+    },
+    "measuredDescription": "time above 2000 DL",
+    "measuredMetric": "tat2000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 1.20678,
+      "ratioDifference": -0.039975,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.20994,
+      "ratioDifference": -0.0368089,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 1.20453,
+      "ratioDifference": -0.0422192,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "speed 960 -> 800"
+    ]
+   },
+   {
+    "caseId": "2.2",
+    "id": "trend-2.2-tat1000_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.027027,
+     "ratio": 1.21622,
+     "ratioSd": 0.0
+    },
+    "measuredDescription": "time above 1000 DL",
+    "measuredMetric": "tat1000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 1.20678,
+      "ratioDifference": -0.00943958,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.20994,
+      "ratioDifference": -0.00627346,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 1.20453,
+      "ratioDifference": -0.0116838,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "speed 960 -> 800"
+    ]
+   },
+   {
+    "caseId": "3.1",
+    "id": "trend-3.1-lsatTemporal_um",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0555556,
+     "ratio": 1.11111,
+     "ratioSd": 0.0
+    },
+    "measuredDescription": "saturated-region length, temporal (TAT_4095 x v)",
+    "measuredMetric": "lsatTemporal_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 1.13657,
+      "ratioDifference": 0.0254619,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.1386,
+      "ratioDifference": 0.0274849,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 1.13839,
+      "ratioDifference": 0.0272784,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "power 285 -> 325"
+    ]
+   },
+   {
+    "caseId": "3.1",
+    "id": "trend-3.1-lsatSpatial_um",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0352944,
+     "ratio": 1.09446,
+     "ratioSd": 0.0216737
+    },
+    "measuredDescription": "saturated-region length, spatial (blob extent x inferred pitch)",
+    "measuredMetric": "lsatSpatial_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 1.13657,
+      "ratioDifference": 0.0421165,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.1386,
+      "ratioDifference": 0.0441394,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 1.13839,
+      "ratioDifference": 0.0439329,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "power 285 -> 325"
+    ]
+   },
+   {
+    "caseId": "3.1",
+    "id": "trend-3.1-tat4095_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0555556,
+     "ratio": 1.11111,
+     "ratioSd": 0.0
+    },
+    "measuredDescription": "time at 4095 DL saturation",
+    "measuredMetric": "tat4095_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 1.13657,
+      "ratioDifference": 0.0254619,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.1386,
+      "ratioDifference": 0.0274849,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 1.13839,
+      "ratioDifference": 0.0272784,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "power 285 -> 325"
+    ]
+   },
+   {
+    "caseId": "3.1",
+    "id": "trend-3.1-tat2000_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.038961,
+     "ratio": 1.07792,
+     "ratioSd": 0.0330741
+    },
+    "measuredDescription": "time above 2000 DL",
+    "measuredMetric": "tat2000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 1.13657,
+      "ratioDifference": 0.0586511,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.1386,
+      "ratioDifference": 0.060674,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 1.13839,
+      "ratioDifference": 0.0604675,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "power 285 -> 325"
+    ]
+   },
+   {
+    "caseId": "3.1",
+    "id": "trend-3.1-tat1000_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.027027,
+     "ratio": 1.06306,
+     "ratioSd": 0.0156041
+    },
+    "measuredDescription": "time above 1000 DL",
+    "measuredMetric": "tat1000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 1.13657,
+      "ratioDifference": 0.0735109,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 1.1386,
+      "ratioDifference": 0.0755338,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 1.13839,
+      "ratioDifference": 0.0753273,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "power 285 -> 325"
+    ]
+   },
+   {
+    "caseId": "3.2",
+    "id": "trend-3.2-lsatTemporal_um",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0555556,
+     "ratio": 0.851852,
+     "ratioSd": 0.032075
+    },
+    "measuredDescription": "saturated-region length, temporal (TAT_4095 x v)",
+    "measuredMetric": "lsatTemporal_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.86313,
+      "ratioDifference": 0.0112773,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.861253,
+      "ratioDifference": 0.00940096,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.861459,
+      "ratioDifference": 0.009607,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "power 285 -> 245"
+    ]
+   },
+   {
+    "caseId": "3.2",
+    "id": "trend-3.2-lsatSpatial_um",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0352944,
+     "ratio": 0.846979,
+     "ratioSd": 0.016776
+    },
+    "measuredDescription": "saturated-region length, spatial (blob extent x inferred pitch)",
+    "measuredMetric": "lsatSpatial_um",
+    "modelQuantity": "liquidusLength_um",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.86313,
+      "ratioDifference": 0.0161511,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.861253,
+      "ratioDifference": 0.0142747,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.861459,
+      "ratioDifference": 0.0144808,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "power 285 -> 245"
+    ]
+   },
+   {
+    "caseId": "3.2",
+    "id": "trend-3.2-tat4095_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.0555556,
+     "ratio": 0.85185,
+     "ratioSd": 0.032075
+    },
+    "measuredDescription": "time at 4095 DL saturation",
+    "measuredMetric": "tat4095_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.86313,
+      "ratioDifference": 0.0112797,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.861253,
+      "ratioDifference": 0.00940339,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.861459,
+      "ratioDifference": 0.00960943,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "power 285 -> 245"
+    ]
+   },
+   {
+    "caseId": "3.2",
+    "id": "trend-3.2-tat2000_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.038961,
+     "ratio": 0.857142,
+     "ratioSd": 0.0192807
+    },
+    "measuredDescription": "time above 2000 DL",
+    "measuredMetric": "tat2000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.86313,
+      "ratioDifference": 0.00598799,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.861253,
+      "ratioDifference": 0.00411165,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.861459,
+      "ratioDifference": 0.00431769,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "power 285 -> 245"
+    ]
+   },
+   {
+    "caseId": "3.2",
+    "id": "trend-3.2-tat1000_frames",
+    "measured": {
+     "changeResolved": true,
+     "changeResolvedRule": "|ratio - 1| > max(repeat SD of the ratio (k=1, n=3, first-order propagation), one measurement quantum / baseline mean); an SD of 0 means identical integer-frame values in the three repeats, not zero uncertainty",
+     "quantumRel": 0.027027,
+     "ratio": 0.891892,
+     "ratioSd": 0.0
+    },
+    "measuredDescription": "time above 1000 DL",
+    "measuredMetric": "tat1000_frames",
+    "modelQuantity": "liquidusDwell_s",
+    "models": {
+     "eagar-tsai": {
+      "ratio": 0.86313,
+      "ratioDifference": -0.0287622,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "goldak": {
+      "ratio": 0.861253,
+      "ratioDifference": -0.0306385,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     },
+     "rosenthal": {
+      "ratio": 0.861459,
+      "ratioDifference": -0.0304325,
+      "ratioDifferenceDefinition": "model ratio - measured ratio",
+      "signAgreement": true
+     }
+    },
+    "reason": "normalised to case 0; the measured isotherm (DL threshold, temperature unknown) differs from the model liquidus isotherm, so the ratio difference is not an error of the model",
+    "status": "sensitivity-only",
+    "varied": [
+     "power 285 -> 245"
+    ]
+   }
+  ],
+  "unavailableRows": [
+   {
+    "id": "absolute-length-or-dwell",
+    "quantity": "absolute saturated length / time above threshold vs model liquidus length / dwell",
+    "reason": "the temperature of the 4095 DL saturation isotherm and of the DL thresholds is unknown (no temperature conversion), so absolute values refer to different isotherms",
+    "status": "unavailable"
+   },
+   {
+    "id": "cooling-rate",
+    "quantity": "cooling rate (K/s); NIST TSCR, TLCR, PSCR",
+    "reason": "the camera signal is not converted to temperature, so no K/s exists on the measured side; signal-decay frames are not cooling rates",
+    "status": "unavailable"
+   },
+   {
+    "id": "time-above-melting",
+    "quantity": "time above melting; NIST TTAM, PTAM",
+    "reason": "needs T(DL) at solidus/liquidus, i.e. the missing temperature conversion",
+    "status": "unavailable"
+   },
+   {
+    "id": "peak-temperature",
+    "quantity": "peak temperature",
+    "reason": "saturated at 4095 DL in every laser-on frame and uncalibrated",
+    "status": "unavailable"
+   },
+   {
+    "id": "transient-enthalpy-reference",
+    "quantity": "lpbf_simulation reference transient (enthalpy) backend",
+    "reason": "not run in v1: the local-history observer is restricted to reference powder-layer runs, the 10 mm bare-plate tracks need the corridor geometry, and the 20 um mesh is about one camera pixel and not converged",
+    "status": "unavailable"
+   },
+   {
+    "id": "pads-vs-kernels",
+    "quantity": "pad thermography vs kernels",
+    "reason": "single-track analytic kernels do not represent multi-track heat accumulation; pad camera videos are not analysed in v1 (only the commanded XYPT track table is derived)",
+    "status": "unavailable"
+   },
+   {
+    "id": "radiance-temperature-bracket",
+    "quantity": "radiance-temperature bracket (spec Phase 2)",
+    "reason": "gated: needs a confirmed calibration equation and unit plus a cited emissivity; not implemented",
+    "status": "unavailable"
+   }
+  ]
+ },
+ "dataset": {
+  "derivedTable": {
+   "bytes": 182588,
+   "path": "data/benchmark/nist-amb2022-03/derived/thermography-signal-metrics-v1.json",
+   "sha256": "7b34b3b304a95aab0dccd9481d8d944d066bfddb087bd05bd409a949b021d76a"
+  },
+  "id": "nist-mds2-2716-thermography-signal-v1",
+  "rawInputs": {
+   "AMB2022-03-718-AMMT-StaringCamera_Signal.h5": {
+    "bytes": 549979044,
+    "committed": false,
+    "sha256": "f6fe21ec911707f72e7efda2932c77eae2b75d84765848878fe5beb6b728cd43"
+   },
+   "AMB2022-03-AMMT-718-Pad_XYPT.h5": {
+    "bytes": 406992,
+    "committed": false,
+    "sha256": "7b7004753e150bc26632e9ce356e0440429160fa92cbff8fc8559202fdce2103"
+   },
+   "README.txt": {
+    "bytes": 12573,
+    "committed": false,
+    "sha256": "ba44076ed51b69c0e4ca80ff0e2568eed2dc6459e85c9ad83b85860bee5760f2"
+   }
+  },
+  "source": {
+   "authors": [
+    {
+     "familyName": "Deisenroth",
+     "givenName": "David",
+     "orcid": "0000-0002-6869-7970"
+    },
+    {
+     "familyName": "Mekhontsev",
+     "givenName": "Sergey",
+     "orcid": "0000-0001-7764-630X"
+    },
+    {
+     "familyName": "Lane",
+     "givenName": "Brandon",
+     "orcid": "0000-0001-5153-1678"
+    },
+    {
+     "familyName": "Weaver",
+     "givenName": "Jordan",
+     "orcid": "0000-0003-4857-5164"
+    },
+    {
+     "familyName": "Yeung",
+     "givenName": "Ho",
+     "orcid": "0000-0002-6073-5709"
+    }
+   ],
+   "citation": "Deisenroth, D., Mekhontsev, S., Lane, B., Weaver, J., & Yeung, H. (2026). AM Bench 2022 Measurement Results Data: In-situ Thermography and Scan Strategy for Laser-scanned Single Tracks and Pads on Bare In718 (AMB2022-03) (Version 1.3.1; first released 2022-07-15) [Data set]. National Institute of Standards and Technology. https://doi.org/10.18434/mds2-2716",
+   "citationBasis": "constructed from data/benchmark/nist-amb2022-03/official/nerdm-record-mds2-2716.json (authors in record order, title, version, release history, publisher, DOI)",
+   "doi": "10.18434/mds2-2716",
+   "firstReleased": "2022-07-15",
+   "license": "https://www.nist.gov/open/license",
+   "nerdmVersion": "1.3.1",
+   "publisher": "National Institute of Standards and Technology",
+   "title": "AM Bench 2022 Measurement Results Data: In-situ Thermography and Scan Strategy for Laser-scanned Single Tracks and Pads on Bare In718 (AMB2022-03)",
+   "versionIssued": "2026-01-06"
+  },
+  "sourceDatasetId": "nist-mds2-2716"
+ },
+ "derivability": [
+  {
+   "quantity": "time above DL thresholds, saturated-region length",
+   "status": "measured-signal (NIST)"
+  },
+  {
+   "quantity": "pixel pitch, temporal/spatial length",
+   "status": "derived-inferred (NIST)"
+  },
+  {
+   "quantity": "case/baseline trend and Spearman rank vs kernels",
+   "status": "sensitivity-only"
+  },
+  {
+   "quantity": "absolute temperature, cooling rate, time above melting",
+   "status": "unavailable"
+  }
+ ],
+ "generatedAt": "2026-10-11",
+ "honesty": "comparison, not validation; raw camera signal in digital levels (DL); no temperature conversion executed; application outputs are screening and unvalidated; measured and model quantities refer to different isotherms, so only normalised trends and ranks are shown (sensitivity-only); nothing tuned",
+ "implementationFingerprint": "807d74b35239a6854ed7e5259f47711e01971b0fa3733f7aab73075e5a65faf8",
+ "kernels": [
+  "rosenthal",
+  "eagar-tsai",
+  "goldak"
+ ],
+ "labels": {
+  "appOutputs": "screening, unvalidated",
+  "evidenceKindMeasuredFor": "NIST experiment only (raw camera signal, DL)",
+  "experimentalValidation": false,
+  "modelAcceptance": false,
+  "nistResidual": null,
+  "opticalOperatorMatched": false,
+  "temperatureConversion": null,
+  "temperatureConversionMissingReason": "No temperature conversion executed: the stored /Calibration/ThermalCal Model string has unbalanced parentheses and an unspecified emissivity e, its Celsius/Kelvin convention is not determinable from the file, and the melt-pool region is saturated at 4095 DL. A reviewed equation, a cited emissivity and the valid calibration range are required."
+ },
+ "limits": [
+  "Measured and model quantities refer to different isotherms: the camera saturation level and DL thresholds have unknown temperatures; the kernels report the IN718 liquidus of the repo material table.",
+  "Measured lengths use a pixel pitch inferred from the commanded scan speed (README +/-2.5 % k=1); ratios cancel the pitch but the temporal length also carries the commanded speed.",
+  "Kernel inputs are assumptions: absorptivity of record (not measured), ambient preheat, D4s taken as the beam diameter, flat-plate absorption; nothing was tuned to the data.",
+  "Each case has 3 repeats; the measured ratio SD is a first-order repeat-scatter propagation, not an uncertainty budget; Spearman correlations are over 7 cases with no significance claimed.",
+  "Single tracks on bare IN718 only; no powder-bed claim and no pad comparison."
+ ],
+ "measured": {
+  "baselineCase": "0",
+  "cases": {
+   "0": {
+    "laserPower_W": 285.0,
+    "metrics": {
+     "lsatSpatial_um": {
+      "cv": 0.0198017,
+      "mean": 603.759,
+      "n": 3,
+      "sd": 11.9554
+     },
+     "lsatTemporal_um": {
+      "cv": 0.0,
+      "mean": 576.0,
+      "n": 3,
+      "sd": 0.0
+     },
+     "tat1000_frames": {
+      "cv": 0.0,
+      "mean": 37.0,
+      "n": 3,
+      "sd": 0.0
+     },
+     "tat2000_frames": {
+      "cv": 0.0224942,
+      "mean": 25.6667,
+      "n": 3,
+      "sd": 0.57735
+     },
+     "tat4095_frames": {
+      "cv": 0.0,
+      "mean": 18.0,
+      "n": 3,
+      "sd": 0.0
+     }
+    },
+    "repeats": [
+     "Line_0_1",
+     "Line_0_2",
+     "Line_0_3"
+    ],
+    "scanSpeed_mm_s": 960.0,
+    "spotD4s_um": 67.0
+   },
+   "1.1": {
+    "laserPower_W": 285.0,
+    "metrics": {
+     "lsatSpatial_um": {
+      "cv": 0.000269228,
+      "mean": 597.158,
+      "n": 3,
+      "sd": 0.160772
+     },
+     "lsatTemporal_um": {
+      "cv": 0.0333087,
+      "mean": 554.667,
+      "n": 3,
+      "sd": 18.4752
+     },
+     "tat1000_frames": {
+      "cv": 0.017149,
+      "mean": 33.6667,
+      "n": 3,
+      "sd": 0.57735
+     },
+     "tat2000_frames": {
+      "cv": 0.0234061,
+      "mean": 24.6667,
+      "n": 3,
+      "sd": 0.57735
+     },
+     "tat4095_frames": {
+      "cv": 0.0333087,
+      "mean": 17.3333,
+      "n": 3,
+      "sd": 0.57735
+     }
+    },
+    "repeats": [
+     "Line_1_1_1",
+     "Line_1_1_2",
+     "Line_1_1_3"
+    ],
+    "scanSpeed_mm_s": 960.0,
+    "spotD4s_um": 49.0
+   },
+   "1.2": {
+    "laserPower_W": 285.0,
+    "metrics": {
+     "lsatSpatial_um": {
+      "cv": 0.0003936,
+      "mean": 532.663,
+      "n": 3,
+      "sd": 0.209656
+     },
+     "lsatTemporal_um": {
+      "cv": 0.0,
+      "mean": 512.0,
+      "n": 3,
+      "sd": 0.0
+     },
+     "tat1000_frames": {
+      "cv": 0.0153279,
+      "mean": 37.6667,
+      "n": 3,
+      "sd": 0.57735
+     },
+     "tat2000_frames": {
+      "cv": 0.0224942,
+      "mean": 25.6667,
+      "n": 3,
+      "sd": 0.57735
+     },
+     "tat4095_frames": {
+      "cv": 0.0,
+      "mean": 16.0,
+      "n": 3,
+      "sd": 0.0
+     }
+    },
+    "repeats": [
+     "Line_1_2_1",
+     "Line_1_2_2",
+     "Line_1_2_3"
+    ],
+    "scanSpeed_mm_s": 960.0,
+    "spotD4s_um": 82.0
+   },
+   "2.1": {
+    "laserPower_W": 285.0,
+    "metrics": {
+     "lsatSpatial_um": {
+      "cv": 0.023182,
+      "mean": 539.294,
+      "n": 3,
+      "sd": 12.5019
+     },
+     "lsatTemporal_um": {
+      "cv": 0.0,
+      "mean": 520.0,
+      "n": 3,
+      "sd": 0.0
+     },
+     "tat1000_frames": {
+      "cv": 0.0203771,
+      "mean": 28.3333,
+      "n": 3,
+      "sd": 0.57735
+     },
+     "tat2000_frames": {
+      "cv": 0.0298629,
+      "mean": 19.3333,
+      "n": 3,
+      "sd": 0.57735
+     },
+     "tat4095_frames": {
+      "cv": 0.0,
+      "mean": 13.0,
+      "n": 3,
+      "sd": 0.0
+     }
+    },
+    "repeats": [
+     "Line_2_1_1",
+     "Line_2_1_2",
+     "Line_2_1_3"
+    ],
+    "scanSpeed_mm_s": 1200.0,
+    "spotD4s_um": 67.0
+   },
+   "2.2": {
+    "laserPower_W": 285.0,
+    "metrics": {
+     "lsatSpatial_um": {
+      "cv": 4.81392e-05,
+      "mean": 617.934,
+      "n": 3,
+      "sd": 0.0297468
+     },
+     "lsatTemporal_um": {
+      "cv": 0.0,
+      "mean": 613.333,
+      "n": 3,
+      "sd": 0.0
+     },
+     "tat1000_frames": {
+      "cv": 0.0,
+      "mean": 45.0,
+      "n": 3,
+      "sd": 0.0
+     },
+     "tat2000_frames": {
+      "cv": 0.0,
+      "mean": 32.0,
+      "n": 3,
+      "sd": 0.0
+     },
+     "tat4095_frames": {
+      "cv": 0.0,
+      "mean": 23.0,
+      "n": 3,
+      "sd": 0.0
+     }
+    },
+    "repeats": [
+     "Line_2_2_1",
+     "Line_2_2_2",
+     "Line_2_2_3"
+    ],
+    "scanSpeed_mm_s": 800.0,
+    "spotD4s_um": 67.0
+   },
+   "3.1": {
+    "laserPower_W": 325.0,
+    "metrics": {
+     "lsatSpatial_um": {
+      "cv": 0.000248306,
+      "mean": 660.788,
+      "n": 3,
+      "sd": 0.164078
+     },
+     "lsatTemporal_um": {
+      "cv": 0.0,
+      "mean": 640.0,
+      "n": 3,
+      "sd": 0.0
+     },
+     "tat1000_frames": {
+      "cv": 0.0146784,
+      "mean": 39.3333,
+      "n": 3,
+      "sd": 0.57735
+     },
+     "tat2000_frames": {
+      "cv": 0.0208681,
+      "mean": 27.6667,
+      "n": 3,
+      "sd": 0.57735
+     },
+     "tat4095_frames": {
+      "cv": 0.0,
+      "mean": 20.0,
+      "n": 3,
+      "sd": 0.0
+     }
+    },
+    "repeats": [
+     "Line_3_1_1",
+     "Line_3_1_2",
+     "Line_3_1_3"
+    ],
+    "scanSpeed_mm_s": 960.0,
+    "spotD4s_um": 67.0
+   },
+   "3.2": {
+    "laserPower_W": 245.0,
+    "metrics": {
+     "lsatSpatial_um": {
+      "cv": 0.000455023,
+      "mean": 511.371,
+      "n": 3,
+      "sd": 0.232686
+     },
+     "lsatTemporal_um": {
+      "cv": 0.0376533,
+      "mean": 490.667,
+      "n": 3,
+      "sd": 18.4752
+     },
+     "tat1000_frames": {
+      "cv": 0.0,
+      "mean": 33.0,
+      "n": 3,
+      "sd": 0.0
+     },
+     "tat2000_frames": {
+      "cv": 0.0,
+      "mean": 22.0,
+      "n": 3,
+      "sd": 0.0
+     },
+     "tat4095_frames": {
+      "cv": 0.0376533,
+      "mean": 15.3333,
+      "n": 3,
+      "sd": 0.57735
+     }
+    },
+    "repeats": [
+     "Line_3_2_1",
+     "Line_3_2_2",
+     "Line_3_2_3"
+    ],
+    "scanSpeed_mm_s": 960.0,
+    "spotD4s_um": 67.0
+   }
+  },
+  "pixelPitchConsistency": {
+   "betweenSpeedSpreadRel": 0.00128953,
+   "medianPitchBySpeed_um": {
+    "1200": 21.2862,
+    "800": 21.3079,
+    "960": 21.3137
+   },
+   "pooledMedian_um": 21.3093,
+   "status": "derived-inferred",
+   "withinReadmeSpeedUncertainty": true
+  }
+ },
+ "model": {
+  "0": {
+   "eagar-tsai": {
+    "depth_um": 123.8,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000700937,
+    "liquidusLength_um": 672.9,
+    "status": "computed-screening",
+    "width_um": 132.9
+   },
+   "goldak": {
+    "depth_um": 123.8,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000691458,
+    "liquidusLength_um": 663.8,
+    "status": "computed-screening",
+    "width_um": 128.3
+   },
+   "rosenthal": {
+    "depth_um": 123.8,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000689479,
+    "liquidusLength_um": 661.9,
+    "status": "computed-screening",
+    "width_um": 128.2
+   }
+  },
+  "1.1": {
+   "eagar-tsai": {
+    "depth_um": 162.6,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000700521,
+    "liquidusLength_um": 672.5,
+    "status": "computed-screening",
+    "width_um": 131.0
+   },
+   "goldak": {
+    "depth_um": 162.6,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000695833,
+    "liquidusLength_um": 668.0,
+    "status": "computed-screening",
+    "width_um": 128.5
+   },
+   "rosenthal": {
+    "depth_um": 162.6,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000690521,
+    "liquidusLength_um": 662.9,
+    "status": "computed-screening",
+    "width_um": 128.3
+   }
+  },
+  "1.2": {
+   "eagar-tsai": {
+    "depth_um": 91.7,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000698958,
+    "liquidusLength_um": 671.0,
+    "status": "computed-screening",
+    "width_um": 135.0
+   },
+   "goldak": {
+    "depth_um": 91.7,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000684479,
+    "liquidusLength_um": 657.1,
+    "status": "computed-screening",
+    "width_um": 128.1
+   },
+   "rosenthal": {
+    "depth_um": 91.7,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000688542,
+    "liquidusLength_um": 661.0,
+    "status": "computed-screening",
+    "width_um": 128.0
+   }
+  },
+  "2.1": {
+   "eagar-tsai": {
+    "depth_um": 101.3,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000556417,
+    "liquidusLength_um": 667.7,
+    "status": "computed-screening",
+    "width_um": 120.0
+   },
+   "goldak": {
+    "depth_um": 101.3,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000546917,
+    "liquidusLength_um": 656.3,
+    "status": "computed-screening",
+    "width_um": 114.9
+   },
+   "rosenthal": {
+    "depth_um": 101.3,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000549417,
+    "liquidusLength_um": 659.3,
+    "status": "computed-screening",
+    "width_um": 114.9
+   }
+  },
+  "2.2": {
+   "eagar-tsai": {
+    "depth_um": 145.3,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000845875,
+    "liquidusLength_um": 676.7,
+    "status": "computed-screening",
+    "width_um": 144.6
+   },
+   "goldak": {
+    "depth_um": 145.3,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000836625,
+    "liquidusLength_um": 669.3,
+    "status": "computed-screening",
+    "width_um": 140.4
+   },
+   "rosenthal": {
+    "depth_um": 145.3,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.0008305,
+    "liquidusLength_um": 664.4,
+    "status": "computed-screening",
+    "width_um": 140.2
+   }
+  },
+  "3.1": {
+   "eagar-tsai": {
+    "depth_um": 141.1,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000796667,
+    "liquidusLength_um": 764.8,
+    "status": "computed-screening",
+    "width_um": 141.6
+   },
+   "goldak": {
+    "depth_um": 141.1,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000787292,
+    "liquidusLength_um": 755.8,
+    "status": "computed-screening",
+    "width_um": 137.3
+   },
+   "rosenthal": {
+    "depth_um": 141.1,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000784896,
+    "liquidusLength_um": 753.5,
+    "status": "computed-screening",
+    "width_um": 137.1
+   }
+  },
+  "3.2": {
+   "eagar-tsai": {
+    "depth_um": 106.4,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000605,
+    "liquidusLength_um": 580.8,
+    "status": "computed-screening",
+    "width_um": 123.7
+   },
+   "goldak": {
+    "depth_um": 106.4,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000595521,
+    "liquidusLength_um": 571.7,
+    "status": "computed-screening",
+    "width_um": 118.7
+   },
+   "rosenthal": {
+    "depth_um": 106.4,
+    "extentStatus": "computed",
+    "liquidusDwell_s": 0.000593958,
+    "liquidusLength_um": 570.2,
+    "status": "computed-screening",
+    "width_um": 118.6
+   }
+  }
+ },
+ "modelInputs": {
+  "absorptionPath": "flat-plate absorptivity: the optional powder-bed ray tracer is pinned off (bare plate, no powder) via tools/lpbf_dataset_comparison.pin_flat_plate",
+  "absorptivityOfRecord": 0.38,
+  "absorptivityOrigin": "four_alloy_materials.thermal_props('IN718')['absorptivity_IR'] (assumed constant, not measured)",
+  "beamDiameter": "NIST spot_size (D4s) passed as the kernel beam diameter: for a Gaussian beam D4s equals the 1/e^2 diameter (assumption about the kernel's beam-size convention)",
+  "hatch_um": 100.0,
+  "layerBasis": "nominal value passed for a bare plate (no powder), as in tools/lpbf_dataset_comparison.py",
+  "layerThickness_um": 30.0,
+  "liquidus_C": 1336.0,
+  "material": "IN718",
+  "preheatBasis": "assumption: ambient plate; the NIST plate temperature is not stated in the files in hand",
+  "preheat_C": 20.0,
+  "propOverrides": null,
+  "solidus_C": 1260.0
+ },
+ "modelQuantities": {
+  "liquidusDwell_s": "kernel liquidus dwell = liquidus length / scan speed",
+  "liquidusLength_um": "kernel liquidus-isotherm length (meltPoolGeometry.length_um)"
+ },
+ "quick": false,
+ "schema": "lpbf-nist-2716-thermography-comparison-1"
+}

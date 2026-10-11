@@ -47,8 +47,11 @@ PRE_BUMP_REVISION = "520903802a5cb89e368af60f68e53f232c99046d"
 # recording metadata.
 # P1 follow-on (2026-10-11, c61ab6a8 -> 7870aae6, re-pin commit 6de85dd5): additive process-map cell keys
 # keyholeIndexLackOfFusion / lackOfFusionNote; content drift in the 7 G11/G18 digest keys, the rest recording metadata.
-GOLDEN_FINGERPRINT = "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede"
-GOLDEN_REVISION = "6de85dd50276987a80cfd162f5840ef3347dc7f7"
+# P6 containment bump (2026-10-11, 7870aae6 -> 807d74b3, re-pin commit 2c6d1073 of feat/p6-containment) re-recorded all
+# goldens: 11 observations changed (G11 meltpool.0/1/2 digests and peakTemperature_C, now null; G12
+# solidification.evaluate; G18 meltpool.in625), the rest recording metadata; no geometry observation moved.
+GOLDEN_FINGERPRINT = "807d74b35239a6854ed7e5259f47711e01971b0fa3733f7aab73075e5a65faf8"
+GOLDEN_REVISION = "2c6d1073cadec290767d279c1c437537aa23b12f"
 SLOW = os.environ.get("LPBF_PARITY_SLOW") == "1"
 # Off the reference machine every case test is skipped (the goldens are bit-exact for one
 # environment). METALLIKSA_REQUIRE_PARITY=1 turns such a "NOT VERIFIED" skip into a failure,
@@ -158,8 +161,10 @@ class ParityHarnessTests(unittest.TestCase):
         # leg): 154.9/110.4/804.9/35.2 -> 119.3/57.9/490.3/0.0 um, peak 35097.0 -> 21250.8 C.
         g11 = json.loads(parity.golden_path(parity.CASE_BY_ID["g11_build_job_meltpool"]).read_text(
             encoding="utf-8"))["rawValues"]
+        # P6 containment (2026-10-11): the geometry is unchanged; the served peak is null (IN718 has no sourced
+        # vapour temperature; the regularised 21250.8 C value is no longer served).
         self.assertEqual(g11["meltpool.0.geometry_um"], [119.3, 57.9, 490.3, 0.0])
-        self.assertEqual(g11["meltpool.0.peakTemperature_C"], 21250.8)
+        self.assertIsNone(g11["meltpool.0.peakTemperature_C"])
         emissivity = json.loads(parity.golden_path(parity.CASE_BY_ID["g19_emissivity_echo"]).read_text(
             encoding="utf-8"))["observations"]
         for name in ("Ti-6Al-4V", "316L Stainless Steel", "AlSi10Mg", "Inconel 718"):

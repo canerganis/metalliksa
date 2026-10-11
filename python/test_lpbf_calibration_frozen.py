@@ -41,11 +41,13 @@ BASE_REF = BASE_REF_CANDIDATES[0]
 # change, the Rosenthal field numbers move, Eagar-Tsai and Goldak carry the flat effectiveAbsorptivity, the new basis
 # keys, the Fabbro model id and basis for every kernel and the P1 process-map grid); re-pinned again at the P1
 # follow-on (7870aae6: every grid cell gains keyholeIndexLackOfFusion, plus lackOfFusionNote where true; all three
-# digests change, nothing else).
+# digests change, nothing else); re-pinned at the P6 containment bump (2026-10-11, 807d74b3: the served peak is the
+# loss-free Eagar-Tsai maximum under the sourced-T_v policy, null here for 316L 200/900/80, recoil and denudation
+# null, the new reason keys, the conduction-field-interface label; geometry unchanged, all three digests change).
 HTTP_GOLDEN = {
-    "eagar-tsai": "0b56facd35fb11d21f16c8fe8da37c9767beeb1e21832c185a8c66b0a667db2a",
-    "goldak": "a9b29cb4cc4bc283887b72e143b626099289df7ddee8fd82133a9b7812faa581",
-    "rosenthal": "d0a381f156d0db838c93824dfefa611178e77cec515b28eacff9238c8f8979d4",
+    "eagar-tsai": "2cb4792e6c150b113cba7f1c39c8a92a035cb7a639d0ea52b0f3d72f2fec24bc",
+    "goldak": "ec487273ad33aa501c138bc24e3fc971c3b119426ebc9fb9558ac150d85c7157",
+    "rosenthal": "faa49e23407e744ec5b12e1b22fc3d1993e431116f9224d57f9856ee14b547ea",
 }
 HTTP_INPUT = {"material": "316L Stainless Steel", "laserPower_W": 200, "scanSpeed_mm_s": 900, "beamDiameter_um": 80,
               "preheatTemp_C": 20, "layerThickness_um": 30, "hatchSpacing_um": 100}
