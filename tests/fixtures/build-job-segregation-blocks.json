@@ -278,11 +278,11 @@
   "processCoupling": {
    "status": "available",
    "reason": null,
-   "G_K_m": 12135115.0,
-   "R_m_s": 0.0684,
-   "coolingRate_K_s": 830457.0,
+   "G_K_m": 16981196.0,
+   "R_m_s": 0.0943,
+   "coolingRate_K_s": 1600948.0,
    "morphology": "Columnar dendritic (Hunt G/R screening)",
-   "PDAS_um": 0.67,
+   "PDAS_um": 0.52,
    "source": "build job microstructure block (copied, not recomputed)",
    "usedInCalculation": false,
    "note": "G and R are copied for context: the equilibrium-k Scheil-type result depends on composition alone. R is used only by the separate rapidSolidification screening estimate (Aziz k(V)); back-diffusion at this solidification rate is not modelled."
@@ -348,34 +348,34 @@
   "rapidSolidification": {
    "status": "available",
    "reason": null,
-   "R_m_s": 0.0684,
+   "R_m_s": 0.0943,
    "R_source": "build job microstructure block (screening-field mean R, copied)",
    "k_e": 0.45,
    "kEff": {
-    "min": 0.5494,
-    "max": 0.5761
+    "min": 0.5783,
+    "max": 0.6099
    },
    "nominalBinaryFGammaLaves": {
-    "min": 0.0287,
-    "max": 0.0354
+    "min": 0.0211,
+    "max": 0.0281
    },
    "byVD": [
     {
      "V_D_m_s": 0.23,
-     "kEff": 0.5761,
+     "kEff": 0.6099,
      "band": [
       {
        "label": "min",
        "Nb_wt": 4.75,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.024
+        "fGammaLavesConstituent": 0.0173
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0482,
+        "fGammaNbCConstituent": 0.0383,
         "fGammaLavesConstituent": 0.0,
-        "fEutecticTotal": 0.0482,
+        "fEutecticTotal": 0.0383,
         "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       },
@@ -384,13 +384,13 @@
        "Nb_wt": 5.125,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0287
+        "fGammaLavesConstituent": 0.0211
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0563,
+        "fGammaNbCConstituent": 0.0454,
         "fGammaLavesConstituent": 0.0,
-        "fEutecticTotal": 0.0563,
+        "fEutecticTotal": 0.0454,
         "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       },
@@ -399,32 +399,32 @@
        "Nb_wt": 5.5,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0339
+        "fGammaLavesConstituent": 0.0252
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0649,
+        "fGammaNbCConstituent": 0.0531,
         "fGammaLavesConstituent": 0.0,
-        "fEutecticTotal": 0.0649,
+        "fEutecticTotal": 0.0531,
         "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       }
      ],
      "segregation": {
       "Nb_wt": 5.125,
-      "coreRatioToNominal": 0.576,
-      "coreNb_wt": 2.952,
+      "coreRatioToNominal": 0.61,
+      "coreNb_wt": 3.126,
       "interdendritic": [
        {
         "fs": 0.9,
-        "liquidNb_wt": 13.603,
-        "ratioToNominal": 2.654,
+        "liquidNb_wt": 12.582,
+        "ratioToNominal": 2.455,
         "atEutecticComposition": false
        },
        {
         "fs": 0.95,
-        "liquidNb_wt": 18.249,
-        "ratioToNominal": 3.561,
+        "liquidNb_wt": 16.489,
+        "ratioToNominal": 3.217,
         "atEutecticComposition": false
        }
       ]
@@ -432,20 +432,20 @@
     },
     {
      "V_D_m_s": 0.31,
-     "kEff": 0.5494,
+     "kEff": 0.5783,
      "band": [
       {
        "label": "min",
        "Nb_wt": 4.75,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0299
+        "fGammaLavesConstituent": 0.0235
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0564,
+        "fGammaNbCConstituent": 0.0475,
         "fGammaLavesConstituent": 0.0,
-        "fEutecticTotal": 0.0564,
+        "fEutecticTotal": 0.0475,
         "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       },
@@ -454,13 +454,13 @@
        "Nb_wt": 5.125,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0354
+        "fGammaLavesConstituent": 0.0281
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0652,
+        "fGammaNbCConstituent": 0.0556,
         "fGammaLavesConstituent": 0.0,
-        "fEutecticTotal": 0.0652,
+        "fEutecticTotal": 0.0556,
         "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       },
@@ -469,32 +469,32 @@
        "Nb_wt": 5.5,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0414
+        "fGammaLavesConstituent": 0.0333
        },
        "pseudoTernaryAtCmax": {
         "C_wt": 0.08,
-        "fGammaNbCConstituent": 0.0739,
-        "fGammaLavesConstituent": 0.0007,
-        "fEutecticTotal": 0.0746,
-        "terminatedBy": "laves-point"
+        "fGammaNbCConstituent": 0.0642,
+        "fGammaLavesConstituent": 0.0,
+        "fEutecticTotal": 0.0642,
+        "terminatedBy": "liquid-exhausted-on-NbC-line"
        }
       }
      ],
      "segregation": {
       "Nb_wt": 5.125,
-      "coreRatioToNominal": 0.549,
-      "coreNb_wt": 2.816,
+      "coreRatioToNominal": 0.578,
+      "coreNb_wt": 2.964,
       "interdendritic": [
        {
         "fs": 0.9,
-        "liquidNb_wt": 14.464,
-        "ratioToNominal": 2.822,
+        "liquidNb_wt": 13.534,
+        "ratioToNominal": 2.641,
         "atEutecticComposition": false
        },
        {
         "fs": 0.95,
-        "liquidNb_wt": 19.766,
-        "ratioToNominal": 3.857,
+        "liquidNb_wt": 18.128,
+        "ratioToNominal": 3.537,
         "atEutecticComposition": false
        }
       ]
@@ -1189,11 +1189,11 @@
   "processCoupling": {
    "status": "available",
    "reason": null,
-   "G_K_m": 12135115.0,
-   "R_m_s": 0.0684,
-   "coolingRate_K_s": 830457.0,
+   "G_K_m": 16981196.0,
+   "R_m_s": 0.0943,
+   "coolingRate_K_s": 1600948.0,
    "morphology": "Columnar dendritic (Hunt G/R screening)",
-   "PDAS_um": 0.67,
+   "PDAS_um": 0.52,
    "source": "build job microstructure block (copied, not recomputed)",
    "usedInCalculation": false,
    "note": "G and R are copied for context: the equilibrium-k Scheil-type result depends on composition alone. R is used only by the separate rapidSolidification screening estimate (Aziz k(V)); back-diffusion at this solidification rate is not modelled."
@@ -1344,28 +1344,28 @@
   "rapidSolidification": {
    "status": "available",
    "reason": null,
-   "R_m_s": 0.0684,
+   "R_m_s": 0.0943,
    "R_source": "build job microstructure block (screening-field mean R, copied)",
    "k_e": 0.51,
    "kEff": {
-    "min": 0.5986,
-    "max": 0.6223
+    "min": 0.6243,
+    "max": 0.6525
    },
    "nominalBinaryFGammaLaves": {
-    "min": 0.0129,
-    "max": 0.0166
+    "min": 0.0088,
+    "max": 0.0126
    },
    "byVD": [
     {
      "V_D_m_s": 0.23,
-     "kEff": 0.6223,
+     "kEff": 0.6525,
      "band": [
       {
        "label": "min",
        "Nb_wt": 3.15,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0087
+        "fGammaLavesConstituent": 0.0058
        }
       },
       {
@@ -1373,7 +1373,7 @@
        "Nb_wt": 3.65,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0129
+        "fGammaLavesConstituent": 0.0088
        }
       },
       {
@@ -1381,25 +1381,25 @@
        "Nb_wt": 4.15,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0181
+        "fGammaLavesConstituent": 0.0127
        }
       }
      ],
      "segregation": {
       "Nb_wt": 3.65,
-      "coreRatioToNominal": 0.622,
-      "coreNb_wt": 2.271,
+      "coreRatioToNominal": 0.652,
+      "coreNb_wt": 2.382,
       "interdendritic": [
        {
         "fs": 0.9,
-        "liquidNb_wt": 8.709,
-        "ratioToNominal": 2.386,
+        "liquidNb_wt": 8.125,
+        "ratioToNominal": 2.226,
         "atEutecticComposition": false
        },
        {
         "fs": 0.95,
-        "liquidNb_wt": 11.315,
-        "ratioToNominal": 3.1,
+        "liquidNb_wt": 10.338,
+        "ratioToNominal": 2.832,
         "atEutecticComposition": false
        }
       ]
@@ -1407,14 +1407,14 @@
     },
     {
      "V_D_m_s": 0.31,
-     "kEff": 0.5986,
+     "kEff": 0.6243,
      "band": [
       {
        "label": "min",
        "Nb_wt": 3.15,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0115
+        "fGammaLavesConstituent": 0.0085
        }
       },
       {
@@ -1422,7 +1422,7 @@
        "Nb_wt": 3.65,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0166
+        "fGammaLavesConstituent": 0.0126
        }
       },
       {
@@ -1430,25 +1430,25 @@
        "Nb_wt": 4.15,
        "binary": {
         "C_wt": 0.0,
-        "fGammaLavesConstituent": 0.0229
+        "fGammaLavesConstituent": 0.0177
        }
       }
      ],
      "segregation": {
       "Nb_wt": 3.65,
-      "coreRatioToNominal": 0.599,
-      "coreNb_wt": 2.185,
+      "coreRatioToNominal": 0.624,
+      "coreNb_wt": 2.279,
       "interdendritic": [
        {
         "fs": 0.9,
-        "liquidNb_wt": 9.199,
-        "ratioToNominal": 2.52,
+        "liquidNb_wt": 8.67,
+        "ratioToNominal": 2.375,
         "atEutecticComposition": false
        },
        {
         "fs": 0.95,
-        "liquidNb_wt": 12.15,
-        "ratioToNominal": 3.329,
+        "liquidNb_wt": 11.249,
+        "ratioToNominal": 3.082,
         "atEutecticComposition": false
        }
       ]

@@ -81,13 +81,15 @@ def microstructure_fixture_blocks():
 
     common = {"beamDiameter_um": 80, "layerThickness_um": 40, "hatchSpacing_um": 110, "bypassCache": True}
     available = run_job({"alloyId": "in718", "laserPower_W": 285, "scanSpeed_mm_s": 960, **common})
-    fallback = run_job({"alloyId": "in718", "laserPower_W": 20, "scanSpeed_mm_s": 2000, **common})
+    # P1 (2026-10-11): the latent-free Rosenthal field resolves the former 20 W / 2000 mm/s case; 10 W / 3000 mm/s
+    # is the fallback case now.
+    fallback = run_job({"alloyId": "in718", "laserPower_W": 10, "scanSpeed_mm_s": 3000, **common})
     # Wave B KS-1: the clamp-floor state is unreachable on real builds now, so the degenerate block is
     # projected from the real IN718 100/960 thermal result with its kinetics moved onto the floors.
     degenerate = run_job({"alloyId": "in718", "laserPower_W": 100, "scanSpeed_mm_s": 960, **common})
     return {
         "available_in718_285_960": available["microstructure"],
-        "screening_fallback_in718_20_2000": fallback["microstructure"],
+        "screening_fallback_in718_10_3000": fallback["microstructure"],
         "degenerate_floor_synthetic": project_build_job_microstructure(_floored_thermal(degenerate["thermal"])),
         "unavailable_no_kinetics": project_build_job_microstructure({}),
     }
@@ -336,9 +338,10 @@ FALLBACK_REASON = (
 def check_build_job_microstructure_fallback():
     """Low power / high speed cases fall back to the tail-length heuristic: labelled, not 'available'."""
     cases = (
-        # Wave B LA-2/KS-1: 60/2000 (IN718) and 40/1500 (Ti64) resolve the field map now.
-        {"alloyId": "in718", "laserPower_W": 20, "scanSpeed_mm_s": 2000},
-        {"alloyId": "ti6al4v", "laserPower_W": 15, "scanSpeed_mm_s": 1500},
+        # Wave B LA-2/KS-1: 60/2000 (IN718) and 40/1500 (Ti64) resolve the field map now; P1 (2026-10-11,
+        # latent-free Rosenthal field) also resolves 20/2000 (IN718), so the cases sit lower.
+        {"alloyId": "in718", "laserPower_W": 10, "scanSpeed_mm_s": 3000},
+        {"alloyId": "ti6al4v", "laserPower_W": 10, "scanSpeed_mm_s": 2500},
     )
     for case in cases:
         job = run_job({**case, "beamDiameter_um": 80, "layerThickness_um": 40,
@@ -496,10 +499,11 @@ def check_extent_status_consumers():
     common = {"alloyId": "in718", "beamDiameter_um": 80, "layerThickness_um": 30,
               "hatchSpacing_um": 100, "bypassCache": True}
 
-    # (a) IN718 20 W / 1000 mm/s / d80: the Rosenthal field stays below liquidus even at its axial peak.
-    # (200 W / 1000 mm/s was this case before the 2026-10-06 tier-2 bump and 60 W before the Wave B LA-2
-    # bump: both resolve now. 20 W is below the IN718 literature box, so literature_pv warns.)
-    heur = run_job({**common, "laserPower_W": 20, "scanSpeed_mm_s": 1000})
+    # (a) IN718 10 W / 1000 mm/s / d80: the Rosenthal field stays below liquidus even at its axial peak.
+    # (200 W / 1000 mm/s was this case before the 2026-10-06 tier-2 bump, 60 W before the Wave B LA-2 bump and
+    # 20 W before the P1 bump of 2026-10-11 (latent-free field): all resolve now. 10 W is below the IN718
+    # literature box, so literature_pv warns.)
+    heur = run_job({**common, "laserPower_W": 10, "scanSpeed_mm_s": 1000})
     geo = heur["thermal"]["meltPoolGeometry"]
     assert geo["extentStatus"] == "heuristic-width-fallback", geo["extentStatus"]
     v = heur["verdict"]

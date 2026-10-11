@@ -18,8 +18,9 @@ test("available (field map): numbers, correlation names, modelId · gradientSour
   const markup = html("available_in718_285_960");
   const t = text(markup);
   assert.match(markup, /data-micro-status="available"/);
-  // Wave B (LA-2 field, KS-1 solidifying-front samples): PDAS/SDAS 0.66/0.51 -> 0.67/0.47 um.
-  assert.ok(t.includes("0.67") && t.includes("0.47"), t);
+  // Wave B (LA-2 field, KS-1 solidifying-front samples): PDAS/SDAS 0.66/0.51 -> 0.67/0.47 um; P1 (2026-10-11, flat
+  // absorptivity and no latent factor on the Rosenthal field): 0.52/0.38 um.
+  assert.ok(t.includes("0.52") && t.includes("0.38"), t);
   assert.ok(t.includes("Hunt–Lu 1996"), t);
   // modelId and gradientSource are the same string on the field-map path: the source is shown once, not repeated.
   assert.equal(t.split("solidification-front-v1").length - 1, 1, t);
@@ -37,13 +38,13 @@ test("available (field map): numbers, correlation names, modelId · gradientSour
 });
 
 test("screening-fallback: amber note with Python's reason, tail-length-fallback shown, numbers still rendered", () => {
-  const markup = html("screening_fallback_in718_20_2000");
+  const markup = html("screening_fallback_in718_10_3000");
   const t = text(markup);
   assert.match(markup, /data-micro-status="screening-fallback"/);
   assert.match(markup, /data-micro-note="screening-fallback"[^>]*>/);
-  assert.ok(t.includes(BLOCKS.screening_fallback_in718_20_2000.reason), t);
+  assert.ok(t.includes(BLOCKS.screening_fallback_in718_10_3000.reason), t);
   assert.ok(t.includes("tail-length-fallback"), t);
-  assert.ok(t.includes("0.33"), t);
+  assert.ok(t.includes("2.25"), t); // PDAS of the 10 W / 3000 mm/s fallback case (P1 fixture, 2026-10-11)
   assert.ok(t.includes("Source: solidification-front-v1 · tail-length-fallback"), t);
   assert.equal(t.split("tail-length-fallback").length - 1, 1, t); // only in the single source line
   assert.doesNotMatch(markup, /data-micro-note="regime"/);

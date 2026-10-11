@@ -11,9 +11,9 @@ const as = (block: unknown) => block as SolidificationMicrostructureResult;
 test("available and screening-fallback pass through with their status", () => {
   const ok = solidificationOutcome(as(BLOCKS.available_in718_285_960));
   assert.ok("result" in ok && ok.result.status === "available");
-  const fb = solidificationOutcome(as(BLOCKS.screening_fallback_in718_20_2000));
+  const fb = solidificationOutcome(as(BLOCKS.screening_fallback_in718_10_3000));
   assert.ok("result" in fb && fb.result.status === "screening-fallback");
-  assert.equal(fb.result.reason, BLOCKS.screening_fallback_in718_20_2000.reason);
+  assert.equal(fb.result.reason, BLOCKS.screening_fallback_in718_10_3000.reason);
 });
 
 test("degenerate-floor yields Python's reason flagged degenerate and never a result", () => {
