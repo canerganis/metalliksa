@@ -317,9 +317,15 @@ def _verified_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None):
     Selection prefers the first printable candidate with zero advisories, else the first printable one. Without an
     evaluator (hand-built thermal input, UQ samples) no patch is offered.
     The downskin caveat of the note is added by _suggested_patch."""
-    if verdict == "printable" or dominant_gate in (None, "none"):
-        return None, (None if verdict == "printable" else
-                      "No sourced gate fails or warns, so there is no parameter change to suggest."), []
+    if verdict == "printable":
+        return None, None, []
+    if dominant_gate in (None, "none"):
+        if verdict == "inconclusive":
+            # P7a merge-gate fix: an inconclusive verdict has no dominant gate by construction; say why no patch
+            # is searched instead of claiming that no gate fails.
+            return None, ("The verdict is inconclusive (geometry not resolved or a verdict-driving input null), so "
+                          "no parameter patch is searched: a patch would be verified against unresolved numbers."), []
+        return None, "No sourced gate fails or warns, so there is no parameter change to suggest.", []
     if evaluate is None:
         return None, "No parameter patch: the solver was not available to verify a suggested point.", []
     first = None

@@ -99,8 +99,13 @@ class SuggestedPatchUnit(unittest.TestCase):
         self.assertEqual(_suggested_patch(self.th, "in718", "none", "printable", ev), (None, None, []))
         patch, note, adv = _suggested_patch(self.th, "in718", "none", "inconclusive", ev)
         self.assertIsNone(patch)
-        self.assertTrue(note)
+        # P7a merge-gate fix: the note names the inconclusive verdict, not a passing gate set.
+        self.assertIn("inconclusive", note)
+        self.assertIn("no parameter patch is searched", note)
+        self.assertNotIn("No sourced gate fails", note)
         self.assertEqual(ev.calls, [])
+        _, risky_note, _ = _suggested_patch(self.th, "in718", "none", "risky", ev)
+        self.assertIn("No sourced gate fails", risky_note)
 
     def test_downskin_is_never_dominant_so_no_patch_is_triggered(self):
         # P7a: downskin is an advisory; a verdict with downskin alone is printable and gets no patch.
