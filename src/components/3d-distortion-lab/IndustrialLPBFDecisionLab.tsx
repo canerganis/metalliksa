@@ -451,8 +451,8 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
           </div>
           {thermal && decision ? (
             <div className="grid grid-cols-2 gap-2">
-              <LofTile label="W / h" value={decision.lofGeometry.widthOverHatch} min={1.05} geometryResolved={geometryResolved} gate={decision.gates?.find((g) => g.id === "lof_wh")} extentLabel={extentLabel} />
-              <LofTile label="D / t" value={decision.lofGeometry.depthOverLayer} min={1.15} geometryResolved={geometryResolved} gate={decision.gates?.find((g) => g.id === "lof_dt")} extentLabel={extentLabel} />
+              <LofTile label="W / h" value={decision.lofGeometry.widthOverHatch} geometryResolved={geometryResolved} gate={decision.gates?.find((g) => g.id === "lof_wh")} extentLabel={extentLabel} />
+              <LofTile label="D / t" value={decision.lofGeometry.depthOverLayer} geometryResolved={geometryResolved} gate={decision.gates?.find((g) => g.id === "lof_dt")} extentLabel={extentLabel} />
               <Metric
                 label="ΔH/hₛ"
                 value={keyholeNotEvaluated ? "not evaluated" : String(thermal.processParameters.normalizedEnthalpy)}
@@ -465,11 +465,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
                 ok={decision.literatureWindow.inside}
                 hint={`${decision.literatureWindow.box.powerMin_W}–${decision.literatureWindow.box.powerMax_W} W`}
               />
-              <Metric
-                label="Recoater"
-                value={thermal.defectDiagnostics.recoaterCrashRisk.startsWith("Not evaluated") ? "Not evaluated" : shortRisk(thermal.defectDiagnostics.recoaterCrashRisk)}
-                hint="alloy/layer/preheat-only index · not from scan parameters · no verdict effect"
-              />
+              <RecoaterTile risk={thermal.defectDiagnostics.recoaterCrashRisk} gate={decision.gates?.find((g) => g.id === "recoater")} />
               <Metric
                 label="Balling"
                 value={geometryResolved ? shortRisk(thermal.defectDiagnostics.ballingInstabilityRisk) : "unavailable"}
@@ -800,34 +796,65 @@ export interface LofTileState {
   hint: string;
 }
 
+/** P7a (2026-10-11): lof_wh and lof_dt are diagnostics with no sourced threshold (gate.required null). */
+export const LOF_DIAGNOSTIC_HINT = "diagnostic, no sourced threshold (Tang index is the gate)";
+
 /**
  * W/h and D/t tile state. A null ratio (lofGeometry payload with a null melt-pool extent or Tang index) is "not
- * evaluated" with the gate reason, never a toFixed on null and never a pass or fail.
+ * evaluated" with the gate reason, never a toFixed on null and never a pass or fail. The threshold comes from the
+ * gate's required value: null (P7a payloads) renders the ratio neutrally (ok null) with the diagnostic hint; a numeric
+ * required (legacy payloads, 1.05 / 1.15) keeps the former pass or fail styling.
  */
 export function lofTileState(
   value: number | null | undefined,
-  min: number,
   geometryResolved: boolean,
-  gate: { status?: string; reason?: string } | undefined,
+  gate: { status?: string; reason?: string; required?: number | null } | undefined,
   extentLabel: string,
 ): LofTileState {
   if (!geometryResolved) return { value: "unavailable", ok: true, hint: extentLabel };
   if (value === null || value === undefined || !Number.isFinite(value) || gate?.status === "not-evaluated") {
     return { value: "not evaluated", ok: null, hint: gate?.reason ?? "lack-of-fusion input is null" };
   }
-  return { value: value.toFixed(2), ok: value >= min, hint: `> ${min}` };
+  const min = gate?.required;
+  if (typeof min !== "number" || !Number.isFinite(min)) {
+    return { value: value.toFixed(2), ok: null, hint: LOF_DIAGNOSTIC_HINT };
+  }
+  return { value: value.toFixed(2), ok: value >= min, hint: `> ${min} (legacy payload threshold)` };
 }
 
 const LofTile: React.FC<{
   label: string;
   value: number | null | undefined;
-  min: number;
   geometryResolved: boolean;
-  gate?: { status?: string; reason?: string };
+  gate?: { status?: string; reason?: string; required?: number | null };
   extentLabel: string;
-}> = ({ label, value, min, geometryResolved, gate, extentLabel }) => {
-  const s = lofTileState(value, min, geometryResolved, gate, extentLabel);
+}> = ({ label, value, geometryResolved, gate, extentLabel }) => {
+  const s = lofTileState(value, geometryResolved, gate, extentLabel);
   return <Metric label={label} value={s.value} ok={s.ok} hint={s.hint} />;
+};
+
+/**
+ * Recoater tile state. Since P7a the recoater gate is not-evaluated (no sourced stress model) and recoaterCrashRisk
+ * starts with "unavailable": the tile shows "n/a", neutral, with the gate reason or STRESS_UNAVAILABLE_NOTE. Legacy
+ * payloads keep the former short-risk text.
+ */
+export function recoaterTileState(
+  risk: string | null | undefined,
+  gate: { status?: string; reason?: string } | undefined,
+): LofTileState {
+  const text = risk ?? "";
+  if (gate?.status === "not-evaluated" || text.toLowerCase().startsWith("unavailable")) {
+    return { value: "n/a", ok: null, hint: gate?.reason ?? STRESS_UNAVAILABLE_NOTE };
+  }
+  if (text.startsWith("Not evaluated")) {
+    return { value: "Not evaluated", ok: true, hint: "alloy/layer/preheat-only index · not from scan parameters · no verdict effect" };
+  }
+  return { value: shortRisk(text), ok: true, hint: "legacy payload: alloy/layer/preheat-only index · no verdict effect" };
+}
+
+const RecoaterTile: React.FC<{ risk: string; gate?: { status?: string; reason?: string } }> = ({ risk, gate }) => {
+  const s = recoaterTileState(risk, gate);
+  return <Metric label="Recoater" value={s.value} ok={s.ok} hint={s.hint} />;
 };
 
 /** ok = null: no pass/fail is possible (dashed, neutral), distinct from a passed check. */
