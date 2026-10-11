@@ -41,8 +41,12 @@ PRE_BUMP_REVISION = "520903802a5cb89e368af60f68e53f232c99046d"
 # (2026-10-08, cda80143 -> ec7e1f7a; first pinned 5f9d651e, then the exported provenance title was fixed) re-recorded all goldens: 97 text/digest observations (plus G3 stripe crossSectionArea 6400 -> 2698.01);
 # previously only G11 and G18
 # (label/basis text of the thermal dicts) changed.
-GOLDEN_FINGERPRINT = "0d52d7f707b98fc588c0972c1c198315d3c1071ed1c7ad7ab91616e69b5248e8"
-GOLDEN_REVISION = "c2e4c63d9492b3c3224765f20c8e043d5b3b7948"
+# P1 sourced-physics bump (2026-10-11, 0d52d7f7 -> c61ab6a8, re-pin commit a486ac08 of feat/p1-sourced-physics)
+# re-recorded all goldens: 10 G11/G18 observations changed numerically (Rosenthal field power A P with no ramp and no
+# latent factor, depth = max(d_iso, Fabbro leg), effectiveAbsorptivity flat for Eagar-Tsai and Goldak), the rest
+# recording metadata.
+GOLDEN_FINGERPRINT = "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32"
+GOLDEN_REVISION = "a486ac085786d4af07188cf8042c541d646f3fb1"
 SLOW = os.environ.get("LPBF_PARITY_SLOW") == "1"
 # Off the reference machine every case test is skipped (the goldens are bit-exact for one
 # environment). METALLIKSA_REQUIRE_PARITY=1 turns such a "NOT VERIFIED" skip into a failure,
@@ -147,11 +151,13 @@ class ParityHarnessTests(unittest.TestCase):
         self.assertEqual(in625["in625.transientSpecification.latentHeat_J_kg"][0], 227000.0)
         # Tier-2 bump (2026-10-06): peak-anchored extents; the reported peak stays T(0,0,0). Wave B
         # (2026-10-07, LA-2): T(0,0,0) is now the regularised point-source value, 2500.2 -> 35097.0 C
-        # (labelled peakTemperatureBasis), and the extents grow (144.7/104.2/755.3/33.2 before).
+        # (labelled peakTemperatureBasis), and the extents grow (144.7/104.2/755.3/33.2 before). P1 bump
+        # (2026-10-11): field power A P (no multi-reflection ramp, no latent factor) and depth = max(d_iso, Fabbro
+        # leg): 154.9/110.4/804.9/35.2 -> 119.3/57.9/490.3/0.0 um, peak 35097.0 -> 21250.8 C.
         g11 = json.loads(parity.golden_path(parity.CASE_BY_ID["g11_build_job_meltpool"]).read_text(
             encoding="utf-8"))["rawValues"]
-        self.assertEqual(g11["meltpool.0.geometry_um"], [154.9, 110.4, 804.9, 35.2])
-        self.assertEqual(g11["meltpool.0.peakTemperature_C"], 35097.0)
+        self.assertEqual(g11["meltpool.0.geometry_um"], [119.3, 57.9, 490.3, 0.0])
+        self.assertEqual(g11["meltpool.0.peakTemperature_C"], 21250.8)
         emissivity = json.loads(parity.golden_path(parity.CASE_BY_ID["g19_emissivity_echo"]).read_text(
             encoding="utf-8"))["observations"]
         for name in ("Ti-6Al-4V", "316L Stainless Steel", "AlSi10Mg", "Inconel 718"):

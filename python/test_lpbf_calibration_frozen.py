@@ -37,11 +37,13 @@ BASE_REF = BASE_REF_CANDIDATES[0]
 # the balling screen sources/basis in geometricDefectScreen and defectDiagnostics); re-pinned again after the exported
 # provenance title fix (only the defectDiagnostics provenance title text changed); re-pinned at the in625-regime bump
 # (316L input: only the regimeBasis text and the new regimeKeyholeThreshold key changed, in both blocks; undoing them
-# reproduces the previous digests).
+# reproduces the previous digests); re-pinned at the P1 sourced-physics bump (2026-10-11, c61ab6a8: all three digests
+# change, the Rosenthal field numbers move, Eagar-Tsai and Goldak carry the flat effectiveAbsorptivity, the new basis
+# keys, the Fabbro model id and basis for every kernel and the P1 process-map grid).
 HTTP_GOLDEN = {
-    "eagar-tsai": "8d4c51c1b905db43cc1422b713960649b982934a5a111bf4c217ba1111b746a0",
-    "goldak": "f64e8c67c5dbd5a989cb69d9aee33c16f5f55a57f8143d3b49a1ec246506bae6",
-    "rosenthal": "170f9d4a3b7f144fc1f3606b1235f54f1733f4cfc019a9f03463b063640ed011",
+    "eagar-tsai": "57c2fc4edcafc8646371c5cba289745c51e8d6dc6e0a2c9992c5c19921f392f4",
+    "goldak": "cdca682a3c30b53a0c10adaf4459e8a8c8f1bcf466f20fa135173c95987bec7d",
+    "rosenthal": "0715118930ea7b9b59b7be3f7de7a59b438e65d3011b72b7a27282f77843ba11",
 }
 HTTP_INPUT = {"material": "316L Stainless Steel", "laserPower_W": 200, "scanSpeed_mm_s": 900, "beamDiameter_um": 80,
               "preheatTemp_C": 20, "layerThickness_um": 30, "hatchSpacing_um": 100}
