@@ -1,5 +1,5 @@
 {
- "bandsId": "lpbf-meltpool-error-bands-2026-10-11-47f3bb3d18c6",
+ "bandsId": "lpbf-meltpool-error-bands-2026-10-11-38927d2295d6",
  "cells": [
   {
    "alloys": [
@@ -6256,8 +6256,8 @@
  ],
  "codeRevision": {
   "dirtyTrackedPaths": 0,
-  "gitBranch": "feat/p1-sourced-physics",
-  "gitHead": "a6dff386d48857f771c0657fbc33e1a7ce956e95",
+  "gitBranch": "feat/p6-containment",
+  "gitHead": "e1abf93432242b5ed41471771cf6adbe808384e7",
   "python": "3.12.10"
  },
  "config": {
@@ -6326,7 +6326,7 @@
   "z80": 1.2816
  },
  "configSha256": "398d02d54da2261b5c5d2944b89d5147f8534f043bb291c1a83f235c7e70303f",
- "contentSha256": "47f3bb3d18c60dd466e7ed4a58857416049c1cb5f8defac77bc40b8cfc6606ac",
+ "contentSha256": "38927d2295d6a9b0dc6afed65b4b22b3bb32f0d6e2cc0062c67b04037a9c83e2",
  "evidenceKind": "screening-only",
  "evidenceLabel": "Screening only",
  "excluded": {
@@ -6339,10 +6339,10 @@
  "experimentalValidation": false,
  "generatedAt": "2026-10-11",
  "honesty": "typical error of the frozen screening kernels on published single tracks, per kernel, alloy family and screening regime class; reporting text only: it is not a tolerance, not a prediction interval for any other machine and not experimental validation; the leave-one-source-out coverage is reported next to every band and shows that a band built from some published sources does not transfer to another; no per-row measurement uncertainty exists in any source; digitized figures (Trapp, Ghosh) and a development sentinel (NIST AMB2022-03 IN718) are flagged; experimentalValidation=false",
- "implementationHash": "7870aae64cf0b6c4aa5459d9e7f6f6a6bcea5822a1d1068e0d7f44d264c48ede",
+ "implementationHash": "807d74b35239a6854ed7e5259f47711e01971b0fa3733f7aab73075e5a65faf8",
  "labelPromotionProposed": "none",
  "rowCount": 863,
- "rowsSha256": "a2484ec94c67b4b52c029f03a8589263b9bacb8f3c10a360415b660ee6426dcc",
+ "rowsSha256": "2833a97ad2cfa47fd28d6be311b8da83188f97679ecca226e648f9db9850033a",
  "schema": "lpbf-meltpool-error-bands-1",
  "sources": [
   {
