@@ -56,6 +56,13 @@ DISAGREE_NO_CELL_TEMPLATE = (
     "({regime}, dH/hs {index}) disagree here, and there is no held-out check for {kernel} on {alloy} in the {regime} band. "
     "No direction is given."
 )
+# P1 planned bump (2026-10-11): appended to the direction text of the cells the bump moved against measurement.
+# UNDER cells in the transition and keyhole bands (every kernel shares the flat-absorptivity Fabbro leg there);
+# OVER cells of the Rosenthal kernel in the conduction band (its field lost the latent-heat cut).
+P1_UNDER_NOTE = (" After 2026-10-11 no kernel represents the measured absorptance rise, so transition and keyhole "
+                 "depth is biased low in all three kernels.")
+P1_OVER_NOTE = (" The conduction field carries no latent-heat cut since 2026-10-11, so conduction-mode depth from "
+                "the Rosenthal kernel is higher than before.")
 BASIS_TEMPLATE = (
     "Error-band summary {bands_id}, cell {alloy} / {kernel_id} / {regime}: relative error pred / meas - 1, equal source "
     "weight, digitized figures included, screening only."
@@ -178,7 +185,12 @@ def depth_bias_warning(regime: Optional[str], material_name: Optional[str], heat
     if abs(median) < MIN_ABS_MEDIAN_FOR_DIRECTION:
         return {"direction": None, "text": FLAT_TEMPLATE.format(**fields), "basis": basis}
     verb = "may be overestimated" if median > 0 else "may be underestimated"
-    return {"direction": OVER if median > 0 else UNDER, "text": DIRECTION_TEMPLATE.format(verb=verb, **fields), "basis": basis}
+    text = DIRECTION_TEMPLATE.format(verb=verb, **fields)
+    if median < 0 and rc in ("transition", "keyhole"):
+        text += P1_UNDER_NOTE
+    elif median > 0 and rc == "conduction" and kernel == "rosenthal":
+        text += P1_OVER_NOTE
+    return {"direction": OVER if median > 0 else UNDER, "text": text, "basis": basis}
 
 
 def attach_depth_bias_warning(result: Dict[str, Any]) -> Dict[str, Any]:

@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { computeDepthBiasWarning, resolveDepthBiasWarning, enthalpyClassOf, DEPTH_BIAS_CELLS, DEPTH_BIAS_BANDS_ID, DEPTH_BIAS_ENTHALPY_EDGES } from "../src/utils/depthBiasWarning";
+import { computeDepthBiasWarning, resolveDepthBiasWarning, enthalpyClassOf, DEPTH_BIAS_CELLS, DEPTH_BIAS_BANDS_ID, DEPTH_BIAS_ENTHALPY_EDGES, DEPTH_BIAS_P1_OVER_NOTE, DEPTH_BIAS_P1_UNDER_NOTE } from "../src/utils/depthBiasWarning";
 import { DepthBiasNotice } from "../src/components/DepthBiasNotice";
 
 const SUMMARY = JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "calibration", "lpbf-meltpool-error-bands-v1.summary.json"), "utf8"));
@@ -37,7 +37,8 @@ test("the band class follows the enthalpy index edges, not the served label", ()
   const c = computeDepthBiasWarning("Keyhole Mode", "Inconel 625", "rosenthal", 13.94);
   assert.equal(c.direction, null);
   assert.match(c.text ?? "", /served regime label \(keyhole\) and the error-band class from the enthalpy index \(conduction, dH\/hs 13\.94\) disagree here/);
-  assert.match(c.text ?? "", /median depth error of 25% \(overpredicted, n=16, 2 sources\)\. No direction is given/);
+  // Bands at c61ab6a8 (P1, 2026-10-11): the IN625 Rosenthal conduction cell is +0.413 with n=18 (was +0.254, n=16).
+  assert.match(c.text ?? "", /median depth error of 41% \(overpredicted, n=18, 2 sources\)\. No direction is given/);
   for (const k of ["rosenthal", "eagar-tsai", "goldak"]) assert.equal(computeDepthBiasWarning("Keyhole Mode", "Inconel 625", k, 13.94).direction, null);
   assert.equal(computeDepthBiasWarning("Keyhole Mode", "Inconel 625", "rosenthal", 17.1).direction, "may-underestimate");
   // Without an index the label decides (n=1 keyhole cell: no direction).
@@ -50,18 +51,24 @@ test("direction follows the served kernel, alloy and regime class from the summa
   const regime = "Conduction Mode (Stable)";
   const ro = computeDepthBiasWarning(regime, "Inconel 625", "rosenthal");
   assert.equal(ro.direction, "may-overestimate");
-  assert.match(ro.text ?? "", /Rosenthal kernel on Inconel 625 overpredicted the depth by a median of 25% \(n=16, 2 sources\)/);
+  assert.match(ro.text ?? "", /Rosenthal kernel on Inconel 625 overpredicted the depth by a median of 41% \(n=18, 2 sources\)/);
+  assert.ok((ro.text ?? "").endsWith(DEPTH_BIAS_P1_OVER_NOTE));
   const gk = computeDepthBiasWarning(regime, "Inconel 625", "goldak");
   assert.match(gk.text ?? "", /Goldak kernel on Inconel 625 overpredicted the depth by a median of 44% \(n=17/);
   const tr = computeDepthBiasWarning("Transition Mode", "Inconel 625", "goldak");
   assert.equal(tr.direction, "may-underestimate");
   assert.match(tr.text ?? "", /underpredicted the depth by a median of 48% \(n=6, 1 source\)/);
+  assert.ok((tr.text ?? "").endsWith(DEPTH_BIAS_P1_UNDER_NOTE));
+  assert.doesNotMatch(gk.text ?? "", /2026-10-11/);
 });
 
-test("Ti-6Al-4V Rosenthal keyhole is never called underestimated", () => {
+test("Ti-6Al-4V Rosenthal keyhole has no clear direction after P1 (cell equals the Eagar-Tsai and Goldak cell)", () => {
+  // Bands at c61ab6a8 (P1, 2026-10-11): -0.047, n=80, below the 0.05 direction floor (was +0.284, may-overestimate).
   const w = computeDepthBiasWarning("Keyhole Mode (melt-pool D/W > 0.5 screening onset)", "Ti-6Al-4V", "rosenthal", 25);
-  assert.equal(w.direction, "may-overestimate");
+  assert.equal(w.direction, null);
+  assert.match(w.text ?? "", /No clear depth bias direction/);
   assert.doesNotMatch(w.text ?? "", /underestimated/);
+  assert.deepEqual(DEPTH_BIAS_CELLS["Ti-6Al-4V|rosenthal|keyhole"], DEPTH_BIAS_CELLS["Ti-6Al-4V|eagar-tsai|keyhole"]);
 });
 
 test("cells with too few tracks or no cell give no direction", () => {

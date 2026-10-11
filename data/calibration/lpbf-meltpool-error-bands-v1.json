@@ -1,5 +1,5 @@
 {
- "bandsId": "lpbf-meltpool-error-bands-2026-10-11-9cc1957538f8",
+ "bandsId": "lpbf-meltpool-error-bands-2026-10-11-7a003dbdea12",
  "cells": [
   {
    "alloys": [
@@ -2112,50 +2112,50 @@
    "loso": {
     "bands": {
      "hofmann-316l-2026": {
-      "p10": -0.482377,
-      "p90": 0.395954
+      "p10": -0.545714,
+      "p90": 0.343796
      },
      "ku-leuven-316l-2021": {
-      "p10": -0.353333,
-      "p90": 0.89378
+      "p10": -0.545714,
+      "p90": 0.535229
      },
      "trapp-316l-2017": {
-      "p10": -0.482377,
-      "p90": 1.04698
+      "p10": -0.353691,
+      "p90": 0.594164
      }
     },
     "coverageBySource": {
-     "hofmann-316l-2026": 0.51194,
-     "ku-leuven-316l-2021": 0.5,
-     "trapp-316l-2017": 1.0
+     "hofmann-316l-2026": 0.694362,
+     "ku-leuven-316l-2021": 0.954545,
+     "trapp-316l-2017": 0.4
     },
-    "coverageEqualWeight": 0.670647,
-    "coveragePooled": 0.517956
+    "coverageEqualWeight": 0.682969,
+    "coveragePooled": 0.706044
    },
-   "median": -0.050924,
-   "n": 724,
+   "median": -0.18787,
+   "n": 728,
    "nBalling": 216,
-   "nSets": 426,
+   "nSets": 429,
    "nSources": 3,
-   "p10": -0.406067,
-   "p90": 0.819225,
-   "pooledMedian": 0.342629,
-   "pooledP10": -0.13923,
-   "pooledP90": 1.23603,
+   "p10": -0.401389,
+   "p90": 0.448726,
+   "pooledMedian": 0.109393,
+   "pooledP10": -0.313253,
+   "pooledP90": 0.894472,
    "quantity": "depth",
    "regime": "all",
    "rowsPerSource": {
-    "hofmann-316l-2026": 670,
+    "hofmann-316l-2026": 674,
     "ku-leuven-316l-2021": 44,
     "trapp-316l-2017": 10
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "hofmann-316l-2026": 0.369404,
-    "ku-leuven-316l-2021": -0.321857,
-    "trapp-316l-2017": -0.25287
+    "hofmann-316l-2026": 0.137584,
+    "ku-leuven-316l-2021": -0.27972,
+    "trapp-316l-2017": -0.370695
    },
-   "sourceMedianSd": 0.380751,
+   "sourceMedianSd": 0.271037,
    "sources": [
     "hofmann-316l-2026",
     "ku-leuven-316l-2021",
@@ -2163,10 +2163,10 @@
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.853234,
+    "coverageEqualWeight": 0.916914,
     "informative": false,
-    "p10": -0.894036,
-    "p90": 1.3072,
+    "p10": -0.74875,
+    "p90": 0.796087,
     "sdLeak": false
    }
   },
@@ -2197,53 +2197,53 @@
    "loso": {
     "bands": {
      "hofmann-316l-2026": {
-      "p10": 0.152941,
-      "p90": 0.240909
+      "p10": 0.323529,
+      "p90": 0.386364
      },
      "trapp-316l-2017": {
-      "p10": -0.0123242,
-      "p90": 1.10142
+      "p10": 0.0847055,
+      "p90": 1.28398
      }
     },
     "coverageBySource": {
-     "hofmann-316l-2026": 0.101911,
+     "hofmann-316l-2026": 0.068323,
      "trapp-316l-2017": 1.0
     },
-    "coverageEqualWeight": 0.550955,
-    "coveragePooled": 0.11875
+    "coverageEqualWeight": 0.534161,
+    "coveragePooled": 0.0853659
    },
-   "median": 0.2,
-   "n": 160,
+   "median": 0.325,
+   "n": 164,
    "nBalling": 31,
-   "nSets": 99,
+   "nSets": 102,
    "nSources": 2,
-   "p10": 0.0526316,
-   "p90": 0.676652,
-   "pooledMedian": 0.256983,
-   "pooledP10": -0.0123242,
-   "pooledP90": 1.08946,
+   "p10": 0.172012,
+   "p90": 0.831224,
+   "pooledMedian": 0.385965,
+   "pooledP10": 0.0847055,
+   "pooledP90": 1.28398,
    "quantity": "depth",
    "regime": "conduction",
    "rowsPerSource": {
-    "hofmann-316l-2026": 157,
+    "hofmann-316l-2026": 161,
     "trapp-316l-2017": 3
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "hofmann-316l-2026": 0.270955,
-    "trapp-316l-2017": 0.2
+    "hofmann-316l-2026": 0.388095,
+    "trapp-316l-2017": 0.325
    },
-   "sourceMedianSd": 0.0501729,
+   "sourceMedianSd": 0.0446151,
    "sources": [
     "hofmann-316l-2026",
     "trapp-316l-2017"
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.636943,
+    "coverageEqualWeight": 0.593168,
     "informative": true,
-    "p10": -0.01167,
-    "p90": 0.740954,
+    "p10": 0.114833,
+    "p90": 0.888402,
     "sdLeak": true
    }
   },
@@ -2274,36 +2274,36 @@
    "loso": {
     "bands": {
      "hofmann-316l-2026": {
-      "p10": -0.482377,
-      "p90": 0.395954
+      "p10": -0.570968,
+      "p90": 0.0955207
      },
      "ku-leuven-316l-2021": {
-      "p10": -0.337004,
-      "p90": 1.00231
+      "p10": -0.570968,
+      "p90": 0.389831
      },
      "trapp-316l-2017": {
-      "p10": -0.482377,
-      "p90": 1.19756
+      "p10": -0.353691,
+      "p90": 0.563965
      }
     },
     "coverageBySource": {
-     "hofmann-316l-2026": 0.475827,
-     "ku-leuven-316l-2021": 0.477273,
-     "trapp-316l-2017": 1.0
+     "hofmann-316l-2026": 0.569975,
+     "ku-leuven-316l-2021": 0.909091,
+     "trapp-316l-2017": 0.2
     },
-    "coverageEqualWeight": 0.651033,
-    "coveragePooled": 0.4819
+    "coverageEqualWeight": 0.559688,
+    "coveragePooled": 0.599548
    },
-   "median": -0.13923,
+   "median": -0.305451,
    "n": 442,
    "nBalling": 144,
    "nSets": 264,
    "nSources": 3,
-   "p10": -0.406067,
-   "p90": 0.891893,
-   "pooledMedian": 0.381631,
-   "pooledP10": -0.195115,
-   "pooledP90": 1.38333,
+   "p10": -0.398148,
+   "p90": 0.373626,
+   "pooledMedian": -0.0419743,
+   "pooledP10": -0.336147,
+   "pooledP90": 0.764298,
    "quantity": "depth",
    "regime": "keyhole",
    "rowsPerSource": {
@@ -2313,11 +2313,11 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "hofmann-316l-2026": 0.418174,
-    "ku-leuven-316l-2021": -0.321857,
-    "trapp-316l-2017": -0.25287
+    "hofmann-316l-2026": -0.00688705,
+    "ku-leuven-316l-2021": -0.27972,
+    "trapp-316l-2017": -0.370695
    },
-   "sourceMedianSd": 0.4088,
+   "sourceMedianSd": 0.189328,
    "sources": [
     "hofmann-316l-2026",
     "ku-leuven-316l-2021",
@@ -2325,10 +2325,10 @@
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.843936,
+    "coverageEqualWeight": 0.875376,
     "informative": false,
-    "p10": -0.929985,
-    "p90": 1.41581,
+    "p10": -0.640791,
+    "p90": 0.616269,
     "sdLeak": false
    }
   },
@@ -2357,16 +2357,16 @@
    "family": "316L",
    "kernel": "rosenthal",
    "loso": null,
-   "median": -0.353333,
+   "median": -0.401389,
    "n": 122,
    "nBalling": 41,
    "nSets": 63,
    "nSources": 2,
-   "p10": -0.356944,
-   "p90": 0.819225,
-   "pooledMedian": 0.4276,
-   "pooledP10": -0.0126716,
-   "pooledP90": 0.970169,
+   "p10": -0.545714,
+   "p90": 0.341388,
+   "pooledMedian": 0.0736624,
+   "pooledP10": -0.294437,
+   "pooledP90": 0.543868,
    "quantity": "depth",
    "regime": "transition",
    "rowsPerSource": {
@@ -2375,8 +2375,8 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "hofmann-316l-2026": 0.429037,
-    "trapp-316l-2017": -0.356944
+    "hofmann-316l-2026": 0.0745098,
+    "trapp-316l-2017": -0.545714
    },
    "sourceMedianSd": null,
    "sources": [
@@ -2400,7 +2400,7 @@
      170.0
     ],
     "laserPower_W": [
-     122.0,
+     49.0,
      195.0
     ],
     "scanSpeed_mm_s": [
@@ -2413,53 +2413,53 @@
    "loso": {
     "bands": {
      "ghosh-in625-2018": {
-      "p10": -0.332007,
-      "p90": 0.287356
+      "p10": -0.260733,
+      "p90": 0.445402
      },
      "lane-in625-2020": {
-      "p10": 0.236735,
-      "p90": 0.447917
+      "p10": 0.377551,
+      "p90": 0.639583
      }
     },
     "coverageBySource": {
-     "ghosh-in625-2018": 0.5,
-     "lane-in625-2020": 0.416667
+     "ghosh-in625-2018": 0.333333,
+     "lane-in625-2020": 0.5
     },
-    "coverageEqualWeight": 0.458333,
-    "coveragePooled": 0.4375
+    "coverageEqualWeight": 0.416667,
+    "coveragePooled": 0.444444
    },
-   "median": 0.254157,
-   "n": 16,
+   "median": 0.413158,
+   "n": 18,
    "nBalling": 0,
-   "nSets": 7,
+   "nSets": 9,
    "nSources": 2,
-   "p10": -0.328669,
-   "p90": 0.447917,
-   "pooledMedian": 0.236735,
-   "pooledP10": -0.332007,
-   "pooledP90": 0.363636,
+   "p10": -0.257038,
+   "p90": 0.62,
+   "pooledMedian": 0.397222,
+   "pooledP10": -0.260733,
+   "pooledP90": 0.62,
    "quantity": "depth",
    "regime": "conduction",
    "rowsPerSource": {
-    "ghosh-in625-2018": 4,
+    "ghosh-in625-2018": 6,
     "lane-in625-2020": 12
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ghosh-in625-2018": 0.265789,
-    "lane-in625-2020": 0.189189
+    "ghosh-in625-2018": 0.545455,
+    "lane-in625-2020": 0.351351
    },
-   "sourceMedianSd": 0.0541646,
+   "sourceMedianSd": 0.137252,
    "sources": [
     "ghosh-in625-2018",
     "lane-in625-2020"
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.583333,
+    "coverageEqualWeight": 0.75,
     "informative": false,
-    "p10": -0.398086,
-    "p90": 0.517334,
+    "p10": -0.43294,
+    "p90": 0.795902,
     "sdLeak": true
    }
   },
@@ -2488,16 +2488,16 @@
    "family": "Inconel 625",
    "kernel": "rosenthal",
    "loso": null,
-   "median": 0.598165,
+   "median": -0.040367,
    "n": 1,
    "nBalling": 0,
    "nSets": 1,
    "nSources": 1,
-   "p10": 0.598165,
-   "p90": 0.598165,
-   "pooledMedian": 0.598165,
-   "pooledP10": 0.598165,
-   "pooledP90": 0.598165,
+   "p10": -0.040367,
+   "p90": -0.040367,
+   "pooledMedian": -0.040367,
+   "pooledP10": -0.040367,
+   "pooledP90": -0.040367,
    "quantity": "depth",
    "regime": "keyhole",
    "rowsPerSource": {
@@ -2505,7 +2505,7 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ghosh-in625-2018": 0.598165
+    "ghosh-in625-2018": -0.040367
    },
    "sourceMedianSd": null,
    "sources": [
@@ -2537,16 +2537,16 @@
    "family": "Inconel 625",
    "kernel": "rosenthal",
    "loso": null,
-   "median": -0.26023,
+   "median": -0.492178,
    "n": 6,
    "nBalling": 0,
    "nSets": 2,
    "nSources": 1,
-   "p10": -0.436653,
-   "p90": -0.215642,
-   "pooledMedian": -0.26023,
-   "pooledP10": -0.436653,
-   "pooledP90": -0.215642,
+   "p10": -0.613286,
+   "p90": -0.392179,
+   "pooledMedian": -0.492178,
+   "pooledP10": -0.613286,
+   "pooledP90": -0.392179,
    "quantity": "depth",
    "regime": "transition",
    "rowsPerSource": {
@@ -2554,7 +2554,7 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "lane-in625-2020": -0.26023
+    "lane-in625-2020": -0.492178
    },
    "sourceMedianSd": null,
    "sources": [
@@ -2586,16 +2586,16 @@
    "family": "Inconel 718",
    "kernel": "rosenthal",
    "loso": null,
-   "median": 0.297781,
+   "median": -0.113099,
    "n": 7,
    "nBalling": 0,
    "nSets": 7,
    "nSources": 1,
-   "p10": -0.110475,
-   "p90": 0.413856,
-   "pooledMedian": 0.297781,
-   "pooledP10": -0.110475,
-   "pooledP90": 0.413856,
+   "p10": -0.283451,
+   "p90": -0.0756609,
+   "pooledMedian": -0.113099,
+   "pooledP10": -0.283451,
+   "pooledP90": -0.0756609,
    "quantity": "depth",
    "regime": "keyhole",
    "rowsPerSource": {
@@ -2603,7 +2603,7 @@
    },
    "sentinelOnly": true,
    "sourceMedian": {
-    "nist-amb2022-03": 0.297781
+    "nist-amb2022-03": -0.113099
    },
    "sourceMedianSd": null,
    "sources": [
@@ -2627,7 +2627,7 @@
      170.0
     ],
     "laserPower_W": [
-     122.0,
+     49.0,
      325.0
     ],
     "scanSpeed_mm_s": [
@@ -2640,50 +2640,50 @@
    "loso": {
     "bands": {
      "ghosh-in625-2018": {
-      "p10": -0.332007,
-      "p90": 0.37793
+      "p10": -0.41587,
+      "p90": 0.425178
      },
      "lane-in625-2020": {
-      "p10": 0.15864,
-      "p90": 0.447917
+      "p10": -0.175637,
+      "p90": 0.62
      },
      "nist-amb2022-03": {
-      "p10": -0.332007,
-      "p90": 0.447917
+      "p10": -0.41587,
+      "p90": 0.62
      }
     },
     "coverageBySource": {
-     "ghosh-in625-2018": 0.6,
+     "ghosh-in625-2018": 0.428571,
      "lane-in625-2020": 0.444444,
      "nist-amb2022-03": 1.0
     },
-    "coverageEqualWeight": 0.681481,
-    "coveragePooled": 0.6
+    "coverageEqualWeight": 0.624339,
+    "coveragePooled": 0.5625
    },
-   "median": 0.265789,
-   "n": 30,
+   "median": -0.0756609,
+   "n": 32,
    "nBalling": 0,
-   "nSets": 17,
+   "nSets": 19,
    "nSources": 3,
-   "p10": -0.323939,
-   "p90": 0.447917,
-   "pooledMedian": 0.216135,
-   "pooledP10": -0.336626,
-   "pooledP90": 0.37793,
+   "p10": -0.392179,
+   "p90": 0.591667,
+   "pooledMedian": -0.0889649,
+   "pooledP10": -0.41587,
+   "pooledP90": 0.545455,
    "quantity": "depth",
    "regime": "all",
    "rowsPerSource": {
-    "ghosh-in625-2018": 5,
+    "ghosh-in625-2018": 7,
     "lane-in625-2020": 18,
     "nist-amb2022-03": 7
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ghosh-in625-2018": 0.363636,
-    "lane-in625-2020": -0.229672,
-    "nist-amb2022-03": 0.297781
+    "ghosh-in625-2018": 0.545455,
+    "lane-in625-2020": -0.257038,
+    "nist-amb2022-03": -0.113099
    },
-   "sourceMedianSd": 0.325207,
+   "sourceMedianSd": 0.427864,
    "sources": [
     "ghosh-in625-2018",
     "lane-in625-2020",
@@ -2691,10 +2691,10 @@
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.814815,
+    "coverageEqualWeight": 0.857143,
     "informative": false,
-    "p10": -0.740724,
-    "p90": 0.864702,
+    "p10": -0.940529,
+    "p90": 1.14002,
     "sdLeak": false
    }
   },
@@ -2712,7 +2712,7 @@
      170.0
     ],
     "laserPower_W": [
-     122.0,
+     49.0,
      195.0
     ],
     "scanSpeed_mm_s": [
@@ -2725,53 +2725,53 @@
    "loso": {
     "bands": {
      "ghosh-in625-2018": {
-      "p10": -0.332007,
-      "p90": 0.287356
+      "p10": -0.260733,
+      "p90": 0.445402
      },
      "lane-in625-2020": {
-      "p10": 0.236735,
-      "p90": 0.447917
+      "p10": 0.377551,
+      "p90": 0.639583
      }
     },
     "coverageBySource": {
-     "ghosh-in625-2018": 0.5,
-     "lane-in625-2020": 0.416667
+     "ghosh-in625-2018": 0.333333,
+     "lane-in625-2020": 0.5
     },
-    "coverageEqualWeight": 0.458333,
-    "coveragePooled": 0.4375
+    "coverageEqualWeight": 0.416667,
+    "coveragePooled": 0.444444
    },
-   "median": 0.254157,
-   "n": 16,
+   "median": 0.413158,
+   "n": 18,
    "nBalling": 0,
-   "nSets": 7,
+   "nSets": 9,
    "nSources": 2,
-   "p10": -0.328669,
-   "p90": 0.447917,
-   "pooledMedian": 0.236735,
-   "pooledP10": -0.332007,
-   "pooledP90": 0.363636,
+   "p10": -0.257038,
+   "p90": 0.62,
+   "pooledMedian": 0.397222,
+   "pooledP10": -0.260733,
+   "pooledP90": 0.62,
    "quantity": "depth",
    "regime": "conduction",
    "rowsPerSource": {
-    "ghosh-in625-2018": 4,
+    "ghosh-in625-2018": 6,
     "lane-in625-2020": 12
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ghosh-in625-2018": 0.265789,
-    "lane-in625-2020": 0.189189
+    "ghosh-in625-2018": 0.545455,
+    "lane-in625-2020": 0.351351
    },
-   "sourceMedianSd": 0.0541646,
+   "sourceMedianSd": 0.137252,
    "sources": [
     "ghosh-in625-2018",
     "lane-in625-2020"
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.583333,
+    "coverageEqualWeight": 0.75,
     "informative": false,
-    "p10": -0.398086,
-    "p90": 0.517334,
+    "p10": -0.43294,
+    "p90": 0.795902,
     "sdLeak": true
    }
   },
@@ -2801,16 +2801,16 @@
    "family": "Ni",
    "kernel": "rosenthal",
    "loso": null,
-   "median": 0.413856,
+   "median": -0.0756609,
    "n": 8,
    "nBalling": 0,
    "nSets": 8,
    "nSources": 2,
-   "p10": 0.15864,
-   "p90": 0.598165,
-   "pooledMedian": 0.297781,
-   "pooledP10": -0.110475,
-   "pooledP90": 0.598165,
+   "p10": -0.175637,
+   "p90": -0.040367,
+   "pooledMedian": -0.113099,
+   "pooledP10": -0.283451,
+   "pooledP90": -0.040367,
    "quantity": "depth",
    "regime": "keyhole",
    "rowsPerSource": {
@@ -2819,8 +2819,8 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ghosh-in625-2018": 0.598165,
-    "nist-amb2022-03": 0.297781
+    "ghosh-in625-2018": -0.040367,
+    "nist-amb2022-03": -0.113099
    },
    "sourceMedianSd": null,
    "sources": [
@@ -2853,16 +2853,16 @@
    "family": "Ni",
    "kernel": "rosenthal",
    "loso": null,
-   "median": -0.26023,
+   "median": -0.492178,
    "n": 6,
    "nBalling": 0,
    "nSets": 2,
    "nSources": 1,
-   "p10": -0.436653,
-   "p90": -0.215642,
-   "pooledMedian": -0.26023,
-   "pooledP10": -0.436653,
-   "pooledP90": -0.215642,
+   "p10": -0.613286,
+   "p90": -0.392179,
+   "pooledMedian": -0.492178,
+   "pooledP10": -0.613286,
+   "pooledP90": -0.392179,
    "quantity": "depth",
    "regime": "transition",
    "rowsPerSource": {
@@ -2870,7 +2870,7 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "lane-in625-2020": -0.26023
+    "lane-in625-2020": -0.492178
    },
    "sourceMedianSd": null,
    "sources": [
@@ -2904,31 +2904,31 @@
    "loso": {
     "bands": {
      "ku-leuven-ti64-2021": {
-      "p10": -0.375885,
-      "p90": 1.1056
+      "p10": -0.405558,
+      "p90": 0.307543
      },
      "totis-ti64-2021": {
-      "p10": -0.0365122,
-      "p90": 1.1921
+      "p10": -0.156087,
+      "p90": 0.609461
      }
     },
     "coverageBySource": {
-     "ku-leuven-ti64-2021": 0.714286,
-     "totis-ti64-2021": 0.5375
+     "ku-leuven-ti64-2021": 0.571429,
+     "totis-ti64-2021": 0.2875
     },
-    "coverageEqualWeight": 0.625893,
-    "coveragePooled": 0.56383
+    "coverageEqualWeight": 0.429464,
+    "coveragePooled": 0.329787
    },
-   "median": 0.28394,
+   "median": -0.0467532,
    "n": 94,
    "nBalling": 0,
    "nSets": 94,
    "nSources": 2,
-   "p10": -0.28184,
-   "p90": 1.1921,
-   "pooledMedian": 0.172803,
-   "pooledP10": -0.353442,
-   "pooledP90": 1.14167,
+   "p10": -0.362557,
+   "p90": 0.609461,
+   "pooledMedian": -0.182994,
+   "pooledP10": -0.375501,
+   "pooledP90": 0.609461,
    "quantity": "depth",
    "regime": "all",
    "rowsPerSource": {
@@ -2937,20 +2937,20 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ku-leuven-ti64-2021": 0.401606,
-    "totis-ti64-2021": 0.0976289
+    "ku-leuven-ti64-2021": 0.0301205,
+    "totis-ti64-2021": -0.229003
    },
-   "sourceMedianSd": 0.214945,
+   "sourceMedianSd": 0.183228,
    "sources": [
     "ku-leuven-ti64-2021",
     "totis-ti64-2021"
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.858036,
+    "coverageEqualWeight": 0.847321,
     "informative": false,
-    "p10": -0.557313,
-    "p90": 1.46757,
+    "p10": -0.597382,
+    "p90": 0.844285,
     "sdLeak": true
    }
   },
@@ -2977,16 +2977,16 @@
    "family": "Ti64",
    "kernel": "rosenthal",
    "loso": null,
-   "median": 0.549126,
+   "median": 0.680407,
    "n": 8,
    "nBalling": 0,
    "nSets": 8,
    "nSources": 1,
-   "p10": -0.744,
-   "p90": 3.0704,
-   "pooledMedian": 0.549126,
-   "pooledP10": -0.744,
-   "pooledP90": 3.0704,
+   "p10": -0.722264,
+   "p90": 3.4288,
+   "pooledMedian": 0.680407,
+   "pooledP10": -0.722264,
+   "pooledP90": 3.4288,
    "quantity": "depth",
    "regime": "conduction",
    "rowsPerSource": {
@@ -2994,7 +2994,7 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "totis-ti64-2021": 0.549126
+    "totis-ti64-2021": 0.680407
    },
    "sourceMedianSd": null,
    "sources": [
@@ -3028,31 +3028,31 @@
    "loso": {
     "bands": {
      "ku-leuven-ti64-2021": {
-      "p10": -0.353442,
-      "p90": 0.972516
+      "p10": -0.371815,
+      "p90": 0.242167
      },
      "totis-ti64-2021": {
-      "p10": -0.0365122,
-      "p90": 1.1921
+      "p10": -0.156087,
+      "p90": 0.609461
      }
     },
     "coverageBySource": {
-     "ku-leuven-ti64-2021": 0.5,
-     "totis-ti64-2021": 0.560606
+     "ku-leuven-ti64-2021": 0.571429,
+     "totis-ti64-2021": 0.333333
     },
-    "coverageEqualWeight": 0.530303,
-    "coveragePooled": 0.55
+    "coverageEqualWeight": 0.452381,
+    "coveragePooled": 0.375
    },
-   "median": 0.28394,
+   "median": -0.0467532,
    "n": 80,
    "nBalling": 0,
    "nSets": 80,
    "nSources": 2,
-   "p10": -0.277704,
-   "p90": 1.14167,
-   "pooledMedian": 0.172803,
-   "pooledP10": -0.328368,
-   "pooledP90": 1.1056,
+   "p10": -0.357677,
+   "p90": 0.499563,
+   "pooledMedian": -0.182994,
+   "pooledP10": -0.370914,
+   "pooledP90": 0.471127,
    "quantity": "depth",
    "regime": "keyhole",
    "rowsPerSource": {
@@ -3061,20 +3061,20 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ku-leuven-ti64-2021": 0.401606,
-    "totis-ti64-2021": 0.0976289
+    "ku-leuven-ti64-2021": 0.0301205,
+    "totis-ti64-2021": -0.242028
    },
-   "sourceMedianSd": 0.214945,
+   "sourceMedianSd": 0.192438,
    "sources": [
     "ku-leuven-ti64-2021",
     "totis-ti64-2021"
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.880952,
+    "coverageEqualWeight": 0.819264,
     "informative": false,
-    "p10": -0.553177,
-    "p90": 1.41714,
+    "p10": -0.604306,
+    "p90": 0.746191,
     "sdLeak": true
    }
   },
@@ -3101,16 +3101,16 @@
    "family": "Ti64",
    "kernel": "rosenthal",
    "loso": null,
-   "median": 0.03,
+   "median": -0.372,
    "n": 6,
    "nBalling": 0,
    "nSets": 6,
    "nSources": 1,
-   "p10": -0.527517,
-   "p90": 0.218109,
-   "pooledMedian": 0.03,
-   "pooledP10": -0.527517,
-   "pooledP90": 0.218109,
+   "p10": -0.580778,
+   "p90": -0.181363,
+   "pooledMedian": -0.372,
+   "pooledP10": -0.580778,
+   "pooledP90": -0.181363,
    "quantity": "depth",
    "regime": "transition",
    "rowsPerSource": {
@@ -3118,7 +3118,7 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "totis-ti64-2021": 0.03
+    "totis-ti64-2021": -0.372
    },
    "sourceMedianSd": null,
    "sources": [
@@ -5238,50 +5238,50 @@
    "loso": {
     "bands": {
      "hofmann-316l-2026": {
-      "p10": -0.175,
-      "p90": 0.881416
+      "p10": -0.157813,
+      "p90": 0.320634
      },
      "ku-leuven-316l-2021": {
-      "p10": -0.223077,
-      "p90": 0.591447
+      "p10": -0.23351,
+      "p90": 0.107237
      },
      "trapp-316l-2017": {
-      "p10": -0.217032,
-      "p90": 0.847664
+      "p10": -0.23351,
+      "p90": 0.29579
      }
     },
     "coverageBySource": {
-     "hofmann-316l-2026": 0.735821,
-     "ku-leuven-316l-2021": 0.522727,
-     "trapp-316l-2017": 0.818182
+     "hofmann-316l-2026": 0.630564,
+     "ku-leuven-316l-2021": 0.477273,
+     "trapp-316l-2017": 0.909091
     },
-    "coverageEqualWeight": 0.692243,
-    "coveragePooled": 0.724138
+    "coverageEqualWeight": 0.672309,
+    "coveragePooled": 0.625514
    },
-   "median": 0.296293,
-   "n": 725,
+   "median": -0.0274367,
+   "n": 729,
    "nBalling": 216,
-   "nSets": 427,
+   "nSets": 430,
    "nSources": 3,
-   "p10": -0.209966,
-   "p90": 0.847664,
-   "pooledMedian": 0.129167,
-   "pooledP10": -0.312236,
-   "pooledP90": 0.559732,
+   "p10": -0.22807,
+   "p90": 0.29579,
+   "pooledMedian": -0.111538,
+   "pooledP10": -0.304839,
+   "pooledP90": 0.113068,
    "quantity": "width",
    "regime": "all",
    "rowsPerSource": {
-    "hofmann-316l-2026": 670,
+    "hofmann-316l-2026": 674,
     "ku-leuven-316l-2021": 44,
     "trapp-316l-2017": 11
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "hofmann-316l-2026": 0.083151,
-    "ku-leuven-316l-2021": 0.554464,
-    "trapp-316l-2017": 0.0523437
+    "hofmann-316l-2026": -0.118865,
+    "ku-leuven-316l-2021": 0.114085,
+    "trapp-316l-2017": -0.0808824
    },
-   "sourceMedianSd": 0.281428,
+   "sourceMedianSd": 0.12498,
    "sources": [
     "hofmann-316l-2026",
     "ku-leuven-316l-2021",
@@ -5289,10 +5289,10 @@
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.862641,
-    "informative": false,
-    "p10": -0.570644,
-    "p90": 1.20834,
+    "coverageEqualWeight": 0.839403,
+    "informative": true,
+    "p10": -0.388245,
+    "p90": 0.455965,
     "sdLeak": false
    }
   },
@@ -5323,53 +5323,53 @@
    "loso": {
     "bands": {
      "hofmann-316l-2026": {
-      "p10": -0.223077,
-      "p90": -0.08
+      "p10": -0.111538,
+      "p90": 0.016
      },
      "trapp-316l-2017": {
-      "p10": -0.441008,
-      "p90": -0.169194
+      "p10": -0.387908,
+      "p90": -0.0867311
      }
     },
     "coverageBySource": {
-     "hofmann-316l-2026": 0.216561,
-     "trapp-316l-2017": 0.666667
+     "hofmann-316l-2026": 0.0931677,
+     "trapp-316l-2017": 0.333333
     },
-    "coverageEqualWeight": 0.441614,
-    "coveragePooled": 0.225
+    "coverageEqualWeight": 0.213251,
+    "coveragePooled": 0.097561
    },
-   "median": -0.223077,
-   "n": 160,
+   "median": -0.111538,
+   "n": 164,
    "nBalling": 31,
-   "nSets": 99,
+   "nSets": 102,
    "nSources": 2,
-   "p10": -0.407026,
-   "p90": -0.08,
-   "pooledMedian": -0.289603,
-   "pooledP10": -0.441008,
-   "pooledP90": -0.169194,
+   "p10": -0.354936,
+   "p90": 0.016,
+   "pooledMedian": -0.231646,
+   "pooledP10": -0.387908,
+   "pooledP90": -0.0853951,
    "quantity": "width",
    "regime": "conduction",
    "rowsPerSource": {
-    "hofmann-316l-2026": 157,
+    "hofmann-316l-2026": 161,
     "trapp-316l-2017": 3
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "hofmann-316l-2026": -0.294667,
-    "trapp-316l-2017": -0.175
+    "hofmann-316l-2026": -0.232354,
+    "trapp-316l-2017": -0.0808824
    },
-   "sourceMedianSd": 0.0846176,
+   "sourceMedianSd": 0.107107,
    "sources": [
     "hofmann-316l-2026",
     "trapp-316l-2017"
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.792994,
+    "coverageEqualWeight": 0.767081,
     "informative": true,
-    "p10": -0.515472,
-    "p90": 0.0284459,
+    "p10": -0.492205,
+    "p90": 0.153268,
     "sdLeak": true
    }
   },
@@ -5400,36 +5400,36 @@
    "loso": {
     "bands": {
      "hofmann-316l-2026": {
-      "p10": 0.15316,
-      "p90": 0.932414
+      "p10": -0.157813,
+      "p90": 0.348966
      },
      "ku-leuven-316l-2021": {
-      "p10": 0.0523437,
-      "p90": 0.794189
+      "p10": -0.157813,
+      "p90": 0.251649
      },
      "trapp-316l-2017": {
-      "p10": 0.123064,
-      "p90": 0.856283
+      "p10": -0.181922,
+      "p90": 0.302069
      }
     },
     "coverageBySource": {
-     "hofmann-316l-2026": 0.735369,
-     "ku-leuven-316l-2021": 0.772727,
-     "trapp-316l-2017": 0.666667
+     "hofmann-316l-2026": 0.804071,
+     "ku-leuven-316l-2021": 0.681818,
+     "trapp-316l-2017": 0.833333
     },
-    "coverageEqualWeight": 0.724921,
-    "coveragePooled": 0.738149
+    "coverageEqualWeight": 0.773074,
+    "coveragePooled": 0.792325
    },
-   "median": 0.409677,
+   "median": -0.000535294,
    "n": 443,
    "nBalling": 144,
    "nSets": 265,
    "nSources": 3,
-   "p10": 0.0564464,
-   "p90": 0.881416,
-   "pooledMedian": 0.277311,
-   "pooledP10": 0.039667,
-   "pooledP90": 0.66623,
+   "p10": -0.157813,
+   "p90": 0.312892,
+   "pooledMedian": -0.0696447,
+   "pooledP10": -0.213299,
+   "pooledP90": 0.162228,
    "quantity": "width",
    "regime": "keyhole",
    "rowsPerSource": {
@@ -5439,11 +5439,11 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "hofmann-316l-2026": 0.258492,
-    "ku-leuven-316l-2021": 0.554464,
-    "trapp-316l-2017": 0.409677
+    "hofmann-316l-2026": -0.0748979,
+    "ku-leuven-316l-2021": 0.114085,
+    "trapp-316l-2017": -0.0148387
    },
-   "sourceMedianSd": 0.147998,
+   "sourceMedianSd": 0.0965597,
    "sources": [
     "hofmann-316l-2026",
     "ku-leuven-316l-2021",
@@ -5451,10 +5451,10 @@
    ],
    "state": "band",
    "widened": {
-    "coverageEqualWeight": 0.941649,
+    "coverageEqualWeight": 0.93843,
     "informative": true,
-    "p10": -0.133227,
-    "p90": 1.07109,
+    "p10": -0.281563,
+    "p90": 0.436643,
     "sdLeak": false
    }
   },
@@ -5483,16 +5483,16 @@
    "family": "316L",
    "kernel": "rosenthal",
    "loso": null,
-   "median": -0.131496,
+   "median": -0.142884,
    "n": 122,
    "nBalling": 41,
    "nSets": 63,
    "nSources": 2,
-   "p10": -0.195098,
-   "p90": 0.0341207,
-   "pooledMedian": -0.0815217,
-   "pooledP10": -0.223388,
-   "pooledP90": 0.0750064,
+   "p10": -0.228346,
+   "p90": -0.0521168,
+   "pooledMedian": -0.142884,
+   "pooledP10": -0.281884,
+   "pooledP90": -0.0142253,
    "quantity": "width",
    "regime": "transition",
    "rowsPerSource": {
@@ -5501,8 +5501,8 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "hofmann-316l-2026": -0.0809726,
-    "trapp-316l-2017": -0.195098
+    "hofmann-316l-2026": -0.142884,
+    "trapp-316l-2017": -0.228346
    },
    "sourceMedianSd": null,
    "sources": [
@@ -5526,7 +5526,7 @@
      170.0
     ],
     "laserPower_W": [
-     122.0,
+     49.0,
      195.0
     ],
     "scanSpeed_mm_s": [
@@ -5539,53 +5539,53 @@
    "loso": {
     "bands": {
      "ghosh-in625-2018": {
-      "p10": -0.275,
-      "p90": -0.164326
+      "p10": -0.188226,
+      "p90": -0.0750401
      },
      "lane-in625-2020": {
-      "p10": -0.298507,
-      "p90": -0.225309
+      "p10": -0.288288,
+      "p90": -0.130645
      }
     },
     "coverageBySource": {
-     "ghosh-in625-2018": 0.75,
+     "ghosh-in625-2018": 0.5,
      "lane-in625-2020": 0.583333
     },
-    "coverageEqualWeight": 0.666667,
-    "coveragePooled": 0.625
+    "coverageEqualWeight": 0.541667,
+    "coveragePooled": 0.555556
    },
-   "median": -0.24812,
-   "n": 16,
+   "median": -0.16391,
+   "n": 18,
    "nBalling": 0,
-   "nSets": 7,
+   "nSets": 9,
    "nSources": 2,
-   "p10": -0.298507,
-   "p90": -0.173037,
-   "pooledMedian": -0.24812,
-   "pooledP10": -0.290152,
-   "pooledP90": -0.164326,
+   "p10": -0.276923,
+   "p90": -0.0846818,
+   "pooledMedian": -0.160929,
+   "pooledP10": -0.276923,
+   "pooledP90": -0.0750401,
    "quantity": "width",
    "regime": "conduction",
    "rowsPerSource": {
-    "ghosh-in625-2018": 4,
+    "ghosh-in625-2018": 6,
     "lane-in625-2020": 12
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ghosh-in625-2018": -0.24812,
-    "lane-in625-2020": -0.2498
+    "ghosh-in625-2018": -0.208955,
+    "lane-in625-2020": -0.159596
    },
-   "sourceMedianSd": 0.00118761,
+   "sourceMedianSd": 0.0349023,
    "sources": [
     "ghosh-in625-2018",
     "lane-in625-2020"
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.666667,
+    "coverageEqualWeight": 0.708333,
     "informative": true,
-    "p10": -0.30003,
-    "p90": -0.171515,
+    "p10": -0.321654,
+    "p90": -0.0399511,
     "sdLeak": true
    }
   },
@@ -5614,16 +5614,16 @@
    "family": "Inconel 625",
    "kernel": "rosenthal",
    "loso": null,
-   "median": 0.0196911,
+   "median": -0.17027,
    "n": 1,
    "nBalling": 0,
    "nSets": 1,
    "nSources": 1,
-   "p10": 0.0196911,
-   "p90": 0.0196911,
-   "pooledMedian": 0.0196911,
-   "pooledP10": 0.0196911,
-   "pooledP90": 0.0196911,
+   "p10": -0.17027,
+   "p90": -0.17027,
+   "pooledMedian": -0.17027,
+   "pooledP10": -0.17027,
+   "pooledP90": -0.17027,
    "quantity": "width",
    "regime": "keyhole",
    "rowsPerSource": {
@@ -5631,7 +5631,7 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ghosh-in625-2018": 0.0196911
+    "ghosh-in625-2018": -0.17027
    },
    "sourceMedianSd": null,
    "sources": [
@@ -5663,16 +5663,16 @@
    "family": "Inconel 625",
    "kernel": "rosenthal",
    "loso": null,
-   "median": -0.10563,
+   "median": -0.196756,
    "n": 6,
    "nBalling": 0,
    "nSets": 2,
    "nSources": 1,
-   "p10": -0.124185,
-   "p90": -0.086658,
-   "pooledMedian": -0.10563,
-   "pooledP10": -0.124185,
-   "pooledP90": -0.086658,
+   "p10": -0.219307,
+   "p90": -0.148098,
+   "pooledMedian": -0.196756,
+   "pooledP10": -0.219307,
+   "pooledP90": -0.148098,
    "quantity": "width",
    "regime": "transition",
    "rowsPerSource": {
@@ -5680,7 +5680,7 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "lane-in625-2020": -0.10563
+    "lane-in625-2020": -0.196756
    },
    "sourceMedianSd": null,
    "sources": [
@@ -5712,16 +5712,16 @@
    "family": "Inconel 718",
    "kernel": "rosenthal",
    "loso": null,
-   "median": 0.371974,
+   "median": -0.0579604,
    "n": 7,
    "nBalling": 0,
    "nSets": 7,
    "nSources": 1,
-   "p10": 0.249118,
-   "p90": 0.789077,
-   "pooledMedian": 0.371974,
-   "pooledP10": 0.249118,
-   "pooledP90": 0.789077,
+   "p10": -0.100577,
+   "p90": 0.209981,
+   "pooledMedian": -0.0579604,
+   "pooledP10": -0.100577,
+   "pooledP90": 0.209981,
    "quantity": "width",
    "regime": "keyhole",
    "rowsPerSource": {
@@ -5729,7 +5729,7 @@
    },
    "sentinelOnly": true,
    "sourceMedian": {
-    "nist-amb2022-03": 0.371974
+    "nist-amb2022-03": -0.0579604
    },
    "sourceMedianSd": null,
    "sources": [
@@ -5753,7 +5753,7 @@
      170.0
     ],
     "laserPower_W": [
-     122.0,
+     49.0,
      325.0
     ],
     "scanSpeed_mm_s": [
@@ -5766,50 +5766,50 @@
    "loso": {
     "bands": {
      "ghosh-in625-2018": {
-      "p10": -0.271646,
-      "p90": 0.50484
+      "p10": -0.196756,
+      "p90": 0.022338
      },
      "lane-in625-2020": {
-      "p10": -0.298507,
-      "p90": 0.50484
+      "p10": -0.276923,
+      "p90": 0.022338
      },
      "nist-amb2022-03": {
-      "p10": -0.298507,
-      "p90": -0.086658
+      "p10": -0.276923,
+      "p90": -0.0964328
      }
     },
     "coverageBySource": {
-     "ghosh-in625-2018": 0.8,
+     "ghosh-in625-2018": 0.571429,
      "lane-in625-2020": 1.0,
-     "nist-amb2022-03": 0.0
+     "nist-amb2022-03": 0.142857
     },
-    "coverageEqualWeight": 0.6,
-    "coveragePooled": 0.733333
+    "coverageEqualWeight": 0.571429,
+    "coveragePooled": 0.71875
    },
-   "median": -0.124185,
-   "n": 30,
+   "median": -0.137654,
+   "n": 32,
    "nBalling": 0,
-   "nSets": 17,
+   "nSets": 19,
    "nSources": 3,
-   "p10": -0.275,
-   "p90": 0.460585,
-   "pooledMedian": -0.164326,
-   "pooledP10": -0.275,
-   "pooledP90": 0.371974,
+   "p10": -0.219307,
+   "p90": 0.0186005,
+   "pooledMedian": -0.149516,
+   "pooledP10": -0.208955,
+   "pooledP90": -0.0574525,
    "quantity": "width",
    "regime": "all",
    "rowsPerSource": {
-    "ghosh-in625-2018": 5,
+    "ghosh-in625-2018": 7,
     "lane-in625-2020": 18,
     "nist-amb2022-03": 7
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ghosh-in625-2018": -0.232258,
-    "lane-in625-2020": -0.183653,
-    "nist-amb2022-03": 0.371974
+    "ghosh-in625-2018": -0.17027,
+    "lane-in625-2020": -0.160929,
+    "nist-amb2022-03": -0.0579604
    },
-   "sourceMedianSd": 0.335703,
+   "sourceMedianSd": 0.0623208,
    "sources": [
     "ghosh-in625-2018",
     "lane-in625-2020",
@@ -5817,10 +5817,10 @@
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.666667,
-    "informative": false,
-    "p10": -0.705237,
-    "p90": 0.890822,
+    "coverageEqualWeight": 0.761905,
+    "informative": true,
+    "p10": -0.299178,
+    "p90": 0.0984708,
     "sdLeak": false
    }
   },
@@ -5838,7 +5838,7 @@
      170.0
     ],
     "laserPower_W": [
-     122.0,
+     49.0,
      195.0
     ],
     "scanSpeed_mm_s": [
@@ -5851,53 +5851,53 @@
    "loso": {
     "bands": {
      "ghosh-in625-2018": {
-      "p10": -0.275,
-      "p90": -0.164326
+      "p10": -0.188226,
+      "p90": -0.0750401
      },
      "lane-in625-2020": {
-      "p10": -0.298507,
-      "p90": -0.225309
+      "p10": -0.288288,
+      "p90": -0.130645
      }
     },
     "coverageBySource": {
-     "ghosh-in625-2018": 0.75,
+     "ghosh-in625-2018": 0.5,
      "lane-in625-2020": 0.583333
     },
-    "coverageEqualWeight": 0.666667,
-    "coveragePooled": 0.625
+    "coverageEqualWeight": 0.541667,
+    "coveragePooled": 0.555556
    },
-   "median": -0.24812,
-   "n": 16,
+   "median": -0.16391,
+   "n": 18,
    "nBalling": 0,
-   "nSets": 7,
+   "nSets": 9,
    "nSources": 2,
-   "p10": -0.298507,
-   "p90": -0.173037,
-   "pooledMedian": -0.24812,
-   "pooledP10": -0.290152,
-   "pooledP90": -0.164326,
+   "p10": -0.276923,
+   "p90": -0.0846818,
+   "pooledMedian": -0.160929,
+   "pooledP10": -0.276923,
+   "pooledP90": -0.0750401,
    "quantity": "width",
    "regime": "conduction",
    "rowsPerSource": {
-    "ghosh-in625-2018": 4,
+    "ghosh-in625-2018": 6,
     "lane-in625-2020": 12
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ghosh-in625-2018": -0.24812,
-    "lane-in625-2020": -0.2498
+    "ghosh-in625-2018": -0.208955,
+    "lane-in625-2020": -0.159596
    },
-   "sourceMedianSd": 0.00118761,
+   "sourceMedianSd": 0.0349023,
    "sources": [
     "ghosh-in625-2018",
     "lane-in625-2020"
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.666667,
+    "coverageEqualWeight": 0.708333,
     "informative": true,
-    "p10": -0.30003,
-    "p90": -0.171515,
+    "p10": -0.321654,
+    "p90": -0.0399511,
     "sdLeak": true
    }
   },
@@ -5927,16 +5927,16 @@
    "family": "Ni",
    "kernel": "rosenthal",
    "loso": null,
-   "median": 0.0196911,
+   "median": -0.17027,
    "n": 8,
    "nBalling": 0,
    "nSets": 8,
    "nSources": 2,
-   "p10": 0.0196911,
-   "p90": 0.50484,
-   "pooledMedian": 0.322229,
-   "pooledP10": 0.0196911,
-   "pooledP90": 0.789077,
+   "p10": -0.17027,
+   "p90": 0.022338,
+   "pooledMedian": -0.0826893,
+   "pooledP10": -0.17027,
+   "pooledP90": 0.209981,
    "quantity": "width",
    "regime": "keyhole",
    "rowsPerSource": {
@@ -5945,8 +5945,8 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ghosh-in625-2018": 0.0196911,
-    "nist-amb2022-03": 0.371974
+    "ghosh-in625-2018": -0.17027,
+    "nist-amb2022-03": -0.0579604
    },
    "sourceMedianSd": null,
    "sources": [
@@ -5979,16 +5979,16 @@
    "family": "Ni",
    "kernel": "rosenthal",
    "loso": null,
-   "median": -0.10563,
+   "median": -0.196756,
    "n": 6,
    "nBalling": 0,
    "nSets": 2,
    "nSources": 1,
-   "p10": -0.124185,
-   "p90": -0.086658,
-   "pooledMedian": -0.10563,
-   "pooledP10": -0.124185,
-   "pooledP90": -0.086658,
+   "p10": -0.219307,
+   "p90": -0.148098,
+   "pooledMedian": -0.196756,
+   "pooledP10": -0.219307,
+   "pooledP90": -0.148098,
    "quantity": "width",
    "regime": "transition",
    "rowsPerSource": {
@@ -5996,7 +5996,7 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "lane-in625-2020": -0.10563
+    "lane-in625-2020": -0.196756
    },
    "sourceMedianSd": null,
    "sources": [
@@ -6030,31 +6030,31 @@
    "loso": {
     "bands": {
      "ku-leuven-ti64-2021": {
-      "p10": -0.40319,
-      "p90": 0.934493
+      "p10": -0.379182,
+      "p90": 0.217384
      },
      "totis-ti64-2021": {
-      "p10": 0.237272,
-      "p90": 0.507856
+      "p10": -0.172642,
+      "p90": -0.038092
      }
     },
     "coverageBySource": {
      "ku-leuven-ti64-2021": 1.0,
-     "totis-ti64-2021": 0.15
+     "totis-ti64-2021": 0.125
     },
-    "coverageEqualWeight": 0.575,
-    "coveragePooled": 0.276596
+    "coverageEqualWeight": 0.5625,
+    "coveragePooled": 0.255319
    },
-   "median": 0.367916,
+   "median": -0.100022,
    "n": 94,
    "nBalling": 0,
    "nSets": 94,
    "nSources": 2,
-   "p10": -0.127957,
-   "p90": 0.821408,
-   "pooledMedian": 0.419145,
-   "pooledP10": -0.377339,
-   "pooledP90": 0.915328,
+   "p10": -0.344956,
+   "p90": 0.142122,
+   "pooledMedian": -0.07913,
+   "pooledP10": -0.369522,
+   "pooledP90": 0.217107,
    "quantity": "width",
    "regime": "all",
    "rowsPerSource": {
@@ -6063,20 +6063,20 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ku-leuven-ti64-2021": 0.322857,
-    "totis-ti64-2021": 0.480411
+    "ku-leuven-ti64-2021": -0.11048,
+    "totis-ti64-2021": -0.0450763
    },
-   "sourceMedianSd": 0.111407,
+   "sourceMedianSd": 0.0462473,
    "sources": [
     "ku-leuven-ti64-2021",
     "totis-ti64-2021"
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.66875,
-    "informative": false,
-    "p10": -0.270737,
-    "p90": 0.964187,
+    "coverageEqualWeight": 0.64375,
+    "informative": true,
+    "p10": -0.404227,
+    "p90": 0.201393,
     "sdLeak": true
    }
   },
@@ -6103,16 +6103,16 @@
    "family": "Ti64",
    "kernel": "rosenthal",
    "loso": null,
-   "median": -0.419152,
+   "median": -0.369522,
    "n": 8,
    "nBalling": 0,
    "nSets": 8,
    "nSources": 1,
-   "p10": -0.517505,
-   "p90": -0.100894,
-   "pooledMedian": -0.419152,
-   "pooledP10": -0.517505,
-   "pooledP90": -0.100894,
+   "p10": -0.475359,
+   "p90": -0.0242656,
+   "pooledMedian": -0.369522,
+   "pooledP10": -0.475359,
+   "pooledP90": -0.0242656,
    "quantity": "width",
    "regime": "conduction",
    "rowsPerSource": {
@@ -6120,7 +6120,7 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "totis-ti64-2021": -0.419152
+    "totis-ti64-2021": -0.369522
    },
    "sourceMedianSd": null,
    "sources": [
@@ -6154,31 +6154,31 @@
    "loso": {
     "bands": {
      "ku-leuven-ti64-2021": {
-      "p10": 0.0168027,
-      "p90": 0.97377
+      "p10": -0.308021,
+      "p90": 0.263741
      },
      "totis-ti64-2021": {
-      "p10": 0.237272,
-      "p90": 0.507856
+      "p10": -0.172642,
+      "p90": -0.038092
      }
     },
     "coverageBySource": {
      "ku-leuven-ti64-2021": 1.0,
-     "totis-ti64-2021": 0.181818
+     "totis-ti64-2021": 0.151515
     },
-    "coverageEqualWeight": 0.590909,
-    "coveragePooled": 0.325
+    "coverageEqualWeight": 0.575758,
+    "coveragePooled": 0.3
    },
-   "median": 0.419145,
+   "median": -0.0976308,
    "n": 80,
    "nBalling": 0,
    "nSets": 80,
    "nSources": 2,
-   "p10": 0.18638,
-   "p90": 0.886844,
-   "pooledMedian": 0.507856,
-   "pooledP10": 0.040304,
-   "pooledP90": 0.934493,
+   "p10": -0.225774,
+   "p90": 0.203275,
+   "pooledMedian": -0.038092,
+   "pooledP10": -0.287344,
+   "pooledP90": 0.217384,
    "quantity": "width",
    "regime": "keyhole",
    "rowsPerSource": {
@@ -6187,20 +6187,20 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "ku-leuven-ti64-2021": 0.322857,
-    "totis-ti64-2021": 0.603547
+    "ku-leuven-ti64-2021": -0.11048,
+    "totis-ti64-2021": 0.00187365
    },
-   "sourceMedianSd": 0.198478,
+   "sourceMedianSd": 0.0794459,
    "sources": [
     "ku-leuven-ti64-2021",
     "totis-ti64-2021"
    ],
    "state": "band-under-covers",
    "widened": {
-    "coverageEqualWeight": 0.80303,
+    "coverageEqualWeight": 0.712121,
     "informative": true,
-    "p10": -0.0679893,
-    "p90": 1.14121,
+    "p10": -0.327592,
+    "p90": 0.305093,
     "sdLeak": true
    }
   },
@@ -6227,16 +6227,16 @@
    "family": "Ti64",
    "kernel": "rosenthal",
    "loso": null,
-   "median": -0.384112,
+   "median": -0.403218,
    "n": 6,
    "nBalling": 0,
    "nSets": 6,
    "nSources": 1,
-   "p10": -0.56766,
-   "p90": -0.0449267,
-   "pooledMedian": -0.384112,
-   "pooledP10": -0.56766,
-   "pooledP90": -0.0449267,
+   "p10": -0.553484,
+   "p90": -0.216897,
+   "pooledMedian": -0.403218,
+   "pooledP10": -0.553484,
+   "pooledP90": -0.216897,
    "quantity": "width",
    "regime": "transition",
    "rowsPerSource": {
@@ -6244,7 +6244,7 @@
    },
    "sentinelOnly": false,
    "sourceMedian": {
-    "totis-ti64-2021": -0.384112
+    "totis-ti64-2021": -0.403218
    },
    "sourceMedianSd": null,
    "sources": [
@@ -6256,8 +6256,8 @@
  ],
  "codeRevision": {
   "dirtyTrackedPaths": 0,
-  "gitBranch": "research/in625-regime-threshold",
-  "gitHead": "0cad625b79cd5d4911b1c6a8d87bea14f745bcfc",
+  "gitBranch": "feat/p1-sourced-physics",
+  "gitHead": "5ed41e0cb5196565c137ff7eee8781ae3ce7e0aa",
   "python": "3.12.10"
  },
  "config": {
@@ -6326,23 +6326,23 @@
   "z80": 1.2816
  },
  "configSha256": "398d02d54da2261b5c5d2944b89d5147f8534f043bb291c1a83f235c7e70303f",
- "contentSha256": "9cc1957538f8cd9fd95f0542d32c896648dc7eee45d71d0ef34613e838782de2",
+ "contentSha256": "7a003dbdea127f6c436955c4280cd5b739d890855871bb0add43b5359cb9dde4",
  "evidenceKind": "screening-only",
  "evidenceLabel": "Screening only",
  "excluded": {
   "depth|eagar-tsai": 1,
   "depth|goldak": 11,
-  "depth|rosenthal": 15,
+  "depth|rosenthal": 9,
   "width|goldak": 10,
-  "width|rosenthal": 14
+  "width|rosenthal": 8
  },
  "experimentalValidation": false,
  "generatedAt": "2026-10-11",
  "honesty": "typical error of the frozen screening kernels on published single tracks, per kernel, alloy family and screening regime class; reporting text only: it is not a tolerance, not a prediction interval for any other machine and not experimental validation; the leave-one-source-out coverage is reported next to every band and shows that a band built from some published sources does not transfer to another; no per-row measurement uncertainty exists in any source; digitized figures (Trapp, Ghosh) and a development sentinel (NIST AMB2022-03 IN718) are flagged; experimentalValidation=false",
- "implementationHash": "0d52d7f707b98fc588c0972c1c198315d3c1071ed1c7ad7ab91616e69b5248e8",
+ "implementationHash": "c61ab6a81912c92ce086073b0e5543fdfc3dd2740cb04458758a147abce88a32",
  "labelPromotionProposed": "none",
  "rowCount": 863,
- "rowsSha256": "df2293f6f5f883bbeff18d9abfd209a9b6931371ac10c26d1ced01023ff315c9",
+ "rowsSha256": "895793ad49c2d93b543273d88019f9edea0774be475b8d77cbf9c7c8fb7d0a7c",
  "schema": "lpbf-meltpool-error-bands-1",
  "sources": [
   {

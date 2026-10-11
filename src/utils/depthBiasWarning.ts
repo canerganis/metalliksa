@@ -16,7 +16,7 @@ export const MIN_ABS_MEDIAN_FOR_DIRECTION = 0.05;
 /** Error-band class edges on the normalized enthalpy index dH/hs (summary config.thresholds): < lo conduction, < hi transition, else keyhole. */
 export const DEPTH_BIAS_ENTHALPY_EDGES: readonly [number, number] = [15.0, 20.0];
 
-export const DEPTH_BIAS_BANDS_ID = "lpbf-meltpool-error-bands-2026-10-11-9cc1957538f8";
+export const DEPTH_BIAS_BANDS_ID = "lpbf-meltpool-error-bands-2026-10-11-7a003dbdea12";
 
 /** "alloy|kernel|regime" -> [median relative error, n tracks, n sources]. */
 export const DEPTH_BIAS_CELLS: Record<string, readonly [number, number, number]> = {
@@ -40,16 +40,16 @@ export const DEPTH_BIAS_CELLS: Record<string, readonly [number, number, number]>
   "Ti-6Al-4V|goldak|conduction": [0.753, 8, 1],
   "Ti-6Al-4V|goldak|keyhole": [-0.047, 80, 2],
   "Ti-6Al-4V|goldak|transition": [-0.352, 6, 1],
-  "316L Stainless Steel|rosenthal|conduction": [0.2, 160, 2],
-  "316L Stainless Steel|rosenthal|keyhole": [-0.139, 442, 3],
-  "316L Stainless Steel|rosenthal|transition": [-0.353, 122, 2],
-  "Inconel 625|rosenthal|conduction": [0.254, 16, 2],
-  "Inconel 625|rosenthal|keyhole": [0.598, 1, 1],
-  "Inconel 625|rosenthal|transition": [-0.26, 6, 1],
-  "Inconel 718|rosenthal|keyhole": [0.298, 7, 1],
-  "Ti-6Al-4V|rosenthal|conduction": [0.549, 8, 1],
-  "Ti-6Al-4V|rosenthal|keyhole": [0.284, 80, 2],
-  "Ti-6Al-4V|rosenthal|transition": [0.03, 6, 1],
+  "316L Stainless Steel|rosenthal|conduction": [0.325, 164, 2],
+  "316L Stainless Steel|rosenthal|keyhole": [-0.305, 442, 3],
+  "316L Stainless Steel|rosenthal|transition": [-0.401, 122, 2],
+  "Inconel 625|rosenthal|conduction": [0.413, 18, 2],
+  "Inconel 625|rosenthal|keyhole": [-0.04, 1, 1],
+  "Inconel 625|rosenthal|transition": [-0.492, 6, 1],
+  "Inconel 718|rosenthal|keyhole": [-0.113, 7, 1],
+  "Ti-6Al-4V|rosenthal|conduction": [0.68, 8, 1],
+  "Ti-6Al-4V|rosenthal|keyhole": [-0.047, 80, 2],
+  "Ti-6Al-4V|rosenthal|transition": [-0.372, 6, 1],
 };
 
 export const DEPTH_BIAS_DIRECTION_TEMPLATE =
@@ -74,6 +74,13 @@ export const DEPTH_BIAS_DISAGREE_NO_CELL_TEMPLATE =
   "No depth bias direction: the served regime label ({label}) and the error-band class from the enthalpy index " +
   "({regime}, dH/hs {index}) disagree here, and there is no held-out check for {kernel} on {alloy} in the {regime} band. " +
   "No direction is given.";
+/** P1 planned bump (2026-10-11): appended to UNDER texts in the transition and keyhole bands and to Rosenthal OVER texts in the conduction band. */
+export const DEPTH_BIAS_P1_UNDER_NOTE =
+  " After 2026-10-11 no kernel represents the measured absorptance rise, so transition and keyhole " +
+  "depth is biased low in all three kernels.";
+export const DEPTH_BIAS_P1_OVER_NOTE =
+  " The conduction field carries no latent-heat cut since 2026-10-11, so conduction-mode depth from " +
+  "the Rosenthal kernel is higher than before.";
 export const DEPTH_BIAS_BASIS_TEMPLATE =
   "Error-band summary {bands_id}, cell {alloy} / {kernel_id} / {regime}: relative error pred / meas - 1, equal source " +
   "weight, digitized figures included, screening only.";
@@ -170,9 +177,12 @@ export function computeDepthBiasWarning(
   if (n < MIN_N_FOR_DIRECTION) return { direction: null, text: fill(DEPTH_BIAS_FEW_TEMPLATE, fields), basis };
   if (Math.abs(median) < MIN_ABS_MEDIAN_FOR_DIRECTION) return { direction: null, text: fill(DEPTH_BIAS_FLAT_TEMPLATE, fields), basis };
   const over = median > 0;
+  let text = fill(DEPTH_BIAS_DIRECTION_TEMPLATE, { ...fields, verb: over ? "may be overestimated" : "may be underestimated" });
+  if (!over && (rc === "transition" || rc === "keyhole")) text += DEPTH_BIAS_P1_UNDER_NOTE;
+  else if (over && rc === "conduction" && kernel === "rosenthal") text += DEPTH_BIAS_P1_OVER_NOTE;
   return {
     direction: over ? "may-overestimate" : "may-underestimate",
-    text: fill(DEPTH_BIAS_DIRECTION_TEMPLATE, { ...fields, verb: over ? "may be overestimated" : "may be underestimated" }),
+    text,
     basis,
   };
 }

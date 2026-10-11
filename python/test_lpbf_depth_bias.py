@@ -74,7 +74,7 @@ class LaneConditionsPerKernel(unittest.TestCase):
             self.assertIn("conduction, dH/hs", w["text"])
             self.assertIn(f"dH/hs {idx:g}", w["text"])
             self.assertIn("No direction is given", w["text"])
-            self.assertIn("n=16", w["text"]) if kernel == "rosenthal" else None
+            self.assertIn("n=18", w["text"]) if kernel == "rosenthal" else None  # bands at c61ab6a8 (P1): n=16 -> 18
             db.attach_depth_bias_warning(res)
             self.assertIsNone(res["meltPoolGeometry"]["depthBiasWarning"]["direction"])
         # Adjacent classes (IN625 keyhole label, transition index) keep the transition direction.
@@ -113,14 +113,35 @@ class SummaryDerived(unittest.TestCase):
         self.assertEqual(db.TABLE, db.build_cells(summary))
         self.assertTrue(db.TABLE["cells"])
 
-    def test_ti64_rosenthal_keyhole_is_over_not_under(self):
+    def test_ti64_rosenthal_keyhole_has_no_clear_direction_after_p1(self):
+        # Bands at c61ab6a8 (P1, 2026-10-11): the Rosenthal keyhole cell equals the Eagar-Tsai and Goldak cell
+        # (-0.047, n=80: every kernel serves the same Fabbro leg there), below the 0.05 direction floor. Before P1 the
+        # Rosenthal cell was +0.284 (OVER).
         w = db.depth_bias_warning("Keyhole Mode (x)", "Ti-6Al-4V", "rosenthal")
-        self.assertEqual(w["direction"], db.OVER)
+        self.assertIsNone(w["direction"])
+        self.assertIn("No clear depth bias direction", w["text"])
         self.assertNotIn("underestimated", w["text"])
+        self.assertEqual(db.TABLE["cells"]["Ti-6Al-4V|rosenthal|keyhole"], db.TABLE["cells"]["Ti-6Al-4V|eagar-tsai|keyhole"])
 
     def test_316l_keyhole_is_under_for_every_kernel(self):
         for kernel in db.KERNEL_LABELS:
-            self.assertEqual(db.depth_bias_warning("Keyhole Mode (x)", "316L Stainless Steel", kernel)["direction"], db.UNDER)
+            w = db.depth_bias_warning("Keyhole Mode (x)", "316L Stainless Steel", kernel)
+            self.assertEqual(w["direction"], db.UNDER)
+            self.assertTrue(w["text"].endswith(db.P1_UNDER_NOTE), kernel)
+
+    def test_p1_notes_only_where_the_bump_moved_the_cell(self):
+        # UNDER in the transition and keyhole bands carries the absorptance note (every kernel); Rosenthal OVER in the
+        # conduction band carries the latent-heat note; other OVER cells carry neither.
+        self.assertTrue(db.depth_bias_warning("Transition Mode", "Inconel 625", "goldak")["text"].endswith(db.P1_UNDER_NOTE))
+        ro = db.depth_bias_warning("Conduction Mode (Stable)", "Inconel 625", "rosenthal")
+        self.assertEqual(ro["direction"], db.OVER)
+        self.assertTrue(ro["text"].endswith(db.P1_OVER_NOTE))
+        gk = db.depth_bias_warning("Conduction Mode (Stable)", "Inconel 625", "goldak")
+        self.assertEqual(gk["direction"], db.OVER)
+        self.assertNotIn("2026-10-11", gk["text"])
+        for t in (db.P1_UNDER_NOTE, db.P1_OVER_NOTE):
+            self.assertNotRegex(t, "[–—]")
+            self.assertNotIn(" - ", t)
 
     def test_few_tracks_and_missing_cells_give_no_direction(self):
         few = db.depth_bias_warning("Keyhole Mode (x)", "Inconel 625", "rosenthal")  # n=1
@@ -153,7 +174,8 @@ class TsMirror(unittest.TestCase):
                  ("DEPTH_BIAS_DISAGREE_NO_CELL_TEMPLATE", db.DISAGREE_NO_CELL_TEMPLATE),
                  ("DEPTH_BIAS_DIRECTION_TEMPLATE", db.DIRECTION_TEMPLATE), ("DEPTH_BIAS_FEW_TEMPLATE", db.FEW_TEMPLATE),
                  ("DEPTH_BIAS_FLAT_TEMPLATE", db.FLAT_TEMPLATE), ("DEPTH_BIAS_NO_CHECK_TEMPLATE", db.NO_CHECK_TEMPLATE),
-                 ("DEPTH_BIAS_BASIS_TEMPLATE", db.BASIS_TEMPLATE), ("DEPTH_BIAS_BASIS_NO_CHECK", db.BASIS_NO_CHECK))
+                 ("DEPTH_BIAS_BASIS_TEMPLATE", db.BASIS_TEMPLATE), ("DEPTH_BIAS_BASIS_NO_CHECK", db.BASIS_NO_CHECK),
+                 ("DEPTH_BIAS_P1_UNDER_NOTE", db.P1_UNDER_NOTE), ("DEPTH_BIAS_P1_OVER_NOTE", db.P1_OVER_NOTE))
         for const, py in pairs:
             m = re.search(r"export const " + const + r" =\s*((?:\"(?:[^\"\\]|\\.)*\"\s*\+?\s*)+);", src)
             self.assertIsNotNone(m, const)
