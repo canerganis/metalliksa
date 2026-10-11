@@ -969,12 +969,13 @@ export interface PythonLpbfBuildJobVerdict {
   verdict: "printable" | "risky" | "do-not-print" | "inconclusive";
   headline: string;
   reasons: string[];
+  /** Each ratio is null when its melt-pool extent or Tang input is null (gate "not-evaluated"; never pass or fail). */
   lofGeometry: {
-    widthOverHatch: number;
-    depthOverLayer: number;
-    tangIndex?: number;
-    hOverW?: number;
-    tOverD?: number;
+    widthOverHatch: number | null;
+    depthOverLayer: number | null;
+    tangIndex?: number | null;
+    hOverW?: number | null;
+    tOverD?: number | null;
   };
   literatureWindow: {
     inside: boolean;
@@ -1268,7 +1269,9 @@ export interface PythonLPBFResult {
     /** x of the axial field maximum the liquidus extent search and the yz cross-sections are anchored at (negative = behind the beam). */
     peakOffset_um?: number;
     /** Axial (y = z = 0) maximum of the kernel's own field at peakOffset_um (Eagar-Tsai, Goldak), served only below the
-     *  sourced vapour temperature; null with a reason otherwise and always null for Rosenthal (regularised value; P6). */
+     *  sourced vapour temperature; null with a reason otherwise and always null for Rosenthal (regularised value; P6).
+     *  It can be a number while hydrodynamicsAndRecoil.peakTemperature_C is null; it is the loss-free field maximum on
+     *  the axis, never a surface temperature (display it with AXIAL_FIELD_MAXIMUM_LABEL). */
     axialFieldMaximum_C?: number | null;
     axialFieldMaximumUnavailableReason?: string | null;
     goldakParameters: {

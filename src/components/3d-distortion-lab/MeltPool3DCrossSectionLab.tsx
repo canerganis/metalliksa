@@ -41,7 +41,7 @@ import {
   contourToCutFace,
   disposeObject3D,
 } from "./meltPool3DGeometry";
-import { DISPLAY_CAP_LABEL, colourScaleIsDisplayCap, colourScalePeak_C, peakTemperatureBasisLabel, servedTemperatureText } from "../../utils/peakTemperatureDisplay";
+import { DISPLAY_CAP_LABEL, colourScaleIsDisplayCap, colourScalePeak_C, peakTemperatureBasisLabel, servedTemperatureText, axialFieldMaximumText } from "../../utils/peakTemperatureDisplay";
 import {
   MELT_POOL_LITERATURE_CASES,
   isLoadableLiteratureCase,
@@ -386,7 +386,6 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
     const ar = geom?.goldakParameters?.semiAxis_ar_rear_um || beamDiameter_um * 2.8;
     const b = geom?.goldakParameters?.semiAxis_b_halfwidth_um || beamDiameter_um * 0.75;
     const c = geom?.goldakParameters?.semiAxis_c_depth_um || layerThickness_um * 1.8;
-    const Ma = pyResult?.hydrodynamicsAndRecoil?.marangoniNumber ?? 800;
 
     // Clip axes match the mesh: X = scan, Y = depth (negative down), Z = hatch.
     const localClippingPlanes: THREE.Plane[] = [];
@@ -1150,6 +1149,11 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
                   {pyResult.hydrodynamicsAndRecoil.peakUnavailableReason && (
                     <div className="py-0.5 border-b border-slate-800/60 text-[10px] text-slate-500" data-testid="peak-temperature-reason">
                       Peak not served: {pyResult.hydrodynamicsAndRecoil.peakUnavailableReason}
+                    </div>
+                  )}
+                  {axialFieldMaximumText(pyResult.meltPoolGeometry.axialFieldMaximum_C) && (
+                    <div className="py-0.5 border-b border-slate-800/60 text-[10px] text-slate-500" data-testid="axial-field-maximum">
+                      Axial field maximum: {axialFieldMaximumText(pyResult.meltPoolGeometry.axialFieldMaximum_C)}.
                     </div>
                   )}
                   {peakTemperatureBasisLabel(pyResult) && (

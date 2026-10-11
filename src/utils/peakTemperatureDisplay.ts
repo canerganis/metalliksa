@@ -57,6 +57,18 @@ export function peakTemperatureBasisLabel(result: HydroLike): string | null {
   }
 }
 
+/**
+ * Basis text for meltPoolGeometry.axialFieldMaximum_C. It can be a number while the served peak is null (the kernel's
+ * axial maximum is below the sourced vapour temperature but the loss-free Eagar-Tsai surface maximum is not), so it must
+ * never read as the peak or as a surface temperature.
+ */
+export const AXIAL_FIELD_MAXIMUM_LABEL = "loss-free field maximum on the beam axis (y = z = 0), not a surface temperature";
+
+/** Axial-maximum row text: the number with its basis, or null when none is served. */
+export function axialFieldMaximumText(value: number | null | undefined): string | null {
+  return finite(value) ? `${value} °C (${AXIAL_FIELD_MAXIMUM_LABEL})` : null;
+}
+
 /** "1234.5 °C" for a served number, else "n/a" (with the served reason appended when given). */
 export function servedTemperatureText(value: number | null | undefined, reason?: string | null): string {
   if (finite(value)) return `${value} °C`;

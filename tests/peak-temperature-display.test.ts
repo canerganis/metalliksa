@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  AXIAL_FIELD_MAXIMUM_LABEL,
   DISPLAY_CAP_LABEL,
   FALLBACK_VAPOR_CAP_C,
+  axialFieldMaximumText,
   colourScaleDisplayCap_C,
   colourScaleIsDisplayCap,
   colourScalePeak_C,
@@ -59,4 +61,12 @@ test("served temperature text: number with unit, else n/a with the reason", () =
   assert.equal(servedTemperatureText(1363.2), "1363.2 °C");
   assert.equal(servedTemperatureText(null), "n/a");
   assert.equal(servedTemperatureText(undefined, "no sourced vapour temperature"), "n/a (no sourced vapour temperature)");
+});
+
+test("a served axial field maximum carries the not-a-surface-temperature basis, also while the peak is null", () => {
+  const text = axialFieldMaximumText(2650.4);
+  assert.equal(text, `2650.4 °C (${AXIAL_FIELD_MAXIMUM_LABEL})`);
+  assert.match(AXIAL_FIELD_MAXIMUM_LABEL, /not a surface temperature/);
+  assert.equal(axialFieldMaximumText(null), null);
+  assert.equal(axialFieldMaximumText(undefined), null);
 });

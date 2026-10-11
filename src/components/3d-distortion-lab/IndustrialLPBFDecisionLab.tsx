@@ -65,7 +65,9 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
   const slicer = job?.slicer ?? null;
   const decision = job?.verdict ?? null;
   const litWindow = job?.verdict?.literatureWindow;
-  const keyholeGateStatus = decision?.gates?.find((g) => g.id === "keyhole")?.status;
+  const keyholeGate = decision?.gates?.find((g) => g.id === "keyhole");
+  const keyholeGateStatus = keyholeGate?.status;
+  const keyholeNotEvaluated = keyholeGateStatus === "not-evaluated" || keyholeGateStatus === "unavailable";
   const geometryResolved = thermal ? isComputedMeltPoolExtent(thermal.meltPoolGeometry) : true;
   const extentLabel = thermal ? meltPoolExtentInfo(thermal.meltPoolGeometry).status : "";
   const htCohorts = useMemo(() => heatTreatmentCohorts(materials.alloyId), [materials.alloyId]);
@@ -448,23 +450,13 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
           </div>
           {thermal && decision ? (
             <div className="grid grid-cols-2 gap-2">
-              <Metric
-                label="W / h"
-                value={geometryResolved ? decision.lofGeometry.widthOverHatch.toFixed(2) : "unavailable"}
-                ok={!geometryResolved || decision.lofGeometry.widthOverHatch >= 1.05}
-                hint={geometryResolved ? "> 1.05" : extentLabel}
-              />
-              <Metric
-                label="D / t"
-                value={geometryResolved ? decision.lofGeometry.depthOverLayer.toFixed(2) : "unavailable"}
-                ok={!geometryResolved || decision.lofGeometry.depthOverLayer >= 1.15}
-                hint={geometryResolved ? "> 1.15" : extentLabel}
-              />
+              <LofTile label="W / h" value={decision.lofGeometry.widthOverHatch} min={1.05} geometryResolved={geometryResolved} gate={decision.gates?.find((g) => g.id === "lof_wh")} extentLabel={extentLabel} />
+              <LofTile label="D / t" value={decision.lofGeometry.depthOverLayer} min={1.15} geometryResolved={geometryResolved} gate={decision.gates?.find((g) => g.id === "lof_dt")} extentLabel={extentLabel} />
               <Metric
                 label="ΔH/hₛ"
-                value={String(thermal.processParameters.normalizedEnthalpy)}
+                value={keyholeNotEvaluated ? "not evaluated" : String(thermal.processParameters.normalizedEnthalpy)}
                 ok={keyholeGateOk(keyholeGateStatus)}
-                hint="porosity unresolved: legacy screen ≥ 30 · regime keyhole ≥ 20 (provisional)"
+                hint={keyholeNotEvaluated ? keyholeGate?.reason ?? "keyhole gate input is null" : "porosity unresolved: legacy screen ≥ 30 · regime keyhole ≥ 20 (provisional)"}
               />
               <Metric
                 label="P–v literature"
@@ -791,11 +783,50 @@ export const VerdictBanner: React.FC<{
   </div>
 );
 
-/** Missing verdict -> null (rendered as unavailable), never the Metric default ok=true. */
+/**
+ * Missing, "not-evaluated" or "unavailable" verdict -> null (rendered as not evaluated), never the Metric default
+ * ok=true and never a fail: a null gate input is neither a pass nor a fail.
+ */
 export function keyholeGateOk(status: string | undefined): boolean | null {
-  if (status === undefined) return null;
+  if (status === undefined || status === "not-evaluated" || status === "unavailable") return null;
   return status === "pass" || status === "advisory";
 }
+
+export interface LofTileState {
+  value: string;
+  ok: boolean | null;
+  hint: string;
+}
+
+/**
+ * W/h and D/t tile state. A null ratio (lofGeometry payload with a null melt-pool extent or Tang index) is "not
+ * evaluated" with the gate reason, never a toFixed on null and never a pass or fail.
+ */
+export function lofTileState(
+  value: number | null | undefined,
+  min: number,
+  geometryResolved: boolean,
+  gate: { status?: string; reason?: string } | undefined,
+  extentLabel: string,
+): LofTileState {
+  if (!geometryResolved) return { value: "unavailable", ok: true, hint: extentLabel };
+  if (value === null || value === undefined || !Number.isFinite(value) || gate?.status === "not-evaluated") {
+    return { value: "not evaluated", ok: null, hint: gate?.reason ?? "lack-of-fusion input is null" };
+  }
+  return { value: value.toFixed(2), ok: value >= min, hint: `> ${min}` };
+}
+
+const LofTile: React.FC<{
+  label: string;
+  value: number | null | undefined;
+  min: number;
+  geometryResolved: boolean;
+  gate?: { status?: string; reason?: string };
+  extentLabel: string;
+}> = ({ label, value, min, geometryResolved, gate, extentLabel }) => {
+  const s = lofTileState(value, min, geometryResolved, gate, extentLabel);
+  return <Metric label={label} value={s.value} ok={s.ok} hint={s.hint} />;
+};
 
 /** ok = null: no pass/fail is possible (dashed, neutral), distinct from a passed check. */
 const Metric: React.FC<{ label: string; value: string; ok?: boolean | null; hint?: string }> = ({ label, value, ok = true, hint }) => (
