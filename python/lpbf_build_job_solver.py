@@ -33,11 +33,12 @@ from lpbf_job_cache import (
     cache_put,
 )
 from lpbf_screening_uq import apply_uq_prop_scales, run_screening_uq
+from fabbro_keyhole import ENTHALPY_KEYHOLE as FABBRO_ENTHALPY_KEYHOLE  # read-only: printed ramp follows the real constants
+from fabbro_keyhole import ENTHALPY_ONSET as FABBRO_ENTHALPY_ONSET
 from lpbf_thermal_solver import (
     ENTHALPY_KEYHOLE,
     ENTHALPY_KEYHOLE_IN625,
     ENTHALPY_TRANSITION,
-    POROSITY_SCREEN_HIGH_AT,
     calculate_meltpool_physics,
 )
 from murakami_fatigue_screening import (
@@ -293,7 +294,7 @@ def _patch_candidates(thermal, alloy_id, dominant_gate):
     return unique
 
 
-def _suggested_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None):
+def _verified_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None):
     """(patch, note). A patch is suggested only when the served solver, re-run at the suggested point, resolves the
     melt-pool geometry and returns a printable verdict (Tang overlap pass, keyhole screen not High, balling not High,
     inside the literature box). The literature box alone is not evidence: its keyhole corner fails Tang for all four
@@ -323,6 +324,23 @@ def _suggested_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None):
         "current or the per-alloy conduction hatch, layer and beam, passes the Tang overlap and keyhole screens "
         "(printable verdict) in the served solver."
     )
+
+
+def _suggested_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None, gates=None):
+    """(patch, note) from _verified_patch, plus a downskin caveat. When the downskin gate fails or warns but another
+    gate dominates, a power or speed patch cannot clear the overhang, so the note says the job stays do-not-print or
+    risky on downskin whatever the patch does."""
+    patch, note = _verified_patch(thermal, alloy_id, dominant_gate, verdict, evaluate)
+    if verdict == "printable" or dominant_gate == "downskin":
+        return patch, note
+    down = next((g for g in (gates or []) if g.get("id") == "downskin" and g.get("status") in ("fail", "warn")), None)
+    if down is not None:
+        stays = "do-not-print" if down["status"] == "fail" else "risky"
+        note = (f"{note or ''} The downskin gate is {down['status']}"
+                f"{'' if down.get('measured') is None else ' at ' + str(down['measured']) + ' deg'}, and no power, "
+                f"speed, hatch or layer change fixes an overhang: the job stays {stays} on downskin"
+                f"{' even with this patch' if patch else ''}.").strip()
+    return patch, note
 
 
 # Gates whose result is a function of the melt-pool W/D/L extent. When the thermal solver
@@ -673,7 +691,7 @@ def compose_verdict(thermal, alloy_id, extras=None):
                 dominant = g["id"]
                 break
 
-    patch, patch_note = _suggested_patch(thermal, alloy_id, dominant, verdict, extras.get("patchEvaluator"))
+    patch, patch_note = _suggested_patch(thermal, alloy_id, dominant, verdict, extras.get("patchEvaluator"), gates)
     return {
         "verdict": verdict,
         "headline": headline,
@@ -1021,7 +1039,7 @@ def _solve_lpbf_build_job_core(data):
             f"Regime labels use ΔH/hs cuts: vapor-depression onset {ENTHALPY_TRANSITION:g} (Cunningham 2019) and a "
             f"provisional keyhole-mode label at {ENTHALPY_KEYHOLE:g} ({ENTHALPY_KEYHOLE_IN625:g} for Inconel 625, "
             "fitted on NIST mds2-2923 tracks). The Fabbro keyhole depth leg opens at the same onset "
-            f"({ENTHALPY_TRANSITION:g}) and reaches full weight at {POROSITY_SCREEN_HIGH_AT:g} through an uncited "
+            f"({FABBRO_ENTHALPY_ONSET:g}) and reaches full weight at {FABBRO_ENTHALPY_KEYHOLE:g} through an uncited "
             "linear ramp. The keyhole porosity screen (advisory 15 to 30, risky at 30, do-not-print above 35) is a "
             "legacy level kept for verdict continuity, not a porosity boundary."
         ),

@@ -22,10 +22,10 @@ KEYHOLE_POINT = {"in718": (520, 400), "ss316l": (500, 300), "ti6al4v": (400, 400
 LOF_POINT = {"in718": (90, 1400), "ss316l": (100, 1500), "ti6al4v": (80, 1500), "alsi10mg": (100, 2000)}
 
 
-def _job(alloy, power, speed, hatch=100.0, layer=30.0, beam=80.0):
+def _job(alloy, power, speed, hatch=100.0, layer=30.0, beam=80.0, **extra):
     return solve_lpbf_build_job({
         "alloyId": alloy, "laserPower_W": power, "scanSpeed_mm_s": speed, "hatchSpacing_um": hatch,
-        "layerThickness_um": layer, "beamDiameter_um": beam, "bypassCache": True})
+        "layerThickness_um": layer, "beamDiameter_um": beam, "bypassCache": True, **extra})
 
 
 def _gates(job):
@@ -103,33 +103,70 @@ class SuggestedPatchUnit(unittest.TestCase):
 
 class SuggestedPatchEndToEnd(unittest.TestCase):
     def _assert_verified(self, alloy, job):
+        """Re-run the suggested patch and check it. Returns True when a non-null patch was verified."""
         verdict = job["verdict"]
         self.assertIn("suggestedPatchNote", verdict)
         patch = verdict["suggestedPatch"]
         if patch is None:
             self.assertTrue(verdict["suggestedPatchNote"])
-            return
+            return False
         again = _job(alloy, patch["laserPower_W"], patch["scanSpeed_mms"], patch["hatch_um"], patch["layer_um"],
                      patch["beamDiameter_um"])
         gates = _gates(again)
         self.assertEqual(gates["lof_tang"], "pass", (alloy, patch))
         self.assertIn(gates["keyhole"], ("pass", "advisory"), (alloy, patch))
         self.assertEqual(again["verdict"]["verdict"], "printable", (alloy, patch))
+        return True
 
     def test_keyhole_dominant_patches_pass_tang_and_keyhole_for_all_alloys(self):
+        verified = 0
         for alloy in ALLOYS:
             p, v = KEYHOLE_POINT[alloy]
             job = _job(alloy, p, v)
             self.assertTrue(job["success"], alloy)
             self.assertIn(job["verdict"]["verdict"], ("risky", "do-not-print"), alloy)
-            self._assert_verified(alloy, job)
+            verified += self._assert_verified(alloy, job)
+        # Not vacuous: the e2e check must have re-run at least one real non-null patch across the alloys.
+        self.assertGreaterEqual(verified, 1)
 
     def test_lack_of_fusion_patches_pass_tang_and_keyhole_for_all_alloys(self):
+        verified = 0
         for alloy in ALLOYS:
             p, v = LOF_POINT[alloy]
             job = _job(alloy, p, v)
             self.assertTrue(job["success"], alloy)
-            self._assert_verified(alloy, job)
+            verified += self._assert_verified(alloy, job)
+        self.assertGreaterEqual(verified, 1)
+
+    def test_a_non_null_verified_patch_exists_across_alloys_and_cases(self):
+        verified = 0
+        for alloy in ALLOYS:
+            for point in (KEYHOLE_POINT[alloy], LOF_POINT[alloy]):
+                verified += self._assert_verified(alloy, _job(alloy, *point))
+        self.assertGreaterEqual(verified, 1)
+
+    def test_failing_downskin_with_lof_tang_dominant_says_the_job_stays_blocked_on_downskin(self):
+        checked = 0
+        for alloy in ALLOYS:
+            p, v = LOF_POINT[alloy]
+            job = _job(alloy, p, v, downskinOverhang_deg=70.0)
+            gates = _gates(job)
+            self.assertEqual(gates["downskin"], "fail", alloy)
+            if gates["lof_tang"] != "fail":
+                continue  # melt-pool extent not resolved for this alloy at this point (gate unavailable)
+            checked += 1
+            self.assertEqual(job["verdict"]["dominantGate"], "lof_tang", alloy)
+            note = job["verdict"]["suggestedPatchNote"]
+            self.assertIn("downskin", note, alloy)
+            self.assertIn("stays do-not-print on downskin", note, alloy)
+            self.assertIn("no power, speed, hatch or layer change fixes an overhang", note, alloy)
+        self.assertGreaterEqual(checked, 1)
+
+    def test_downskin_warning_note_says_risky(self):
+        p, v = LOF_POINT["in718"]
+        job = _job("in718", p, v, downskinOverhang_deg=50.0)
+        self.assertEqual(_gates(job)["downskin"], "warn")
+        self.assertIn("stays risky on downskin", job["verdict"]["suggestedPatchNote"])
 
     def test_the_old_box_corner_is_never_returned_unless_it_passes(self):
         # The pre-fix keyhole patch: box minimum power, maximum speed, current hatch/layer.
