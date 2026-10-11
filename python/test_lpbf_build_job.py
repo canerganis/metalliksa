@@ -654,7 +654,7 @@ def main():
         "lpbf-build-job-la6-gusarov-v18",
         "lpbf-build-job-in625-regime-v20",
     ), BUILD_JOB_SOLVER_REVISION
-    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-p1-sourced-v21"
+    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-p1-sourced-v22"
     assert ti["processSeed"] == 42
     assert ti["scanStrategy"]["id"] == "stripe"
     assert ti["uq"] is None  # lazy default

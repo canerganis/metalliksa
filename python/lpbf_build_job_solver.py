@@ -33,7 +33,13 @@ from lpbf_job_cache import (
     cache_put,
 )
 from lpbf_screening_uq import apply_uq_prop_scales, run_screening_uq
-from lpbf_thermal_solver import ENTHALPY_TRANSITION, calculate_meltpool_physics
+from lpbf_thermal_solver import (
+    ENTHALPY_KEYHOLE,
+    ENTHALPY_KEYHOLE_IN625,
+    ENTHALPY_TRANSITION,
+    POROSITY_SCREEN_HIGH_AT,
+    calculate_meltpool_physics,
+)
 from murakami_fatigue_screening import (
     build_qualification_block,
     evaluate_murakami_block,
@@ -234,40 +240,89 @@ def _gate(gid, status, measured, required, unit, note):
     }
 
 
-def _suggested_patch(thermal, alloy_id, dominant_gate, verdict):
-    if verdict == "printable" or dominant_gate in (None, "none"):
-        return None
+# Number of power and speed levels per axis in the suggested-patch grid search over the literature box.
+PATCH_GRID_LEVELS = 5
+
+
+def _patch_dict(power, speed, hatch, layer, beam):
+    return {
+        "laserPower_W": int(round(power)),
+        "scanSpeed_mms": int(round(speed)),
+        "hatch_um": int(round(hatch)),
+        "layer_um": int(round(layer)),
+        "beamDiameter_um": int(round(beam)),
+    }
+
+
+def _patch_candidates(thermal, alloy_id, dominant_gate):
+    """Ordered candidate points: the literature-box heuristic first, then a P-v grid over the box nearest the
+    current point, current hatch/layer/beam before the per-alloy conduction set (_LOF_HT). Each is a patch dict."""
     box = LITERATURE_PV_WINDOWS[alloy_id]
-    mid_p = int(round((box["powerMin_W"] + box["powerMax_W"]) / 2.0))
-    mid_v = int(round((box["speedMin_mm_s"] + box["speedMax_mm_s"]) / 2.0))
     pp = thermal["processParameters"]
+    cur_p = float(pp["laserPower_W"])
+    cur_v = float(pp["scanSpeed_mm_s"])
     cur_h = float(pp["hatchSpacing_um"])
     cur_t = float(pp["layerThickness_um"])
     cur_d = float(pp["beamDiameter_um"])
     ht = _LOF_HT.get(alloy_id, {"hatch_um": 100, "layer_um": 30, "beamDiameter_um": cur_d})
+    mid_p = (box["powerMin_W"] + box["powerMax_W"]) / 2.0
+    mid_v = (box["speedMin_mm_s"] + box["speedMax_mm_s"]) / 2.0
+    out = []
     if dominant_gate == "keyhole":
-        return {
-            "laserPower_W": int(box["powerMin_W"]),
-            "scanSpeed_mms": int(box["speedMax_mm_s"]),
-            "hatch_um": int(round(cur_h)),
-            "layer_um": int(round(cur_t)),
-            "beamDiameter_um": int(round(cur_d)),
-        }
-    if dominant_gate in ("lof_tang", "lof_wh", "lof_dt", "downskin"):
-        return {
-            "laserPower_W": mid_p,
-            "scanSpeed_mms": mid_v,
-            "hatch_um": ht["hatch_um"],
-            "layer_um": ht["layer_um"],
-            "beamDiameter_um": ht["beamDiameter_um"],
-        }
-    return {
-        "laserPower_W": mid_p,
-        "scanSpeed_mms": mid_v,
-        "hatch_um": int(round(cur_h)),
-        "layer_um": int(round(cur_t)),
-        "beamDiameter_um": int(round(cur_d)),
-    }
+        out.append(_patch_dict(box["powerMin_W"], box["speedMax_mm_s"], cur_h, cur_t, cur_d))
+    elif dominant_gate in ("lof_tang", "lof_wh", "lof_dt"):
+        out.append(_patch_dict(mid_p, mid_v, ht["hatch_um"], ht["layer_um"], ht["beamDiameter_um"]))
+    else:
+        out.append(_patch_dict(mid_p, mid_v, cur_h, cur_t, cur_d))
+    p_span = max(1e-9, box["powerMax_W"] - box["powerMin_W"])
+    v_span = max(1e-9, box["speedMax_mm_s"] - box["speedMin_mm_s"])
+    n = PATCH_GRID_LEVELS
+    grid = [
+        (box["powerMin_W"] + p_span * i / (n - 1), box["speedMin_mm_s"] + v_span * j / (n - 1))
+        for i in range(n) for j in range(n)
+    ]
+    grid.sort(key=lambda pv: ((pv[0] - cur_p) / p_span) ** 2 + ((pv[1] - cur_v) / v_span) ** 2)
+    for hatch, layer, beam in ((cur_h, cur_t, cur_d), (ht["hatch_um"], ht["layer_um"], ht["beamDiameter_um"])):
+        out.extend(_patch_dict(p, v, hatch, layer, beam) for p, v in grid)
+    seen, unique = set(), []
+    for cand in out:
+        key = tuple(sorted(cand.items()))
+        if key not in seen:
+            seen.add(key)
+            unique.append(cand)
+    return unique
+
+
+def _suggested_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None):
+    """(patch, note). A patch is suggested only when the served solver, re-run at the suggested point, resolves the
+    melt-pool geometry and returns a printable verdict (Tang overlap pass, keyhole screen not High, balling not High,
+    inside the literature box). The literature box alone is not evidence: its keyhole corner fails Tang for all four
+    alloys. Without an evaluator (hand-built thermal input, UQ samples) no patch is offered."""
+    if verdict == "printable" or dominant_gate in (None, "none"):
+        return None, (None if verdict == "printable" else
+                      "No gate fails or warns, so there is no parameter change to suggest.")
+    if dominant_gate == "downskin":
+        return None, ("The dominant gate is the downskin overhang angle, which no power, speed, hatch or layer "
+                      "change fixes; no parameter patch is suggested.")
+    if evaluate is None:
+        return None, "No parameter patch: the solver was not available to verify a suggested point."
+    for cand in _patch_candidates(thermal, alloy_id, dominant_gate):
+        th = evaluate(cand["laserPower_W"], cand["scanSpeed_mms"], cand["hatch_um"], cand["layer_um"],
+                      cand["beamDiameter_um"])
+        check = compose_verdict(th, alloy_id)
+        if check["verdict"] == "printable":
+            pp = th["processParameters"]
+            return cand, (
+                f"Verified by re-running the solver at the suggested point: Tang index {check['lofGeometry']['tangIndex']}, "
+                f"dH/hs {pp['normalizedEnthalpy']}, verdict {check['verdict']} under the same screening rules. "
+                "Downskin, if requested, is unchanged by these parameters."
+            )
+    return None, (
+        "No parameter patch: no point of a "
+        f"{PATCH_GRID_LEVELS}x{PATCH_GRID_LEVELS} power-speed grid over the {alloy_id} literature box, with the "
+        "current or the per-alloy conduction hatch, layer and beam, passes the Tang overlap and keyhole screens "
+        "(printable verdict) in the served solver."
+    )
 
 
 # Gates whose result is a function of the melt-pool W/D/L extent. When the thermal solver
@@ -618,6 +673,7 @@ def compose_verdict(thermal, alloy_id, extras=None):
                 dominant = g["id"]
                 break
 
+    patch, patch_note = _suggested_patch(thermal, alloy_id, dominant, verdict, extras.get("patchEvaluator"))
     return {
         "verdict": verdict,
         "headline": headline,
@@ -632,7 +688,8 @@ def compose_verdict(thermal, alloy_id, extras=None):
         "literatureWindow": win,
         "gates": gates,
         "dominantGate": dominant,
-        "suggestedPatch": _suggested_patch(thermal, alloy_id, dominant, verdict),
+        "suggestedPatch": patch,
+        "suggestedPatchNote": patch_note,
         "geometryResolved": geometry_resolved,
         "extentStatus": extent_status,
         "extentNote": extent_note,
@@ -851,10 +908,26 @@ def _solve_lpbf_build_job_core(data):
     if slicer.get("error"):
         return {"success": False, "error": slicer["error"]}
 
+    def _patch_thermal(p_w, v_mms, hatch_um, layer_um, beam_um):
+        # Re-runs the served solver at a suggested point so a patch is verified, not read off the literature box.
+        return calculate_meltpool_physics(
+            thermal_mat,
+            p_w,
+            v_mms,
+            beam_um,
+            preheat,
+            layer_um,
+            hatch_um,
+            wavelength,
+            incline_angle_deg=incline_deg,
+            process_seed=process_seed,
+            prop_overrides=material_snapshot["thermal"],
+        )
+
     decision = compose_verdict(
         thermal,
         alloy_id,
-        extras={"downskinOverhang_deg": downskin_deg},
+        extras={"downskinOverhang_deg": downskin_deg, "patchEvaluator": _patch_thermal},
     )
 
     # --- Faz 3: literature-default Monte Carlo UQ (lazy; default off) ---
@@ -944,7 +1017,14 @@ def _solve_lpbf_build_job_core(data):
     assumptions = [
         "Melt-pool field is regularized Rosenthal (not volumetric Goldak FEA).",
         "LoF gate is Tang (h/W)²+(t/D)² ≤ 1; VED is not the sole criterion.",
-        "Keyhole uses King ΔH/hs ≈ 30.",
+        (
+            f"Regime labels use ΔH/hs cuts: vapor-depression onset {ENTHALPY_TRANSITION:g} (Cunningham 2019) and a "
+            f"provisional keyhole-mode label at {ENTHALPY_KEYHOLE:g} ({ENTHALPY_KEYHOLE_IN625:g} for Inconel 625, "
+            "fitted on NIST mds2-2923 tracks). The Fabbro keyhole depth leg opens at the same onset "
+            f"({ENTHALPY_TRANSITION:g}) and reaches full weight at {POROSITY_SCREEN_HIGH_AT:g} through an uncited "
+            "linear ramp. The keyhole porosity screen (advisory 15 to 30, risky at 30, do-not-print above 35) is a "
+            "legacy level kept for verdict continuity, not a porosity boundary."
+        ),
         "Slicer uses live customTriangles when present; otherwise a demo CAD preset.",
         "No artificial peak-T / PDAS / residual-stress display ceilings; alloy M_molar drives recoil.",
         "Marangoni characteristic length uses the same thermal melt-pool width (geometrySource=thermal).",

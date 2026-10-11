@@ -983,6 +983,8 @@ export interface PythonLpbfBuildJobVerdict {
   gates?: PythonLpbfScreeningGate[];
   dominantGate?: string;
   suggestedPatch?: PythonLpbfSuggestedPatch | null;
+  /** Why there is no suggestedPatch, or how the suggested point was verified by re-running the solver. */
+  suggestedPatchNote?: string | null;
   /** false when meltPoolGeometry.extentStatus !== "computed": geometry gates are unavailable, verdict is inconclusive. */
   geometryResolved?: boolean;
   extentStatus?: string;
