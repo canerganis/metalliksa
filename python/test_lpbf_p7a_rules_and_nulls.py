@@ -1,7 +1,7 @@
 """P7a planned bump (docs/research/SPEC_p7a_rules_and_nulls_2026-10-11.md): sourced verdict rules, advisories, nulls.
 
 Self-contained: every fixture below is synthetic (hand-built thermal dicts or the served solver on synthetic process
-inputs); no measured data is read. The geometry pins (REV0_PINS) were recorded at REV0 = c528195c (the P6 containment
+inputs); no measured data is read. The geometry pins (REV0_PINS) were recorded at REV0 = ddd0b5ba (the P6 containment
 head 09eccb8b, fingerprint 807d74b3..., plus the two cherry-picked G1 fixes that touch no manifest file) by running
 calculate_meltpool_physics on the listed (alloy, P, v, beam, kernel) points at 80 C preheat, 40 um layer, 100 um
 hatch, IR; they are served solver numbers on synthetic inputs, not measurements. P7a must keep them bit equal.
