@@ -634,9 +634,9 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
       {job?.porosity && (
         <div className="rounded-2xl border border-violet-500/30 bg-[#090e18] p-3.5 grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="space-y-1">
-            <h3 className="text-[10px] font-bold text-violet-300 uppercase tracking-widest">Heuristic Screening Index</h3>
+            <h3 className="text-[10px] font-bold text-violet-300 uppercase tracking-widest">Unsourced Screening Index</h3>
             <div className="text-xl text-white font-bold" title={job.porosity.screeningIndex.basis}>{job.porosity.screeningIndex.mean_percent.toFixed(2)}%</div>
-            <div className="text-[9px] text-amber-500/80">{job.porosity.screeningIndex.evidenceLabel}: not a measured or predicted relative density</div>
+            <div className="text-[9px] text-amber-500/80">{job.porosity.screeningIndex.evidenceLabel}: unsourced penalties, not a measured or predicted relative density</div>
             <div className="text-[9px] text-slate-500" title={job.porosity.screeningIndex.spreadBasis}>Spread of penalties (not a CI): {job.porosity.screeningIndex.spread_lower_percent.toFixed(2)} to {job.porosity.screeningIndex.spread_upper_percent.toFixed(2)}</div>
           </div>
           <div className="space-y-1">

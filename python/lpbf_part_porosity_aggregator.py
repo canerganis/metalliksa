@@ -2,16 +2,21 @@ import statistics
 
 # Heuristic penalty weights (volume fractions added to a sample's index when a mechanism is flagged). They are NOT
 # sourced from a measurement or a paper: they are fixed placeholders that only rank flagged samples above clean ones.
+# There is no keyhole penalty: defect_diagnostics() assigns no keyhole risk (D/W alone cannot resolve keyhole
+# porosity) and no sourced keyhole flag exists, so keyhole never contributes to the index.
 LOF_VOLUME_PENALTY = 0.05
-KEYHOLE_VOLUME_PENALTY = 0.02
 BALLING_VOLUME_PENALTY = 0.08
+# Lack-of-fusion statuses that defect_diagnostics() emits when the Tang overlap screen fails or nothing melts.
+LOF_FAIL_STATUSES = ("lack-of-fusion-screened", "inadequate-penetration", "no-melt")
 
-INDEX_LABEL = "Heuristic screening index (not a measured or predicted relative density)"
+INDEX_LABEL = "Unsourced screening index (not a measured or predicted relative density)"
 INDEX_EVIDENCE_LABEL = "Screening only"
 INDEX_BASIS = (
-    "100 % minus a sum of fixed, unsourced penalty fractions (lack of fusion 5 %, keyhole 2 %, balling 8 %, "
-    "partial weights for moderate flags) and an unsourced powder-gas prior, averaged over the sampled inputs. "
-    "It is not calibrated against any density measurement."
+    "Unsourced screening index, not a density or porosity estimate: 100 % minus a sum of fixed penalty fractions "
+    "that have no literature or measurement source (lack of fusion 5 % when the Tang overlap screen fails, 2.5 % "
+    "when marginal; balling 8 % for High, 2.4 % for Moderate) and an unsourced 0.01 % powder-gas prior, averaged "
+    "over the sampled inputs. There is no keyhole term. It is not calibrated against any density measurement and "
+    "only ranks flagged samples below clean ones."
 )
 SPREAD_BASIS = (
     "Mean plus or minus 1.96 standard deviations of the per-sample heuristic penalty over the Monte Carlo input "
@@ -25,9 +30,9 @@ CONFIDENCE_NOTE = (
 
 def aggregate_part_porosity(defect_samples, powder_gas_prior_percent=0.01):
     """
-    Aggregate track/layer risks back to the CAD part as a heuristic screening index.
+    Aggregate track/layer risks back to the CAD part as an unsourced screening index.
 
-    The index is 100 % minus summed fixed penalties; it is not a measured or predicted relative density.
+    The index is 100 % minus summed fixed, unsourced penalties; it is not a measured or predicted relative density.
     powder_gas_prior_percent is in percent of volume (0.01 means 0.01 %, i.e. a fraction of 0.0001).
 
     defect_samples is a list of results from defect_diagnostics() evaluated
@@ -38,40 +43,21 @@ def aggregate_part_porosity(defect_samples, powder_gas_prior_percent=0.01):
 
     prior_fraction = float(powder_gas_prior_percent) / 100.0
 
-    lof_risks = []
-    keyhole_risks = []
-    balling_risks = []
-
     porosity_samples = []
+    # keyhole stays in the payload at 0: no sourced keyhole risk flag exists, so it is never counted.
     mechanism_counts = {"lackOfFusion": 0, "keyhole": 0, "balling": 0, "gasPore": len(defect_samples)}
 
     for sample in defect_samples:
         sample_porosity = prior_fraction
 
-        # Lack of fusion
+        # Lack of fusion: riskScreened is True when the Tang overlap screen fails, False when the geometry is covered and None
+        # when marginal or unresolved; the penalty applies only when the screen actually fails.
         lof = sample.get("lackOfFusion", {})
-        if lof.get("status") in ("inadequate-penetration", "no-melt") or (lof.get("riskScreened") is False and lof.get("status") != "marginal"):
+        if lof.get("status") in LOF_FAIL_STATUSES or lof.get("riskScreened") is True:
             sample_porosity += LOF_VOLUME_PENALTY
             mechanism_counts["lackOfFusion"] += 1
-            lof_risks.append(1.0)
         elif lof.get("status") == "marginal":
             sample_porosity += LOF_VOLUME_PENALTY * 0.5
-            lof_risks.append(0.5)
-        else:
-            lof_risks.append(0.0)
-
-        # Keyhole
-        kh = sample.get("keyhole", {})
-        kh_risk = kh.get("risk")
-        if kh_risk == "high":
-            sample_porosity += KEYHOLE_VOLUME_PENALTY
-            mechanism_counts["keyhole"] += 1
-            keyhole_risks.append(1.0)
-        elif kh_risk == "moderate":
-            sample_porosity += KEYHOLE_VOLUME_PENALTY * 0.2
-            keyhole_risks.append(0.5)
-        else:
-            keyhole_risks.append(0.0)
 
         # Balling
         bl = sample.get("balling", {})
@@ -79,12 +65,8 @@ def aggregate_part_porosity(defect_samples, powder_gas_prior_percent=0.01):
         if bl_risk == "high":
             sample_porosity += BALLING_VOLUME_PENALTY
             mechanism_counts["balling"] += 1
-            balling_risks.append(1.0)
         elif bl_risk == "moderate":
             sample_porosity += BALLING_VOLUME_PENALTY * 0.3
-            balling_risks.append(0.5)
-        else:
-            balling_risks.append(0.0)
 
         porosity_samples.append(sample_porosity)
 
