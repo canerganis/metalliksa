@@ -287,6 +287,16 @@ class In718EndToEnd(unittest.TestCase):
         v, dh = self._check(solve_lpbf_build_job(dict(self.PAYLOAD)))
         self._assert_flat_risky(v, dh)
 
+    def test_in718_280_940_at_the_former_hatch_100_fails_tang_after_p7b(self):
+        # P7b (2026-10-14): the same case at the pre-P7b 100 um hatch fails the Tang unit criterion on the shallower
+        # pool (W 106.8 um) and the verdict is do-not-print on lof_tang; the keyhole gate still only warns.
+        res = solve_lpbf_build_job({**self.PAYLOAD, "hatchSpacing_um": 100})
+        self.assertTrue(res["success"], res.get("error"))
+        v = res["verdict"]
+        self.assertEqual(v["verdict"], "do-not-print", v["reasons"])
+        self.assertIn("lof_tang", v["blockingGates"])
+        self.assertNotIn("keyhole", v["blockingGates"])
+
     def test_in718_280_940_without_ray_tracer_is_risky(self):
         sys.modules["powder_bed_raytracer"] = None  # GPU module not importable
         v, dh = self._check(solve_lpbf_build_job(dict(self.PAYLOAD)))
