@@ -137,12 +137,20 @@ V1_ARCHIVED_RESULT_STRIPPED_SHA256 = "3eed50effcb82e8cffce55f2a24816cee37e634bb9
 SMALL = dict(mode="standard", backend="reference", power_W=40, mesh_um=40, trackLength_um=200,
              cooling_s=.0001, dwell_s=0)
 # Observer case shared with test_lpbf_fixed_event_time_history_observer.SMALL_CASE.
-OBSERVER_CASE = {"mode": "standard", "backend": "reference", "material": "Inconel 718",
+# P7b (2026-10-14): at the IN718 authority 0.32 this 60 W synthetic point no longer melts (peak 1596.6 K, liquidus
+# 1609.15 K), so the peak-field, phase-slice and temperature-slice observers would never fire and G8 / G15 would stop
+# exercising them. The case keeps the absorptivity it was recorded with (0.38, explicit, like LAYERED): the observer
+# numerics stay bit equal and only the re-identified material digests drift (named exactly).
+OBSERVER_CASE = {"mode": "standard", "backend": "reference", "material": "Inconel 718", "absorptivity": 0.38,
                  "power_W": 60, "speed_mm_s": 1200, "mesh_um": 40, "maxDt_s": 2e-7,
                  "layer_um": 80, "trackLength_um": 100, "cooling_s": 0, "dwell_s": 0}
 # Layered-plate case shared with test_lpbf_layered_plate_solver.LAYERED.
+# P7b (2026-10-14): the reference layered-plate replay carries its absorptivity explicitly (0.38, the value it was
+# recorded with), as the archived G1 and G2 inputs do, so the reference numerics stay bit equal while the material
+# authority (0.32 for Inconel 718) moves the default of every non-reference case; the material identity of the replay
+# is re-identified by lpbf_material_registry.reidentify and drifts as a named identity observation.
 LAYERED = dict(
-    mode="standard", backend="reference", surfaceMode="bare-plate",
+    mode="standard", backend="reference", surfaceMode="bare-plate", absorptivity=0.38,
     barePlateGeometry="square", study="none", layers=1, tracks=1,
     scanAngle_deg=0, mesh_um=20, beamDiameter_um=20, trackLength_um=100,
     power_W=50, speed_mm_s=10000, maxDt_s=1e-5, sourcePenetration_um=20,
@@ -373,6 +381,22 @@ def _fixture() -> Tuple[Dict[str, Any], Dict[str, Any]]:
 FIXTURE_POST_CAPTURE_LABEL_KEYS = ("solidificationResolution",)
 
 
+MATERIAL_IDENTITY_KEYS = ("materialRevisionSha256", "materialAuthorityRevisionSha256")
+
+
+def _without_material_identity(stripped: Dict[str, Any]) -> Dict[str, Any]:
+    """The stripped result minus the material identity digests (the material's own numbers stay)."""
+    out = copy.deepcopy(stripped)
+    material = out.get("material")
+    if isinstance(material, dict):
+        for key in MATERIAL_IDENTITY_KEYS:
+            material.pop(key, None)
+    contract = out.get("coreContract")
+    if isinstance(contract, dict):
+        contract.pop("materialSha256", None)
+    return out
+
+
 def case_g2_bare_plate_fixture(ctx: CaseContext) -> Dict[str, Any]:
     """Real bare-plate 100 W corridor job 7ec9dc57...: rerun and compare with the in-repo fixture."""
     capture, reference = _fixture()
@@ -385,6 +409,13 @@ def case_g2_bare_plate_fixture(ctx: CaseContext) -> Dict[str, Any]:
             run_stripped.pop(key, None)
     observations["fixture.strippedResultEqual"] = (
         canonical_json_sha256(run_stripped) == canonical_json_sha256(reference_stripped))
+    # P7b (2026-10-14): the material authority moved, so the capture's material identity (materialRevisionSha256,
+    # materialAuthorityRevisionSha256, coreContract.materialSha256) can no longer equal a rerun's. This observation
+    # compares everything else bit-exact (the physics numerics of the replay; the capture's explicit absorptivity 0.38
+    # is still what the rerun uses) so the replay claim survives an identity move that is named exactly.
+    observations["fixture.strippedResultEqualExceptMaterialIdentity"] = (
+        canonical_json_sha256(_without_material_identity(run_stripped))
+        == canonical_json_sha256(_without_material_identity(reference_stripped)))
     # No ordered/typed comparison with the fixture: the worker passed the original request
     # dict, whose key order (not the implementation) sets the order of extra settings keys,
     # and the fixture went through JSON (tuples become lists). Canonical equality is the
@@ -501,7 +532,9 @@ def case_g14_calibration_measurements(ctx: CaseContext) -> Dict[str, Any]:
 
 def case_g15_bare_plate_square_optical_observer(ctx: CaseContext) -> Dict[str, Any]:
     """Square bare plate (G2 is the corridor) with a non-null opticalObserver setting."""
-    raw = {"mode": "standard", "backend": "reference", "surfaceMode": "bare-plate",
+    # P7b (2026-10-14): explicit absorptivity 0.38 (the recorded value) so the 60 W plate still melts and the optical
+    # observer artifacts stay exercised at the IN718 authority 0.32 (see OBSERVER_CASE); identity digests drift, named.
+    raw = {"mode": "standard", "backend": "reference", "surfaceMode": "bare-plate", "absorptivity": 0.38,
            "barePlateGeometry": "square", "sourcePenetration_um": 40, "power_W": 60,
            "mesh_um": 40, "trackLength_um": 200, "cooling_s": 1e-4, "dwell_s": 0,
            "opticalObserver": "nist-six-section"}
@@ -1531,6 +1564,13 @@ def check_case(case: Case, work_root: Path, expect_unpinned: bool = False,
 REFERENCE_CASES = ("g1_v1_60w_in718", "g2_bare_plate_100w_corridor", "g4_layered_plate")
 # Identity observations: a change fails in EVERY case unless an entry names that exact key.
 IDENTITY_PATTERNS = ("*materialRevisionSha256*", "*materialSha256*", "*inputSha256*")
+# P7b (2026-10-14): the two G2 fixture booleans that compare the whole stripped result and the core-contract material
+# digest with the real capture are identity-class, not numerics: they flip when the material authority moves while
+# every numeric observation of the case stays protected (fixture.strippedResultEqualExceptMaterialIdentity carries the
+# replay claim). They may drift only when named exactly, like every identity observation. The third key is the new
+# replay-claim observation itself (absent from the pre-P7b golden, so its first appearance is named exactly once).
+REFERENCE_IDENTITY_FLAGS = ("fixture.strippedResultEqual", "fixture.materialSha256Equal",
+                            "fixture.strippedResultEqualExceptMaterialIdentity")
 # Reference numerics: a change in a REFERENCE_CASES case always fails, whatever the allowlist.
 REFERENCE_NUMERICS_PATTERNS = (
     "*.key.metrics", "*.key.thermalHistory", "*.key.energyBalance", "*.key.field*",
@@ -1593,6 +1633,10 @@ def parse_expect_drift(values: Optional[List[str]]) -> List[DriftEntry]:
 
 
 def _protected_reason(case_id: str, key: str, entries: List[DriftEntry]) -> Optional[str]:
+    if key in REFERENCE_IDENTITY_FLAGS:
+        if not any(e.pattern == key for e in entries):
+            return "identity observation: allowed only by an entry naming this exact key"
+        return None
     if case_id in REFERENCE_CASES and any(fnmatch.fnmatchcase(key, p) for p in REFERENCE_NUMERICS_PATTERNS):
         return "reference-case numerics never drift under --expect-drift"
     if any(fnmatch.fnmatchcase(key, p) for p in HONESTY_PATTERNS):
