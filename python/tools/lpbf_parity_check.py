@@ -1575,7 +1575,9 @@ IDENTITY_PATTERNS = ("*materialRevisionSha256*", "*materialSha256*", "*inputSha2
 # rule (P7b gate ruling): it is the G2 replay claim, not an identity flag. Its first appearance against a golden that
 # never recorded it is allowed by an entry naming it exactly (evaluate_drift), as any new observation is.
 REFERENCE_IDENTITY_FLAGS = ("fixture.strippedResultEqual", "fixture.materialSha256Equal")
-# Reference numerics: a change in a REFERENCE_CASES case always fails, whatever the allowlist.
+# Reference numerics: a change of a recorded value in a REFERENCE_CASES case always fails, whatever the allowlist.
+# The one exception is a first appearance (a key the golden never recorded, so nothing recorded changes): it is
+# allowed by an entry naming it exactly (evaluate_drift); honesty keys are never allowed, recorded or new.
 REFERENCE_NUMERICS_PATTERNS = (
     "*.key.metrics", "*.key.thermalHistory", "*.key.energyBalance", "*.key.field*",
     "*.key.artifacts", "artifact.*", "artifacts.*", "npz.*", "*.artifact.*", "*.artifacts*",
@@ -1773,10 +1775,14 @@ def evaluate_drift(case: Case, outcome: Dict[str, Any], entries: List[DriftEntry
             # protected class (reference numerics, identity) is allowed only by an entry naming it exactly, and an
             # honesty key never (P7b gate: the G2 replay claim fixture.strippedResultEqualExceptMaterialIdentity is
             # new on this tree and protected by fixture.* from then on).
+            # The honesty test comes first and is made directly on HONESTY_PATTERNS: in a reference case
+            # _protected_reason reports the reference-numerics reason before the honesty one, so a new honesty key
+            # under fixture.*, artifact.*, npz.* or *.artifacts* must not pass by its exact entry (final gate).
+            if any(fnmatch.fnmatchcase(key, p) for p in HONESTY_PATTERNS):
+                problems.append(f"new observation {key}: honesty observation never drifts under --expect-drift")
+                continue
             reason = _protected_reason(case.id, key, mine)
-            if reason is not None and reason.startswith("honesty"):
-                problems.append(f"new observation {key}: {reason}")
-            elif reason is not None and not any(entry.pattern == key for entry in mine):
+            if reason is not None and not any(entry.pattern == key for entry in mine):
                 problems.append(f"new observation {key}: allowed only by an entry naming this exact key")
             elif not any(entry.matches(key) for entry in mine):
                 problems.append(f"new observation {key}: not named by --expect-drift "

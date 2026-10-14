@@ -591,6 +591,35 @@ class ParityHarnessTests(unittest.TestCase):
         self.assertEqual(honesty["status"], "FAIL")
         self.assertIn("new observation result.productionReady: honesty observation never drifts under --expect-drift",
                       honesty["problems"])
+        # Final gate: a new honesty key inside a reference-numerics family of a reference case (fixture.*, artifact.*,
+        # npz.*, *.artifacts*) must not pass by its exact entry either (the honesty test is made directly on
+        # HONESTY_PATTERNS, before the exact-key rule).
+        for case_id, new_key in (("g2_bare_plate_100w_corridor", "fixture.experimentalValidation"),
+                                 ("g2_bare_plate_100w_corridor", "artifact.validationStatus"),
+                                 ("g1_v1_60w_in718", "result.artifacts.productionReady"),
+                                 ("g4_layered_plate", "npz.confidence")):
+            with self.subTest(case=case_id, key=new_key):
+                probe = parity.evaluate_drift(parity.CASE_BY_ID[case_id], self._synthetic_outcome({}, {new_key: False}),
+                                              parity.parse_expect_drift([f"{case_id}:{new_key}"]))
+                self.assertEqual(probe["status"], "FAIL")
+                self.assertIn(f"new observation {new_key}: honesty observation never drifts under --expect-drift",
+                              probe["problems"])
+        # A new identity key is allowed only by its exact entry: a glob (non-reference case) and a whole-case entry fail.
+        new_identity = "registry.material.X.materialRevisionSha256"
+        for allow in ("g3_powder_island:registry.material.*", "g3_powder_island"):
+            with self.subTest(allow=allow):
+                probe = parity.evaluate_drift(island, self._synthetic_outcome({}, {new_identity: "0" * 64}),
+                                              parity.parse_expect_drift([allow]))
+                self.assertEqual(probe["status"], "FAIL")
+                self.assertIn(f"new observation {new_identity}: allowed only by an entry naming this exact key",
+                              probe["problems"])
+        # A new key of REFERENCE_IDENTITY_FLAGS without an exact entry fails too.
+        for flag in parity.REFERENCE_IDENTITY_FLAGS:
+            with self.subTest(flag=flag):
+                probe = parity.evaluate_drift(case, self._synthetic_outcome({}, {flag: False}),
+                                              parity.parse_expect_drift([f"{case.id}:{key}"]))
+                self.assertEqual(probe["status"], "FAIL")
+                self.assertIn(f"new observation {flag}: allowed only by an entry naming this exact key", probe["problems"])
 
     def test_expect_drift_never_lets_an_honesty_observation_drift_in_any_case(self):
         names = ("validationStatus", "productionReady", "confidence", "effectiveMode")
@@ -652,18 +681,23 @@ class ParityHarnessTests(unittest.TestCase):
 
     def test_checked_in_drift_allowlist_names_no_honesty_or_identity_observation(self):
         import fnmatch
-        allowlist = HERE.parent / "docs" / "LPBF_IMPLEMENTATION_BUMP_2026-10-04_corrected-physics.expect-drift.txt"
-        entries = [line.strip() for line in allowlist.read_text(encoding="utf-8").splitlines() if line.strip()]
-        self.assertGreater(len(entries), 0)
-        for entry in entries:
-            case_id, separator, key = entry.partition(":")
-            with self.subTest(entry=entry):
-                self.assertTrue(separator and key, "every entry names CASE:KEY")
-                self.assertIn(case_id, parity.CASE_BY_ID)
-                for pattern in parity.HONESTY_PATTERNS:
-                    self.assertFalse(fnmatch.fnmatchcase(key, pattern), f"{entry} matches honesty pattern {pattern}")
-                for pattern in parity.IDENTITY_PATTERNS:
-                    self.assertFalse(fnmatch.fnmatchcase(key, pattern), f"{entry} matches identity pattern {pattern}")
+        # Every checked-in allowlist (P7b final gate: not only the 2026-10-04 file). An identity key may appear only as
+        # an exact entry (the tool allows identity drift by exact key); a honesty key never, in any form.
+        allowlists = sorted((HERE.parent / "docs").glob("LPBF_IMPLEMENTATION_BUMP_*.expect-drift.txt"))
+        self.assertGreaterEqual(len(allowlists), 11)
+        for allowlist in allowlists:
+            entries = [line.strip() for line in allowlist.read_text(encoding="utf-8").splitlines()
+                       if line.strip() and not line.startswith("#")]
+            self.assertGreater(len(entries), 0, allowlist.name)
+            for entry in entries:
+                case_id, separator, key = entry.partition(":")
+                with self.subTest(file=allowlist.name, entry=entry):
+                    self.assertTrue(separator and key, "every entry names CASE:KEY")
+                    self.assertIn(case_id, parity.CASE_BY_ID)
+                    for pattern in parity.HONESTY_PATTERNS:
+                        self.assertFalse(fnmatch.fnmatchcase(key, pattern), f"{entry} matches honesty pattern {pattern}")
+                    if any(fnmatch.fnmatchcase(key, pattern) for pattern in parity.IDENTITY_PATTERNS):
+                        self.assertFalse(any(c in key for c in parity.GLOB_CHARACTERS), f"{entry} is an identity glob")
 
     def test_expect_drift_on_g1_allows_only_named_non_numeric_observations(self):
         def reviewer(observations):  # review b5g S1: result digest + material revision + V1 equality
