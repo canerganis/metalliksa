@@ -1201,6 +1201,14 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
                     <span className="text-slate-400">Peak Intensity (I0):</span>
                     <span className="font-bold text-rose-300">{pyResult.processParameters.peakIntensity_MW_cm2 ?? "—"} MW/cm²</span>
                   </div>
+                  {pyResult.processParameters.absorptivityBasis && (
+                    <p className="pt-1 text-[10px] leading-4 text-slate-500" data-testid="absorptivity-basis-3d">
+                      Absorptivity (field) {pyResult.processParameters.effectiveAbsorptivity}: {pyResult.processParameters.absorptivityBasis}
+                      {pyResult.processParameters.absorptivityIndexBasis ? ` Index ${pyResult.processParameters.indexAbsorptivity}: ${pyResult.processParameters.absorptivityIndexBasis}.` : ""}
+                      {pyResult.processParameters.propertyConventionBasis ? ` Conduction k/cp ${pyResult.processParameters.effectiveConductivity_W_mK} W/m·K, ${pyResult.processParameters.effectiveSpecificHeat_J_kgK} J/kg·K: ${pyResult.processParameters.propertyConventionBasis}.` : ""}
+                      {" "}Sourcing correction (P7b), not validation.
+                    </p>
+                  )}
                 </div>
               </div>
             )}

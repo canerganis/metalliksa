@@ -81,6 +81,13 @@ export const DEPTH_BIAS_P1_UNDER_NOTE =
 export const DEPTH_BIAS_P1_OVER_NOTE =
   " The conduction field carries no latent-heat cut since 2026-10-11, so conduction-mode depth from " +
   "the Rosenthal kernel is higher than before.";
+/** P7b planned bump (2026-10-14): appended to every direction text of the conduction band (every kernel); alloy neutral,
+ *  the direction differs per alloy (Ti-6Al-4V shallower, AlSi10Mg deeper) and is stated in the bump record. Mirrors
+ *  python/lpbf_depth_bias.py P7B_CONDUCTION_NOTE. */
+export const DEPTH_BIAS_P7B_CONDUCTION_NOTE =
+  " After 2026-10-14 (P7b) the conduction absorptivity authority and the conduction property " +
+  "convention change conduction width and depth for every alloy that has a sourced value; the " +
+  "direction is stated per alloy in the bump record.";
 export const DEPTH_BIAS_BASIS_TEMPLATE =
   "Error-band summary {bands_id}, cell {alloy} / {kernel_id} / {regime}: relative error pred / meas - 1, equal source " +
   "weight, digitized figures included, screening only.";
@@ -180,6 +187,7 @@ export function computeDepthBiasWarning(
   let text = fill(DEPTH_BIAS_DIRECTION_TEMPLATE, { ...fields, verb: over ? "may be overestimated" : "may be underestimated" });
   if (!over && (rc === "transition" || rc === "keyhole")) text += DEPTH_BIAS_P1_UNDER_NOTE;
   else if (over && rc === "conduction" && kernel === "rosenthal") text += DEPTH_BIAS_P1_OVER_NOTE;
+  if (rc === "conduction") text += DEPTH_BIAS_P7B_CONDUCTION_NOTE;
   return {
     direction: over ? "may-overestimate" : "may-underestimate",
     text,

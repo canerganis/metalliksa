@@ -370,7 +370,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
             <h3 className="text-xs font-bold text-white">Is this P–v window safe?</h3>
             <span className="ml-auto text-[10px] text-slate-500">{materials.pythonThermal}</span>
           </div>
-          {thermal?.processWindowMap ? (
+          {thermal?.processWindowMap?.grid ? (
             <>
               <div className="relative">
                 <div className="grid grid-cols-7 gap-1">
@@ -382,7 +382,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
                     <button
                       key={idx}
                       type="button"
-                      title={`${pt.power_W} W, ${pt.speed_mm_s} mm/s — ${pt.regime}${pt.lackOfFusionNote ? ` — ${pt.lackOfFusionNote}` : ""}`}
+                      title={processMapCellTitle(pt)}
                       onClick={() =>
                         updateLpbfProcess({ laserPower_W: pt.power_W, scanSpeed_mms: pt.speed_mm_s })
                       }
@@ -395,14 +395,15 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
                         <span>{pt.power_W}W</span>
                         <span className="text-slate-400">{pt.speed_mm_s}</span>
                       </div>
-                      <div style={{ color: pt.color }}>{pt.regime.split(" ")[0]}</div>
+                      <div style={{ color: pt.color }}>{pt.regime.split(" ")[0]}{pt.width_um === null ? " (n/r)" : ""}</div>
                     </button>
                   );
                 })}
                 </div>
-                {litPoints.length > 0 && (() => {
-                  const powers = thermal.processWindowMap.grid.map((g) => g.power_W);
-                  const speeds = thermal.processWindowMap.grid.map((g) => g.speed_mm_s);
+                {litPoints.length > 0 && thermal.processWindowMap.grid && (() => {
+                  const grid = thermal.processWindowMap.grid;
+                  const powers = grid.map((g) => g.power_W);
+                  const speeds = grid.map((g) => g.speed_mm_s);
                   const pMin = Math.min(...powers);
                   const pMax = Math.max(...powers);
                   const vMin = Math.min(...speeds);
@@ -432,9 +433,19 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
                 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-emerald-500" /> Conduction</span>
                 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-rose-500" /> Keyhole</span>
                 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-amber-500" /> LoF</span>
+                <span className="flex items-center gap-1">(n/r): cell extent not resolved, W/D null, no LoF class</span>
                 <span className="flex items-center gap-1">Balling: operating point only (Eagar–Tsai L/W screen)</span>
+                {thermal.processWindowMap.gridKernel && <span className="flex items-center gap-1">Grid cells: {thermal.processWindowMap.gridKernel} field extent (every requested kernel)</span>}
                 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-sky-300" /> Literature DOI</span>
               </div>
+              {thermal.processParameters?.absorptivityBasis && (
+                <p className="text-[10px] text-slate-500" data-testid="absorptivity-basis">
+                  Absorptivity (field) {thermal.processParameters.effectiveAbsorptivity}: {thermal.processParameters.absorptivityBasis}
+                  {thermal.processParameters.absorptivityIndexBasis ? ` Index ${thermal.processParameters.indexAbsorptivity}: ${thermal.processParameters.absorptivityIndexBasis}.` : ""}
+                  {thermal.processParameters.propertyConventionBasis ? ` Conduction k/cp: ${thermal.processParameters.propertyConventionBasis}.` : ""}
+                  {" "}Sourcing correction (P7b), not validation.
+                </p>
+              )}
             </>
           ) : (
             <SkeletonLines />
@@ -794,6 +805,20 @@ export interface LofTileState {
   value: string;
   ok: boolean | null;
   hint: string;
+}
+
+/**
+ * P7b (2026-10-14): process-map cells whose field extent is not a computed isotherm carry width_um and depth_um null
+ * and their extentStatus; the tooltip says so instead of printing a number.
+ */
+export function processMapCellTitle(pt: {
+  power_W: number; speed_mm_s: number; regime: string; width_um: number | null; depth_um: number | null;
+  extentStatus?: string; lackOfFusionNote?: string;
+}): string {
+  const wd = pt.width_um === null || pt.depth_um === null
+    ? `W/D not resolved (${pt.extentStatus ?? "extent not computed"})`
+    : `W ${pt.width_um} µm, D ${pt.depth_um} µm`;
+  return `${pt.power_W} W, ${pt.speed_mm_s} mm/s — ${pt.regime} — ${wd}${pt.lackOfFusionNote ? ` — ${pt.lackOfFusionNote}` : ""}`;
 }
 
 /** P7a (2026-10-11): lof_wh and lof_dt are diagnostics with no sourced threshold (gate.required null). */

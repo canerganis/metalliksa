@@ -1246,10 +1246,28 @@ export interface PythonLPBFResult {
     inclineAngle_deg?: number;
     processSeed?: number;
     effectiveAbsorptivity: number;
+    /** P7b (2026-10-14): basis of the physical field absorptivity: the measured conduction-mode authority with its
+     *  locator and band, or exactly "no measurement, unsourced estimate" (no-measurement alloys, every green run). */
+    absorptivityBasis?: string;
+    absorptivitySource?: string | null;
+    /** P7b: the index convention absorptivity the dH/hs regime index reads (pre-P7 value, not a measurement). */
+    indexAbsorptivity?: number;
+    absorptivityIndexBasis?: string;
     effectiveConductivity_W_mK?: number;
     effectiveSpecificHeat_J_kgK?: number;
+    /** P7b: the density every conduction-kernel read uses (AlSi10Mg 2696; the room temperature value elsewhere). */
+    kernelDensity_kg_m3?: number;
+    effectiveDiffusivity_m2_s?: number;
+    /** P7b: "kernel-ledger-kirchhoff" (Ti-6Al-4V, AlSi10Mg: Kirchhoff mean of the sourced solid forms at the request
+     *  preheat), "melting-point" (sourced k and cp at the melting point), "blend" (equal-weight solid/liquid, unsourced)
+     *  or "kernel-override" (explicit kernel keys of a caller). */
+    propertyConvention?: "kernel-ledger-kirchhoff" | "melting-point" | "blend" | "kernel-override";
+    propertyConventionBasis?: string;
+    kernelLedgerSha256?: string | null;
     solidConductivity_W_mK?: number;
+    solidConductivityBasis?: string;
     liquidConductivity_W_mK?: number;
+    densityBasis?: string;
     volumetricEnergyDensity_J_mm3: number;
     linearEnergyDensity_J_m: number;
     peakIntensity_MW_cm2?: number;
@@ -1454,35 +1472,49 @@ export interface PythonLPBFResult {
       regime: string;
       lofStatus: string;
     };
+    /** P7b (2026-10-14): "rosenthal-screening-v1" for every requested kernel (each cell is the served Rosenthal field
+     *  extent at the authority field power). */
+    gridKernel?: string;
+    gridKernelNote?: string;
+    /** P7b: the dH/hs threshold of keyholeIndexLackOfFusion, the per-alloy keyhole cut (13.6 IN625, 20 otherwise). */
+    keyholeIndexLackOfFusionCut?: number;
+    /** null when the solver was called with include_process_map=False (internal re-runs only). */
     grid: {
       power_W: number;
       speed_mm_s: number;
       normalizedEnthalpy: number;
       regime: string;
       color: string;
-      width_um: number;
-      depth_um: number;
-      /** True when the Tang lack-of-fusion flag fired on a cell with dH/hs >= 20 (depth biased low, A(R) not modelled). */
+      /** P7b: null when the cell's field extent is not a computed isotherm (see extentStatus); older payloads: a number. */
+      width_um: number | null;
+      depth_um: number | null;
+      /** P7b: the cell's liquidus extent status ("computed" or a fallback / floor / search-limit status). */
+      extentStatus?: string;
+      /** True when the Tang lack-of-fusion flag fired on a cell at or above keyholeIndexLackOfFusionCut (depth biased
+       *  low, A(R) not modelled); never true on an unresolved cell. */
       keyholeIndexLackOfFusion?: boolean;
       /** Only present when keyholeIndexLackOfFusion is true. */
       lackOfFusionNote?: string;
-    }[];
-    /** The quick grid marks no balling zone (no melt-pool length); balling is screened at the operating point. */
+    }[] | null;
+    /** The grid marks no balling zone (no melt-pool length); balling is screened at the operating point. */
     ballingNote?: string;
   };
 }
 
-/** python/lpbf_defect_diagnostics.balling_screen: Eagar–Tsai liquidus L/W; High > 5.5 (empirical, Hofmann 316L,
- *  risky), Moderate > 3.85 (Yadroitsev 2010 Eq. 13 / Gusarov 2007 mechanism, advisory), null band = extent not computed. */
+/** python/lpbf_defect_diagnostics.balling_screen: Eagar–Tsai liquidus L/W; Moderate > 3.85 (Yadroitsev 2010 Eq. 13 /
+ *  Gusarov 2007 mechanism, advisory), null band = extent not computed. No High band since P7b (2026-10-14): the former
+ *  in-sample 316L edge 5.5 was fitted on a geometry P7b changed; "high" appears only in older payloads. */
 export interface PythonLpbfBallingScreen {
   modelId: string;
   kernel: string;
   extentStatus: string;
   lengthToWidth: number | null;
   depthToWidth: number | null;
+  /** "high" only in payloads older than P7b (2026-10-14); the High band was removed for every alloy. */
   band: "high" | "moderate" | "stable" | null;
   moderateThreshold: number;
-  highThreshold: number;
+  /** null since P7b (no High band); older payloads carried 5.5. */
+  highThreshold: number | null;
   relativeUncertainty: number;
   hofmannBalledFractionInBand: string | null;
   verdictEffect: "risky" | "advisory" | "none";

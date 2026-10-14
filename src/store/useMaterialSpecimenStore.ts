@@ -77,6 +77,8 @@ export const LPBF_PROCESS_FALLBACKS = {
   thermalConductivity_k_WmK: 11.5,
   density_rho_kgm3: 8200,
   specificHeat_Cp_JkgK: 435,
+  // UI default, not a measurement: the served physics reads the Python authority (four_alloy_materials.py
+  // ABSORPTIVITY_AUTHORITY since P7b, 2026-10-14); this form fallback never reaches a solver.
   laserAbsorptivity: 0.58,
   thermalExpansion_CTE_10e6: 13,
   criticalGradient_G_Km: 1.5e7,
@@ -449,6 +451,7 @@ export function deriveSpecimenProperties(
       thermalConductivity_k_WmK,
       density_rho_kgm3,
       specificHeat_Cp_JkgK,
+      // UI default, not a measurement (0.68 / 0.35 / 0.58 are form placeholders; Python's authority drives the solver).
       laserAbsorptivity: baseMetal === "Ti" ? 0.68 : baseMetal === "Al" ? 0.35 : 0.58,
       thermalExpansion_CTE_10e6: baseMetal === "Ni" ? 13.0 : baseMetal === "Ti" ? 8.6 : 16.5,
       criticalGradient_G_Km: 1.5e7,

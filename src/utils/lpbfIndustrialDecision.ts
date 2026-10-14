@@ -117,7 +117,8 @@ export interface LiteratureMatch {
 
 /**
  * Live quantities used to rank literature records. Normalized enthalpy is deliberately absent:
- * the live ΔH/h_s is Python's (rho Cp (T_liq - T_preheat), powder-bed absorptivity) and records
+ * the live ΔH/h_s is Python's (rho Cp (T_liq - T_preheat), the index convention absorptivity
+ * absorptivity_index_IR since P7b, 2026-10-14; the field uses the measured authority) and records
  * carry no comparable Python value, so mixing the two in one distance is not done (B5 step 1).
  * Peak intensity has the same definition on both sides (8P/(pi d^2)).
  */
