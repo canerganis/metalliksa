@@ -61,7 +61,10 @@ class LawAndParity(unittest.TestCase):
         live = ts.calculate_meltpool_physics(*args, heat_source="rosenthal", absorption_model="flat-plate")["meltPoolGeometry"]
         self.assertEqual((mine["W_um"], mine["D_um"]), PRE_P1_SERVED[(args, "rosenthal")][:2])
         self.assertNotEqual((mine["W_um"], mine["D_um"]), (live["width_um"], live["depth_um"]))
-        self.assertEqual(live["width_um"], 142.2)  # A P field, no ramp, no latent factor (P1 tree)
+        # A P field, no ramp, no latent factor (P1 tree) was 142.2; P7b (2026-10-14) serves the 316L authority 0.30
+        # and the melting-point k / cp (28.5, 830), so the live Rosenthal width is 104.1 while the frozen kernel
+        # keeps its pre-P1 literals and index reads (PRE_P7B_FROZEN_PROPS, absorptivity_index_IR).
+        self.assertEqual(live["width_um"], 104.1)
         self.assertEqual(K.PRE_P1_KEYHOLE_INCREMENT_FULL_AT, 30.0)
         self.assertFalse(hasattr(ts, "KEYHOLE_INCREMENT_FULL_AT"))
 

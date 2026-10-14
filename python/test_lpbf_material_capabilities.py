@@ -56,8 +56,13 @@ class MaterialCapabilityAuditTests(unittest.TestCase):
                 self.assertEqual(row["marangoniAdapter"]["modelQualification"], "open")
                 self.assertEqual(row["samePhysicsGpuQualification"], "open")
                 self.assertFalse(row["boundedFusionEnthalpyScreening"]["available"])
-                self.assertGreater(len(set(v for k, v in row["crossModelAbsorptivity"].items()
-                                           if k != "note")), 1)
+                # P7b (2026-10-14): one authority value for every model (the former per-table duplicates are gone);
+                # the dH/hs index reads the separate convention constant, which differs for the measured alloys.
+                cross = row["crossModelAbsorptivity"]
+                self.assertEqual(len({cross[k] for k in ("buildJobIR", "transient", "marangoni", "inherentStrain")}), 1)
+                self.assertEqual(cross["buildJobIR"], cross["authority"]["value"])
+                self.assertEqual(cross["indexConvention"], expected_build["thermal"]["absorptivity_index_IR"])
+                self.assertEqual(row["kernelLedger"] is not None, alloy_id in ("ti6al4v", "alsi10mg"))
 
     def test_in625_is_bounded_screening_only_and_preserves_distinct_sources(self):
         row = capability_for("Inconel-625")

@@ -34,49 +34,58 @@ MATS = {"in718": "Inconel 718", "ti6al4v": "Ti-6Al-4V", "ss316l": "316L Stainles
 KH = "Keyhole Mode (melt-pool D/W > 0.5 screening onset)"
 
 
-def _cell(color, depth, enth, p, regime, v, width):
-    return {"color": color, "depth_um": depth, "keyholeIndexLackOfFusion": False, "normalizedEnthalpy": enth,
-            "power_W": p, "regime": regime, "speed_mm_s": v, "width_um": width}
+def _cell(color, depth, enth, p, regime, v, width, status="computed", flag=False):
+    cell = {"color": color, "depth_um": depth, "extentStatus": status, "keyholeIndexLackOfFusion": flag,
+            "normalizedEnthalpy": enth, "power_W": p, "regime": regime, "speed_mm_s": v, "width_um": width}
+    if flag:
+        cell["lackOfFusionNote"] = solver.KEYHOLE_INDEX_LOF_NOTE
+    return cell
 
 
+# P7b (2026-10-14, sourcing correction): the geometry pins move with the absorptivity authority (IN718 0.32, Ti-6Al-4V
+# 0.32, 316L 0.30), the melting-point / kernel-ledger k and cp and the field-extent grid (B17); dH/hs, the regime and
+# the field-power-to-A relation are bit equal (index convention). REV0 rows: 119.3/57.9/490.3/0.0 (field 76.0),
+# 132.1/105.9/685.9/47.8 (98.0), 114.8/57.8/722.5/0.0 (147.0).
 REV0_PINS = {
     "in718|200|800|80|rosenthal": {
-        "W": 119.3, "D": 57.9, "L": 490.3, "cav": 0.0, "dh": 23.67, "regime": KH, "extent": "computed",
-        "fieldPower": 76.0, "contour0": {"x_um": 14.3, "y_um": 0.3},
-        "grid0": [_cell("#38bdf8", 74.6, 15.46, 80, "Transition", 300, 149.1),
-                  _cell("#f59e0b", 59.8, 10.93, 80, "Lack of Fusion Zone", 600, 119.7),
-                  _cell("#f59e0b", 54.0, 8.93, 80, "Lack of Fusion Zone", 900, 108.1)]},
+        "W": 96.0, "D": 46.5, "L": 286.1, "cav": 0.0, "dh": 23.67, "regime": KH, "extent": "computed",
+        "fieldPower": 64.0, "contour0": {"x_um": 14.0, "y_um": 0.0},
+        "grid0": [_cell("#f59e0b", 40.9, 15.46, 80, "Lack of Fusion Zone", 300, 83.5),
+                  _cell("#f59e0b", 29.9, 10.93, 80, "Lack of Fusion Zone", 600, 62.0),
+                  _cell("#f59e0b", 24.7, 8.93, 80, "Lack of Fusion Zone", 900, 51.4)]},
     "ti6al4v|280|1200|80|eagar-tsai": {
-        "W": 132.1, "D": 105.9, "L": 685.9, "cav": 47.8, "dh": 31.96, "regime": KH, "extent": "computed",
-        "fieldPower": 98.0, "contour0": {"x_um": 44.6, "y_um": 0.4},
-        "grid0": [_cell("#38bdf8", 78.8, 18.26, 80, "Transition", 300, 157.6),
-                  _cell("#f59e0b", 62.5, 12.91, 80, "Lack of Fusion Zone", 600, 124.9),
-                  _cell("#f59e0b", 56.0, 10.54, 80, "Lack of Fusion Zone", 900, 112.0)]},
+        "W": 128.8, "D": 96.8, "L": 559.6, "cav": 40.5, "dh": 31.96, "regime": KH, "extent": "computed",
+        "fieldPower": 89.6, "contour0": {"x_um": 43.9, "y_um": 0.1},
+        "grid0": [_cell("#f59e0b", 55.1, 18.26, 80, "Lack of Fusion Zone", 300, 112.3),
+                  _cell("#f59e0b", 40.4, 12.91, 80, "Lack of Fusion Zone", 600, 83.2),
+                  _cell("#f59e0b", 33.4, 10.54, 80, "Lack of Fusion Zone", 900, 69.1)]},
     "ss316l|350|1500|100|goldak": {
-        "W": 114.8, "D": 57.8, "L": 722.5, "cav": 0.0, "dh": 17.98, "regime": "Transition Mode", "extent": "computed",
-        "fieldPower": 147.0, "contour0": {"x_um": 23.5, "y_um": 0.3},
-        "grid0": [_cell("#10b981", 79.9, 9.19, 80, "Optimal Conduction", 300, 159.8),
-                  _cell("#10b981", 66.7, 6.5, 80, "Optimal Conduction", 600, 133.3),
-                  _cell("#f59e0b", 61.6, 5.31, 80, "Lack of Fusion Zone", 900, 123.2)]},
+        "W": 85.1, "D": 42.4, "L": 403.2, "cav": 0.0, "dh": 17.98, "regime": "Transition Mode", "extent": "computed",
+        "fieldPower": 105.0, "contour0": {"x_um": 17.5, "y_um": 0.0},
+        "grid0": [_cell("#f59e0b", 34.1, 9.19, 80, "Lack of Fusion Zone", 300, 70.3),
+                  _cell("#10b981", None, 6.5, 80, "Optimal Conduction", 600, None, "width-floor-applied"),
+                  _cell("#10b981", None, 5.31, 80, "Optimal Conduction", 900, None, "width-floor-applied")]},
+    # REV0 rows: 117.2/65.1/491.6/8.3 (76.0), 97.2/49.0/107.2/0.0 (27.0; AlSi10Mg 0.18 to 0.30 deeper, Amendment 1),
+    # 93.5/13.4/170.0/0.0 width-floor-applied (18.0; the field with A 0.30 and the kernel ledger resolves this point).
     "in625|200|800|80|rosenthal": {
-        "W": 117.2, "D": 65.1, "L": 491.6, "cav": 8.3, "dh": 25.62, "regime": KH, "extent": "computed",
-        "fieldPower": 76.0, "contour0": {"x_um": 14.0, "y_um": 0.0},
-        "grid0": [_cell("#ef4444", 73.6, 16.74, 80, "Keyhole Mode", 300, 147.2),
-                  _cell("#f59e0b", 59.2, 11.83, 80, "Lack of Fusion Zone", 600, 118.5),
-                  _cell("#f59e0b", 53.6, 9.66, 80, "Lack of Fusion Zone", 900, 107.2)]},
+        "W": 97.5, "D": 58.3, "L": 308.1, "cav": 11.0, "dh": 25.62, "regime": KH, "extent": "computed",
+        "fieldPower": 68.0, "contour0": {"x_um": 14.0, "y_um": 0.0},
+        "grid0": [_cell("#f59e0b", 42.2, 16.74, 80, "Lack of Fusion Zone", 300, 86.3, flag=True),
+                  _cell("#f59e0b", 30.8, 11.83, 80, "Lack of Fusion Zone", 600, 63.8),
+                  _cell("#f59e0b", 25.4, 9.66, 80, "Lack of Fusion Zone", 900, 52.9)]},
     "alsi10mg|150|600|80|rosenthal": {
-        "W": 97.2, "D": 49.0, "L": 107.2, "cav": 0.0, "dh": 8.48, "regime": "Conduction Mode (Stable)",
-        "extent": "computed", "fieldPower": 27.0, "contour0": {"x_um": 34.9, "y_um": 0.5},
-        "grid0": [_cell("#10b981", 96.9, 6.39, 80, "Optimal Conduction", 300, 193.8),
-                  _cell("#10b981", 74.1, 4.52, 80, "Optimal Conduction", 600, 148.3),
-                  _cell("#10b981", 64.8, 3.69, 80, "Optimal Conduction", 900, 129.6)]},
-    # Fallback point (extent not computed): the verdict must stay inconclusive and the numbers bit equal.
+        "W": 121.4, "D": 60.9, "L": 130.2, "cav": 0.0, "dh": 8.48, "regime": "Conduction Mode (Stable)",
+        "extent": "computed", "fieldPower": 45.0, "contour0": {"x_um": 46.2, "y_um": 0.4},
+        "grid0": [_cell("#f59e0b", 33.1, 6.39, 80, "Lack of Fusion Zone", 300, 66.2),
+                  _cell("#f59e0b", 29.7, 4.52, 80, "Lack of Fusion Zone", 600, 59.6),
+                  _cell("#f59e0b", 27.4, 3.69, 80, "Lack of Fusion Zone", 900, 54.4)]},
+    # Former fallback point: resolved since P7b (the AlSi10Mg field absorbs 0.30); its grid corner stays unresolved.
     "alsi10mg|100|400|170|eagar-tsai": {
-        "W": 93.5, "D": 13.4, "L": 170.0, "cav": 0.0, "dh": 2.23, "regime": "Conduction Mode (Stable)",
-        "extent": "width-floor-applied", "fieldPower": 18.0, "contour0": {"x_um": 34.5, "y_um": 0.4},
-        "grid0": [_cell("#10b981", 122.6, 2.06, 80, "Optimal Conduction", 300, 245.1),
-                  _cell("#10b981", 105.5, 1.46, 80, "Optimal Conduction", 600, 210.9),
-                  _cell("#10b981", 99.1, 1.19, 80, "Optimal Conduction", 900, 198.2)]},
+        "W": 113.6, "D": 24.0, "L": 170.0, "cav": 0.0, "dh": 2.23, "regime": "Conduction Mode (Stable)",
+        "extent": "computed", "fieldPower": 30.0, "contour0": {"x_um": 49.7, "y_um": 0.5},
+        "grid0": [_cell("#10b981", None, 2.06, 80, "Optimal Conduction", 300, None, "heuristic-width-fallback"),
+                  _cell("#10b981", None, 1.46, 80, "Optimal Conduction", 600, None, "heuristic-width-fallback"),
+                  _cell("#10b981", None, 1.19, 80, "Optimal Conduction", 900, None, "heuristic-width-fallback")]},
 }
 
 # DOI strings that resolve to the wrong paper or to nothing (G1 sweep 1.4 and 6.2): denied everywhere in src/ and python/.
@@ -176,11 +185,13 @@ class Ladder(unittest.TestCase):
         self.assertEqual(out["verdict"], "printable")
         self.assertEqual(_gates(out)["literature_pv"]["status"], "advisory")
         self.assertTrue(any("literature display range" in a for a in out["advisories"]))
+        # P7b (2026-10-14): no High band; the former High L/W is the Moderate advisory for every alloy.
         high = balling_screen(600.0, 100.0, 40.0, "computed", material_name="316L Stainless Steel")
         out = bj.compose_verdict(_thermal(tang=0.5, balling=high), "ss316l")
         self.assertEqual(out["verdict"], "printable")
         self.assertEqual(_gates(out)["balling"]["status"], "advisory")
-        self.assertTrue(any(a.startswith("Advisory: balling screen High") for a in out["advisories"]))
+        self.assertTrue(any(a.startswith("Advisory: balling screen Moderate") for a in out["advisories"]))
+        self.assertFalse(any(a.startswith("Advisory: balling screen High") for a in out["advisories"]))
         out = bj.compose_verdict(_thermal(tang=0.5), "in718", extras={"downskinOverhang_deg": 60.0})
         self.assertEqual(out["verdict"], "printable")
         self.assertEqual(_gates(out)["downskin"]["status"], "advisory")
@@ -219,7 +230,9 @@ class Ladder(unittest.TestCase):
         import lpbf_keyhole_benchmark as kb
         conv = kb.king_conversion()["kingThresholdInAppUnits"]
         self.assertEqual((round(conv["low"], 1), round(conv["mid"], 1), round(conv["high"], 1)), (19.3, 22.2, 25.2))
-        self.assertEqual(kb.king_conversion()["app316lProperties"]["absorptivity_IR"], 0.42)
+        # P7b (2026-10-14): the conversion reads the index convention constant 0.42; the physical authority is 0.30.
+        self.assertEqual(kb.king_conversion()["app316lProperties"]["absorptivity_index_IR"], 0.42)
+        self.assertEqual(kb.king_conversion()["app316lProperties"]["absorptivity_IR_physical_not_used"], 0.30)
 
     def test_lof_single_rule(self):
         for p, v, h, t in ((200.0, 800.0, 100.0, 40.0), (150.0, 1200.0, 110.0, 40.0), (300.0, 600.0, 90.0, 30.0),
@@ -239,19 +252,20 @@ class Ladder(unittest.TestCase):
         self.assertTrue(out["lackOfFusionMarginAdvisory"])
 
     def test_balling_high_band_316l_only(self):
+        # P7b (2026-10-14, V09): the P7a 316L-only High band is removed for every alloy (highBandApplicable False, the
+        # served highThreshold null); Moderate (3.85) and Stable stay.
         s316 = balling_screen(600.0, 100.0, 40.0, "computed", material_name="316L Stainless Steel")
-        self.assertEqual((s316["band"], s316["highBandApplicable"], s316["verdictEffect"]), ("high", True, "advisory"))
+        self.assertEqual((s316["band"], s316["highBandApplicable"], s316["verdictEffect"]), ("moderate", False, "advisory"))
         for mat in ("Inconel 718", "Ti-6Al-4V", "AlSi10Mg", "Inconel 625"):
             other = balling_screen(600.0, 100.0, 40.0, "computed", material_name=mat)
             self.assertEqual((other["band"], other["highBandApplicable"]), ("moderate", False), mat)
-            self.assertIn("not assigned for this alloy", other["reason"])
         self.assertEqual(balling_screen(385.0, 100.0, 40.0, "computed", material_name="Inconel 718")["band"], "moderate")
         self.assertEqual(balling_screen(384.7, 100.0, 40.0, "computed", material_name="Inconel 718")["band"], "stable")
         self.assertAlmostEqual(s316["moderateThreshold"], 3.848, places=3)
-        self.assertEqual(s316["highThreshold"], 5.5)
+        self.assertIsNone(s316["highThreshold"])
         out316 = bj.compose_verdict(_thermal(tang=0.5, balling=s316), "ss316l")
         self.assertEqual(out316["verdict"], "printable")
-        self.assertTrue(any(a.startswith("Advisory: balling screen High") for a in out316["advisories"]))
+        self.assertFalse(any("High" in a for a in out316["advisories"]))
         out718 = bj.compose_verdict(_thermal(tang=0.5, balling=balling_screen(600.0, 100.0, 40.0, "computed",
                                                                                  material_name="Inconel 718")), "in718")
         self.assertFalse(any("High" in a for a in out718["advisories"]))
@@ -454,7 +468,8 @@ class Ladder(unittest.TestCase):
 
     def test_assumptions_and_revision(self):
         from lpbf_job_cache import BUILD_JOB_SOLVER_REVISION
-        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p7a-rules-and-nulls-v24")
+        # P7b (2026-10-14): v25.
+        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p7b-sourced-constants-v25")
         job = bj.solve_lpbf_build_job({"alloyId": "in718", "laserPower_W": 285, "scanSpeed_mm_s": 960,
                                        "hatchSpacing_um": 110, "layerThickness_um": 40, "bypassCache": True})
         text = " ".join(job["assumptions"])

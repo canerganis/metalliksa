@@ -62,7 +62,7 @@ class RosenthalExponentLA2(unittest.TestCase):
         g = r["meltPoolGeometry"]
         self.assertEqual(g["extentStatus"], "computed")
         # P1 (2026-10-11): no latent factor on the Rosenthal field, 68.3 -> 75.4 um.
-        self.assertAlmostEqual(g["width_um"], 75.4, delta=0.2)
+        self.assertAlmostEqual(g["width_um"], 60.3, delta=0.2)  # P7b (2026-10-14): A 0.32, melting-point k / cp (P1: 75.4)
         self.assertGreater(r["solidificationKinetics"]["coolingRate_K_s"], 1.0e5)
 
 
@@ -141,7 +141,7 @@ class FabbroLA4(unittest.TestCase):
         kh = run(*NIST, heat_source="goldak")["keyholeModel"]
         self.assertIn("not Fabbro keyhole A(R)", kh["absorptivityBasis"])
         self.assertTrue(kh["pecletInFitRange"] in (True, False))
-        self.assertAlmostEqual(kh["fabbroDepth_um"], 123.9, delta=0.1)  # depth unchanged by LA-4
+        self.assertAlmostEqual(kh["fabbroDepth_um"], 104.4, delta=0.1)  # P7b (2026-10-14): 123.9 x 0.32 / 0.38 (A authority)
 
 
 class LatentHeatFactorLA5(unittest.TestCase):
@@ -160,7 +160,8 @@ class LatentHeatFactorLA5(unittest.TestCase):
         self.assertIn("1/(1+0.55 St)", pp["latentHeatPowerFactorBasis"])
 
     def test_nist_goldak_width(self):
-        self.assertAlmostEqual(run(*NIST, heat_source="goldak")["meltPoolGeometry"]["width_um"], 128.5, delta=0.5)
+        # P7b (2026-10-14): 104.7 (P1 value 128.5; the IN718 authority 0.32 and the melting-point k / cp).
+        self.assertAlmostEqual(run(*NIST, heat_source="goldak")["meltPoolGeometry"]["width_um"], 104.7, delta=0.5)
 
 
 class IncrementAndRecoilLA8(unittest.TestCase):

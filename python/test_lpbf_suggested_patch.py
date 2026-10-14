@@ -204,13 +204,15 @@ class SuggestedPatchEndToEnd(unittest.TestCase):
                                     (box["powerMin_W"], box["speedMax_mm_s"], 100), alloy)
 
     def test_printable_job_has_no_patch_and_no_note(self):
-        # P7a: 210/775 (dH/hs 25.3) is keyhole mode, so risky; 165/775/90/30 (dH/hs 19.84, Tang 0.996) is printable.
-        job = _job("in718", 165, 775, 90.0, 30.0)
+        # P7a: 210/775 (dH/hs 25.3) is keyhole mode, so risky. P7b (2026-10-14): the smaller IN718 pool (authority
+        # 0.32, melting-point k / cp) fails Tang at 165/775/90/30 (1.564), so the printable point is 150/700/50/20
+        # (dH/hs 18.98, Tang 0.56) and the risky point keeps a 50 um hatch and 20 um layer (Tang 0.379).
+        job = _job("in718", 150, 700, 50.0, 20.0)
         self.assertEqual(job["verdict"]["verdict"], "printable")
         self.assertIsNone(job["verdict"]["suggestedPatch"])
         self.assertIsNone(job["verdict"]["suggestedPatchNote"])
         self.assertEqual(job["verdict"]["suggestedPatchAdvisories"], [])
-        risky = _job("in718", 210, 775, 90.0, 30.0)
+        risky = _job("in718", 210, 775, 50.0, 20.0)
         self.assertEqual(risky["verdict"]["verdict"], "risky")
         self.assertEqual(risky["verdict"]["dominantGate"], "keyhole")
 

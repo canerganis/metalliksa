@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { computeDepthBiasWarning, resolveDepthBiasWarning, enthalpyClassOf, DEPTH_BIAS_CELLS, DEPTH_BIAS_BANDS_ID, DEPTH_BIAS_ENTHALPY_EDGES, DEPTH_BIAS_P1_OVER_NOTE, DEPTH_BIAS_P1_UNDER_NOTE } from "../src/utils/depthBiasWarning";
+import { computeDepthBiasWarning, resolveDepthBiasWarning, enthalpyClassOf, DEPTH_BIAS_CELLS, DEPTH_BIAS_BANDS_ID, DEPTH_BIAS_ENTHALPY_EDGES, DEPTH_BIAS_P1_OVER_NOTE, DEPTH_BIAS_P1_UNDER_NOTE, DEPTH_BIAS_P7B_CONDUCTION_NOTE } from "../src/utils/depthBiasWarning";
 import { DepthBiasNotice } from "../src/components/DepthBiasNotice";
 
 const SUMMARY = JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "calibration", "lpbf-meltpool-error-bands-v1.summary.json"), "utf8"));
@@ -52,8 +52,11 @@ test("direction follows the served kernel, alloy and regime class from the summa
   const ro = computeDepthBiasWarning(regime, "Inconel 625", "rosenthal");
   assert.equal(ro.direction, "may-overestimate");
   assert.match(ro.text ?? "", /Rosenthal kernel on Inconel 625 overpredicted the depth by a median of 41% \(n=18, 2 sources\)/);
-  assert.ok((ro.text ?? "").endsWith(DEPTH_BIAS_P1_OVER_NOTE));
+  // P7b (2026-10-14): every conduction-band direction text ends with the alloy-neutral P7b note.
+  assert.ok((ro.text ?? "").endsWith(DEPTH_BIAS_P1_OVER_NOTE + DEPTH_BIAS_P7B_CONDUCTION_NOTE));
   const gk = computeDepthBiasWarning(regime, "Inconel 625", "goldak");
+  assert.ok((gk.text ?? "").endsWith(DEPTH_BIAS_P7B_CONDUCTION_NOTE));
+  assert.doesNotMatch(DEPTH_BIAS_P7B_CONDUCTION_NOTE, /lower|shallower/);
   assert.match(gk.text ?? "", /Goldak kernel on Inconel 625 overpredicted the depth by a median of 44% \(n=17/);
   const tr = computeDepthBiasWarning("Transition Mode", "Inconel 625", "goldak");
   assert.equal(tr.direction, "may-underestimate");

@@ -121,7 +121,8 @@ class GoldakMeltPoolPathIndependentTests(unittest.TestCase):
         gk, _ = _goldak_nist()
         self.assertEqual(gk["modelId"], "goldak-half-space-v3", "goldak model id")
         self.assertEqual(gk["keyholeModel"]["modelId"], "fabbro-keyhole-v1", "fabbro on goldak path")
-        self.assertLess(abs(gk["keyholeModel"]["absorptivity"] - 0.38), 0.02, "Fabbro A is the flat effective absorptivity, not eta_eff")
+        # P7b (2026-10-14): the flat value is the IN718 authority 0.32 (was 0.38).
+        self.assertLess(abs(gk["keyholeModel"]["absorptivity"] - 0.32), 0.02, "Fabbro A is the flat effective absorptivity, not eta_eff")
         D = gk["meltPoolGeometry"]["depth_um"]
         # For this NIST case: the same value (123.9 um) with and without the ray tracer.
         self.assertTrue(0.70 * NIST_DEPTH_UM <= D <= 1.40 * NIST_DEPTH_UM, f"Goldak+Fabbro NIST depth {D}")
@@ -182,15 +183,16 @@ class GoldakCpuFallbackTests(unittest.TestCase):
         default, _ = _goldak_nist()
         self.assertEqual(default, gk, "default result does not depend on the ray tracer being importable")
         flat = _flat_plate_absorptivity()
-        self.assertAlmostEqual(flat, 0.38, places=9, msg="IN718 IR flat-plate absorptivity")
+        self.assertAlmostEqual(flat, 0.32, places=9, msg="IN718 IR flat-plate absorptivity (P7b authority, Deisenroth 2026)")
         pp = gk["processParameters"]
         self.assertAlmostEqual(pp["conductionAbsorptivity"], round(flat, 3), places=9,
                                msg="fallback conduction absorptivity is the flat-plate value")
         self.assertAlmostEqual(pp["fabbroAbsorptivity"], round(flat, 3), places=9)
         W = gk["meltPoolGeometry"]["width_um"]
         # Wave B LA-5 (Goldak takes the absorbed power as Q, no latent-heat cut): 117.3 -> 128.5 um.
-        self.assertAlmostEqual(W, 128.5, delta=0.5, msg=f"flat-plate default width {W}")
-        self.assertAlmostEqual(gk["meltPoolGeometry"]["depth_um"], 123.9, delta=0.5)
+        # P7b (2026-10-14): 104.7 / 104.4 (P1: 128.5 / 123.9; authority 0.32, melting-point k / cp, the leg follows A).
+        self.assertAlmostEqual(W, 104.7, delta=0.5, msg=f"flat-plate default width {W}")
+        self.assertAlmostEqual(gk["meltPoolGeometry"]["depth_um"], 104.4, delta=0.5)
 
 
 if __name__ == "__main__":

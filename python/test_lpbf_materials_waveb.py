@@ -8,11 +8,13 @@ import in625_thermal_material as in625
 import lpbf_material_registry as registry
 from lpbf_material_capabilities import capability_for
 
-# Identity digests that MD-1 must NOT move (rising-k alloys keep the 3-row table bit-for-bit).
+# Identity digests that MD-1 must NOT move (rising-k alloys keep the 3-row table bit-for-bit). Re-pinned at the P7b
+# sourced-constants bump (2026-10-14): the absorptivity authority (IN718 0.32, 316L 0.30, Ti-6Al-4V 0.32) and the
+# Ti-6Al-4V liquid row (k_l 29.8, cp_l 930, rho_l 4087, Mohr 2020) move the snapshot, the table shape does not.
 UNCHANGED_REVISIONS = {
-    "Inconel 718": "5c9179e947ca",
-    "Ti-6Al-4V": "a2d15d6c44ec",
-    "316L Stainless Steel": "d4d89609d9ab",
+    "Inconel 718": "8bbceb4e810f",
+    "Ti-6Al-4V": "ac61f9564639",
+    "316L Stainless Steel": "51f124e66e86",
 }
 
 
@@ -62,9 +64,11 @@ class SurfaceTensionSlopeTest(unittest.TestCase):  # MD-2, MD-5
         self.assertEqual(in718["value"], fam.thermal_props("in718")["d_gamma_dT_N_mK"])
         self.assertIn("10.2355/isijinternational.46.623", in718["source"])
         self.assertEqual(in718["commercialMeasured_N_mK"], -0.00011)
+        # P7b (2026-10-14): the AlSi10Mg slope is the Seimiya 2026 Table 1 EML value (binary Al-Si proxy, cited).
         al = fam.PROPERTY_PROVENANCE["alsi10mg"]["d_gamma_dT_N_mK"]
-        self.assertEqual(al["basis"], "unsourced-estimate")
-        self.assertIsNone(al["source"])
+        self.assertEqual(al["basis"], "cited-primary")
+        self.assertIn("Seimiya", al["source"])
+        self.assertEqual(al["value"], -0.000103)
 
     def test_capability_exposes_cross_model_slope(self):
         cap = capability_for("in718")

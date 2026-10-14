@@ -46,7 +46,8 @@ test("TS and Python build-job solver revisions are the same string", () => {
   assert.notEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p1-sourced-v21");
   assert.notEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p1-sourced-v22");
   assert.notEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p6-containment-v23");
-  assert.equal(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p7a-rules-and-nulls-v24");
+  assert.notEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p7a-rules-and-nulls-v24");
+  assert.equal(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p7b-sourced-constants-v25");
 });
 
 test("316L and AlSi10Mg: one Unavailable tile with the reason, no numbers, no substituted alloy", () => {

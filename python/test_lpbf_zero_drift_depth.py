@@ -118,8 +118,9 @@ class FabbroFwhmDiagnosticTests(unittest.TestCase):
 
     def test_nist_case_served_unchanged_and_fwhm_value(self):
         d = kb.fabbro_fwhm_diagnostic("Inconel 718", 285.0, 960.0, 67.0, 23.5)
-        self.assertEqual(d["fabbroDepth_um"], 123.9)  # served value, bit-equal to the solver's keyholeModel
-        self.assertAlmostEqual(d["fabbroDepthFwhm_um"], 195.4, delta=0.3)
+        # P7b (2026-10-14): the leg scales with the authority A 0.32 / 0.38 (P1: 123.9 / 195.4).
+        self.assertEqual(d["fabbroDepth_um"], 104.4)  # served value, bit-equal to the solver's keyholeModel
+        self.assertAlmostEqual(d["fabbroDepthFwhm_um"], 164.6, delta=0.3)
         self.assertTrue(d["aspectRatioInScope"])
         self.assertEqual(d["label"], "diagnostic, not served")
 
@@ -133,7 +134,8 @@ class FabbroFwhmDiagnosticTests(unittest.TestCase):
         d = kb.fabbro_fwhm_diagnostic("Ti-6Al-4V", 231.0, 400.0, 95.0, 20.0)
         self.assertEqual(d["fabbroDepth_um"], res["keyholeModel"]["fabbroDepth_um"])
         # Cunningham row (Ti64 231 W / 400 mm/s / 95 um / 20 C): harness value 299.4 um within +-5 %
-        self.assertAlmostEqual(d["fabbroDepthFwhm_um"], 299.4, delta=0.05 * 299.4)
+        # P7b (2026-10-14): 299.4 x 0.32 / 0.35 = 273.7 (the Ti-6Al-4V authority 0.32).
+        self.assertAlmostEqual(d["fabbroDepthFwhm_um"], 273.7, delta=0.05 * 273.7)
         self.assertGreater(d["fabbroDepthFwhm_um"], d["fabbroDepth_um"])
         # the recorder is removed again: the solver binding is the original function
         from fabbro_keyhole import fabbro_keyhole_depth_m

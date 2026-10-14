@@ -30,30 +30,35 @@ def _run(*args, **kwargs):
 # Post-P1 Rosenthal results (recorded on the P1 tree, 2026-10-11; before P1, at 6f6f58f5 through 393cdbd1, they were
 # 166.4/77.1/183.8/1306.8, 138.9/52.7/177.4/1010.5 and 109.6/35.6/152.3/718.4):
 # (material, P_W, v_mm_s, d_um, preheat_C) -> (depth_um, vapor cavity depth_um, width_um, length_um, dH/hs)
+# P7b (2026-10-14, sourcing correction): the absorptivity authority and the melting-point / kernel-ledger k and cp
+# (P1 rows 108.0/44.2/131.3/680.6, 84.5/24.3/124.1/511.1, 58.2/1.0/117.9/443.0); dH/hs is bit equal (index convention).
 P1_ROSENTHAL = {
-    ("Inconel 718", 280, 940, 80, 80): (108.0, 44.2, 131.3, 680.6, 30.58),
-    ("Ti-6Al-4V", 200, 900, 80, 150): (84.5, 24.3, 124.1, 511.1, 27.58),
-    ("316L Stainless Steel", 200, 800, 70, 80): (58.2, 1.0, 117.9, 443.0, 24.02),
+    ("Inconel 718", 280, 940, 80, 80): (90.9, 39.2, 106.8, 395.9, 30.58),
+    ("Ti-6Al-4V", 200, 900, 80, 150): (77.3, 19.4, 119.3, 404.5, 27.58),
+    ("316L Stainless Steel", 200, 800, 70, 80): (41.6, 0.0, 85.8, 264.6, 24.02),
 }
-# Post-P1 process-map grid of IN718 200/800/80 (49 cells, P 80..540 W x v 300..2400 mm/s): width from the flat
-# absorptivity, depth = max(w/2, Fabbro leg); the enthalpy column is unchanged by every bump.
+# Process-map grid of IN718 200/800/80 (49 cells, P 80..540 W x v 300..2400 mm/s). P7b (2026-10-14, B17): each cell is
+# the served Rosenthal field extent at the authority field power (A 0.32, melting-point k / cp), depth = max(liquidus
+# depth, Fabbro leg); unresolved cells (width floor) serve None. The P1 closed-form values (width from the flat
+# absorptivity plus d_beam^2, depth = max(w/2, leg)) were 74.6 ... 86.6 um deep and 149.1 ... 140.6 um wide. The
+# enthalpy column is unchanged by every bump.
 P1_GRID_DEPTH_UM = [
-    74.6, 59.8, 54.0, 50.9, 48.4, 46.8, 45.8,
-    140.3, 72.9, 63.8, 58.8, 54.7, 52.1, 50.3,
-    220.6, 126.1, 72.3, 65.7, 60.4, 56.9, 54.4,
-    300.8, 171.9, 120.3, 86.4, 66.2, 61.9, 58.8,
-    381.1, 217.7, 152.4, 117.2, 89.7, 66.5, 62.9,
-    461.3, 263.6, 184.5, 141.9, 108.5, 87.9, 73.8,
-    541.5, 309.4, 216.6, 166.6, 127.4, 103.1, 86.6,
+    40.9, 29.9, 24.7, 21.4, None, None, None,
+    118.2, 45.2, 37.2, 32.4, 28.1, 25.2, 23.0,
+    185.8, 106.2, 47.3, 40.3, 35.0, 31.4, 28.7,
+    253.3, 144.8, 101.3, 72.7, 41.4, 37.1, 33.9,
+    320.9, 183.4, 128.4, 98.7, 75.5, 54.8, 38.4,
+    388.4, 222.0, 155.4, 119.5, 91.4, 74.0, 62.2,
+    456.0, 260.6, 182.4, 140.3, 107.3, 86.9, 73.0,
 ]
 P1_GRID_WIDTH_UM = [
-    149.1, 119.7, 108.1, 101.8, 96.8, 93.7, 91.5,
-    190.0, 145.8, 127.7, 117.6, 109.4, 104.2, 100.6,
-    223.5, 167.9, 144.6, 131.5, 120.7, 113.7, 108.8,
-    256.5, 190.0, 161.9, 145.8, 132.4, 123.7, 117.6,
-    285.7, 209.8, 177.4, 158.8, 143.2, 133.0, 125.7,
-    312.2, 227.9, 191.7, 170.8, 153.2, 141.6, 133.4,
-    336.7, 244.7, 205.1, 182.0, 162.6, 149.8, 140.6,
+    83.5, 62.0, 51.4, 44.9, None, None, None,
+    127.1, 93.1, 77.0, 67.2, 58.5, 52.4, 48.0,
+    159.7, 116.0, 95.7, 83.3, 72.4, 64.9, 59.4,
+    190.3, 137.5, 113.1, 98.4, 85.5, 76.6, 70.0,
+    216.6, 156.0, 128.2, 111.4, 96.7, 86.6, 79.1,
+    240.2, 172.5, 141.6, 122.9, 106.7, 95.6, 87.3,
+    261.6, 187.5, 153.8, 133.5, 115.8, 103.7, 94.7,
 ]
 PRE_GRID_ENTHALPY = [
     15.46, 10.93, 8.93, 7.73, 6.7, 5.99, 5.47,
@@ -66,7 +71,9 @@ PRE_GRID_ENTHALPY = [
 ]
 # Post-P1 labels: T = Transition, L = Lack of Fusion Zone, K = Keyhole Mode (the lack-of-fusion cells follow the
 # P1 grid depth; before P1 the string was TLLLLLLTTTLLLLKKTTTTTKKKTTTTKKKKKTTKKKKKKKKKKKKKK with the pre-bump labels)
-P1_GRID_REGIME = "TLLLLLLKKLLLLLKKKKLLLKKKKKLLKKKKKKLKKKKKKKKKKKKKK"
+# P7b: the field-extent cells fail Tang more often (hatch 100 um, layer 40 um); unresolved cells keep their enthalpy
+# regime (P1 string "TLLLLLLKKLLLLLKKKKLLLKKKKKLLKKKKKKLKKKKKKKKKKKKKK").
+P1_GRID_REGIME = "LLLLCCCKLLLLLLKKLLLLLKKKLLLLKKKKLLLKKKKLLLKKKKKLL"
 
 
 class RegimeThresholds(unittest.TestCase):
@@ -138,6 +145,11 @@ class PinnedNumerics(unittest.TestCase):
         self.assertEqual("".join(next(k for k, lab in labels.items() if lab[0] == c["regime"]) for c in grid), P1_GRID_REGIME)
         for c, want in zip(grid, P1_GRID_REGIME):
             self.assertEqual((c["regime"], c["color"]), labels[want], c)
+            if c["width_um"] is None:
+                # P7b: an unresolved cell serves no width or depth and no Lack of Fusion Zone class.
+                self.assertNotEqual(c["extentStatus"], "computed", c)
+                self.assertNotEqual(want, "L", c)
+                continue
             # the Tang lack-of-fusion override reads the pinned grid width and depth (hatch 100 um, layer 40 um)
             tang = (100.0 / c["width_um"]) ** 2 + (40.0 / c["depth_um"]) ** 2
             self.assertEqual(want == "L", tang > 1.0, c)
@@ -182,12 +194,14 @@ class PinnedNumerics(unittest.TestCase):
 # IN625 per-alloy cut (planned bump in625-regime, 2026-10-11). IN625 Rosenthal results at 80 C preheat, recorded on the
 # P1 tree (before P1 the rows were 41.1/85.1/389.9/0.0, 104.0/163.1/501.2/24.8, 76.5/125.7/562.5/15.6, 47.3/97.6/209.9/0.0,
 # 48.4/100.9/388.2/0.0): (P_W, v_mm_s, d_um) -> (dH/hs, pre-in625-bump family, depth_um, width_um, length_um, cavity_um)
+# P7b (2026-10-14): the IN625 authority 0.34 and the melting-point k / cp 28.78 / 719.92 (P1 rows 45.7/94.5/473.9,
+# 67.6/139.3/379.1, 55.8/115.2/478.1, 53.4/110.1/254.9, 54.4/113.1/473.1); dH/hs bit equal (index convention 0.38).
 P1_IN625 = {
-    (195, 1200, 100): (14.6, "Conduction", 45.7, 94.5, 473.9, 0.0),
-    (150, 400, 100): (19.45, "Transition", 67.6, 139.3, 379.1, 0.0),
-    (195, 800, 100): (17.88, "Transition", 55.8, 115.2, 478.1, 0.0),
-    (100, 400, 100): (12.96, "Conduction", 53.4, 110.1, 254.9, 0.0),
-    (195, 800, 170): (8.06, "Conduction", 54.4, 113.1, 473.1, 0.0),
+    (195, 1200, 100): (14.6, "Conduction", 37.8, 78.4, 294.7, 0.0),
+    (150, 400, 100): (19.45, "Transition", 54.8, 112.9, 239.3, 0.0),
+    (195, 800, 100): (17.88, "Transition", 46.0, 95.3, 298.6, 0.0),
+    (100, 400, 100): (12.96, "Conduction", 41.9, 86.5, 159.6, 0.0),
+    (195, 800, 170): (8.06, "Conduction", 43.4, 93.5, 291.6, 0.0),
 }
 # Process-map grid of IN625 195/800/100 (C conduction, T transition, K keyhole, L lack of fusion); enthalpy unchanged by
 # every bump, depth and labels recorded on the P1 tree.
@@ -199,12 +213,14 @@ PRE_IN625_GRID_ENTHALPY = [
 ]
 # Before the in625-regime bump the labels were CLLLLLLKTCLLLLKKTTLLLKKKKTTTKKKKKKKKKKKKKKKKKKKKK; after P1 (grid depth
 # changed, so the lack-of-fusion cells move too) they are:
-P1_IN625_GRID_REGIME = "CCLLLLLKKCCLLLKKKKKLLKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+# P7b (2026-10-14, B17): field-extent cells (P1 closed-form string "CCLLLLLKKCCLLLKKKKKLLKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+# depths 79.5 ... 75.6 um); unresolved cells serve None and keep their enthalpy regime.
+P1_IN625_GRID_REGIME = "LLCCCCCLLLLLCCKLLLLLLKKLLLLLKKKLLLLKKKKLLLKKKKKLL"
 P1_IN625_GRID_DEPTH_UM = [
-    79.5, 66.4, 61.4, 58.8, 56.7, 55.4, 54.6, 98.3, 78.0, 69.9, 65.5, 62.0, 59.8, 58.3,
-    193.9, 88.0, 77.5, 71.6, 66.8, 63.8, 61.7, 264.4, 146.2, 85.3, 78.0, 72.0, 68.2, 65.5,
-    334.9, 185.1, 127.9, 87.6, 76.8, 72.2, 69.0, 405.4, 224.1, 154.9, 118.3, 88.9, 76.1, 72.4,
-    476.0, 263.1, 181.8, 138.9, 105.6, 85.2, 75.6,
+    40.5, 29.3, None, None, None, None, None, 62.6, 45.2, 37.2, 32.3, 28.0, None, None,
+    173.5, 56.7, 46.6, 40.5, 35.1, 31.5, 28.7, 236.6, 130.8, 65.8, 48.0, 41.7, 37.3, 34.1,
+    299.7, 165.7, 114.5, 78.4, 47.2, 42.3, 38.6, 362.8, 200.5, 138.6, 105.9, 79.5, 50.5, 42.7,
+    425.9, 235.4, 162.7, 124.3, 94.5, 76.3, 57.9,
 ]
 # The 13 held-out units of the declared run (docs/research/RESULTS_in625_regime_2026-10-11.md section 5):
 # (unit, app index at 20 C, measured depth over half width). Truth: keyhole when the ratio > 1.
@@ -264,7 +280,8 @@ class In625RegimeCut(unittest.TestCase):
         self.assertEqual([c["depth_um"] for c in grid], P1_IN625_GRID_DEPTH_UM)
         got = []
         for c, want in zip(grid, P1_IN625_GRID_REGIME):
-            tang = (100.0 / c["width_um"]) ** 2 + (40.0 / c["depth_um"]) ** 2
+            # P7b: an unresolved cell has no width or depth and never the Lack of Fusion Zone class.
+            tang = 0.0 if c["width_um"] is None else (100.0 / c["width_um"]) ** 2 + (40.0 / c["depth_um"]) ** 2
             if tang > 1.0:
                 self.assertEqual(c["regime"], "Lack of Fusion Zone")
                 got.append("L")
@@ -276,8 +293,13 @@ class In625RegimeCut(unittest.TestCase):
                 got.append("C")
         self.assertEqual("".join(got), P1_IN625_GRID_REGIME)
         self.assertNotIn("Transition", [c["regime"] for c in grid])
-        # the IN625 cut: every non-lack-of-fusion cell with 13.6 <= dH/hs < 20 is Keyhole Mode (shared cut would say Transition)
-        self.assertTrue(any(13.6 <= c["normalizedEnthalpy"] < 20.0 and c["regime"] == "Keyhole Mode" for c in grid))
+        # the IN625 cut: every cell with 13.6 <= dH/hs < 20 is keyhole mode by the index (shared cut would say
+        # Transition); on the P7b field-extent grid these cells all fail Tang, so they carry the Lack of Fusion Zone
+        # class with the keyhole-index flag at the per-alloy cut 13.6 (B19) instead of the Keyhole Mode label.
+        band = [c for c in grid if 13.6 <= c["normalizedEnthalpy"] < 20.0]
+        self.assertTrue(band)
+        self.assertTrue(all(c["regime"] == "Keyhole Mode" or (c["regime"] == "Lack of Fusion Zone"
+                                                                and c["keyholeIndexLackOfFusion"]) for c in band))
 
     def test_lane_conditions_at_20c(self):
         # Lane et al. 2020 conditions as served by the app at 20 C: CBM (100 um) keyhole, AMMT (170 um) conduction.

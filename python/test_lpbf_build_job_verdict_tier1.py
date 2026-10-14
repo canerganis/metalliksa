@@ -84,7 +84,9 @@ class ComposeVerdictTier1(unittest.TestCase):
         self.assertEqual(out["advisories"], [])
 
     def test_only_balling_high_is_an_advisory_with_screen_reason(self):
-        # P7a: balling High is an advisory (unsourced screening threshold), never risky.
+        # P7a: balling was an advisory (unsourced screening threshold), never risky. P7b (2026-10-14): the High band is
+        # removed; the former High L/W (6.0) is the Moderate advisory and the gate requirement is the 3.848 bound.
+        self.assertEqual(HIGH_BALLING["band"], "moderate")
         out = compose_verdict(_clean(ballingScreen=HIGH_BALLING), "in718")
         self.assertEqual(out["verdict"], "printable")
         gates = {g["id"]: g["status"] for g in out["gates"]}
@@ -93,13 +95,14 @@ class ComposeVerdictTier1(unittest.TestCase):
         self.assertEqual(out["riskGates"], [])
         self.assertEqual(out["dominantGate"], "none")
         line = next(r for r in out["advisories"] if "alling" in r)
-        self.assertIn("unsourced screening threshold", line)
-        self.assertIn("Eagar–Tsai L/W = 6.00 (> 5.5", line)
-        self.assertIn("Eagar-Tsai aspect-ratio screen calibrated on Hofmann 2026 316L single tracks", line)
-        self.assertIn("10.5281/zenodo.16979848", line)
-        self.assertIn("not a demonstrated balling prediction", line)
+        self.assertTrue(line.startswith("Advisory: balling screen Moderate"), line)
+        self.assertIn("Eagar–Tsai L/W = 6.00 > 3.85", line)
+        self.assertIn("Yadroitsev et al. 2010", line)
+        self.assertIn("It does not change the verdict", line)
         gate = next(g for g in out["gates"] if g["id"] == "balling")
-        self.assertEqual((gate["measured"], gate["required"]), (6.0, 5.5))
+        self.assertEqual((gate["measured"], gate["required"]), (6.0, 3.848))
+        self.assertIn("no High band since P7b", gate["basis"])
+        self.assertFalse(any("High" in a for a in out["advisories"]))
 
     def test_balling_moderate_is_an_advisory_without_verdict_effect(self):
         out = compose_verdict(_clean(ballingScreen=MODERATE_BALLING), "in718")
@@ -136,9 +139,14 @@ class ComposeVerdictTier1(unittest.TestCase):
         self.assertNotIn("balling not screened", out["headline"])
 
     def test_high_reason_discloses_recall_and_spot_dependence(self):
-        out = compose_verdict(_clean(ballingScreen=HIGH_BALLING), "in718")
-        line = next(r for r in out["advisories"] if r.startswith("Advisory: balling screen High"))
-        self.assertIn("69/216 balled tracks flagged overall, 3/38 at a 140 um spot", line)
+        # P7b (2026-10-14): the recall and spot-size disclosure lives in the screen note (served as evidence text), the
+        # High advisory line is gone; an older payload carrying band "high" is reported as the Moderate advisory.
+        from lpbf_build_job_solver import BALLING_SCREEN_NOTE
+        self.assertIn("69/216 balled tracks above the former edge, 3/38 at a 140 um spot", BALLING_SCREEN_NOTE)
+        legacy = dict(HIGH_BALLING, band="high")
+        out = compose_verdict(_clean(ballingScreen=legacy), "in718")
+        self.assertEqual(out["verdict"], "printable")
+        self.assertTrue(any(r.startswith("Advisory: balling screen Moderate") for r in out["advisories"]))
 
     def test_non_flat_plate_absorption_is_disclosed_not_rebanded(self):
         th = _clean(ballingScreen=MODERATE_BALLING)
@@ -232,7 +240,9 @@ class ComposeVerdictTier1(unittest.TestCase):
 
 
 class In718EndToEnd(unittest.TestCase):
-    PAYLOAD = {"alloyId": "in718", "laserPower_W": 280, "scanSpeed_mm_s": 940, "hatchSpacing_um": 100,
+    # P7b (2026-10-14): the smaller IN718 pool (authority 0.32, melting-point k / cp; W 106.8 um) fails Tang at a 100 um
+    # hatch, so the end-to-end keyhole case uses an 80 um hatch (Tang 0.75, below the 0.80 margin advisory).
+    PAYLOAD = {"alloyId": "in718", "laserPower_W": 280, "scanSpeed_mm_s": 940, "hatchSpacing_um": 80,
                "layerThickness_um": 40, "beamDiameter_um": 80, "preheatTemp_C": 80, "bypassCache": True,
                "enableUq": False, "includeAmbench": False}
 
@@ -249,16 +259,17 @@ class In718EndToEnd(unittest.TestCase):
         th = res["thermal"]
         dh = float(th["processParameters"]["normalizedEnthalpy"])
         self.assertEqual(th["meltPoolGeometry"]["extentStatus"], "computed")
-        # The Rosenthal L/W (5.18 after P1, 2026-10-11; ~7.1 before) no longer drives balling; the Eagar-Tsai L/W (~5.02, Wave B) is Moderate.
+        # The Rosenthal L/W (5.18 after P1, 2026-10-11; ~7.1 before; 3.71 after P7b, 2026-10-14, melting-point k / cp)
+        # no longer drives balling; the Eagar-Tsai L/W (5.02 at Wave B, 3.54 after P7b) is Stable.
         ros_lw = float(th["meltPoolGeometry"]["aspectRatio_L_over_W"])
-        self.assertAlmostEqual(ros_lw, 5.18, delta=0.01)
-        self.assertGreater(ros_lw, 3.8)
+        self.assertAlmostEqual(ros_lw, 3.71, delta=0.01)
         screen = th["defectDiagnostics"]["ballingScreen"]
-        self.assertEqual(screen["band"], "moderate")
-        self.assertAlmostEqual(screen["lengthToWidth"], 5.016, delta=0.01)
-        # Balling and recoater/distortion never block; keyhole is the only possible blocking gate here.
+        self.assertEqual(screen["band"], "stable")
+        self.assertAlmostEqual(screen["lengthToWidth"], 3.542, delta=0.01)
+        # Balling and recoater/distortion never block; keyhole is the only possible blocking gate here (P7b: the
+        # Eagar-Tsai L/W is Stable, so the balling gate passes).
         gates = {g["id"]: g["status"] for g in v["gates"]}
-        self.assertEqual(gates["balling"], "advisory")
+        self.assertEqual(gates["balling"], "pass")
         self.assertNotIn("balling", v["riskGates"])
         self.assertEqual(gates["recoater"], "not-evaluated")  # P7a: no sourced stress model
         self.assertEqual(gates["distortion"], "not-evaluated")

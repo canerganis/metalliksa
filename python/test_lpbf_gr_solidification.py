@@ -279,9 +279,11 @@ class PointIntegrationTests(unittest.TestCase):
         pt = self.cond["point"]
         f = pt["front"]
         # Pinned on the P1 tree (pre-P1: 30629747 / 0.1479, 12380206 / 0.4204, 55295265 / 0.0214).
-        self.assertEqual((f["median"]["G_K_m"], f["median"]["R_m_s"]), (27593695.0, 0.1387))
-        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (10657436.0, 0.4076))
-        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (50434919.0, 0.0226))
+        # P7b (2026-10-14): IN718 authority 0.32 and melting-point k / cp (P1 pins 27593695 / 0.1387, 10657436 / 0.4076,
+        # 50434919 / 0.0226).
+        self.assertEqual((f["median"]["G_K_m"], f["median"]["R_m_s"]), (33453214.0, 0.1899))
+        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (15234752.0, 0.4873))
+        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (56841389.0, 0.0362))
         self.assertIsNone(pt["regimeNote"])
 
     def test_in625_point(self):
@@ -289,10 +291,12 @@ class PointIntegrationTests(unittest.TestCase):
         f = r["point"]["front"]
         # P6 (2026-10-11): the former 195 W / 800 mm/s point now serves null G/R (Fabbro keyhole leg; its P1 pins were
         # 19393766 / 0.1005, 6701551 / 0.3233, 36221417 / 0.0196), so a conduction point (120 W / 1000 mm/s) is pinned.
-        self.assertEqual(f["median"]["G_K_m"], 28457032.0)
-        self.assertAlmostEqual(f["median"]["R_m_s"], 0.1355, places=12)
-        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (11017877.0, 0.3972))
-        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (52031697.0, 0.0219))
+        # P7b (2026-10-14): IN625 authority 0.34 and melting-point k / cp 28.78 / 719.92 (P6 pins 28457032 / 0.1355,
+        # 11017877 / 0.3972, 52031697 / 0.0219).
+        self.assertEqual(f["median"]["G_K_m"], 33329476.0)
+        self.assertAlmostEqual(f["median"]["R_m_s"], 0.1806, places=12)
+        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (14858288.0, 0.4693))
+        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (57143923.0, 0.0358))
         self.assertEqual(r["materialEvidence"]["provenanceClass"], "legacy-estimated-secondary")
         self.assertIn("not established", r["point"]["laves"]["note"])
         self.assertEqual(r["point"]["cet"]["status"], "unavailable")

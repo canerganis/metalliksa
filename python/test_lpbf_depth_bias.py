@@ -14,10 +14,13 @@ TS_FILE = Path(__file__).resolve().parent.parent / "src" / "utils" / "depthBiasW
 # 2026-10-11; the Rosenthal row before P1 was 0.686, 0.838, 1.271, 1.276: CBM moves further under, AMMT further over).
 LANE_ROWS = (("CBM-A", 150.0, 400.0, 100.0, 151.53), ("CBM-B", 195.0, 800.0, 100.0, 91.25),
              ("AMMT-A", 137.9, 400.0, 170.0, 42.63), ("AMMT-B", 179.2, 800.0, 170.0, 35.98))
+# P7b (2026-10-14, sourcing correction, not validation): the IN625 authority 0.34 and the melting-point k / cp move
+# every kernel (P1 pins: rosenthal 0.446 / 0.612 / 1.450 / 1.437, eagar-tsai 0.424 / 0.564 / 1.248 / 1.145, goldak
+# 0.461 / 0.635 / 1.494 / 1.440). Regenerated, never hand edited; a descriptive record at the new fingerprint.
 PINNED_RATIO = {
-    "rosenthal": (0.446, 0.612, 1.450, 1.437),
-    "eagar-tsai": (0.424, 0.564, 1.248, 1.145),
-    "goldak": (0.461, 0.635, 1.494, 1.440),
+    "rosenthal": (0.362, 0.504, 1.112, 1.137),
+    "eagar-tsai": (0.338, 0.454, 0.908, 0.837),
+    "goldak": (0.376, 0.526, 1.058, 0.951),
 }
 
 
@@ -133,13 +136,15 @@ class SummaryDerived(unittest.TestCase):
         # UNDER in the transition and keyhole bands carries the absorptance note (every kernel); Rosenthal OVER in the
         # conduction band carries the latent-heat note; other OVER cells carry neither.
         self.assertTrue(db.depth_bias_warning("Transition Mode", "Inconel 625", "goldak")["text"].endswith(db.P1_UNDER_NOTE))
+        # P7b (2026-10-14): every conduction-band direction text ends with the alloy-neutral P7b note.
         ro = db.depth_bias_warning("Conduction Mode (Stable)", "Inconel 625", "rosenthal")
         self.assertEqual(ro["direction"], db.OVER)
-        self.assertTrue(ro["text"].endswith(db.P1_OVER_NOTE))
+        self.assertTrue(ro["text"].endswith(db.P1_OVER_NOTE + db.P7B_CONDUCTION_NOTE))
         gk = db.depth_bias_warning("Conduction Mode (Stable)", "Inconel 625", "goldak")
         self.assertEqual(gk["direction"], db.OVER)
         self.assertNotIn("2026-10-11", gk["text"])
-        for t in (db.P1_UNDER_NOTE, db.P1_OVER_NOTE):
+        self.assertTrue(gk["text"].endswith(db.P7B_CONDUCTION_NOTE))
+        for t in (db.P1_UNDER_NOTE, db.P1_OVER_NOTE, db.P7B_CONDUCTION_NOTE):
             self.assertNotRegex(t, "[–—]")
             self.assertNotIn(" - ", t)
 

@@ -27,11 +27,11 @@ kinematics = calculate_scanner_kinematics(1000.0, 500.0, 200000.0)
 assert kinematics['warning'] is not None, "Should warn about short track"
 assert kinematics['effectiveMidTrackSpeed_mms'] < 1000.0, "Should not reach nominal speed"
 
-# 2. Defect Diagnostics (balling): the band comes only from the Eagar-Tsai L/W screen (High > 5.5)
+# 2. Defect Diagnostics (balling): the band comes only from the Eagar-Tsai L/W screen (Moderate > 3.85; no High band since P7b)
 assert defect_diagnostics(width_um=50, depth_um=30, length_um=200, hatch_um=40, layer_um=20)['balling']['risk'] is None
 screen = balling_screen(300.0, 50.0, 30.0, 'computed')
 diag_balling = defect_diagnostics(width_um=50, depth_um=30, length_um=200, hatch_um=40, layer_um=20, balling=screen)
-assert diag_balling['balling']['risk'] == 'high', "Eagar-Tsai L/W 6 > 5.5 should be High"
+assert diag_balling['balling']['risk'] == 'moderate', "Eagar-Tsai L/W 6 > 3.85 is Moderate (no High band since P7b, 2026-10-14)"
 assert diag_balling['balling']['lengthToWidth'] == 4.0
 
 # Keyhole (Wave B LA-3): D/W alone gives no risk verdict; King et al. 2014 sec. 5.2 mode indicator only

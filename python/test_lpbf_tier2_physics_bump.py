@@ -78,10 +78,13 @@ class FlatDefaultTest(unittest.TestCase):
         self.assertEqual(stdout, "")
         self.assertEqual(pp["absorptionModel"], "flat-plate")
         self.assertEqual(pp["thermalSliceBackend"], "cpu")
-        self.assertEqual(pp["conductionAbsorptivity"], 0.38)
+        # P7b (2026-10-14): the field absorptivity is the IN718 authority 0.32 (Deisenroth 2026); the index reads the
+        # convention constant 0.38, so dH/hs 30.58 is unchanged.
+        self.assertEqual(pp["conductionAbsorptivity"], 0.32)
+        self.assertEqual(pp["indexAbsorptivity"], 0.38)
         self.assertAlmostEqual(pp["normalizedEnthalpy"], 30.58, delta=0.01)
         # P1 (2026-10-11): the multi-reflection ramp is gone, effectiveAbsorptivity is the flat value (was 0.884).
-        self.assertAlmostEqual(pp["effectiveAbsorptivity"], 0.38, delta=0.001)
+        self.assertAlmostEqual(pp["effectiveAbsorptivity"], 0.32, delta=0.001)
         self.assertTrue(result["defectDiagnostics"]["keyholePorosityRisk"].startswith("High"))
 
     def test_enthalpy_formula_pi_inside_root(self):
@@ -90,7 +93,8 @@ class FlatDefaultTest(unittest.TestCase):
         rho, cp_s, k_s = props["density_kg_m3"], props["specific_heat_J_kgK"], props["thermal_conductivity_W_mK"]
         alpha = k_s / (rho * cp_s)
         r = 40e-6
-        expected = 0.38 * 280.0 / (rho * cp_s * (props["liquidus_C"] - 80.0)
+        # P7b: the index reads the convention constant absorptivity_index_IR (0.38), not the authority 0.32.
+        expected = props["absorptivity_index_IR"] * 280.0 / (rho * cp_s * (props["liquidus_C"] - 80.0)
                                    * math.sqrt(math.pi * alpha * 0.94 * r ** 3))
         result, _ = run(*IN718_280)
         self.assertAlmostEqual(result["processParameters"]["normalizedEnthalpy"], round(expected, 2), places=6)
@@ -176,9 +180,10 @@ class PeakAnchoredExtentTest(unittest.TestCase):
         self.assertEqual(g["peakOffset_um"], 0.0)
         # P1 (2026-10-11): flat absorptivity, no latent factor, depth = max(d_iso, Fabbro leg); Wave B values were
         # 158.5 / 123.5 / 1266.3 um.
-        self.assertAlmostEqual(g["width_um"], 116.5, delta=0.2)
-        self.assertAlmostEqual(g["depth_um"], 71.6, delta=0.2)
-        self.assertAlmostEqual(g["length_um"], 695.1, delta=0.5)
+        # P7b (2026-10-14): authority 0.32 and melting-point k / cp 29.6 / 720 (P1 values were 116.5 / 71.6 / 695.1).
+        self.assertAlmostEqual(g["width_um"], 94.9, delta=0.2)
+        self.assertAlmostEqual(g["depth_um"], 60.3, delta=0.2)
+        self.assertAlmostEqual(g["length_um"], 403.1, delta=0.5)
         # P6 (2026-10-11): IN718 has no sourced vapour temperature, so the peak and the Rosenthal axial maximum are null.
         self.assertIsNone(result["hydrodynamicsAndRecoil"]["peakTemperature_C"])
         self.assertIsNone(g["axialFieldMaximum_C"])
@@ -194,9 +199,10 @@ class PeakAnchoredExtentTest(unittest.TestCase):
         g = result["meltPoolGeometry"]
         self.assertEqual(g["extentStatus"], "computed")
         # P1 (2026-10-11): 131.3 / 108.0 / 680.6 um (Wave B LA-2: 183.8 / 166.4 / 1306.8; Tier 2: 175.2 / 159.7 / 1250.5).
-        self.assertAlmostEqual(g["width_um"], 131.3, delta=0.2)
-        self.assertAlmostEqual(g["depth_um"], 108.0, delta=0.2)
-        self.assertAlmostEqual(g["length_um"], 680.6, delta=0.5)
+        # P7b (2026-10-14): authority 0.32 and melting-point k / cp (P1 values 131.3 / 108.0 / 680.6).
+        self.assertAlmostEqual(g["width_um"], 106.8, delta=0.2)
+        self.assertAlmostEqual(g["depth_um"], 90.9, delta=0.2)
+        self.assertAlmostEqual(g["length_um"], 395.9, delta=0.5)
 
     def test_axial_peak_locator(self):
         def field(x, y, z):

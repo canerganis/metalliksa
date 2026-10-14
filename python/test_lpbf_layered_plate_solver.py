@@ -24,8 +24,10 @@ class LayeredPlateSolverTests(unittest.TestCase):
         self.assertEqual({key: settings[key] for key in DEFAULTS}, DEFAULTS)
         self.assertFalse((set(LAYERED) - set(DEFAULTS)) & set(settings))
         digest = hashlib.sha256(json.dumps(settings, sort_keys=True, allow_nan=False).encode()).hexdigest()
-        # Frozen against the default payload before CPU progress instrumentation.
-        self.assertEqual(digest, "6118a1df4bb616c72b5fafee828ebad3f80d96cc78f11ae80695682a74af19f9")
+        # Frozen against the default payload before CPU progress instrumentation; re-pinned at P7b (2026-10-14): the
+        # default settings echo the registry absorptivity, now the IN718 authority 0.32 (was 0.38).
+        self.assertEqual(settings["absorptivity"], 0.32)
+        self.assertEqual(digest, "fab07705a0d0f652a25a087cc3d95ca5274a2364fa8aaba3ae1064726d7a8626")
 
     def test_layered_inputs_are_explicit_and_strict(self):
         with self.assertRaisesRegex(ValueError, "all explicit"):

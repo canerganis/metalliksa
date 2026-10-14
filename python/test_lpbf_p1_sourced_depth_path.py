@@ -235,9 +235,10 @@ class LatentFree(unittest.TestCase):
 
 
 # SYNTHETIC grid fixture: regime labels of the 49 process-map cells for the synthetic set at the 200 W / 800 mm/s / 80 um
-# operating point (hatch 100 um, layer 40 um); C conduction, T transition, K keyhole, L lack of fusion. Recorded on the P1
-# tree from the synthetic property set above (not an alloy).
-SYNTHETIC_GRID_REGIME = "TLLLLLLKKTLLLLKKKKLLLKKKKKLLKKKKKKKKKKKKKKKKKKKKK"
+# operating point (hatch 100 um, layer 40 um); C conduction, T transition, K keyhole, L lack of fusion. Recorded on the P7b
+# tree (2026-10-14: each cell is the served Rosenthal field extent, B17; the P1 closed-form grid gave
+# "TLLLLLLKKTLLLLKKKKLLLKKKKKLLKKKKKKKKKKKKKKKKKKKKK") from the synthetic property set above (not an alloy).
+SYNTHETIC_GRID_REGIME = "LLLLLLLKLLLLLLKKKLLLLKKKKLLLKKKKKLLKKKKKKLKKKKKKK"
 
 
 class ProcessMapProxy(unittest.TestCase):
@@ -249,14 +250,24 @@ class ProcessMapProxy(unittest.TestCase):
         d_beam = 80e-6
         labels = {"Optimal Conduction": "C", "Transition": "T", "Keyhole Mode": "K", "Lack of Fusion Zone": "L"}
         got = []
+        # P7b (2026-10-14, B17): every cell is the served Rosenthal field extent at the authority field power, depth
+        # = max(liquidus depth, Fabbro leg); the former closed-form width sqrt(8/(pi e) A P / (rho cp dT v) + d_beam^2)
+        # and the 0.5 w depth bound are gone. A Rosenthal operating point on the grid reproduces its own cell exactly.
+        self.assertEqual(r["processWindowMap"]["gridKernel"], "rosenthal-screening-v1")
+        on_grid = _run(220.0, 900.0, 80.0, "rosenthal")
+        cell = next(c for c in on_grid["processWindowMap"]["grid"] if c["power_W"] == 220 and c["speed_mm_s"] == 900)
+        self.assertEqual((cell["width_um"], cell["depth_um"]),
+                         (on_grid["meltPoolGeometry"]["width_um"], on_grid["meltPoolGeometry"]["depth_um"]))
         for c in grid:
             P, v = float(c["power_W"]), float(c["speed_mm_s"]) * 1e-3
-            w = math.sqrt((8.0 / (math.pi * math.e)) * (0.4 * P / (m["rho"] * m["cp"] * (m["T_liq"] - T0) * v)) + d_beam ** 2) * 1e6
-            self.assertAlmostEqual(c["width_um"], w, delta=0.05, msg=c)
             idx = _index(P, v, d_beam)
             self.assertAlmostEqual(c["normalizedEnthalpy"], idx, delta=0.006, msg=c)
             e = fabbro_keyhole_depth_m(P, v, d_beam, m["k_s"], m["alpha_s"], m["T_vap"], T0, 0.4, idx)["depth_m"] * 1e6
-            self.assertAlmostEqual(c["depth_um"], max(0.5 * c["width_um"], e), delta=0.1, msg=c)
+            self.assertEqual(c["extentStatus"], "computed", msg=c)
+            self.assertGreaterEqual(c["depth_um"] + 0.06, e, msg=c)
+            self.assertGreaterEqual(c["width_um"], 0.55 * d_beam * 1e6 - 0.06, msg=c)
+            tang = (HATCH_UM / c["width_um"]) ** 2 + (LAYER_UM / c["depth_um"]) ** 2
+            self.assertEqual(c["regime"] == "Lack of Fusion Zone", tang > 1.0, msg=c)
             got.append(labels[c["regime"]])
             # P1 follow-on: additive keyhole-index flag, regime string and colour unchanged.
             flag = c["regime"] == "Lack of Fusion Zone" and idx >= solver.ENTHALPY_KEYHOLE

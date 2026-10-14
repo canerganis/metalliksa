@@ -29,9 +29,10 @@ class CoreContractTests(unittest.TestCase):
         self.assertFalse(c['resolvedPhysics']['momentum'])
         self.assertRegex(c['materialSha256'], r'^[a-f0-9]{64}$')
         enforce_thermal_balances(self.thermal)
-        # Recorded pre-change CPU profile, unchanged numerical acceptance.
-        self.assertAlmostEqual(self.thermal['metrics']['peakTemperature_K'], 2119.81011401591, places=8)
-        self.assertAlmostEqual(self.thermal['metrics']['volume_um3'], 192000, places=6)
+        # Recorded CPU profile; re-pinned at P7b (2026-10-14): the default IN718 material absorbs the authority 0.32
+        # (was 0.38, peak 2119.81011401591 K), the mesh and the acceptance are unchanged.
+        self.assertAlmostEqual(self.thermal['metrics']['peakTemperature_K'], 1846.9190523490593, places=8)
+        self.assertAlmostEqual(self.thermal['metrics']['volume_um3'], 128000, places=6)  # was 192000 at A 0.38
 
     def test_layer_conforming_grid_has_separate_model_identity(self):
         settings, material = validate(dict(

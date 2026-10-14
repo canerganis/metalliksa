@@ -24,25 +24,30 @@ class MeltPoolConsumerPins(unittest.TestCase):
         g, r = _geometry("goldak", *NIST)
         self.assertEqual(r["modelId"], "goldak-half-space-v3")
         # Wave B LA-5 (absorbed power as Q, no latent-heat cut): Tier 2 117.4 / 558.5 um; v2 kernel 81.7 / 280.7.
-        self.assertAlmostEqual(g["width_um"], 128.5, delta=0.5)
-        self.assertAlmostEqual(g["depth_um"], 123.9, delta=0.5)   # Fabbro depth, unchanged
-        self.assertAlmostEqual(g["length_um"], 665.6, delta=1.0)
+        # P7b (2026-10-14): IN718 authority 0.32 and melting-point k / cp (P1 values 128.5 / 123.9 / 665.6; the Fabbro
+        # depth follows A linearly, 123.9 x 0.32 / 0.38).
+        self.assertAlmostEqual(g["width_um"], 104.7, delta=0.5)
+        self.assertAlmostEqual(g["depth_um"], 104.4, delta=0.5)   # Fabbro depth at the authority A
+        self.assertAlmostEqual(g["length_um"], 389.9, delta=1.0)
         self.assertEqual(g["extentStatus"], "computed")
 
     def test_nist_eagar_tsai(self):
         g, r = _geometry("eagar-tsai", *NIST)
         self.assertEqual(r["modelId"], "eagar-tsai-v2")
         # Wave B LA-5: Tier 2 122.5 / 567.7 um; v1 kernel 127.8 / 776.0.
-        self.assertAlmostEqual(g["width_um"], 133.1, delta=0.5)
-        self.assertAlmostEqual(g["depth_um"], 123.9, delta=0.5)
-        self.assertAlmostEqual(g["length_um"], 674.6, delta=1.0)
+        # P7b (2026-10-14): P1 values 133.1 / 123.9 / 674.6.
+        self.assertAlmostEqual(g["width_um"], 110.5, delta=0.5)
+        self.assertAlmostEqual(g["depth_um"], 104.4, delta=0.5)
+        self.assertAlmostEqual(g["length_um"], 397.8, delta=1.0)
         self.assertEqual(g["extentStatus"], "computed")
 
     def test_g11_payloads(self):
         g, _ = _geometry("eagar-tsai", "Ti-6Al-4V", 280.0, 1200.0, 70.0, 200.0, 30.0, 120.0)
-        self.assertAlmostEqual(g["width_um"], 135.8, delta=0.5)   # Tier 2: 126.7; v1 kernel: 132.6
+        # P7b (2026-10-14): Ti-6Al-4V kernel ledger and authority 0.32 (P1: 135.8; Tier 2: 126.7; v1 kernel: 132.6)
+        self.assertAlmostEqual(g["width_um"], 131.2, delta=0.5)
         g, _ = _geometry("goldak", "316L Stainless Steel", 370.0, 600.0, 60.0, 25.0, 50.0, 90.0)
-        self.assertAlmostEqual(g["width_um"], 183.2, delta=0.5)   # Tier 2: 168.9; v2 kernel: 117.4
+        # P7b: 316L authority 0.30 and melting-point k / cp (P1: 183.2; Tier 2: 168.9; v2 kernel: 117.4)
+        self.assertAlmostEqual(g["width_um"], 134.8, delta=0.5)
 
     def test_retired_heat_source_ids_are_refused(self):
         for retired in ("eagar-tsai-v1", "goldak-v1", "goldak-total-power-v2"):
@@ -59,9 +64,11 @@ class MeltPoolConsumerPins(unittest.TestCase):
         # The computed half-width is below the 0.55 x beam-diameter floor (rr1 S1: 16 such cases).
         # Wave B LA-5 raised the ET/Goldak field power, so the floored cases are lower-power than at Tier 2
         # (Goldak IN718 50 W and ET Ti64 20 W are computed now).
-        for source, args in (("goldak", ("Inconel 718", 40.0, 800.0, 80.0, 80.0, 40, 110)),
+        # P7b (2026-10-14): the lower IN718 field power (A 0.32, k 29.6) sends the former 40 W Goldak and 30 W
+        # Rosenthal cases into the width fallback; the floored cases are re-pinned one step higher in power.
+        for source, args in (("goldak", ("Inconel 718", 48.0, 800.0, 80.0, 80.0, 40, 110)),
                              ("eagar-tsai", ("Ti-6Al-4V", 18.0, 800.0, 80.0, 80.0, 40, 110)),
-                             ("rosenthal", ("Inconel 718", 30.0, 2000.0, 80.0, 80.0, 40, 110))):
+                             ("rosenthal", ("Inconel 718", 40.0, 2000.0, 80.0, 80.0, 40, 110))):
             g, _ = _geometry(source, *args)
             self.assertEqual(g["extentStatus"], "width-floor-applied", (source, g["width_um"]))
             self.assertAlmostEqual(g["width_um"], 44.0, delta=0.05)
@@ -72,10 +79,12 @@ class MeltPoolConsumerPins(unittest.TestCase):
         # the box now grows and the extents equal the reviewer's unbounded search. Rosenthal values after the P1 bump
         # (2026-10-11, flat absorptivity and no latent factor; Wave B: 1896.2 / 1033.5; Tier 2: 1849.5 / 1011.7 um);
         # Eagar-Tsai and Goldak unchanged by P1.
-        for source, args, length in (("eagar-tsai", ("Inconel 718", 500.0, 1500.0, 40.0, 80.0, 40, 110), 1211.7),
-                                     ("rosenthal", ("Inconel 718", 370.0, 800.0, 80.0, 80.0, 40, 110), 898.9),
-                                     ("rosenthal", ("Inconel 718", 200.0, 1500.0, 40.0, 80.0, 40, 110), 486.0),
-                                     ("goldak", ("Inconel 718", 200.0, 3000.0, 40.0, 80.0, 40, 110), 472.4)):
+        # P7b (2026-10-14): IN718 authority 0.32 and melting-point k / cp shorten every pool (P1: 1211.7 / 898.9 /
+        # 486.0 / 472.4 um).
+        for source, args, length in (("eagar-tsai", ("Inconel 718", 500.0, 1500.0, 40.0, 80.0, 40, 110), 704.8),
+                                     ("rosenthal", ("Inconel 718", 370.0, 800.0, 80.0, 80.0, 40, 110), 523.2),
+                                     ("rosenthal", ("Inconel 718", 200.0, 1500.0, 40.0, 80.0, 40, 110), 282.9),
+                                     ("goldak", ("Inconel 718", 200.0, 3000.0, 40.0, 80.0, 40, 110), 271.6)):
             g, _ = _geometry(source, *args)
             self.assertEqual(g["extentStatus"], "computed", (source, args))
             self.assertAlmostEqual(g["length_um"], length, delta=0.5, msg=(source, args))

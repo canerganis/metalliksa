@@ -103,7 +103,9 @@ test("Python advisory / balling-screen wording and the 'advisory' gate status re
   const py = read("python/lpbf_build_job_solver.py");
   assert.match(py, /ADVISORY_GATES = \("recoater", "distortion"\)/);
   assert.match(py, /not a demonstrated balling/);
-  assert.match(py, /Eagar-Tsai aspect-ratio screen calibrated on Hofmann 2026 316L single tracks/);
+  // P7b (2026-10-14): no High band; the Hofmann tracks are recorded evidence per L/W bin, not a threshold.
+  assert.match(py, /Eagar-Tsai aspect-ratio screen \(model L\/W uncertainty about \+-10 %\); the Hofmann 2026 316L single tracks/);
+  assert.match(py, /no High band since P7b/);
   assert.doesNotMatch(py, /> 3\.8\)/);
   // P7a (2026-10-11): recoater and distortion are not-evaluated (no sourced stress model), never advisory numbers.
   assert.match(py, /"recoater",\s*"not-evaluated"/);

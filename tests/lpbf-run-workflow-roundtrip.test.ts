@@ -113,8 +113,9 @@ test('LPBF source select, CPU compute, unvalidated compare, export and restore p
     assert.equal(job.result.settings[key], value, `resolved workflow setting ${key}`);
   }
   assert.equal(job.result.material.materialId, 'in718');
+  // P7b (2026-10-14): the IN718 registry material absorbs the authority 0.32 (was 0.38, digest 5c9179e947ca...).
   assert.equal(job.result.material.materialRevisionSha256,
-    '5c9179e947ca19c3128e78e6ab9ce005c9b0ee6f86a8e6b579d368077b909749');
+    '8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8');
   assert.match(job.result.provenance.inputHash, /^[a-f0-9]{64}$/);
   assert.match(job.result.provenance.implementationHash, /^[a-f0-9]{64}$/);
   assert.equal(job.result.solver.id, 'enthalpy-fv-6');
