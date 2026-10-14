@@ -857,7 +857,9 @@ LANE_PROVENANCE = {
         "AMMT-100us and AMMT-20us tracks are different physical tracks made under nominally the same conditions "
         "(paper Fig. 7); CBM case A is described as near or at keyholing.",
         "IN625 kernel properties come from lpbf_thermal_solver.SECONDARY_THERMOPHYSICAL_DB (provenance class "
-        "'legacy-estimated-secondary', absorptivity_IR 0.38 estimated), not from a measured property set.",
+        "'legacy-estimated-secondary'; since P7b its absorptivity_IR 0.34 is the measured conduction-mode authority "
+        "(Deisenroth 2020 Sec. 3.4) and the regime index reads the convention constant 0.38; the other properties are "
+        "estimated), not from a measured property set.",
     ],
 }
 LANE_TRACK_COLUMNS = ["machine", "integration_time_us", "track", "case", "power_W", "nominal_case_power_W",
@@ -1113,7 +1115,8 @@ def wave2_reference_targets() -> List[Dict[str, Any]]:
          "caveats": sim["provenance"]["caveats"], "rows": sim["rows"],
          "comparison": {"status": "unavailable", "reason": (
              "The app has no stationary-spot (non-scanning) absorptance model: the kernels take a moving source and a "
-             "constant flat-plate absorptivity_IR (316L 0.42, estimated), so there is no like-for-like prediction of a "
+             "constant flat-plate absorptivity_IR (316L 0.30, the measured conduction-mode authority since P7b; the "
+             "regime index reads the convention constant 0.42), so there is no like-for-like prediction of a "
              "10 ms, 303 um top-hat spot's average coupling efficiency. Not computed.")}},
     ]
 
@@ -1137,7 +1140,8 @@ def screening_props(material: str) -> Dict[str, Any]:
 
 def normalized_enthalpy(material: str, power_W: float, speed_mm_s: float, beam_diameter_um: float,
                         preheat_C: float) -> float:
-    """dH/h_s with flat-plate absorptivity (same formula as lpbf_thermal_solver.py, King/Rubenchik)."""
+    """dH/h_s with the flat-plate INDEX CONVENTION absorptivity (absorptivity_index_IR; same formula and the same
+    key as lpbf_thermal_solver.py since P7b, King/Rubenchik). screening_props stays physical: it returns both keys."""
     props = screening_props(material)
     v = speed_mm_s * 1e-3
     r = beam_diameter_um * 1e-6 / 2.0
@@ -1146,7 +1150,7 @@ def normalized_enthalpy(material: str, power_W: float, speed_mm_s: float, beam_d
     cp_s = props["specific_heat_J_kgK"]
     alpha_s = k_s / (rho * cp_s)
     denom = rho * cp_s * max(50.0, props["liquidus_C"] - preheat_C) * math.sqrt(math.pi * alpha_s * v * r ** 3)
-    return props["absorptivity_IR"] * power_W / max(1e-9, denom)
+    return props["absorptivity_index_IR"] * power_W / max(1e-9, denom)
 
 
 def classify_regime(material: str, power_W: float, speed_mm_s: float, beam_diameter_um: float,

@@ -70,6 +70,9 @@ IN625_VALIDATION_PROPS = {
     "latent_heat_fusion_J_kg": 290000.0,
     "latent_heat_vap_J_kg": 6400000.0,
     "absorptivity_IR": 0.32,
+    # P7b (2026-10-14): the index convention key equals this set's own absorptivity (the pre-P7 served index of these
+    # cases), so the AM-Bench dH/hs is bit equal and the snapshot's required-key list is satisfied.
+    "absorptivity_index_IR": 0.32,
     "absorptivity_Green": 0.50,
     "surface_tension_N_m": 1.8,
     "d_gamma_dT_N_mK": -0.00038,

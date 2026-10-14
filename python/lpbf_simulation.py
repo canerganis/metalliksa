@@ -10,7 +10,7 @@ import math
 import datetime
 from pathlib import Path
 import numpy as np
-from lpbf_material_registry import material
+from lpbf_material_registry import material, reidentify
 from lpbf_run_progress import (current_progress, track_cpu_progress, track_cpu_run_boundary,
                                validate_cpu_progress)
 from lpbf_source_identity import (CANONICAL_SCHEMA, RAW_SCHEMA, fingerprint_sources,
@@ -230,16 +230,23 @@ def validate(raw):
         raise ValueError("Layered-plate sensitivity currently requires Inconel 718")
     if p["preheat_C"]+273.15 >= m["solidus_K"]:
         raise ValueError("Baseplate preheat must be below solidus")
+    overridden = False
     if "absorptivity" in p:
         a = p["absorptivity"]
         if isinstance(a, bool) or not isinstance(a, (int, float)) or not math.isfinite(a) or not 0 < a <= 1:
             raise ValueError("absorptivity must be in (0,1]")
+        overridden = overridden or m["absorptivity"] != a
         m["absorptivity"] = a
     if "emissivity" in p:
         e = p["emissivity"]
         if type(e) not in (int, float) or not math.isfinite(e) or not 0 <= e <= 1:
             raise ValueError("emissivity must be in [0,1]")
+        overridden = overridden or m["emissivity"] != e
         m["emissivity"] = e
+    if overridden:
+        # P7b (2026-10-14): a request value that differs from the registry snapshot changes the material, so its
+        # identity is recomputed (the core contract verifies materialRevisionSha256 against the served dict).
+        m = reidentify(m)
     p["absorptivity"], p["emissivity"] = m["absorptivity"], m["emissivity"]
     measurement_evidence(p.get("measurements", []), p)
     if p["mode"] == "calibration" and not p.get("measurements"):

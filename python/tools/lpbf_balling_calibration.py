@@ -21,7 +21,10 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 
-from lpbf_defect_diagnostics import BALLING_LW_HIGH, BALLING_LW_MODERATE  # noqa: E402
+from lpbf_defect_diagnostics import BALLING_LW_MODERATE, HOFMANN_EVIDENCE_LW_EDGES  # noqa: E402
+
+# P7b: the served High band is gone; this calibration tool keeps scoring the recorded 5.5 evidence edge.
+BALLING_LW_HIGH = HOFMANN_EVIDENCE_LW_EDGES[2]
 
 HOFMANN = "hofmann-316l-2026"
 KU = ("ku-leuven-316l-2021", "ku-leuven-ti64-2021")
@@ -140,8 +143,9 @@ def markdown(results):
              "**Comparison, not validation.** Labels: Hofmann et al. 316L balling flag (Zenodo 10.5281/zenodo.16979848). "
              "KU Leuven rows carry published *regime* labels (conduction/transition/keyhole), not balling labels; Lane "
              "IN625 and Totis Ti64 carry no balling label. Kernel geometry: flat-plate absorptivity (estimated). "
-             f"Shipped screen: Eagar–Tsai L/W > {BALLING_LW_HIGH} High (risky), > {BALLING_LW_MODERATE:.3f} Moderate "
-             "(advisory). experimentalValidation=false.", ""]
+             f"Shipped screen: Eagar–Tsai L/W > {BALLING_LW_MODERATE:.3f} Moderate (advisory); the former High edge "
+             f"{BALLING_LW_HIGH} is scored here as recorded evidence only (no served High band since P7b). "
+             "experimentalValidation=false.", ""]
     for label, r in results:
         lines += [f"## {label} (implementation {str(r['implementationHash'])[:8]})", "",
                   "| kernel | AUC L/W, all (pos/neg) | AUC L/W, bare plate |", "|---|---|---|"]

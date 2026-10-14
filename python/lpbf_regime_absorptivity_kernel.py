@@ -25,7 +25,7 @@ from typing import Any, Dict, Optional, Tuple
 import lpbf_thermal_solver as ts
 from eagar_tsai_solver import EagarTsaiField
 from fabbro_keyhole import fabbro_keyhole_depth_m
-from four_alloy_materials import thermal_props
+from four_alloy_materials import resolve_alloy_id, thermal_props
 from goldak_solver import GoldakField, seed_goldak_axes
 
 KERNELS = ("eagar-tsai", "goldak", "rosenthal")
@@ -59,11 +59,29 @@ def gan_absorptivity(A_flat: float, Am: float, P_W: float, v_m_s: float, r_m: fl
     return float(max(A_flat, eta_max * (1.0 - math.exp(-rate * X))))
 
 
+# P7b (2026-10-14): this frozen pre-P1 copy keeps reproducing its committed results after the P7b constants bump.
+# Its property dict is frozen as pre-bump literals for the two alloys whose served constants moved (Ti-6Al-4V and
+# AlSi10Mg: solid and liquid k and cp, density, absorptivity), and both absorptivity reads below use the index
+# convention value (absorptivity_index_IR, the pre-P7 served value of every alloy), so the baseline numbers of
+# python/test_lpbf_regime_absorptivity_eval.py (recorded at 393cdbd1 / pin 0d52d7f7) stay bit equal.
+PRE_P7B_FROZEN_PROPS = {
+    "ti6al4v": {"thermal_conductivity_W_mK": 6.7, "thermal_conductivity_liquid_W_mK": 23.0,
+                "specific_heat_J_kgK": 526.0, "specific_heat_liquid_J_kgK": 830.0, "density_kg_m3": 4430.0,
+                "density_liquid_kg_m3": 3950.0, "absorptivity_IR": 0.35, "absorptivity_index_IR": 0.35},
+    "alsi10mg": {"thermal_conductivity_W_mK": 130.0, "thermal_conductivity_liquid_W_mK": 85.0,
+                 "specific_heat_J_kgK": 910.0, "specific_heat_liquid_J_kgK": 1180.0, "density_kg_m3": 2680.0,
+                 "density_liquid_kg_m3": 2390.0, "absorptivity_IR": 0.18, "absorptivity_index_IR": 0.18},
+}
+
+
 def resolve_props(material: str) -> Dict[str, Any]:
     props = thermal_props(material) or ts.SECONDARY_THERMOPHYSICAL_DB.get(material)
     if props is None:
         raise ValueError(f"Unsupported LPBF material identity: {material!r}")
-    return dict(props)
+    out = dict(props)
+    out.pop("kernel_density_kg_m3", None)
+    out.update(PRE_P7B_FROZEN_PROPS.get(resolve_alloy_id(material) or "", {}))
+    return out
 
 
 def flat_enthalpy(material: str, P_W: float, v_mm_s: float, d_um: float, preheat_C: float) -> float:
@@ -75,7 +93,8 @@ def flat_enthalpy(material: str, P_W: float, v_mm_s: float, d_um: float, preheat
     alpha_solid = k_s / (rho * cp_s)
     denom = rho * cp_s * max(50.0, props["liquidus_C"] - float(preheat_C)) * math.sqrt(
         math.pi * alpha_solid * v_scan * (r_beam ** 3))
-    return (float(props["absorptivity_IR"]) * float(P_W)) / max(1e-9, denom)
+    # P7b: the index convention absorptivity (the pre-P7 served value); the physical authority absorptivity_IR moved.
+    return (float(props["absorptivity_index_IR"]) * float(P_W)) / max(1e-9, denom)
 
 
 def meltpool_wd(material: str, P_W: float, v_mm_s: float, d_um: float, preheat_C: float, layer_um: float,
@@ -104,7 +123,8 @@ def meltpool_wd(material: str, P_W: float, v_mm_s: float, d_um: float, preheat_C
     cp = 0.5 * (cp_s + cp_l)
     alpha_th = k_th / (rho * cp)
     alpha_solid = k_s / (rho * cp_s)
-    eta_base_flat = float(props["absorptivity_IR"])
+    # P7b: both reads of this frozen pre-P1 kernel use the index convention value (pre-P7 served absorptivity).
+    eta_base_flat = float(props["absorptivity_index_IR"])
     eta_base = eta_base_flat
 
     enthalpy_denom = rho * cp_s * max(50.0, T_liq - T_preheat) * math.sqrt(math.pi * alpha_solid * v_scan * (r_beam ** 3))

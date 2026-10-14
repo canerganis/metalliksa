@@ -617,7 +617,9 @@ def build_document(quick: bool, jobs: int, ref_budget_s: float, skip_reference: 
                         "layer because the function requires a positive layer; width/depth/length do not depend "
                         "on it (checked at 10/30/60 um)",
             "preheat_C": "20 C assumed (not given by either dataset)",
-            "absorptivity": "the repo's estimated absorptivity_IR (316L 0.42, Ti-6Al-4V 0.35), flat-plate",
+            "absorptivity": ("the repo's absorptivity_IR authority (316L 0.30, Ti-6Al-4V 0.32: measured conduction-mode "
+                             "bare-plate values since P7b; the regime index reads the convention constants 0.42 and "
+                             "0.35), flat-plate"),
             "inclusionRule": "a row counts for statistics only when extentStatus == 'computed'",
             "powderBedRayTracer": ("calculate_meltpool_physics runs the optional GPU powder ray tracer only when "
                                    "absorption_model='powder-raytrace' is requested (tier-2 bump 2026-10-06); the "
@@ -696,9 +698,11 @@ def build_document(quick: bool, jobs: int, ref_budget_s: float, skip_reference: 
                                           "extents)")
         doc["assumptions"]["preheat_C"] = ("20 C assumed for every dataset (no dataset in this record states a "
                                            "build-plate or substrate temperature in the files read)")
-        doc["assumptions"]["absorptivity"] = ("the repo's estimated absorptivity_IR (316L 0.42, Ti-6Al-4V 0.35; "
-                                              f"IN625 {abs_by_material['Inconel 625']} from the legacy-estimated "
-                                              "secondary table, wave 2 Lane rows only), flat-plate")
+        doc["assumptions"]["absorptivity"] = ("the repo's absorptivity_IR authority (316L 0.30, Ti-6Al-4V 0.32: "
+                                              "measured conduction-mode bare-plate values since P7b; "
+                                              f"IN625 {abs_by_material['Inconel 625']} measured, Deisenroth 2020, from "
+                                              "the secondary table, wave 2 Lane rows only; the regime index reads the "
+                                              "convention constants 0.42, 0.35 and 0.38), flat-plate")
     if reuse_reference is not None:
         sha, norm = _lf_sha256(reuse_reference)
         src = json.loads(norm.decode("utf-8"))

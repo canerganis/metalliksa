@@ -241,7 +241,8 @@ def repo_per_weaver_factor(preheat_C: float = PREHEAT_C) -> float:
     alpha_repo = props["thermal_conductivity_W_mK"] / (props["density_kg_m3"] * props["specific_heat_J_kgK"])
     hs_weaver = w["rho_kg_m3"] * w["cp_J_kgK"] * (w["Tm_K"] - w["T0_K"])
     hs_repo = props["density_kg_m3"] * props["specific_heat_J_kgK"] * max(50.0, props["liquidus_C"] - preheat_C)
-    return ((props["absorptivity_IR"] / w["A"]) * (hs_weaver / hs_repo) * math.sqrt(d_weaver / alpha_repo)
+    # P7b: the index convention absorptivity (0.38, the value the 13.6 cut was fitted with), not the authority 0.34.
+    return ((props["absorptivity_index_IR"] / w["A"]) * (hs_weaver / hs_repo) * math.sqrt(d_weaver / alpha_repo)
             * (0.25 / 0.5) ** 1.5)
 
 

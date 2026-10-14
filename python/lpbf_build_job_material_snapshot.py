@@ -7,7 +7,8 @@ import hashlib
 import json
 import math
 
-from four_alloy_materials import resolve_alloy_id, slicer_props, thermal_props
+from four_alloy_materials import (INDEX_FULL_SET_KEYS, INDEX_KEY_IR, MELT_KEYS, kernel_ledger_sha256,
+                                  resolve_alloy_id, slicer_props, thermal_props)
 
 
 MATERIAL_PROPERTY_SCHEMA_VERSION = 1
@@ -15,19 +16,21 @@ MATERIAL_PROPERTY_REVISION = "build-job-effective-properties-v1"
 BUILD_JOB_IDENTITY_SCHEMA_VERSION = 1
 
 # Keep this list aligned with property reads in lpbf_thermal_solver. Optional
-# properties are materialized with the same defaults as that solver.
-_THERMAL_REQUIRED = (
-    "liquidus_C", "solidus_C", "boiling_C", "density_kg_m3",
-    "thermal_conductivity_W_mK", "specific_heat_J_kgK",
-    "absorptivity_IR", "absorptivity_Green", "latent_heat_fusion_J_kg",
-    "latent_heat_vap_J_kg", "d_gamma_dT_N_mK", "viscosity_Pa_s",
-    "youngs_modulus_GPa", "thermal_expansion_1_K", "poissons_ratio",
-)
+# properties are materialized with the same defaults as that solver. P7b (2026-10-14): the physical keys are the
+# authority's INDEX_FULL_SET_KEYS (a manifest constant) plus the index convention key absorptivity_index_IR, so the
+# snapshot freezes the index constant for every Build Job material and the solver's full-set rule reads it (rule 1).
+_THERMAL_REQUIRED = INDEX_FULL_SET_KEYS + (INDEX_KEY_IR,)
+# P7b: melting-point k and cp (absent means the solver blends) and the kernel density (AlSi10Mg 2696) are frozen when
+# the authority carries them. No kernel K / cp key is frozen: the ledger alloys' kernel is evaluated per call at the
+# job's own preheat (the snapshot digest must not depend on a process input); the ledger's numeric identity is frozen
+# as kernelLedgerSha256 instead.
+_THERMAL_OPTIONAL = MELT_KEYS + ("kernel_density_kg_m3",)
 
 
 def _effective_thermal(thermal):
     """Freeze exactly the thermal solver's required and defaulted reads."""
     effective = {key: thermal[key] for key in _THERMAL_REQUIRED}
+    effective.update({key: thermal[key] for key in _THERMAL_OPTIONAL if key in thermal})
     effective.update({
         "thermal_conductivity_liquid_W_mK": thermal.get(
             "thermal_conductivity_liquid_W_mK", thermal["thermal_conductivity_W_mK"]
@@ -70,6 +73,10 @@ def build_material_property_snapshot(alloy_id, thermal_name, slicer_name):
         "thermal": _effective_thermal(thermal),
         "slicer": {"density_gcm3": density},
     }
+    ledger_sha = kernel_ledger_sha256(alloy_id)
+    if ledger_sha is not None:
+        # P7b: the kernel ledger's numeric projection is part of the Build Job material identity (ledger alloys only).
+        snapshot["kernelLedgerSha256"] = ledger_sha
     return snapshot, _digest(snapshot)
 
 

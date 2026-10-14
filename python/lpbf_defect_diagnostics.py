@@ -32,38 +32,33 @@ MODEL_ID = "elliptic-overlap-screening-v2"
 #   in Katagiri et al. 2023 (Materials 16:1729, Table 2), both of which also cite Gusarov & Smurov 2010
 #   (Phys. Procedia 5:381) -- that paper is not in the repo and was not checked against its text.
 #   Applied here to the MODEL pool L/W as a proxy for wavelength / cylinder diameter: advisory only.
-# High: L/W > 5.5, EMPIRICAL: chosen on the Hofmann et al. 316L single tracks (Zenodo
-#   10.5281/zenodo.16979848, 677 tracks, 216 balling-flagged) with the Wave B (f3ba9896) Eagar-Tsai
-#   geometry, as the lowest 0.5-step L/W edge above which >= 90 % of the tracks balled (69/71 above
-#   5.5; 2 of 461 non-balled tracks flagged). In-sample, one alloy, one machine; the model L/W has
-#   about +-10 % uncertainty (absorptivity is estimated). A 'risky' screen, not a demonstrated
-#   balling prediction, never a do-not-print gate.
+# High band: REMOVED (P7b, 2026-10-14, G1 audit V09). P7a kept a 316L-only High advisory fitted in sample on the
+#   Eagar-Tsai geometry of the fitting commit f3ba9896 (Hofmann et al. 316L single tracks, Zenodo
+#   10.5281/zenodo.16979848, 677 tracks, 216 balling-flagged); P7b changes that geometry (the absorptivity authority
+#   and the melting-point and kernel-ledger properties move the Eagar-Tsai L/W), so the in-sample edge 5.5 no longer
+#   corresponds to the served L/W. No alloy reports High (highBandApplicable False everywhere); Moderate (3.85,
+#   Yadroitsev proxy) and Stable stay with their disclosure. The Hofmann balled fractions per L/W bin are kept as
+#   recorded evidence (BALLING_SCREEN_EVIDENCE, bins as recorded at the fitting commit), not as a threshold.
 # No depth (D/W) exemption: an earlier D/W < 1.2 clause was fitted to two Hofmann rows. KU Leuven tracks
-# above 5.5 (regime-labelled, no balling label) are keyhole-mode cells (dH/h_s >= 53), risky by the regime
+# with a high L/W (regime-labelled, no balling label) are keyhole-mode cells (dH/h_s >= 53), risky by the regime
 # classifier since P7a (the former do-not-print edge 35 is gone); not all of them are deep keyholes
 # (Ti-6Al-4V 200 W / 2000 mm/s / 37.5 um: measured D/W 62/90 = 0.69).
-# P7a (2026-10-11, G1 audit V09): the High band is an unsourced screening threshold (5.5, fitted in sample on Hofmann
-# 2026 316L, 677 tracks, Zenodo 16979848; 69 of 71 above it balled, on the Eagar-Tsai geometry of the fitting commit
-# f3ba9896; not validated elsewhere). It is REPORTED AS AN ADVISORY for 316L only and is NOT ASSIGNED for any other
-# alloy (highBandApplicable False: the band is Moderate there). Moderate (3.85) and Stable are unchanged. A call
-# without a material name keeps the legacy behaviour (High applicable) for the unlabelled synthetic callers.
 # ---------------------------------------------------------------------------------------------
 BALLING_SCREEN_MODEL_ID = "eagar-tsai-aspect-balling-screen-v1"
 BALLING_SCREEN_KERNEL = "eagar-tsai-v2"
 BALLING_LW_MODERATE = math.pi * math.sqrt(1.5)
-BALLING_LW_HIGH = 5.5
 BALLING_LW_RELATIVE_UNCERTAINTY = 0.10
-BALLING_HIGH_BAND_BASIS = ("unsourced screening threshold 5.5, fitted in sample on Hofmann 2026 316L (677 tracks, Zenodo "
-                           "16979848; 69 of 71 above it balled), on the Eagar-Tsai geometry of the fitting commit; not "
-                           "validated elsewhere; reported as an advisory for 316L only, not assigned for other alloys "
-                           "(P7a)")
+# Evidence bin edges of the recorded Hofmann balled fractions (fitting-commit geometry); not a served threshold.
+HOFMANN_EVIDENCE_LW_EDGES = (BALLING_LW_MODERATE, 4.5, 5.5)
+BALLING_HIGH_BAND_BASIS = ("no High band since P7b (2026-10-14): the former in-sample 316L edge 5.5 was fitted on the "
+                           "Eagar-Tsai geometry of the fitting commit and that geometry changed (absorptivity authority, "
+                           "melting-point and kernel-ledger properties); Moderate (3.85, Yadroitsev et al. 2010 Eq. 13 "
+                           "proxy) and Stable are the only bands, advisory")
 
 
 def balling_high_band_applicable(material_name):
-    """True when the empirical High band may be reported: 316L, or an unlabelled call (material_name None)."""
-    if material_name is None:
-        return True
-    return "316" in str(material_name).lower()
+    """Always False since P7b: no alloy reports the removed High band (kept for callers that ask)."""
+    return False
 BALLING_SCREEN_SOURCES = (
     "Yadroitsev, Gusarov, Yadroitsava & Smurov 2010, J. Mater. Process. Technol. 210:1624 (doi "
     "10.1016/j.jmatprotec.2010.05.010), sec. 3.3 Eq. (12)-(13): segmental-cylinder capillary stability, full-cylinder "
@@ -72,7 +67,8 @@ BALLING_SCREEN_SOURCES = (
     "sec. 3-4: balling above ~20 cm/s (316L, 50 um layer) explained by the Plateau-Rayleigh break-up of the remelted "
     "cylinder when its length exceeds its circumference; substrate contact stabilises (mechanism, no threshold on pool L/W)",
     "Hofmann et al. 316L single tracks, Zenodo 10.5281/zenodo.16979848 (Mater. Des. 262 (2026) 115459): "
-    "empirical High threshold L/W > 5.5 on Eagar-Tsai geometry (in-sample, 316L only)",
+    "recorded balled fractions per Eagar-Tsai L/W bin at the fitting commit (evidence only; the former High "
+    "threshold derived from them was removed in P7b)",
     "Eagar & Tsai 1983, Welding J. 62:346s: beam-size-aware kernel that supplies L and W",
 )
 # Hofmann 316L balled fraction per Eagar-Tsai L/W band (Wave B geometry, all layers, 677 tracks).
@@ -97,10 +93,11 @@ BALLING_SCREEN_EVIDENCE = {
 
 
 def _balling_band_rate(lw):
+    """Recorded Hofmann balled fraction of the evidence bin the L/W falls in (evidence, not a band)."""
     rates = BALLING_SCREEN_EVIDENCE["bandBalledFraction"]
-    if lw > BALLING_LW_HIGH:
+    if lw > HOFMANN_EVIDENCE_LW_EDGES[2]:
         return rates["high (> 5.5)"]
-    if lw > 4.5:
+    if lw > HOFMANN_EVIDENCE_LW_EDGES[1]:
         return rates["moderate (4.5-5.5]"]
     if lw > BALLING_LW_MODERATE:
         return rates["moderate (3.85-4.5]"]
@@ -112,9 +109,9 @@ def balling_screen(length_um, width_um, depth_um, extent_status, material_name=N
 
     ``length_um``/``width_um``/``depth_um`` are the liquidus extents of the Eagar-Tsai kernel and
     ``extent_status`` its meltPoolGeometry.extentStatus. Returns a JSON-compatible dict whose
-    ``band`` is "high", "moderate", "stable", or None when the Eagar-Tsai extent is not a computed
-    isotherm (unavailable: no band is assigned). ``material_name`` (P7a) decides whether the empirical
-    High band is applicable (316L only; an unlabelled call keeps it); ``highBandApplicable`` reports it.
+    ``band`` is "moderate", "stable", or None when the Eagar-Tsai extent is not a computed isotherm
+    (unavailable: no band is assigned). Since P7b no alloy reports "high" (``highBandApplicable`` is
+    always False); ``material_name`` is accepted for the callers that pass it.
     """
     status = str(extent_status) if extent_status is not None else "not-reported"
     high_applicable = balling_high_band_applicable(material_name)
@@ -135,16 +132,16 @@ def balling_screen(length_um, width_um, depth_um, extent_status, material_name=N
         "depthToWidth": None if dw is None else round(dw, 3),
         "band": None,
         "moderateThreshold": round(BALLING_LW_MODERATE, 3),
-        "highThreshold": BALLING_LW_HIGH,
+        "highThreshold": None,
         "relativeUncertainty": BALLING_LW_RELATIVE_UNCERTAINTY,
         "hofmannBalledFractionInBand": None,
         "verdictEffect": "none",
         "highBandApplicable": high_applicable,
         "highBandBasis": BALLING_HIGH_BAND_BASIS,
-        "basis": ("Eagar-Tsai liquidus L/W: High > 5.5 (empirical, Hofmann 316L, in-sample; an unsourced screening "
-                  "threshold reported as an advisory for 316L only since P7a, not assigned for other alloys); Moderate > "
-                  "pi*sqrt(3/2) = 3.85 (Yadroitsev et al. 2010 Eq. 13 cylinder bound, mechanism Gusarov et al. 2007; "
-                  "a wavelength/cylinder-diameter bound applied to the model pool L/W) -> advisory only"),
+        "basis": ("Eagar-Tsai liquidus L/W: Moderate > pi*sqrt(3/2) = 3.85 (Yadroitsev et al. 2010 Eq. 13 cylinder "
+                  "bound, mechanism Gusarov et al. 2007; a wavelength/cylinder-diameter bound applied to the model pool "
+                  "L/W) -> advisory only; no High band since P7b (the former in-sample 316L edge was fitted on a "
+                  "geometry that P7b changed)"),
         "sources": list(BALLING_SCREEN_SOURCES),
         "evidence": BALLING_SCREEN_EVIDENCE,
         "experimentalValidation": False,
@@ -155,20 +152,7 @@ def balling_screen(length_um, width_um, depth_um, extent_status, material_name=N
                          "computed Eagar-Tsai liquidus L/W only, so no band is assigned.")
         return out
     out["hofmannBalledFractionInBand"] = _balling_band_rate(lw)
-    if lw > BALLING_LW_HIGH and high_applicable:
-        out["band"] = "high"
-        out["verdictEffect"] = "advisory"
-        out["reason"] = (f"Eagar-Tsai L/W {lw:.2f} > {BALLING_LW_HIGH} (empirical 316L threshold, an unsourced screening "
-                         f"threshold reported as an advisory; {out['hofmannBalledFractionInBand']} Hofmann tracks above "
-                         "it balled).")
-    elif lw > BALLING_LW_HIGH:
-        out["band"] = "moderate"
-        out["verdictEffect"] = "advisory"
-        out["reason"] = (f"Eagar-Tsai L/W {lw:.2f} > pi*sqrt(3/2) = {BALLING_LW_MODERATE:.2f} (Yadroitsev 2010 "
-                         "segmental-cylinder bound; Gusarov 2007 Plateau-Rayleigh mechanism). The empirical High band "
-                         f"(> {BALLING_LW_HIGH}, 316L in-sample) is not assigned for this alloy; "
-                         f"{out['hofmannBalledFractionInBand']} Hofmann 316L tracks in this L/W band balled. Advisory only.")
-    elif lw > BALLING_LW_MODERATE:
+    if lw > BALLING_LW_MODERATE:
         out["band"] = "moderate"
         out["verdictEffect"] = "advisory"
         out["reason"] = (f"Eagar-Tsai L/W {lw:.2f} > pi*sqrt(3/2) = {BALLING_LW_MODERATE:.2f} (Yadroitsev 2010 "
@@ -273,7 +257,7 @@ def defect_diagnostics(width_um, depth_um, length_um, hatch_um, layer_um, *, agg
             "title": "Yadroitsev et al. (2010) Eq. 13; Gusarov et al. (2007); Hofmann et al. 316L tracks (Zenodo 16979848)",
             "url": "https://doi.org/10.1016/j.jmatprotec.2010.05.010",
             "use": ("Eagar-Tsai L/W balling screen: Moderate > pi*sqrt(3/2) = 3.85 (literature bound, advisory), "
-                    "High > 5.5 (empirical 316L threshold, in-sample)."),
+                    "Hofmann 316L balled fractions per L/W bin recorded as evidence (no High band since P7b)."),
         })
 
     # Keyhole: no stability/porosity verdict from D/W alone (see limitations; risk stays None). The

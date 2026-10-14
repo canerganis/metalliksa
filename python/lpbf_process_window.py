@@ -184,7 +184,8 @@ def _evaluate(resolved: str, power: float, speed: float, norm: Dict[str, Any]) -
         preheat_temp_C=norm["preheatTemp_C"],
         layer_thickness_um=norm["layer_um"],
         hatch_spacing_um=norm["hatch_um"],
-        laser_wavelength="IR_1064nm")
+        laser_wavelength="IR_1064nm",
+        include_process_map=False)
     vd = build_job.compose_verdict(th, resolved)
     if vd.get("verdict") not in VERDICTS:
         raise ValueError(f"unknown verdict {vd.get('verdict')!r} from compose_verdict")

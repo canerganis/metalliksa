@@ -26,7 +26,12 @@ import numpy as np
 from eagar_tsai_solver import (EagarTsaiField, MODEL_ID as EAGAR_TSAI_MODEL_ID, SURFACE_MAXIMUM_BASIS,
                                eagar_tsai_surface_maximum)
 from fabbro_keyhole import MODEL_ID as FABBRO_MODEL_ID, fabbro_keyhole_depth_m
-from four_alloy_materials import four_alloy_thermophysical_db, resolve_alloy_id, thermal_props
+from four_alloy_materials import (ABSORPTIVITY_BASIS_UNSOURCED, ABSORPTIVITY_INDEX_BASIS,
+                                  ABSORPTIVITY_INDEX_NOTE_ALSI10MG, INDEX_FULL_SET_KEYS, INDEX_KEY_IR, KERNEL_KEYS,
+                                  KERNEL_LEDGER_BASIS, KERNEL_LEDGER_STATE_NOTE_ALSI10MG, MELT_KEYS,
+                                  PROPERTY_CONVENTION_BLEND_BASIS, SOLID_CONDUCTIVITY_BASIS_LEDGER,
+                                  absorptivity_authority, four_alloy_thermophysical_db, kernel_properties,
+                                  melt_point_properties, resolve_alloy_id, thermal_props)
 from in625_thermal_material import LATENT_HEAT_J_KG as IN625_LATENT_HEAT_J_KG
 from goldak_solver import GoldakField, MODEL_ID as GOLDAK_MODEL_ID, seed_goldak_axes
 from solidification_front import MODEL_ID as SOLIDIFICATION_MODEL_ID, evaluate_solidification
@@ -57,8 +62,16 @@ SECONDARY_THERMOPHYSICAL_DB = {
         # keeps its own 227 kJ/kg and is NOT changed here.
         "latent_heat_fusion_J_kg": IN625_LATENT_HEAT_J_KG,
         "latent_heat_vap_J_kg": 6300000.0,
-        "absorptivity_IR": 0.38,
+        # P7b (2026-10-14): absorptivity_IR is the measured conduction-mode authority (Deisenroth 2020 Sec. 3.4,
+        # four_alloy_materials.ABSORPTIVITY_AUTHORITY), absorptivity_index_IR the pre-P7 convention constant of the
+        # dH/hs regime index (the 13.6 cut was fitted with it), the melt keys the Weaver 2022 Table 2 melting-point
+        # convention (four_alloy_materials.MELT_POINT_PROPERTIES). The other secondaries have no measurement: their
+        # index constant equals their absorptivity_IR and they keep the solid/liquid blend (no melt keys).
+        "absorptivity_IR": 0.34,
+        "absorptivity_index_IR": 0.38,
         "absorptivity_Green": 0.58,
+        "thermal_conductivity_melt_W_mK": 28.78,
+        "specific_heat_melt_J_kgK": 719.92,
         "surface_tension_N_m": 1.76,
         "d_gamma_dT_N_mK": -0.00045,
         "viscosity_Pa_s": 0.0055,
@@ -83,6 +96,7 @@ SECONDARY_THERMOPHYSICAL_DB = {
         "latent_heat_fusion_J_kg": 275000.0,
         "latent_heat_vap_J_kg": 6300000.0,
         "absorptivity_IR": 0.40,
+        "absorptivity_index_IR": 0.40,
         "absorptivity_Green": 0.60,
         "surface_tension_N_m": 1.75,
         "d_gamma_dT_N_mK": -0.00038,
@@ -108,6 +122,7 @@ SECONDARY_THERMOPHYSICAL_DB = {
         "latent_heat_fusion_J_kg": 405000.0,
         "latent_heat_vap_J_kg": 10500000.0,
         "absorptivity_IR": 0.22,
+        "absorptivity_index_IR": 0.22,
         "absorptivity_Green": 0.42,
         "surface_tension_N_m": 0.88,
         "d_gamma_dT_N_mK": -0.00032,
@@ -133,6 +148,7 @@ SECONDARY_THERMOPHYSICAL_DB = {
         "latent_heat_fusion_J_kg": 265000.0,
         "latent_heat_vap_J_kg": 6450000.0,
         "absorptivity_IR": 0.39,
+        "absorptivity_index_IR": 0.39,
         "absorptivity_Green": 0.59,
         "surface_tension_N_m": 1.76,
         "d_gamma_dT_N_mK": -0.00042,
@@ -158,6 +174,7 @@ SECONDARY_THERMOPHYSICAL_DB = {
         "latent_heat_fusion_J_kg": 205000.0,
         "latent_heat_vap_J_kg": 4730000.0,
         "absorptivity_IR": 0.08,   # Very low IR absorption
+        "absorptivity_index_IR": 0.08,
         "absorptivity_Green": 0.45, # High Green 515nm absorption
         "surface_tension_N_m": 1.30,
         "d_gamma_dT_N_mK": -0.00028,
@@ -171,6 +188,180 @@ SECONDARY_THERMOPHYSICAL_DB = {
 }
 
 THERMOPHYSICAL_DB = {**four_alloy_thermophysical_db(), **SECONDARY_THERMOPHYSICAL_DB}
+
+for _name, _row in SECONDARY_THERMOPHYSICAL_DB.items():
+    assert _row["absorptivity_IR"] == absorptivity_authority(_name)["value"], _name
+    _melt = melt_point_properties(_name)
+    if _melt is None:
+        assert all(_key not in _row for _key in MELT_KEYS), _name
+        assert _row[INDEX_KEY_IR] == _row["absorptivity_IR"], _name
+    else:
+        for _key in MELT_KEYS:
+            assert _row[_key] == _melt[_key], (_name, _key)
+del _name, _row, _melt, _key
+
+# P7b (2026-10-14, docs/research/SPEC_p7b_sourced_constants_2026-10-11.md section 2.2): the dH/hs regime index is
+# CLASSIFICATION NEUTRAL. It reads an index convention absorptivity (absorptivity_index_IR, the pre-P7 served value
+# per alloy) because the cuts 15, 20 and 13.6, the King conversion 22.2 and the Zhao and Cunningham derived bands were
+# all derived in that convention; the conduction field, the Fabbro leg amplitude and every other physical use take the
+# measured authority absorptivity_IR. Resolution of the index value for the IR wavelength, in order: (1) the override
+# set's own absorptivity_index_IR; (2) a FULL property set override (every key of INDEX_FULL_SET_KEYS present, for
+# example the AM-Bench IN625_VALIDATION_PROPS snapshot) without an index key follows its own absorptivity_IR, stated;
+# (3) otherwise (a partial override such as UQ or the calibration layer) the base alloy's absorptivity_index_IR. The
+# Green wavelength index reads absorptivity_Green unchanged.
+ABSORPTIVITY_TRANSITION_NOTE = ("In transition and keyhole mode the measured absorptance is 0.6 to 0.9 (Deisenroth "
+                                "2020 Fig 7, Trapp 2017 Fig 3a, Fabbro 2020 Sec 4.1); the field and the Fabbro leg "
+                                "use this conduction value, a disclosed lower bound there (see FABBRO_BASIS; "
+                                "replacement is P3). Not a powder layer value.")
+ABSORPTIVITY_BASIS_ALSI10MG = ("measured conduction value on an as-built rough AM surface (Sa 22.3 um) in N2 at 1075 nm, "
+                               "Leis 2020 area II minimum; band 0.28 to 0.40; not a polished or ground plate; not a "
+                               "powder layer value")
+ABSORPTIVITY_AUTHORITY_SEE = "authority value, see absorptivityBasis"
+# Process-map grid kernel (B17, B19): every cell's width and liquidus depth come from the served Rosenthal field
+# extent routine at the authority field power whatever kernel was requested (an Eagar-Tsai or Goldak cell would
+# cost about 100 times more). gridKernel says so.
+GRID_KERNEL = "rosenthal-screening-v1"
+GRID_KERNEL_NOTE = ("every grid cell is the served Rosenthal field extent (_axial_peak_x, _liquidus_extent) at the "
+                    "authority field power A P with the served k, cp, rho and alpha convention and depth = max(liquidus "
+                    "depth, Fabbro leg), whatever kernel the operating point requested; the former closed-form width "
+                    "sqrt(8/(pi e) A P / (rho cp dT v) + d_beam^2) had no source (G1 audit B17) and the 0.5 w depth "
+                    "bound is dropped. Cells whose extent is not a computed isotherm serve width and depth null with "
+                    "their extentStatus and no Lack of Fusion Zone class.")
+GRID_NOT_COMPUTED_NOTE = "process map not computed (include_process_map=False: an internal re-run)"
+# Conduction property conventions served as propertyConvention.
+PROPERTY_CONVENTION_KERNEL_LEDGER = "kernel-ledger-kirchhoff"
+PROPERTY_CONVENTION_KERNEL_OVERRIDE = "kernel-override"
+PROPERTY_CONVENTION_MELTING_POINT = "melting-point"
+PROPERTY_CONVENTION_BLEND = "blend"
+DENSITY_BASIS_ALSI10MG = "2680, room temperature convention constant, unsourced; the conduction kernel uses 2696"
+
+
+def _merged_props(base_props, prop_overrides):
+    props = dict(base_props)
+    if prop_overrides:
+        props.update(prop_overrides)
+    return props
+
+
+def resolve_index_absorptivity(laser_wavelength, base_props, prop_overrides, material_name=None):
+    """(index absorptivity, basis text) for the dH/hs regime index under the P7b resolution rule."""
+    if laser_wavelength != "IR_1064nm":
+        return float(_merged_props(base_props, prop_overrides)["absorptivity_Green"]), (
+            "Green wavelength: the index reads absorptivity_Green (the same value as the field); no index "
+            "convention constant exists for 515 nm")
+    overrides = prop_overrides or {}
+    if INDEX_KEY_IR in overrides:
+        value = float(overrides[INDEX_KEY_IR])
+        text = f"{ABSORPTIVITY_INDEX_BASIS}; the override set supplied its own {INDEX_KEY_IR}"
+    elif all(key in overrides for key in INDEX_FULL_SET_KEYS):
+        value = float(overrides["absorptivity_IR"])
+        text = ("index follows the override set's own absorptivity, no index key supplied (a full property set "
+                f"override; {ABSORPTIVITY_INDEX_BASIS})")
+    else:
+        value = float(base_props.get(INDEX_KEY_IR, base_props["absorptivity_IR"]))
+        text = (f"{ABSORPTIVITY_INDEX_BASIS}; the base alloy's {INDEX_KEY_IR} is used"
+                + ("; a partial override (absorptivity_IR among the keys) moves the field, not the index"
+                   if "absorptivity_IR" in overrides else ""))
+    if resolve_alloy_id(material_name) == "alsi10mg" and value == 0.18:
+        text += f"; {ABSORPTIVITY_INDEX_NOTE_ALSI10MG}"
+    return value, text
+
+
+def absorptivity_basis_text(material_name, laser_wavelength, prop_overrides=None):
+    """(absorptivityBasis, absorptivitySource) of the physical field value (spec section 2.3, Amendment 1 item 3.7)."""
+    entry = absorptivity_authority(material_name)
+    overridden = bool(prop_overrides) and "absorptivity_IR" in prop_overrides
+    if laser_wavelength != "IR_1064nm" or entry is None or entry["unsourced"]:
+        return ABSORPTIVITY_BASIS_UNSOURCED, None
+    lo, hi = entry["band"]
+    if entry["alloy"] == "alsi10mg":
+        text = f"{ABSORPTIVITY_BASIS_ALSI10MG}. {ABSORPTIVITY_TRANSITION_NOTE}"
+    else:
+        text = (f"measured conduction-mode value, bare plate, 1070 nm: {entry['source']}, {entry['locator']}; band "
+                f"{lo:g} to {hi:g}. {ABSORPTIVITY_TRANSITION_NOTE}")
+    if overridden:
+        text = ("overridden by prop_overrides (the served value is the override, not the authority); authority: "
+                + text)
+    return text, entry["source"]
+
+
+def resolve_conduction_kernel(material_name, props, prop_overrides, T_preheat_C):
+    """One constant K, cp and rho_k per call for the conduction kernels (Amendment 1 item 3.3 precedence).
+
+    (i) explicit kernel_* keys in prop_overrides win (UQ scaling uses this); (ii) otherwise a ledger alloy (Ti-6Al-4V,
+    AlSi10Mg) takes the Kirchhoff mean of its sourced solid forms at the call's preheat, whatever k / cp keys the set
+    carries (the Build Job passes the full frozen snapshot); (iii) otherwise the melting point keys of the property
+    set, else the equal-weight solid/liquid blend. rho_k is kernel_density_kg_m3 when present, else density_kg_m3.
+    Returns (k_th, cp, rho_k, convention, basis, solid_basis, kernel_ledger_or_None).
+    """
+    overrides = prop_overrides or {}
+    rho = float(props["density_kg_m3"])
+    k_s = float(props["thermal_conductivity_W_mK"])
+    k_l = float(props.get("thermal_conductivity_liquid_W_mK", k_s))
+    cp_s = float(props["specific_heat_J_kgK"])
+    cp_l = float(props.get("specific_heat_liquid_J_kgK", cp_s))
+    rho_k = float(props.get("kernel_density_kg_m3", rho))
+    T_liq = float(props["liquidus_C"])
+    solid_basis_tail = ("; the dH/hs index and the Fabbro leg keep the solid k_s, cp_s and the room temperature density")
+    if KERNEL_KEYS[0] in overrides and KERNEL_KEYS[1] in overrides:
+        k_th = float(overrides[KERNEL_KEYS[0]])
+        cp = float(overrides[KERNEL_KEYS[1]])
+        alpha = k_th / (rho_k * cp)
+        basis = (f"explicit kernel keys of prop_overrides: K {k_th:.6g} W/mK, cp {cp:.6g} J/kgK, rho_k {rho_k:g} kg/m3, "
+                 f"alpha {alpha:.4g} m2/s (a caller's own kernel, for example a UQ scale of the materialised ledger "
+                 f"mean){solid_basis_tail}")
+        return k_th, cp, rho_k, PROPERTY_CONVENTION_KERNEL_OVERRIDE, basis, (
+            "room temperature value used by the regime index, the keyhole leg and the transient table; the "
+            "conduction field uses the explicit kernel keys"), None
+    ledger = kernel_properties(material_name, T_preheat_C + 273.15, T_liq + 273.15)
+    if ledger is not None:
+        k_th = ledger["kernel_conductivity_W_mK"]
+        cp = ledger["kernel_specific_heat_J_kgK"]
+        rho_k = float(overrides.get("kernel_density_kg_m3", ledger["kernel_density_kg_m3"]))
+        alpha = k_th / (rho_k * cp)
+        basis = f"{KERNEL_LEDGER_BASIS}; K {k_th:.3f} W/mK, cp {cp:.2f} J/kgK, alpha {alpha:.4g} m2/s"
+        if ledger["alloy"] == "alsi10mg":
+            basis += f"; {KERNEL_LEDGER_STATE_NOTE_ALSI10MG}; kernel density {rho_k:g} kg/m3"
+        basis += (f"; evaluated at the request preheat {ledger['T0_requested_K'] - 273.15:g} C (isotherm range "
+                  f"{ledger['T0_K']:.2f} to {ledger['T_liq_K']:.2f} K){solid_basis_tail}")
+        return k_th, cp, rho_k, PROPERTY_CONVENTION_KERNEL_LEDGER, basis, SOLID_CONDUCTIVITY_BASIS_LEDGER, ledger
+    k_blend = 0.5 * (k_s + k_l)
+    cp_blend = 0.5 * (cp_s + cp_l)
+    melt_entry = melt_point_properties(material_name)
+    # An override set that replaces the solid or liquid k / cp without supplying the melt keys describes another
+    # material (a synthetic set, a calibration property set): the base alloy's melt keys must not leak into it, so
+    # the blend of the overridden values is used. A set that carries the melt keys (the Build Job snapshot, UQ
+    # scales) or touches no k / cp key (an absorptivity-only override) keeps them.
+    blend_source_keys = ("thermal_conductivity_W_mK", "thermal_conductivity_liquid_W_mK", "specific_heat_J_kgK",
+                         "specific_heat_liquid_J_kgK")
+    melt_props = dict(props)
+    if overrides and not any(key in overrides for key in MELT_KEYS) and any(key in overrides for key in blend_source_keys):
+        for key in MELT_KEYS:
+            melt_props.pop(key, None)
+    if all(key in melt_props for key in MELT_KEYS):
+        k_th = float(melt_props["thermal_conductivity_melt_W_mK"])
+        cp = float(melt_props["specific_heat_melt_J_kgK"])
+        alpha = k_th / (rho_k * cp)
+        src_alpha = None if melt_entry is None else melt_entry.get("sourceDiffusivity_m2_s")
+        basis = (
+            f"melting point k {k_th:g} W/mK and cp {cp:g} J/kgK with room temperature density {rho_k:g} kg/m3; "
+            + (f"{melt_entry['source']}; {melt_entry['locator']}; evaluation temperature "
+               f"{melt_entry['evaluationTemperature_C']:g} C; " if melt_entry is not None else
+               "melt keys supplied by prop_overrides; ")
+            + (f"the source diffusivity at the melting point is {src_alpha:.3g} m2/s, the served alpha is "
+               f"{alpha:.3g} m2/s" if src_alpha is not None else f"the served alpha is {alpha:.3g} m2/s")
+            + (f"; {melt_entry['bandNote']}" if melt_entry is not None and melt_entry.get("bandNote") else "")
+            + solid_basis_tail)
+        return k_th, cp, rho_k, PROPERTY_CONVENTION_MELTING_POINT, basis, (
+            "room temperature value used by the regime index, the keyhole leg and the transient table; the "
+            "conduction field uses the melting point k and cp"), None
+    alpha = k_blend / (rho_k * cp_blend)
+    basis = (f"{PROPERTY_CONVENTION_BLEND_BASIS}: k 0.5 (k_s + k_l) = {k_blend:g} W/mK, cp 0.5 (cp_s + cp_l) = "
+             f"{cp_blend:g} J/kgK (no melting point source in the library for this alloy); the served alpha is "
+             f"{alpha:.3g} m2/s{solid_basis_tail}")
+    return k_blend, cp_blend, rho_k, PROPERTY_CONVENTION_BLEND, basis, (
+        "room temperature value used by the regime index, the keyhole leg and the transient table; the "
+        "conduction field uses the equal-weight solid and liquid blend"), None
 
 # Regime (normalised-enthalpy screening index, repo convention r = 1/e^2 radius, flat A, solid k/cp,
 # hs = rho cp_s (T_liq - T0)). 15 = vapor-depression onset (Cunningham 2019 Fig. 3A blue line, app units
@@ -317,7 +508,9 @@ EFFECTIVE_ABSORPTIVITY_BASIS = ("flat absorptivity of the material authority for
                                 "effective absorption near Fresnel 0.30, HT 0.29 to 0.32, HTFF 0.27 to 0.29). No kernel "
                                 "represents the measured absorptance rise in transition and keyhole mode (0.6 to 0.9: "
                                 "Deisenroth 2020 Fig. 7, Trapp 2017 Fig. 3a). The former multi-reflection ramp 1-(1-A)^n "
-                                "(uncited) was removed 2026-10-11.")
+                                "(uncited) was removed 2026-10-11. " + ABSORPTIVITY_AUTHORITY_SEE + " (P7b: the "
+                                "measured conduction-mode authority where one exists; the dH/hs index reads the "
+                                "separate index convention constant, see absorptivityIndexBasis).")
 LATENT_HEAT_POWER_FACTOR_BASIS = ("1.0 for every kernel; latent heat of fusion is excluded from the conduction field "
                                   "(Rubenchik 2018 Sec. 3.1, Gan 2021 SI Method 3), from the index hs and from the "
                                   "Fabbro leg; the former 1/(1+0.55 St) factor (uncited) was removed.")
@@ -391,7 +584,8 @@ VAPOR_TEMPERATURE_UNSOURCED_NOTE = ("no sourced vapour temperature in the librar
 PEAK_TEMPERATURE_BASIS = SURFACE_MAXIMUM_BASIS
 PEAK_TEMPERATURE_NOTE = ("numerical maximum along the axis y = z = 0 of the loss-free Eagar & Tsai 1983 Gaussian "
                          "surface field (printed p.347-s Eq. 6, 8 to 10, p.348-s Eq. 11, Appendix B) driven by the "
-                         "same field power, k/alpha blend and 1/e^2 radius as the requested kernel; conduction only, "
+                         "same field power, served k and alpha convention (kernel ledger mean, melting point or blend, "
+                         "see propertyConventionBasis; P7b) and 1/e^2 radius as the requested kernel; conduction only, "
                          "no evaporation, flow or recoil loss. Served only below the sourced vapour temperature: a "
                          "centreline above boiling is an impossible situation for the loss-free solution (Eagar & "
                          "Tsai 1983 p.348-s). The former regularised Rosenthal centre value was removed (P6).")
@@ -653,6 +847,7 @@ def calculate_meltpool_physics(
     sulfur_ppm: float = 15.0,
     absorption_model: str | None = None,
     thermal_slice_backend: str | None = None,
+    include_process_map: bool = True,
 ):
     """
     Evaluates 3D multi-regime melt pool physics, geometry, defects, and microstructure.
@@ -661,6 +856,8 @@ def calculate_meltpool_physics(
     sulfur_ppm: Heiple–Roper screening only (does not refit W/D or re-score Build Job).
     absorption_model: "flat-plate" (default) or "powder-raytrace" (explicit GPU opt-in; ΔH/hs stays flat).
     thermal_slice_backend: "cpu" (default) or "warp" (explicit GPU opt-in, Rosenthal only).
+    include_process_map: False skips the 49-cell field-extent grid (internal re-runs: suggested patch, UQ, optimizer,
+    process window); processWindowMap.grid is then None and every other served field is identical (P7b).
     """
     if not isinstance(material_name, str) or not material_name.strip():
         raise ValueError(f"Unsupported LPBF material identity: {material_name!r}")
@@ -715,10 +912,18 @@ def calculate_meltpool_physics(
     k_l = float(props.get("thermal_conductivity_liquid_W_mK", k_s))
     cp_s = props["specific_heat_J_kgK"]
     cp_l = float(props.get("specific_heat_liquid_J_kgK", cp_s))
-    # Effective mushy-zone k/Cp for Rosenthal geometry (equal-weight solid↔liquid blend).
-    k_th = 0.5 * (k_s + k_l)
-    cp = 0.5 * (cp_s + cp_l)
-    alpha_th = k_th / (rho * cp)  # Thermal diffusivity (m^2/s)
+    # P7b (V07 and Amendment 1 item 3): the conduction field (Rosenthal, Eagar-Tsai, Goldak, the balling companion,
+    # the grid, the loss-free peak, the thermal slices and the field mapped G and R) takes ONE constant k, cp and rho_k
+    # per call: the Kirchhoff mean of the sourced solid forms at the request preheat for a ledger alloy (Ti-6Al-4V,
+    # AlSi10Mg), the melting point values where a source gives them (Rubenchik 2018 Sec. 3.1: "the values will be
+    # taken at melting point where most of the energy will be deposited"; Weaver 2022; Mills 2002), else the former
+    # equal-weight solid/liquid blend, labelled. The index and the Fabbro leg keep the solid k_s, cp_s and the room
+    # temperature density (V17, V08 unchanged); rho_k is used in every kernel read of rho.
+    k_th, cp, rho_k, property_convention, property_convention_basis, solid_conductivity_basis, kernel_ledger = (
+        resolve_conduction_kernel(material_name, props, prop_overrides, T_preheat))
+    alpha_th = k_th / (rho_k * cp)  # Thermal diffusivity (m^2/s) of the conduction kernel
+    density_basis = (DENSITY_BASIS_ALSI10MG if resolve_alloy_id(material_name) == "alsi10mg" and rho_k != rho
+                     else "room temperature value; the conduction kernel reads the same density")
     # King ΔH/hs stays on solid props (literature onset ~30 is solid-based).
     alpha_solid = k_s / (rho * cp_s)
 
@@ -733,7 +938,13 @@ def calculate_meltpool_physics(
         raise ValueError(
             f"Material {material_name!r} has no absorptivity for {laser_wavelength}"
         )
+    # Physical value (P7b: the measured conduction-mode authority where one exists): the field power of every
+    # kernel and the Fabbro leg amplitude.
     eta_base_flat = float(props[wavelength_property])
+    # Index convention value (P7b, classification neutral): the dH/hs regime index only.
+    eta_index, absorptivity_index_basis = resolve_index_absorptivity(laser_wavelength, base, prop_overrides,
+                                                                     material_name)
+    absorptivity_basis, absorptivity_source = absorptivity_basis_text(material_name, laser_wavelength, prop_overrides)
 
     if absorption_model == ABSORPTION_MODEL_POWDER_RAYTRACE:
         # Explicit opt-in only; import or CUDA errors propagate instead of silently changing physics.
@@ -759,9 +970,10 @@ def calculate_meltpool_physics(
     # the root: dH/hs = A P / (hs sqrt(pi D u sigma^3)), A = flat absorptivity. Repo convention differs
     # from King's calibration: r = 1/e^2 radius (King sigma = r/2), hs = rho cp_s (T_liq - T0), D = solid
     # diffusivity; the 15/20 thresholds (IN625: 13.6) are derived in this convention (see REGIME_THRESHOLD_BASIS).
-    # dH always uses the flat absorptivity, also when the powder ray tracer is requested.
+    # dH always uses the flat INDEX CONVENTION absorptivity (P7b, eta_index), also when the powder ray tracer is
+    # requested; the measured authority moves the field, never the regime label.
     enthalpy_denom = rho * cp_s * max(50.0, T_liq - T_preheat) * math.sqrt(math.pi * alpha_solid * v_scan * (r_beam ** 3))
-    normalized_enthalpy = (eta_base_flat * P_laser) / max(1e-9, enthalpy_denom)
+    normalized_enthalpy = (eta_index * P_laser) / max(1e-9, enthalpy_denom)
     # Gaussian 1/e² diameter d=2w: I0 = 2P/(πw²) = 8P/(πd²).
     peak_intensity_W_m2 = (8.0 * P_laser) / (math.pi * d_beam ** 2)
     peak_intensity_MW_cm2 = peak_intensity_W_m2 * 1e-10
@@ -795,7 +1007,7 @@ def calculate_meltpool_physics(
         heat_source_id = EAGAR_TSAI_MODEL_ID
     elif source == "goldak":
         gk_field = GoldakField(
-            T_preheat, P_geom, rho, cp, alpha_th,
+            T_preheat, P_geom, rho_k, cp, alpha_th,
             goldak_seed["af_m"], goldak_seed["ar_m"], goldak_seed["b_m"], goldak_seed["c_m"],
         ).bind_speed(v_scan)
 
@@ -813,8 +1025,8 @@ def calculate_meltpool_physics(
         P_laser, v_scan, d_beam, k_s, alpha_solid, T_vap, T_preheat, A_fabbro, normalized_enthalpy
     )
 
-    # Seed search box from the high-speed Rosenthal width scale
-    denom_thermal = rho * cp * max(50.0, T_liq - T_preheat) * v_scan
+    # Seed search box from the high-speed Rosenthal width scale (kernel density rho_k, P7b)
+    denom_thermal = rho_k * cp * max(50.0, T_liq - T_preheat) * v_scan
     w_analytical = math.sqrt(max(1e-12, (8.0 / (math.pi * math.e)) * (P_geom / denom_thermal)))
     search_half_w = max(d_beam * 1.8, w_analytical * 1.8, 50e-6)
     search_len = max(d_beam * 3.0, w_analytical * 4.5, 80e-6)
@@ -960,7 +1172,7 @@ def calculate_meltpool_physics(
     if source == "eagar-tsai":
         et_extent = (l_melt_um, w_melt_um, d_melt_um, extent_status)
     else:
-        et_extent = _eagar_tsai_companion(T_preheat, P_laser, eta_base, k_th, alpha_th, rho, cp, r_beam, d_beam,
+        et_extent = _eagar_tsai_companion(T_preheat, P_laser, eta_base, k_th, alpha_th, rho_k, cp, r_beam, d_beam,
                                           v_scan, T_liq, fabbro["depth_m"], normalized_enthalpy)
     balling = balling_screen(*et_extent, material_name=material_name)
     if balling["band"] == "high":
@@ -1109,68 +1321,92 @@ def calculate_meltpool_physics(
         {"trackId": "Right Track (+1)", "y_center_um": hatch_val_um, "contour": [{"y_um": round(pt["y_um"] + hatch_val_um, 1), "z_depth_um": pt["z_depth_um"]} for pt in transverse_contour]}
     ]
 
-    # 13. Dynamic P-V Process Window Map (2D Grid: Power 50-600W, Speed 200-2500 mm/s)
-    process_map_grid = []
+    # 13. P-V Process Window Map (2D grid: power 80 to 540 W, speed 300 to 2400 mm/s). P7b (B17, B19): every cell's
+    # width and liquidus depth are the served Rosenthal field extent at the authority field power (GRID_KERNEL_NOTE);
+    # the former closed-form width with the unsourced d_beam^2 quadrature term and the 0.5 w depth bound are gone.
+    process_map_grid = None
     keyhole_cut = regime_keyhole_cut(material_name)
-    p_steps = np.array([80, 150, 220, 300, 380, 460, 540], dtype=np.float64)
-    v_steps = np.array([300, 600, 900, 1200, 1600, 2000, 2400], dtype=np.float64)
+    if include_process_map:
+        process_map_grid = []
+        p_steps = np.array([80, 150, 220, 300, 380, 460, 540], dtype=np.float64)
+        v_steps = np.array([300, 600, 900, 1200, 1600, 2000, 2400], dtype=np.float64)
+        dT_liq = max(50.0, T_liq - T_preheat)
 
-    for p_val in p_steps:
-        for v_val in v_steps:
-            # Quick evaluation of regime
-            v_m = float(v_val) * 1e-3
-            denom_th = rho * cp_s * (T_liq - T_preheat) * math.sqrt(math.pi * alpha_solid * v_m * (r_beam ** 3))
-            enth = (eta_base_flat * float(p_val)) / max(1e-9, denom_th)
-            
-            # Width proxy (P1): the flat conduction absorptivity for every cell (the former 1-(1-A)^2.2 ramp above
-            # the transition cut was uncited).
-            eff_p = eta_base * float(p_val)
-            w_m = math.sqrt(max(1e-12, (8.0 / (math.pi * math.e)) * (eff_p / (rho * cp * max(50.0, T_liq - T_preheat) * v_m))) + d_beam ** 2)
-            w_um = w_m * 1e6
+        for p_val in p_steps:
+            for v_val in v_steps:
+                v_m = float(v_val) * 1e-3
+                # Index of the cell: the index convention absorptivity, solid k and cp (as the operating point).
+                denom_th = rho * cp_s * dT_liq * math.sqrt(math.pi * alpha_solid * v_m * (r_beam ** 3))
+                enth = (eta_index * float(p_val)) / max(1e-9, denom_th)
 
-            # Depth proxy (P1): max(conduction bound w/2, Fabbro leg) with the same leg and onset ramp as the operating
-            # point. King et al. 2014 Sec. 5.2 define keyhole mode by d > w/2, so a conduction pool has d <= w/2 and
-            # the leg takes over where it exceeds that bound. The former 0.45 / 0.70 / 1.15 width multiples were uncited.
-            cell_fabbro = fabbro_keyhole_depth_m(float(p_val), v_m, d_beam, k_s, alpha_solid, T_vap, T_preheat,
-                                                 A_fabbro, enth)
-            d_um = max(0.5 * w_um, cell_fabbro["depth_m"] * 1e6)
-            # Same per-alloy cuts as classify_enthalpy_regime (Inconel 625: keyhole from 13.6, no transition band).
-            if enth >= keyhole_cut:
-                pt_regime = "Keyhole Mode"
-                color_code = "#ef4444"  # Red
-            elif enth >= ENTHALPY_TRANSITION:
-                pt_regime = "Transition"
-                color_code = "#38bdf8"  # Sky
-            else:
-                pt_regime = "Optimal Conduction"
-                color_code = "#10b981"  # Emerald
+                # Field extent of the cell: the served Rosenthal routine at the authority field power A P with the
+                # served k, cp, rho_k and alpha convention (identical to the operating point's sequence, so a Rosenthal
+                # operating point that lies on the grid reproduces its own served W and D exactly). The leg is the
+                # same Fabbro leg (amplitude A authority, ramp weight from the index convention dH/hs).
+                cell_p_geom = eta_base * float(p_val)
+                cell_w_analytical = math.sqrt(max(1e-12, (8.0 / (math.pi * math.e))
+                                                  * (cell_p_geom / (rho_k * cp * dT_liq * v_m))))
+                cell_fabbro = fabbro_keyhole_depth_m(float(p_val), v_m, d_beam, k_s, alpha_solid, T_vap, T_preheat,
+                                                     A_fabbro, enth)
+                cell_half_w = max(d_beam * 1.8, cell_w_analytical * 1.8, 50e-6)
+                cell_len = max(d_beam * 3.0, cell_w_analytical * 4.5, 80e-6)
+                cell_depth = max(d_beam * 2.2, cell_w_analytical * 2.0, 40e-6, cell_fabbro["depth_m"] * 1.35)
 
-            # Check Lack of Fusion — Tang (h/W)^2+(t/D)^2
-            tang_pt = (float(hatch_spacing_um) / max(1.0, w_um)) ** 2 + (
-                float(layer_thickness_um) / max(1.0, d_um)
-            ) ** 2
-            if tang_pt > 1.0:
-                pt_regime = "Lack of Fusion Zone"
-                color_code = "#f59e0b"  # Amber
-            # No balling cell: the balling screen needs the Eagar–Tsai liquidus L/W, which this quick grid
-            # does not compute (the former (1.6 + 0.55 min(6, Pe)) > 3.8 rule was Pe > 4, uncited).
+                def cell_T(x_m, y_m, z_m, _p=cell_p_geom, _v=v_m):
+                    return rosenthal_temperature_C(x_m, y_m, z_m, T_preheat, _p, k_th, _v, alpha_th, r_reg)
 
-            # Additive flag (P1 follow-on): the Tang flag of a keyhole-index cell comes from the Fabbro depth, which is
-            # biased low because the keyhole absorptance A(R) is not modelled. Regime string and colour are unchanged.
-            keyhole_index_lof = bool(tang_pt > 1.0 and enth >= ENTHALPY_KEYHOLE)
-            cell = {
-                "power_W": int(p_val),
-                "speed_mm_s": int(v_val),
-                "normalizedEnthalpy": round(enth, 2),
-                "regime": pt_regime,
-                "color": color_code,
-                "width_um": round(w_um, 1),
-                "depth_um": round(d_um, 1),
-                "keyholeIndexLackOfFusion": keyhole_index_lof,
-            }
-            if keyhole_index_lof:
-                cell["lackOfFusionNote"] = KEYHOLE_INDEX_LOF_NOTE
-            process_map_grid.append(cell)
+                cell_x_peak = _axial_peak_x(cell_T, -cell_len * 1.4 * 8.0, cell_len)
+                cell_ext = _liquidus_extent(cell_T, T_liq, cell_x_peak, cell_len, cell_half_w, cell_depth, d_beam,
+                                            r_beam, cell_w_analytical, enth)
+                cell_status = cell_ext["extent_status"]
+                if cell_status == "computed":
+                    w_um = cell_ext["w_melt_m"] * 1e6
+                    d_um = max(cell_ext["d_iso"], cell_fabbro["depth_m"]) * 1e6
+                else:
+                    w_um = None
+                    d_um = None
+
+                # Same per-alloy cuts as classify_enthalpy_regime (Inconel 625: keyhole from 13.6, no transition band).
+                if enth >= keyhole_cut:
+                    pt_regime = "Keyhole Mode"
+                    color_code = "#ef4444"  # Red
+                elif enth >= ENTHALPY_TRANSITION:
+                    pt_regime = "Transition"
+                    color_code = "#38bdf8"  # Sky
+                else:
+                    pt_regime = "Optimal Conduction"
+                    color_code = "#10b981"  # Emerald
+
+                # Tang (h/W)^2 + (t/D)^2 on computed cells only; an unresolved cell keeps its enthalpy regime and no
+                # Lack of Fusion Zone class (its width and depth are not an isotherm).
+                keyhole_index_lof = False
+                if w_um is not None:
+                    tang_pt = (float(hatch_spacing_um) / max(1.0, w_um)) ** 2 + (
+                        float(layer_thickness_um) / max(1.0, d_um)
+                    ) ** 2
+                    if tang_pt > 1.0:
+                        pt_regime = "Lack of Fusion Zone"
+                        color_code = "#f59e0b"  # Amber
+                    # Additive flag (P1 follow-on; B19 since P7b: the per-alloy keyhole cut, 13.6 for Inconel 625): the
+                    # Tang flag of a keyhole-index cell comes from the Fabbro depth, which is biased low because the
+                    # keyhole absorptance A(R) is not modelled. Regime string and colour are unchanged.
+                    keyhole_index_lof = bool(tang_pt > 1.0 and enth >= keyhole_cut)
+                # No balling cell: the balling screen needs the Eagar–Tsai liquidus L/W, which this grid does not
+                # compute (the former (1.6 + 0.55 min(6, Pe)) > 3.8 rule was Pe > 4, uncited).
+                cell = {
+                    "power_W": int(p_val),
+                    "speed_mm_s": int(v_val),
+                    "normalizedEnthalpy": round(enth, 2),
+                    "regime": pt_regime,
+                    "color": color_code,
+                    "width_um": None if w_um is None else round(w_um, 1),
+                    "depth_um": None if d_um is None else round(d_um, 1),
+                    "extentStatus": cell_status,
+                    "keyholeIndexLackOfFusion": keyhole_index_lof,
+                }
+                if keyhole_index_lof:
+                    cell["lackOfFusionNote"] = KEYHOLE_INDEX_LOF_NOTE
+                process_map_grid.append(cell)
 
     result = {
         "success": True,
@@ -1193,10 +1429,22 @@ def calculate_meltpool_physics(
             "effectiveAbsorptivityBasis": EFFECTIVE_ABSORPTIVITY_BASIS,
             "conductionAbsorptivity": round(eta_base, 3),
             "fabbroAbsorptivity": round(A_fabbro, 3),
+            # P7b: the physical authority value and its basis; the index convention value and its basis.
+            "absorptivityBasis": absorptivity_basis,
+            "absorptivitySource": absorptivity_source,
+            "indexAbsorptivity": round(eta_index, 3),
+            "absorptivityIndexBasis": absorptivity_index_basis,
             "effectiveConductivity_W_mK": round(k_th, 3),
             "effectiveSpecificHeat_J_kgK": round(cp, 1),
+            "kernelDensity_kg_m3": round(rho_k, 1),
+            "effectiveDiffusivity_m2_s": alpha_th,
+            "propertyConvention": property_convention,
+            "propertyConventionBasis": property_convention_basis,
+            "kernelLedgerSha256": None if kernel_ledger is None else kernel_ledger["kernelLedgerSha256"],
             "solidConductivity_W_mK": round(k_s, 3),
+            "solidConductivityBasis": solid_conductivity_basis,
             "liquidConductivity_W_mK": round(k_l, 3),
+            "densityBasis": density_basis,
             "kingUsesSolidThermophysics": True,
             "volumetricEnergyDensity_J_mm3": round(ved_J_mm3, 2),
             "linearEnergyDensity_J_m": round(led_J_m, 1),
@@ -1244,7 +1492,8 @@ def calculate_meltpool_physics(
             "peclet": round(fabbro["peclet"], 2),
             "pecletInFitRange": fabbro["pecletInFitRange"],
             "absorptivity": round(A_fabbro, 3),
-            "absorptivityBasis": "flat-surface value, a disclosed lower bound (not Fabbro keyhole A(R), unmodelled)",
+            "absorptivityBasis": ("flat-surface value, a disclosed lower bound (not Fabbro keyhole A(R), unmodelled); "
+                                  + ABSORPTIVITY_AUTHORITY_SEE),
             "doi": fabbro["doi"],
             "depthBenchmarkNote": KEYHOLE_DEPTH_BENCHMARK_NOTE,
         },
@@ -1356,9 +1605,12 @@ def calculate_meltpool_physics(
             },
             "regimeBasis": REGIME_THRESHOLD_BASIS,
             "regimeKeyholeThreshold": keyhole_cut,
+            "gridKernel": GRID_KERNEL,
+            "gridKernelNote": GRID_KERNEL_NOTE if include_process_map else GRID_NOT_COMPUTED_NOTE,
+            "keyholeIndexLackOfFusionCut": keyhole_cut,
             "grid": process_map_grid,
             "ballingNote": ("Balling is screened at the operating point only (defectDiagnostics.ballingScreen, "
-                            "Eagar-Tsai L/W); the quick grid has no melt-pool length and marks no balling zone."),
+                            "Eagar-Tsai L/W); the grid has no melt-pool length and marks no balling zone."),
         }
     }
     if material_name == "Inconel 625":

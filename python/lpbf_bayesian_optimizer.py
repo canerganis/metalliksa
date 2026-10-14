@@ -255,7 +255,8 @@ def run_bayesian_optimization(alloy_id, param_bounds=None, n_iter=20, n_warmup=5
                 preheat_temp_C=preheat,
                 layer_thickness_um=float(params['layer_um']),
                 hatch_spacing_um=float(params['hatch_um']),
-                laser_wavelength='IR_1064nm')
+                laser_wavelength='IR_1064nm',
+                include_process_map=False)
             vd = compose_verdict(th, resolved)
         except Exception as e:
             raise _SolverError(str(e)) from e

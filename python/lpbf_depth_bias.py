@@ -63,6 +63,11 @@ P1_UNDER_NOTE = (" After 2026-10-11 no kernel represents the measured absorptanc
                  "depth is biased low in all three kernels.")
 P1_OVER_NOTE = (" The conduction field carries no latent-heat cut since 2026-10-11, so conduction-mode depth from "
                 "the Rosenthal kernel is higher than before.")
+# P7b planned bump (2026-10-14): appended to every direction text of the conduction band (every kernel), alloy
+# neutral: the direction differs per alloy (Ti-6Al-4V shallower, AlSi10Mg deeper) and is stated in the bump record.
+P7B_CONDUCTION_NOTE = (" After 2026-10-14 (P7b) the conduction absorptivity authority and the conduction property "
+                       "convention change conduction width and depth for every alloy that has a sourced value; the "
+                       "direction is stated per alloy in the bump record.")
 BASIS_TEMPLATE = (
     "Error-band summary {bands_id}, cell {alloy} / {kernel_id} / {regime}: relative error pred / meas - 1, equal source "
     "weight, digitized figures included, screening only."
@@ -190,6 +195,8 @@ def depth_bias_warning(regime: Optional[str], material_name: Optional[str], heat
         text += P1_UNDER_NOTE
     elif median > 0 and rc == "conduction" and kernel == "rosenthal":
         text += P1_OVER_NOTE
+    if rc == "conduction":
+        text += P7B_CONDUCTION_NOTE
     return {"direction": OVER if median > 0 else UNDER, "text": text, "basis": basis}
 
 

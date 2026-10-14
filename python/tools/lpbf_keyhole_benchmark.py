@@ -132,8 +132,10 @@ def porosity_prefix_legacy(h: float) -> str:
 
 def ti64_props() -> Dict[str, Any]:
     p = pds.screening_props(kl.APP_MATERIAL_TI64)
+    # P7b: absorptivity_IR is the physical authority (0.32 for Ti-6Al-4V); absorptivity_index_IR (0.35) is the index
+    # convention value the Huang product and the app index use (they are compared against thresholds derived with it).
     return {k: p[k] for k in ("density_kg_m3", "thermal_conductivity_W_mK", "specific_heat_J_kgK", "liquidus_C",
-                              "boiling_C", "absorptivity_IR")}
+                              "boiling_C", "absorptivity_IR", "absorptivity_index_IR")}
 
 
 def ye_eta_min_ti64() -> Dict[str, Any]:
@@ -156,7 +158,7 @@ def index_block(P: float, v: float, spot: float, preheat: float, props: Dict[str
             "ganKe": r3(gan["Ke"]), "ganEta": r3(gan["eta"]), "ganRegime": kl.gan_regime(gan["Ke"]),
             "ganKeyholeDepth_um": r3(kl.gan_keyhole_depth_um(gan["Ke"], spot)),
             "huangProduct_betaYe": r3(kl.huang_enthalpy_product(P, v, spot, eta_min)),
-            "huangProduct_betaAppFlat": r3(kl.huang_enthalpy_product(P, v, spot, props["absorptivity_IR"])),
+            "huangProduct_betaAppFlat": r3(kl.huang_enthalpy_product(P, v, spot, props["absorptivity_index_IR"])),
             "hannRegime": kl.hann_regime(reg["normalizedEnthalpy"])}
 
 
@@ -353,7 +355,10 @@ def king_conversion(red_line_index: Optional[Dict[str, Any]] = None) -> Dict[str
     rho, cp, k = props["density_kg_m3"], props["specific_heat_J_kgK"], props["thermal_conductivity_W_mK"]
     app_hs = rho * cp * (props["liquidus_C"] - t0)
     alpha = k / (rho * cp)
-    factor = ((c["A"] / props["absorptivity_IR"]) * app_hs / (c["rho_kg_m3"] * c["hs_J_kg"])
+    # P7b: the conversion reads the index convention absorptivity (0.42), the value the cut 20 was derived with; the
+    # physical authority (0.30) is listed next to it and does not enter the factor.
+    a_index = props["absorptivity_index_IR"]
+    factor = ((c["A"] / a_index) * app_hs / (c["rho_kg_m3"] * c["hs_J_kg"])
               * math.sqrt(alpha / c["D_m2_s"]) * 2.0 ** 1.5)
     lo, mid, hi = ((c["center"] + sgn * c["halfwidth"]) / factor for sgn in (-1, 0, 1))
     out: Dict[str, Any] = {
@@ -362,7 +367,8 @@ def king_conversion(red_line_index: Optional[Dict[str, Any]] = None) -> Dict[str
                             "accepted manuscript, OSTI 1502044); the physical value is 7.98 g/cm3 = 7980 kg/m3, so the "
                             "unit was corrected here, not taken as printed"),
         "app316lProperties": {"density_kg_m3": rho, "specific_heat_J_kgK": cp, "liquidus_C": props["liquidus_C"],
-                              "thermal_conductivity_W_mK": k, "absorptivity_IR": props["absorptivity_IR"], "T0_C": t0},
+                              "thermal_conductivity_W_mK": k, "absorptivity_index_IR": a_index,
+                              "absorptivity_IR_physical_not_used": props["absorptivity_IR"], "T0_C": t0},
         "factorHKingOverHApp": r3(factor),
         "kingThresholdInAppUnits": {"low": r3(lo), "mid": r3(mid), "high": r3(hi)},
         "note": ("Convention conversion at equal P, v and beam (r = 2 sigma), conditional on the app absorptivity, 20 C "
@@ -594,7 +600,10 @@ def evaluate(run_kernels: bool = True) -> Dict[str, Any]:
             "material": kl.APP_MATERIAL_TI64, "materialProperties": props, "absorptionModel": "flat-plate"},
         "publishedRelationInputs": {
             "ganEtaMin": ye, "ganProperties": "app Ti-6Al-4V properties (Gan's values are SI-only)",
-            "huangHm_J_mm3": kl.HUANG_HM_TI64_J_MM3, "huangBeta": {"ye": eta_min, "appFlat": props["absorptivity_IR"]},
+            "huangHm_J_mm3": kl.HUANG_HM_TI64_J_MM3,
+            "huangBeta": {"ye": eta_min, "appFlat": props["absorptivity_index_IR"],
+                          "appFlatNote": "index convention value (P7b); the physical authority is "
+                                         f"{props['absorptivity_IR']}"},
             "hannHvHsTi64": kl.HANN_HV_HS_TI64},
         "datasets": {name: {k: v for k, v in fn()["provenance"].items()}
                      for name, fn in kl.LOADERS.items()},

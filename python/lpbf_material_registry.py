@@ -220,6 +220,24 @@ def material(name, supplied=None):
     return m
 
 
+def reidentify(m):
+    """Recompute materialRevisionSha256 after a request-level override (absorptivity, emissivity) changed the snapshot.
+
+    P7b (2026-10-14, finding 1.3 f): before the absorptivity authority moved, a request absorptivity equal to the
+    registry value left the snapshot unchanged, so the identity never had to be redone; an archived payload or fixture
+    that carries an explicit absorptivity (Ti-6Al-4V 0.35, AlSi10Mg 0.18, Inconel 718 0.38) now differs from the
+    registry value and must be re-identified, otherwise lpbf_core_contract rejects the result as a revision mismatch.
+    The hash rule is exactly the one of material(): sha256 of the canonical JSON of the snapshot without the hash key.
+    """
+    snapshot = {key: value for key, value in m.items() if key != "materialRevisionSha256"}
+    _require_json_value(snapshot)
+    identity_payload = json.dumps(snapshot, sort_keys=True, separators=(",", ":"),
+                                  ensure_ascii=True, allow_nan=False).encode("utf-8")
+    out = dict(snapshot)
+    out["materialRevisionSha256"] = hashlib.sha256(identity_payload).hexdigest()
+    return out
+
+
 def property_at(m, temperature, column):
     a = np.asarray(m["table"])
     return np.interp(temperature, a[:, 0], a[:, column])

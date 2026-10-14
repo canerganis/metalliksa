@@ -36,6 +36,8 @@ from lpbf_job_cache import (
     cache_put,
 )
 from lpbf_screening_uq import apply_uq_prop_scales, run_screening_uq
+from four_alloy_materials import ABSORPTIVITY_BASIS_UNSOURCED, kernel_properties
+from lpbf_defect_diagnostics import BALLING_LW_MODERATE
 from fabbro_keyhole import ENTHALPY_KEYHOLE as FABBRO_ENTHALPY_KEYHOLE  # read-only: printed ramp follows the real constants
 from fabbro_keyhole import ENTHALPY_ONSET as FABBRO_ENTHALPY_ONSET
 from lpbf_thermal_solver import (
@@ -426,9 +428,10 @@ LITERATURE_PV_ADVISORY_BASIS = (
 DOWNSKIN_ADVISORY_BASIS = (UNSOURCED_SCREENING_THRESHOLD + ": no primary source with a locator retrieved (SWP 2.8); "
                            "reported limits depend on alloy and exposure strategy")
 BALLING_HIGH_ADVISORY_BASIS = (
-    UNSOURCED_SCREENING_THRESHOLD + " 5.5, fitted in sample on Hofmann 2026 316L (677 tracks, Zenodo 16979848; 69 of 71 "
-    "above it balled), on the Eagar-Tsai geometry of the fitting commit; not validated elsewhere; reported as an "
-    "advisory for 316L only, not assigned for other alloys"
+    UNSOURCED_SCREENING_THRESHOLD + " (Moderate 3.85, a Yadroitsev et al. 2010 Eq. 13 cylinder-bound proxy applied to "
+    "the model pool L/W, is the only advisory band); no High band since P7b (2026-10-14): the former in-sample 316L "
+    "edge 5.5 (Hofmann 2026, Zenodo 16979848) was fitted on the Eagar-Tsai geometry of the fitting commit, and P7b "
+    "changed that geometry (absorptivity authority, melting-point and kernel-ledger properties)"
 )
 # P1 (2026-10-11): at dH/hs >= ENTHALPY_TRANSITION the served depth is the Fabbro leg with a flat absorptivity, so
 # transition and keyhole depth is biased low (keyhole absorptance A(R) not modelled).
@@ -437,10 +440,11 @@ KEYHOLE_DEPTH_BIAS_LOF_NOTE = (
     "absorptance A(R) is not modelled, so a lack-of-fusion fail in this regime may be a model artefact."
 )
 BALLING_SCREEN_NOTE = (
-    "Eagar-Tsai aspect-ratio screen calibrated on Hofmann 2026 316L single tracks (Zenodo 10.5281/zenodo.16979848; "
-    "High threshold 5.5 chosen in-sample, model L/W uncertainty about +-10 %; low recall and spot-size dependent: "
-    "69/216 balled tracks flagged overall, 3/38 at a 140 um spot, so a track below 5.5 is not balling-cleared); "
-    "not a demonstrated balling prediction for other alloys; an advisory since P7a, never a verdict input"
+    "Eagar-Tsai aspect-ratio screen (model L/W uncertainty about +-10 %); the Hofmann 2026 316L single tracks "
+    "(Zenodo 10.5281/zenodo.16979848) are recorded evidence per L/W bin, not a threshold since P7b (the former "
+    "in-sample High edge was fitted on a geometry P7b changed); low recall is documented there (69/216 balled tracks "
+    "above the former edge, 3/38 at a 140 um spot), so a low L/W is not balling-cleared; not a demonstrated balling "
+    "prediction for any alloy; an advisory since P7a, never a verdict input"
 )
 BALLING_LITERATURE_NOTE = (
     "pi*sqrt(3/2) segmental-cylinder bound of Yadroitsev et al. 2010 (J. Mater. Process. Technol. 210:1624, "
@@ -599,13 +603,8 @@ def compose_verdict(thermal, alloy_id, extras=None):
         )
     if balling_absorption_note and geometry_resolved:
         advisories.append("Advisory: " + balling_absorption_note)
-    if balling_high:
-        advisories.append(
-            f"Advisory: balling screen High — Eagar–Tsai L/W = {balling_lw_text} (> {balling.get('highThreshold', 5.5)}; "
-            f"{balling.get('hofmannBalledFractionInBand') or 'n/a'} Hofmann 316L tracks above it balled) — "
-            f"{BALLING_HIGH_ADVISORY_BASIS}; {BALLING_SCREEN_NOTE}. It does not change the verdict."
-        )
-    if balling_moderate:
+    # P7b: no High band exists any more; an older payload carrying band "high" is reported as the Moderate advisory.
+    if balling_moderate or balling_high:
         advisories.append(
             f"Advisory: balling screen Moderate — Eagar–Tsai L/W = {balling_lw_text} > 3.85, the "
             f"{BALLING_LITERATURE_NOTE}; {balling.get('hofmannBalledFractionInBand') or 'n/a'} Hofmann 316L tracks "
@@ -715,12 +714,12 @@ def compose_verdict(thermal, alloy_id, extras=None):
             "balling",
             ball_status,
             ball_measured,
-            5.5,
+            round(BALLING_LW_MODERATE, 3),
             "1",
-            "Eagar–Tsai liquidus L/W (beam-size aware, whatever kernel the job uses for W/D): High (> 5.5, "
-            "empirical, Hofmann 316L, in-sample) → advisory, 316L only, not assigned for other alloys; Moderate (> 3.85 = "
-            "π√(3/2), Yadroitsev et al. 2010 Eq. 13 / Gusarov et al. 2007 mechanism) → advisory; Eagar–Tsai extent not "
-            "computed → unavailable. Aspect-ratio screen, not a demonstrated balling prediction; no verdict effect.",
+            "Eagar–Tsai liquidus L/W (beam-size aware, whatever kernel the job uses for W/D): Moderate (> 3.85 = "
+            "π√(3/2), Yadroitsev et al. 2010 Eq. 13 / Gusarov et al. 2007 mechanism) → advisory; no High band since "
+            "P7b; Eagar–Tsai extent not computed → unavailable. Aspect-ratio screen, not a demonstrated balling "
+            "prediction; no verdict effect.",
             basis=BALLING_HIGH_ADVISORY_BASIS,
         ),
         _gate(
@@ -1048,6 +1047,8 @@ def _solve_lpbf_build_job_core(data):
 
     def _patch_thermal(p_w, v_mms, hatch_um, layer_um, beam_um):
         # Re-runs the served solver at a suggested point so a patch is verified, not read off the literature box.
+        # P7b: the full frozen snapshot is passed (precedence rule (ii): a ledger alloy still takes its Kirchhoff
+        # kernel at this job's preheat); the grid is skipped on the internal re-run.
         return calculate_meltpool_physics(
             thermal_mat,
             p_w,
@@ -1060,6 +1061,7 @@ def _solve_lpbf_build_job_core(data):
             incline_angle_deg=incline_deg,
             process_seed=process_seed,
             prop_overrides=material_snapshot["thermal"],
+            include_process_map=False,
         )
 
     decision = compose_verdict(
@@ -1075,9 +1077,12 @@ def _solve_lpbf_build_job_core(data):
     uq_n = int(data.get("uqSamples", 96))
     if enable_uq:
         base_props = material_snapshot["thermal"]
+        # P7b: a ledger alloy's kernel (Kirchhoff mean at this job's preheat) is materialised into explicit kernel keys
+        # so the UQ conductivity and density scales reach the conduction kernel (precedence rule (i)); None otherwise.
+        uq_kernel = kernel_properties(thermal_mat, preheat + 273.15, float(base_props["liquidus_C"]) + 273.15)
 
         def _thermal_runner(p_w, beam_um, scale_overrides):
-            concrete = apply_uq_prop_scales(base_props, scale_overrides)
+            concrete = apply_uq_prop_scales(base_props, scale_overrides, kernel=uq_kernel)
             return calculate_meltpool_physics(
                 thermal_mat,
                 p_w,
@@ -1090,6 +1095,7 @@ def _solve_lpbf_build_job_core(data):
                 incline_angle_deg=incline_deg,
                 process_seed=process_seed,
                 prop_overrides={**base_props, **concrete},
+                include_process_map=False,
             )
 
         def _verdict_runner(th):
@@ -1160,8 +1166,9 @@ def _solve_lpbf_build_job_core(data):
             f"provisional keyhole-mode cut {ENTHALPY_KEYHOLE:g} ({ENTHALPY_KEYHOLE_IN625:g} for Inconel 625, fitted on "
             "NIST mds2-2923 tracks), a mode onset and not a porosity boundary. The verdict (P7a, sourced criteria only) "
             "is do-not-print on the Tang unit criterion, risky in keyhole mode, otherwise printable. The level "
-            f"{POROSITY_SCREEN_HIGH_AT:g}, the Tang margin 0.80, the literature box, the balling High band and the "
-            "downskin angles are unsourced screening thresholds reported as advisories. The Fabbro keyhole depth leg "
+            f"{POROSITY_SCREEN_HIGH_AT:g}, the Tang margin 0.80, the literature box, the balling Moderate band and the "
+            "downskin angles are unsourced screening thresholds reported as advisories (the balling High band was "
+            "removed in P7b). The Fabbro keyhole depth leg "
             f"opens at the same onset ({FABBRO_ENTHALPY_ONSET:g}) and reaches full weight at "
             f"{FABBRO_ENTHALPY_KEYHOLE:g} through an unsourced linear ramp (P3)."
         ),
@@ -1179,9 +1186,32 @@ def _solve_lpbf_build_job_core(data):
     assumptions.extend(
         _scan_strategy_assumptions(scan_strategy, stripe_width_mm, rotation_deg, dwell_ms)
     )
-    if thermal.get("processParameters", {}).get("effectiveConductivity_W_mK") is not None:
+    pp_served = thermal.get("processParameters", {})
+    if pp_served.get("effectiveConductivity_W_mK") is not None:
+        convention = pp_served.get("propertyConvention")
+        if convention == "kernel-ledger-kirchhoff":
+            convention_text = ("the Kirchhoff integral mean of the sourced solid k(T) and cp(T) from the job preheat to "
+                               "the liquidus (kernel ledger, evaluated per call)")
+        elif convention == "melting-point":
+            convention_text = "melting-point k and cp"
+        else:
+            convention_text = "the equal-weight solid/liquid k and cp blend (unsourced; no melting-point source for this alloy)"
         assumptions.append(
-            "Effective k/Cp blend solid↔liquid for Rosenthal geometry; King ΔH/hs stays on solid thermophysics."
+            f"P7b (2026-10-14, sourcing correction, not validation): the conduction field uses {convention_text} with "
+            f"the kernel density {pp_served.get('kernelDensity_kg_m3')} kg/m3; King ΔH/hs and the Fabbro leg stay on "
+            "the room temperature solid thermophysics (propertyConventionBasis, solidConductivityBasis)."
+        )
+    assumptions.append(
+        "P7b (2026-10-14): the field absorptivity is the measured conduction-mode authority where one exists "
+        f"(absorptivityBasis); the ΔH/hs regime index reads the separate index convention constant "
+        f"{pp_served.get('indexAbsorptivity')} (absorptivityIndexBasis), so regime labels, the Fabbro onset weight and "
+        "the porosity advisory class are classification neutral; the process-map grid is the served Rosenthal field "
+        "extent per cell (gridKernel)."
+    )
+    if pp_served.get("absorptivityBasis") == ABSORPTIVITY_BASIS_UNSOURCED:
+        assumptions.append(
+            f"Absorptivity: {ABSORPTIVITY_BASIS_UNSOURCED} (no measured conduction-mode value in the library for this "
+            "alloy or wavelength)."
         )
     if abs(incline_deg) > 1e-6:
         assumptions.append(

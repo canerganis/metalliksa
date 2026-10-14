@@ -201,8 +201,15 @@ def run_screening_uq(
     }
 
 
-def apply_uq_prop_scales(props: Dict[str, Any], overrides: Optional[Dict[str, float]]) -> Dict[str, Any]:
-    """Expand UQ scale keys into concrete thermophysical overrides."""
+def apply_uq_prop_scales(props: Dict[str, Any], overrides: Optional[Dict[str, float]],
+                         kernel: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
+    """Expand UQ scale keys into concrete thermophysical overrides.
+
+    ``kernel`` (P7b, Amendment 1 item 3.3): the ledger kernel of the alloy at the job's own preheat
+    (four_alloy_materials.kernel_properties), materialised into explicit kernel_* keys so that _uq_k_scale and
+    _uq_rho_scale reach the conduction kernel of a ledger alloy (the solver's ledger rule would otherwise ignore the
+    scaled solid and liquid keys). None for an alloy without a ledger entry.
+    """
     if not overrides:
         return {}
     out: Dict[str, Any] = {}
@@ -210,6 +217,9 @@ def apply_uq_prop_scales(props: Dict[str, Any], overrides: Optional[Dict[str, fl
     k_scale = overrides.get("_uq_k_scale")
     rho_scale = overrides.get("_uq_rho_scale")
     if a_scale is not None:
+        # P7b: the field absorptivity is scaled; the index convention constant absorptivity_index_IR is NOT scaled
+        # (passed through unchanged from the base props), so UQ no longer moves the regime label or the Fabbro
+        # onset weight (spec question 4, reasons file IR-2).
         out["absorptivity_IR"] = float(props["absorptivity_IR"]) * float(a_scale)
         out["absorptivity_Green"] = float(props["absorptivity_Green"]) * float(a_scale)
     if k_scale is not None:
@@ -219,10 +229,23 @@ def apply_uq_prop_scales(props: Dict[str, Any], overrides: Optional[Dict[str, fl
         )
         out["thermal_conductivity_W_mK"] = ks
         out["thermal_conductivity_liquid_W_mK"] = kl
+        # P7b (spec 3.3.4): the two melting-point keys follow the same scale when the property set carries them.
+        for melt_key in ("thermal_conductivity_melt_W_mK", "specific_heat_melt_J_kgK"):
+            if melt_key in props:
+                out[melt_key] = float(props[melt_key]) * float(k_scale)
+    if kernel is not None and (k_scale is not None or rho_scale is not None):
+        # Materialise the ledger kernel at the job preheat into explicit kernel keys (precedence rule (i)).
+        kk = float(k_scale) if k_scale is not None else 1.0
+        out["kernel_conductivity_W_mK"] = float(kernel["kernel_conductivity_W_mK"]) * kk
+        out["kernel_specific_heat_J_kgK"] = float(kernel["kernel_specific_heat_J_kgK"]) * kk
+        out["kernel_density_kg_m3"] = float(kernel["kernel_density_kg_m3"]) * (
+            float(rho_scale) if rho_scale is not None else 1.0)
     if rho_scale is not None:
         out["density_kg_m3"] = float(props["density_kg_m3"]) * float(rho_scale)
         if "density_liquid_kg_m3" in props:
             out["density_liquid_kg_m3"] = float(props["density_liquid_kg_m3"]) * float(rho_scale)
+        if "kernel_density_kg_m3" in props and "kernel_density_kg_m3" not in out:
+            out["kernel_density_kg_m3"] = float(props["kernel_density_kg_m3"]) * float(rho_scale)
     # Pass through any direct overrides that are not scale keys.
     for k, v in overrides.items():
         if not str(k).startswith("_uq_"):
