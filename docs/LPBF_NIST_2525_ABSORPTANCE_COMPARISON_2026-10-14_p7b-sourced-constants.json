@@ -1,0 +1,929 @@
+{
+ "checks": {
+  "fingerprintCheckPassed": true,
+  "inputHashesVerified": true
+ },
+ "circularity": "the application's Ti-6Al-4V absorptivity of record (0.32 since P7b, 2026-10-14) was sourced in part from this dataset (NIST mds2-2525 pre-keyhole mean 32.5 percent, Simonds 2021 Sec. 3.2) together with Ye 2019 Table 1 Am 0.26; the flat-plate row and the ray tracer's base_absorption therefore report the consistency of a sourced input with its own source, not an independent comparison and never a validation",
+ "comparison": {
+  "rows": [
+   {
+    "difference": -0.471187,
+    "differenceRelative_pct": -1.45109,
+    "differenceUnit": "percentage points (model - measured)",
+    "id": "ti64-spot-pre-keyhole-flat-plate",
+    "material": "Ti-6Al-4V (NIST SRM 654b)",
+    "measured": 32.4712,
+    "measuredStd": 1.4509,
+    "measuredUnit": "%",
+    "model": 32.0,
+    "modelId": "lpbf_thermal_solver.thermal_props('Ti-6Al-4V')['absorptivity_IR'] (four_alloy_materials)",
+    "modelUnit": "%",
+    "quantity": "pre-keyhole absorptance, Ti-6Al-4V stationary pulse",
+    "reason": "flat polished surface before any cavity: the like-for-like comparison; 7 deg incidence, thin coupon and temperature dependence not represented by the constant; the application's Ti-6Al-4V absorptivity of record (0.32 since P7b, 2026-10-14) was sourced in part from this dataset (NIST mds2-2525 pre-keyhole mean 32.5 percent, Simonds 2021 Sec. 3.2) together with Ye 2019 Table 1 Am 0.26; the flat-plate row and the ray tracer's base_absorption therefore report the consistency of a sourced input with its own source, not an independent comparison and never a validation",
+    "status": "compared"
+   },
+   {
+    "difference": null,
+    "id": "ti64-spot-keyhole-raytracer-sensitivity",
+    "material": "Ti-6Al-4V (NIST SRM 654b)",
+    "measured": 62.0075,
+    "measuredStd": 7.09085,
+    "measuredUnit": "%",
+    "model": {
+     "depths_um": [
+      0.0,
+      25.0,
+      50.0,
+      100.0,
+      150.0,
+      200.0,
+      300.0,
+      400.0,
+      600.0
+     ],
+     "max_pct": 91.602,
+     "min_pct": 32.0
+    },
+    "modelId": "prescribed-cavity-ray-optics-v2",
+    "modelUnit": "%",
+    "quantity": "keyhole-phase absorptance, prescribed-depth sweep",
+    "reason": "sweep brackets the measured keyhole-phase mean between prescribed depths [[100.0, 150.0]]; SENSITIVITY over prescribed depth, not calibration",
+    "status": "sensitivity-only"
+   },
+   {
+    "difference": null,
+    "id": "ti64-spot-keyhole-direct",
+    "material": "Ti-6Al-4V (NIST SRM 654b)",
+    "measured": 62.0075,
+    "measuredStd": 7.09085,
+    "measuredUnit": "%",
+    "model": null,
+    "modelId": null,
+    "quantity": "keyhole-phase absorptance, direct prediction (no prescribed depth)",
+    "reason": "the application does not solve the cavity depth (no free surface) and the Ti-6Al-4V X-ray cavity depth is not among the pinned files, so there is no depth to feed the ray tracer",
+    "status": "unavailable"
+   },
+   {
+    "difference": null,
+    "id": "ti64-spot-thermal-solver-eta-eff",
+    "material": "Ti-6Al-4V (NIST SRM 654b)",
+    "measured": 62.0075,
+    "measuredUnit": "%",
+    "model": null,
+    "modelId": "lpbf_thermal_solver.calculate_meltpool_physics",
+    "quantity": "effective absorptivity (flat after P1), Ti-6Al-4V stationary pulse",
+    "reason": "stationary 2 ms pulse is not representable by the moving-source kernels of calculate_meltpool_physics (scan speed must be > 0; a near-zero speed is not a valid substitute and was not run)",
+    "status": "unavailable"
+   },
+   {
+    "difference": null,
+    "id": "ti64-scan-before-during-keyhole",
+    "material": "Ti-6Al-4V (NIST SRM 654b)",
+    "measured": null,
+    "measuredUnit": "%",
+    "model": null,
+    "modelId": "lpbf_thermal_solver.calculate_meltpool_physics",
+    "quantity": "Ti-6Al-4V scan (700 mm/s) before/during-keyhole absorptance",
+    "reason": "Ti-6Al-4V scan CSV Scan on Bare Metal_Calibrated Absorption Data.csv: file not acquired (NIST download unavailable; no archived copy with the official SHA-256)",
+    "status": "unavailable"
+   },
+   {
+    "difference": null,
+    "id": "ti64-absorption-uncertainty-analysis",
+    "material": "Ti-6Al-4V (NIST SRM 654b)",
+    "measured": null,
+    "measuredUnit": null,
+    "model": null,
+    "modelId": null,
+    "quantity": "NIST published absorptance uncertainty analysis",
+    "reason": "Absorption_Uncertainty_Analysis.pdf: file not acquired (NIST download unavailable; no archived copy with the official SHA-256); only the per-sample uncertainty column is used",
+    "status": "unavailable"
+   },
+   {
+    "difference": null,
+    "id": "ti64-spot-energy-coupling",
+    "material": "Ti-6Al-4V (NIST SRM 654b)",
+    "measured": 49.4,
+    "measuredUnit": "%",
+    "model": null,
+    "modelId": null,
+    "quantity": "absorbed J / input J over the 2 ms pulse (measured context)",
+    "reason": "no model counterpart: the application has no time-resolved stationary-pulse absorption model",
+    "status": "unavailable"
+   },
+   {
+    "difference": null,
+    "id": "al-spot-before-keyhole",
+    "material": "aluminium (NIST SRM 1241c)",
+    "measured": 23.9,
+    "measuredStd": 0.3,
+    "measuredUnit": "%",
+    "model": null,
+    "modelId": null,
+    "quantity": "Al spot absorptance before keyhole",
+    "reason": "the application's locked alloy set (Ti-6Al-4V, 316L, AlSi10Mg, IN718; IN625 screening) has no aluminium SRM 1241c; AlSi10Mg is a different alloy and is not substituted",
+    "status": "unavailable"
+   },
+   {
+    "difference": null,
+    "id": "al-spot-during-keyhole",
+    "material": "aluminium (NIST SRM 1241c)",
+    "measured": 64.1,
+    "measuredStd": 3.9,
+    "measuredUnit": "%",
+    "model": null,
+    "modelId": null,
+    "quantity": "Al spot absorptance during keyhole",
+    "reason": "the application's locked alloy set (Ti-6Al-4V, 316L, AlSi10Mg, IN718; IN625 screening) has no aluminium SRM 1241c; AlSi10Mg is a different alloy and is not substituted",
+    "status": "unavailable"
+   },
+   {
+    "difference": null,
+    "id": "al-scan-before-keyhole",
+    "material": "aluminium (NIST SRM 1241c)",
+    "measured": 23.8,
+    "measuredStd": 0.08,
+    "measuredUnit": "%",
+    "model": null,
+    "modelId": null,
+    "quantity": "Al scan absorptance before keyhole",
+    "reason": "the application's locked alloy set (Ti-6Al-4V, 316L, AlSi10Mg, IN718; IN625 screening) has no aluminium SRM 1241c; AlSi10Mg is a different alloy and is not substituted",
+    "status": "unavailable"
+   },
+   {
+    "difference": null,
+    "id": "al-scan-during-keyhole",
+    "material": "aluminium (NIST SRM 1241c)",
+    "measured": 43.3,
+    "measuredStd": 1.5,
+    "measuredUnit": "%",
+    "model": null,
+    "modelId": null,
+    "quantity": "Al scan absorptance during keyhole",
+    "reason": "the application's locked alloy set (Ti-6Al-4V, 316L, AlSi10Mg, IN718; IN625 screening) has no aluminium SRM 1241c; AlSi10Mg is a different alloy and is not substituted",
+    "status": "unavailable"
+   },
+   {
+    "difference": null,
+    "id": "al-scan-max-depth",
+    "material": "aluminium (NIST SRM 1241c)",
+    "measured": 88.8,
+    "measuredStd": 0.4,
+    "measuredUnit": "micrometer",
+    "model": null,
+    "modelId": null,
+    "quantity": "Al scan maximum melt-pool depth",
+    "reason": "the application's locked alloy set (Ti-6Al-4V, 316L, AlSi10Mg, IN718; IN625 screening) has no aluminium SRM 1241c; AlSi10Mg is a different alloy and is not substituted",
+    "status": "unavailable"
+   },
+   {
+    "difference": null,
+    "id": "al-scan-max-width",
+    "material": "aluminium (NIST SRM 1241c)",
+    "measured": 326.0,
+    "measuredStd": 16.08,
+    "measuredUnit": "micrometer",
+    "model": null,
+    "modelId": null,
+    "quantity": "Al scan maximum melt-pool width",
+    "reason": "the application's locked alloy set (Ti-6Al-4V, 316L, AlSi10Mg, IN718; IN625 screening) has no aluminium SRM 1241c; AlSi10Mg is a different alloy and is not substituted",
+    "status": "unavailable"
+   },
+   {
+    "difference": null,
+    "id": "al-spot-melt-pool-width-vs-time",
+    "material": "aluminium (NIST SRM 1241c)",
+    "measured": 515.274,
+    "measuredUnit": "micrometer",
+    "model": null,
+    "modelId": null,
+    "quantity": "Al spot melt-pool width vs time (TDW; value shown is the series maximum)",
+    "reason": "the application's locked alloy set (Ti-6Al-4V, 316L, AlSi10Mg, IN718; IN625 screening) has no aluminium SRM 1241c; AlSi10Mg is a different alloy and is not substituted; additionally a stationary source is not representable by the moving-source kernels",
+    "status": "unavailable"
+   }
+  ]
+ },
+ "dataset": {
+  "absentFiles": {
+   "Absorption_Uncertainty_Analysis.pdf": {
+    "officialSha256": "98ead678e3a8f6696650302dbf29660f2a886a62ba677453dd130c222755e28d",
+    "reason": "file not acquired (NIST download unavailable; no archived copy with the official SHA-256)"
+   },
+   "Scan on Bare Metal_Calibrated Absorption Data.csv": {
+    "officialSha256": "1c64f24e84c274d9f9ae27fb09e79b86cda2fda5bee4b67da3567c8a59ca499d",
+    "reason": "file not acquired (NIST download unavailable; no archived copy with the official SHA-256)"
+   }
+  },
+  "citation": "Simonds, B. J., Tanner, J., Artusio-Glimpse, A., Williams, P. A., Parab, N., Zhao, C., & Sun, T. (2022). Asynchronous AM Bench 2022 Challenge Data: Real-time, simultaneous absorptance and high-speed Xray imaging (v1.3.2). National Institute of Standards and Technology. https://doi.org/10.18434/mds2-2525 (constructed from the NERDm record fields)",
+  "doi": "10.18434/mds2-2525",
+  "files": {
+   "2525_README_v200.txt": {
+    "bytes": 21907,
+    "sha256": "936f4c166b448f4b5a27d1e2b2465f9c2db1be073a7bffd54d45eb4259120a65"
+   },
+   "Al_Scan_AA_MWD_ASR_Results.csv": {
+    "bytes": 364,
+    "sha256": "d3732fcddaaee046105aa90eb82547ffd0fe61edb425fc1e8f019c6f73ed0b4d"
+   },
+   "Al_Scan_TDA_v2_Results.csv": {
+    "bytes": 2493685,
+    "sha256": "3af3478b463b867ed3c78ef6e60c75f9d613607b236933f3f9df08113884a6a8"
+   },
+   "Al_Spot_AA_ASR_Results.csv": {
+    "bytes": 242,
+    "sha256": "4429f08ff3f571ab871fdbaf072e0c67aaef346259a3f2ca8744927ad6419ffb"
+   },
+   "Al_Spot_TDA_Results.csv": {
+    "bytes": 2292050,
+    "sha256": "3f0b6812f98535f5ffbb0e2fed31f084ad9a7f9cc393c04a43ed57f0bb14bf69"
+   },
+   "Al_Spot_TDW_Results.csv": {
+    "bytes": 2169,
+    "sha256": "06b280222eab5f82eb9dcfb0689f20a5011c16e115548cd94ce120e5a97b4f5c"
+   },
+   "Spot on Bare Metal_Calibrated Absorption Data.csv": {
+    "bytes": 6497288,
+    "sha256": "0e96b220852d762fde846e406cc44c6fc874cef22e7e41db7f4025dbcc9ca274"
+   }
+  },
+  "id": "nist-mds2-2525",
+  "license": "https://www.nist.gov/open/license",
+  "title": "Asynchronous AM Bench 2022 Challenge Data: Real-time, simultaneous absorptance and high-speed Xray imaging",
+  "version": "1.3.2"
+ },
+ "experiment": {
+  "atmosphere": "argon",
+  "beamRadius1overE2_um": 61.25,
+  "coupon": "~300 um thin Ti-6Al-4V coupon (not a semi-infinite plate)",
+  "detector": "integrating sphere, 40 ns resolution",
+  "incidenceAngle_deg": 7.0,
+  "material": "Ti-6Al-4V (NIST SRM 654b)",
+  "scan_mm_s": 700.0,
+  "source": "NIST mds2-2525 README v2.0.0 and NERDm record",
+  "spotDiameter1overE2_um": 122.5,
+  "spotDiameterUncertainty_um": 3.0,
+  "stationaryPulse_ms": 2.0,
+  "surface": "polished bare metal (no powder)",
+  "wavelengthNm": 1070.0
+ },
+ "generatedAt": "2026-10-14",
+ "honesty": "comparison, not validation; NIST values are measured for the NIST experiment only (polished bare Ti-6Al-4V, ~300 um coupon, argon); application outputs are screening and unvalidated; the ray-tracing sweep over prescribed cavity depth is a sensitivity bracket, not a calibration; nothing was tuned to the data; where the application cannot represent the experiment the record says unavailable and no number is forced",
+ "implementationFingerprint": "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348",
+ "labels": {
+  "appOutputs": "screening, unvalidated",
+  "evidenceKindMeasuredFor": "NIST experiment only",
+  "experimentalValidation": false,
+  "modelAcceptance": false,
+  "nistResidual": null,
+  "opticalOperatorMatched": false
+ },
+ "limits": [
+  "The NIST coupon is ~300 um thin; the application's conduction kernels and the flat-plate absorptivity assume a semi-infinite plate, so late-pulse heat accumulation and absorptance differ in kind.",
+  "The NIST source is stationary for 2 ms; the thermal-solver absorptivity logic is moving-source only, so the stationary pulse has no thermal-solver counterpart (not run at a fake speed).",
+  "The ray tracer uses a prescribed Gaussian cavity with a fixed depth per run, not a solved keyhole; the real cavity is dynamic and not Gaussian, so a bracketing depth is not a prediction.",
+  "The ray tracer's angular absorption law is empirical (A = a(1 + 0.5(1 - cos theta))), not complex-index Fresnel optics, and ray power still in flight at the 16-bounce limit is reported as truncated, never as absorbed or escaped.",
+  "The experimental 7 deg incidence is not modelled (rays at normal incidence); the flat-plate absorptivity is a constant with no angle or temperature dependence.",
+  "NIST absorptance was measured on polished bare metal in argon, not on powder; no powder-bed claim is made.",
+  "Aluminium (SRM 1241c) before/during-keyhole averages carry three-run standard deviations only and are not comparable with any application alloy.",
+  "Pre-keyhole (0.05-0.80 ms) and keyhole (0.90-2.00 ms) windows are local analysis windows chosen in this work from the first laser-on sample, not NIST-published phase boundaries; the sub-microsecond leading-edge spike is excluded by starting the first window at 0.05 ms.",
+  "The Ti-6Al-4V scan CSV and the NIST uncertainty-analysis PDF were not acquired; the scan comparison and the NIST uncertainty budget are unavailable.",
+  "The measured uncertainty is the per-sample column median (W) only; no replicate Ti-6Al-4V runs are in the pinned files, so the window std is a within-trace sample spread, not a run-to-run uncertainty.",
+  "Sampling standard errors of the ray tracer exclude geometry, bounce truncation and model error.",
+  "No model input was tuned to the data; any disagreement above is the application's, reported as found."
+ ],
+ "loaderUsed": "lpbf_nist_mds2_2525_absorptance",
+ "measured": {
+  "definition": "RelativeAbsorption (%) is NIST column 6 ('Percent absorption'; README: input minus backscattered power, divided by input power, x 100) per 40 ns sample, used as published and not recomputed here; window means are plain means of that column inside local windows",
+  "evidenceKind": "measured (NIST experiment only)",
+  "file": "Spot on Bare Metal_Calibrated Absorption Data.csv",
+  "material": "Ti-6Al-4V (NIST SRM 654b)",
+  "summary": {
+   "absorbed_energy_J": 0.100839,
+   "absorbed_uncertainty_median_W": 1.15838,
+   "bins_50us": [
+    [
+     0.0,
+     31.0137,
+     1250
+    ],
+    [
+     0.05,
+     32.9714,
+     1250
+    ],
+    [
+     0.1,
+     32.9428,
+     1251
+    ],
+    [
+     0.15,
+     32.7559,
+     1249
+    ],
+    [
+     0.2,
+     33.2393,
+     1251
+    ],
+    [
+     0.25,
+     32.8045,
+     1250
+    ],
+    [
+     0.3,
+     32.7804,
+     1250
+    ],
+    [
+     0.35,
+     32.5874,
+     1249
+    ],
+    [
+     0.4,
+     32.2576,
+     1251
+    ],
+    [
+     0.45,
+     32.2089,
+     1250
+    ],
+    [
+     0.5,
+     31.9281,
+     1249
+    ],
+    [
+     0.55,
+     31.7002,
+     1251
+    ],
+    [
+     0.6,
+     31.7777,
+     1250
+    ],
+    [
+     0.65,
+     32.004,
+     1250
+    ],
+    [
+     0.7,
+     32.2986,
+     1250
+    ],
+    [
+     0.75,
+     32.811,
+     1249
+    ],
+    [
+     0.8,
+     33.3107,
+     1251
+    ],
+    [
+     0.85,
+     48.251,
+     1250
+    ],
+    [
+     0.9,
+     54.954,
+     1250
+    ],
+    [
+     0.95,
+     57.1405,
+     1250
+    ],
+    [
+     1.0,
+     56.5624,
+     1250
+    ],
+    [
+     1.05,
+     56.1558,
+     1249
+    ],
+    [
+     1.1,
+     57.3596,
+     1251
+    ],
+    [
+     1.15,
+     58.4658,
+     1250
+    ],
+    [
+     1.2,
+     59.1604,
+     1250
+    ],
+    [
+     1.25,
+     62.5412,
+     1250
+    ],
+    [
+     1.3,
+     62.4404,
+     1249
+    ],
+    [
+     1.35,
+     60.3192,
+     1251
+    ],
+    [
+     1.4,
+     61.5818,
+     1250
+    ],
+    [
+     1.45,
+     65.4938,
+     1250
+    ],
+    [
+     1.5,
+     64.189,
+     1250
+    ],
+    [
+     1.55,
+     64.3927,
+     1249
+    ],
+    [
+     1.6,
+     63.8692,
+     1251
+    ],
+    [
+     1.65,
+     65.4244,
+     1250
+    ],
+    [
+     1.7,
+     64.6191,
+     1250
+    ],
+    [
+     1.75,
+     64.6605,
+     1250
+    ],
+    [
+     1.8,
+     66.2955,
+     1250
+    ],
+    [
+     1.85,
+     65.8534,
+     1250
+    ],
+    [
+     1.9,
+     64.9855,
+     1250
+    ],
+    [
+     1.95,
+     67.7163,
+     1250
+    ],
+    [
+     2.0,
+     52.7033,
+     219
+    ]
+   ],
+   "energy_coupling_fraction": 0.494,
+   "input_energy_J": 0.204127,
+   "input_power_median_W": 101.869,
+   "input_power_p10_W": 100.501,
+   "input_power_p90_W": 103.105,
+   "keyhole_mean_pct": 62.0075,
+   "keyhole_n": 27500,
+   "keyhole_std_pct": 7.09085,
+   "keyhole_window_ms": [
+    0.9,
+    2.0
+   ],
+   "laser_on_end_s": 0.00200876,
+   "laser_on_start_s": 0.0,
+   "laser_on_threshold_W": 50.0,
+   "pre_keyhole_mean_pct": 32.4712,
+   "pre_keyhole_n": 18750,
+   "pre_keyhole_std_pct": 1.4509,
+   "pre_keyhole_window_ms": [
+    0.05,
+    0.8
+   ],
+   "transition_rule": "first 50 us bin whose mean relative absorption exceeds the pre-keyhole mean by 10 percentage points",
+   "transition_time_ms": 0.85,
+   "window_definition": "Windows are measured from the first sample with input power above the laser-on threshold. They are local analysis windows chosen in this module, not NIST-published phase boundaries; NIST publishes before/during-keyhole averages only for the aluminium challenge tables."
+  },
+  "uncertainty": {
+   "column": "AbsAbsorptionUncertainty (W), NIST column 5: absolute expanded uncertainty of the absorbed power per the README ('--' before laser on)",
+   "median_W": 1.15838,
+   "median_as_pp_of_median_input": 1.13713,
+   "note": "the NIST uncertainty-analysis PDF is not acquired; this is the per-sample column median only"
+  }
+ },
+ "measuredOnly": {
+  "material": "aluminium (NIST SRM 1241c)",
+  "note": "aluminium NIST SRM 1241c; not Ti-6Al-4V and not any alloy of the application; retrievable here only, never compared with a model",
+  "scanAverageAbsorptionAndMeltPool": {
+   "material": "aluminium (NIST SRM 1241c)",
+   "rows": [
+    {
+     "description": "Average Absorption before keyhole",
+     "std_dev": 0.08,
+     "std_dev_unit": "%",
+     "unit": "%",
+     "value": 23.8
+    },
+    {
+     "description": "Average Absorption during keyhole",
+     "std_dev": 1.5,
+     "std_dev_unit": "%",
+     "unit": "%",
+     "value": 43.3
+    },
+    {
+     "description": "Standard Deviation of Absorption during keyhole",
+     "std_dev": 1.14,
+     "std_dev_unit": "%",
+     "unit": "%",
+     "value": 7.12
+    },
+    {
+     "description": "Melt Pool Depth - Maximum",
+     "std_dev": 0.4,
+     "std_dev_unit": "micrometer",
+     "unit": "micrometer",
+     "value": 88.8
+    },
+    {
+     "description": "Melt Pool Width - Maximum",
+     "std_dev": 16.08,
+     "std_dev_unit": "micrometer",
+     "unit": "micrometer",
+     "value": 326.0
+    },
+    {
+     "description": "Solidification Rate",
+     "std_dev": 0.019,
+     "std_dev_unit": "m/s",
+     "unit": "m/s",
+     "value": 0.191
+    }
+   ]
+  },
+  "scanTdaLocalSummary": {
+   "before_keyhole_mean_pct": 23.9462,
+   "before_keyhole_n": 12500,
+   "before_keyhole_std_pct": 0.629621,
+   "before_keyhole_window_ms": [
+    0.05,
+    0.55
+   ],
+   "datafile_name": "190613_Al2c_061_CW85",
+   "during_keyhole_mean_pct": 42.124,
+   "during_keyhole_n": 32264,
+   "during_keyhole_std_pct": 6.99319,
+   "during_keyhole_window_ms": [
+    0.7,
+    2.0
+   ],
+   "input_power_median_W": 472.624,
+   "laser_on_end_s": 0.00199052,
+   "laser_on_start_s": -4e-08,
+   "material": "aluminium (NIST SRM 1241c)",
+   "row_count": 58131,
+   "transition_time_ms": 0.6,
+   "window_definition": "Windows are measured from the first sample with input power above the laser-on threshold. They are local analysis windows chosen in this module, not NIST-published phase boundaries; NIST publishes before/during-keyhole averages only for the aluminium challenge tables."
+  },
+  "spotAverageAbsorption": {
+   "material": "aluminium (NIST SRM 1241c)",
+   "rows": [
+    {
+     "description": "Average Absorption before keyhole",
+     "std_dev": 0.3,
+     "std_dev_unit": "%",
+     "unit": "%",
+     "value": 23.9
+    },
+    {
+     "description": "Average Absorption during keyhole",
+     "std_dev": 3.9,
+     "std_dev_unit": "%",
+     "unit": "%",
+     "value": 64.1
+    },
+    {
+     "description": "Standard Deviation of Absorption during keyhole",
+     "std_dev": 0.8,
+     "std_dev_unit": "%",
+     "unit": "%",
+     "value": 10.21
+    },
+    {
+     "description": "Solidification Rate",
+     "std_dev": 0.03,
+     "std_dev_unit": "m/s",
+     "unit": "m/s",
+     "value": 0.46
+    }
+   ]
+  },
+  "spotMeltPoolWidthSeries": {
+   "material": "aluminium (NIST SRM 1241c)",
+   "max_width_um": 515.274,
+   "rows": 99
+  },
+  "spotTdaLocalSummary": {
+   "before_keyhole_mean_pct": 24.3055,
+   "before_keyhole_n": 2501,
+   "before_keyhole_std_pct": 0.819403,
+   "before_keyhole_window_ms": [
+    0.05,
+    0.15
+   ],
+   "datafile_name": "190613_Al2g_065_CW90",
+   "during_keyhole_mean_pct": 69.4207,
+   "during_keyhole_n": 42303,
+   "during_keyhole_std_pct": 9.39995,
+   "during_keyhole_window_ms": [
+    0.3,
+    2.0
+   ],
+   "input_power_median_W": 501.028,
+   "laser_on_end_s": 0.0019922,
+   "laser_on_start_s": 8e-08,
+   "material": "aluminium (NIST SRM 1241c)",
+   "row_count": 51750,
+   "transition_time_ms": 0.2,
+   "window_definition": "Windows are measured from the first sample with input power above the laser-on threshold. They are local analysis windows chosen in this module, not NIST-published phase boundaries; NIST publishes before/during-keyhole averages only for the aluminium challenge tables."
+  }
+ },
+ "models": {
+  "flatPlateAbsorptivity": {
+   "authority": {
+    "absorptivityOfRecord": 0.32,
+    "allEqual": true,
+    "fourAlloyMaterials": 0.32,
+    "materialRegistry": 0.32,
+    "origin": "lpbf_thermal_solver.thermal_props('Ti-6Al-4V')['absorptivity_IR'] (four_alloy_materials)",
+    "secondaryInlineTable": {
+     "containsTi64": false,
+     "entries": {
+      "CoCrMo": 0.4,
+      "Hastelloy X": 0.39,
+      "Inconel 625": 0.34,
+      "Pure Copper (Cu-OF)": 0.08,
+      "Scalmalloy (Al-Mg-Sc-Zr)": 0.22
+     },
+     "note": "the secondary inline table has no Ti-6Al-4V entry, so no legacy value competes with the resolved one"
+    },
+    "solverRole": "flat-plate eta_base_flat of calculate_meltpool_physics: the solver's default absorptivity on every machine since the 2026-10-06 tier-2 bump (powder_bed_raytracer's effective absorptivity is used only with an explicit absorption_model='powder-raytrace')"
+   },
+   "circularity": "the application's Ti-6Al-4V absorptivity of record (0.32 since P7b, 2026-10-14) was sourced in part from this dataset (NIST mds2-2525 pre-keyhole mean 32.5 percent, Simonds 2021 Sec. 3.2) together with Ye 2019 Table 1 Am 0.26; the flat-plate row and the ray tracer's base_absorption therefore report the consistency of a sourced input with its own source, not an independent comparison and never a validation",
+   "comparedWith": {
+    "measuredMean_pct": 32.4712,
+    "measuredStd_pct": 1.4509,
+    "window_ms": [
+     0.05,
+     0.8
+    ]
+   },
+   "difference_pp": -0.471187,
+   "difference_relative_pct": -1.45109,
+   "quantity": "Ti-6Al-4V flat-plate absorptivity_IR",
+   "value_fraction": 0.32,
+   "value_pct": 32.0
+  },
+  "keyholeRayTracing": {
+   "bracket": {
+    "bracketingDepthIntervals_um": [
+     [
+      100.0,
+      150.0
+     ]
+    ],
+    "measured_pct": 62.0075,
+    "note": "information only: the real cavity is neither Gaussian nor static, so a bracketing depth is not a prediction and not a calibration",
+    "sweepRange_pct": [
+     32.0,
+     91.602
+    ],
+    "verdict": "sweep brackets the measured keyhole-phase mean between prescribed depths [[100.0, 150.0]]"
+   },
+   "device": "cpu",
+   "directPrediction": {
+    "reason": "the application does not solve the cavity depth (no free surface) and the Ti-6Al-4V X-ray cavity depth is not among the pinned files, so there is no depth to feed the ray tracer",
+    "status": "unavailable"
+   },
+   "flatSelfConsistency": {
+    "base_absorption_pct": 32.0,
+    "depth0_absorbed_pct": 32.0,
+    "difference_pp": 2.31242e-07,
+    "note": "normal incidence; empirical law A = a(1 + 0.5(1 - cos)) reduces to a at cos = 1; the 7 deg incidence is not represented"
+   },
+   "limitations": [
+    "Prescribed Gaussian cavity, not a solved free surface",
+    "Empirical angular absorption, not Fresnel optics",
+    "Finite mesh aperture; no material or experimental qualification",
+    "Bounce-limited power remains unresolved"
+   ],
+   "model_id": "prescribed-cavity-ray-optics-v2",
+   "params": {
+    "base_absorption": 0.32,
+    "beam_radius_um": 61.25,
+    "cavityShape": "prescribed Gaussian, sigma = beam radius / 1.5, depth = sweep value",
+    "dx_m": 4e-06,
+    "dy_m": 4e-06,
+    "incidence": "normal (the 7 deg experimental incidence is not represented)",
+    "max_bounces": 16,
+    "meshExtent_in_beam_radii": 6.20408,
+    "meshExtent_um": 380.0,
+    "num_rays": 20000,
+    "nx": 96,
+    "ny": 96,
+    "power_W": 101.869,
+    "seed": 0
+   },
+   "status": "success",
+   "sweep": [
+    {
+     "absorbed_fraction": 0.32,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 2,
+      "mean_path_segments": 2,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.68,
+     "keyhole_depth_um": 0.0,
+     "standard_error": 0.0,
+     "total_absorbed_W": 32.598,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.326927,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 2,
+      "mean_path_segments": 2,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.673073,
+     "keyhole_depth_um": 25.0,
+     "standard_error": 2.05532e-05,
+     "total_absorbed_W": 33.3036,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.342759,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 2,
+      "mean_path_segments": 2,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.657241,
+     "keyhole_depth_um": 50.0,
+     "standard_error": 6.21641e-05,
+     "total_absorbed_W": 34.9164,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.573216,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 3,
+      "mean_path_segments": 2.917,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.426784,
+     "keyhole_depth_um": 100.0,
+     "standard_error": 0.000507113,
+     "total_absorbed_W": 58.3928,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.67437,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 4,
+      "mean_path_segments": 3.475,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.32563,
+     "keyhole_depth_um": 150.0,
+     "standard_error": 0.000677735,
+     "total_absorbed_W": 68.6972,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.738606,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 5,
+      "mean_path_segments": 3.941,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.261394,
+     "keyhole_depth_um": 200.0,
+     "standard_error": 0.000710573,
+     "total_absorbed_W": 75.2408,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.825289,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 7,
+      "mean_path_segments": 4.761,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.174711,
+     "keyhole_depth_um": 300.0,
+     "standard_error": 0.000604773,
+     "total_absorbed_W": 84.0711,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.86983,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 10,
+      "mean_path_segments": 5.476,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.13017,
+     "keyhole_depth_um": 400.0,
+     "standard_error": 0.0006054,
+     "total_absorbed_W": 88.6084,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.91602,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 14,
+      "mean_path_segments": 6.743,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.0839799,
+     "keyhole_depth_um": 600.0,
+     "standard_error": 0.000548941,
+     "total_absorbed_W": 93.3137,
+     "truncated_fraction": 4.0084e-08
+    }
+   ],
+   "sweepKind": "SENSITIVITY (not calibration)",
+   "warp_version": "1.17.0"
+  },
+  "thermalSolverEtaEff": {
+   "ti64Scan": {
+    "reason": "Ti-6Al-4V scan CSV Scan on Bare Metal_Calibrated Absorption Data.csv: file not acquired (NIST download unavailable; no archived copy with the official SHA-256)",
+    "status": "unavailable"
+   },
+   "ti64Spot": {
+    "reason": "stationary 2 ms pulse is not representable by the moving-source kernels of calculate_meltpool_physics (scan speed must be > 0; a near-zero speed is not a valid substitute and was not run)",
+    "status": "unavailable"
+   }
+  }
+ },
+ "quick": false,
+ "schema": "lpbf-nist-2525-absorptance-comparison-1"
+}

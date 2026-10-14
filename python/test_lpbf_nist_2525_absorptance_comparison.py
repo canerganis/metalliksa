@@ -166,8 +166,11 @@ class ComparisonToolTest(unittest.TestCase):
         # Current record: fingerprint c61ab6a8 (P1 sourced-physics bump, 2026-10-11; the ray tracer and the flat
         # absorptivity do not move, the eta_eff row is renamed "effective absorptivity (flat after P1)"). The earlier
         # records are history. This stem was stale (red) on main since the in625-regime bump.
-        stem = "LPBF_NIST_2525_ABSORPTANCE_COMPARISON_2026-10-11_p1-sourced"
-        doc = tool.build_document(False, "2026-10-11")
+        # Current record: fingerprint 36cd9d4a (P7b sourced-constants bump, 2026-10-14): the Ti-6Al-4V absorptivity of
+        # record is the authority 0.32 (was 0.35), so the flat-plate row and the ray tracer base_absorption move; the
+        # record states that this is a consistency of a sourced input with its own source, never a validation.
+        stem = "LPBF_NIST_2525_ABSORPTANCE_COMPARISON_2026-10-14_p7b-sourced-constants"
+        doc = tool.build_document(False, "2026-10-14")
         fresh_json = json.dumps(doc, sort_keys=True, indent=1, ensure_ascii=False) + "\n"
         self.assertEqual((docs / f"{stem}.json").read_bytes().replace(b"\r\n", b"\n"),
                          fresh_json.encode("utf-8"))

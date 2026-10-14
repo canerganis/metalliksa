@@ -165,10 +165,10 @@ class ComparisonToolTest(unittest.TestCase):
         """The committed docs record equals a fresh full run (needs the fingerprint test; about 15 s)."""
         # The current record (fingerprint cda80143, keyhole-regime bump; numbers equal the balling-screen record,
         # only the fingerprint differs); the earlier records are kept as history.
-        # Current record: fingerprint 0e1599b4 (P7a rules-and-nulls bump, 2026-10-11; fingerprint only, every column
-        # equals the P6 record because P7a moves no geometry, length or dwell). The earlier records are kept as history.
-        committed = PYTHON_DIR.parent / "docs" / "LPBF_NIST_2716_THERMOGRAPHY_COMPARISON_2026-10-11_p7a-rules-and-nulls.json"
-        doc = tool.build_document(False, "2026-10-11")
+        # Current record: fingerprint 36cd9d4a (P7b sourced-constants bump, 2026-10-14: the IN625 authority 0.34 and the
+        # melting-point k / cp move every kernel liquidus length and the rank columns). The earlier records are history.
+        committed = PYTHON_DIR.parent / "docs" / "LPBF_NIST_2716_THERMOGRAPHY_COMPARISON_2026-10-14_p7b-sourced-constants.json"
+        doc = tool.build_document(False, "2026-10-14")
         self.assertEqual(tool.serialize(doc), committed.read_text(encoding="utf-8"))
         self.assertEqual(tool.render_markdown(doc), committed.with_suffix(".md").read_text(encoding="utf-8"))
         self.assertEqual(doc["kernels"], list(tool.KERNELS))
