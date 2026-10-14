@@ -250,8 +250,10 @@ def check_build_job_kinetics(ti):
     assert fast["thermal"]["solidificationKinetics"]["coolingRate_K_s"] > 2000.0
     assert fast["kinetics"]["status"] == "unavailable" and fast["kinetics"]["reason"] != DEGENERATE_FRONT_REASON
     assert fast["kinetics"]["buildCoolingRateCctRow"] is None
-    # A non-degenerate IN718 build: unavailable because the kinetics model is steel-only.
-    slow = run_job({"alloyId": "in718", "laserPower_W": 220, "scanSpeed_mm_s": 900, "beamDiameter_um": 80,
+    # A non-degenerate IN718 build: unavailable because the kinetics model is steel-only. P7b (2026-10-14): at an 80 um
+    # beam this point (dH/hs 24.55) sits on the Fabbro keyhole leg where P6 serves no G, R or cooling rate, so the
+    # case uses a 100 um beam (dH/hs 17.57, conduction field resolved, cooling about 3.2e6 K/s).
+    slow = run_job({"alloyId": "in718", "laserPower_W": 220, "scanSpeed_mm_s": 900, "beamDiameter_um": 100,
                     "layerThickness_um": 30, "hatchSpacing_um": 100, "bypassCache": True})
     assert slow["thermal"]["solidificationKinetics"]["coolingRate_K_s"] > 2000.0
     assert slow["kinetics"]["status"] == "unavailable"
@@ -311,7 +313,8 @@ def check_build_job_microstructure(job):
     assert micro["G_K_m"] == kin["thermalGradient_G_K_m"]
     # R is the more precise R_mm_s / 1e3 when present (R_m_s is rounded to 3 decimals).
     assert micro["R_m_s"] == kin["solidificationRate_R_mm_s"] / 1.0e3
-    assert abs(micro["R_m_s"] - kin["solidificationRate_R_m_s"]) <= 5.0e-4
+    # P7b (2026-10-14): R_mm_s is exactly 194.5 here, a rounding half (0.1945 vs 0.194), so the bound carries an ulp.
+    assert abs(micro["R_m_s"] - kin["solidificationRate_R_m_s"]) <= 5.0e-4 + 1.0e-12
     # The regime is carried so the panel can say when the G/R field is outside its regime (conduction here).
     assert micro["regime"] == job["thermal"]["meltPoolGeometry"]["regime"]
     assert micro["regime"].startswith("Conduction"), micro["regime"]
@@ -574,14 +577,16 @@ def check_extent_status_consumers():
     assert cv["verdictBasis"] == "sourced-criteria-only"
     assert cv["geometryResolved"] is True and cv["verdictReason"] is None
     assert cv["unavailableGates"] == ["recoater", "distortion"] and cv["geometryIndependentFailGates"] == []
+    # P7b (2026-10-14): the Eagar-Tsai L/W of this case is 3.6 (melting-point k / cp shorten the pool), below the
+    # Moderate edge 3.85, so the balling screen is Stable and the gate passes (it was Moderate / advisory at ~5.1).
     assert {g["id"]: g["status"] for g in cv["gates"]} == {
         "lof_tang": "pass", "lof_wh": "pass", "lof_dt": "pass", "keyhole": "warn",
-        "balling": "advisory", "literature_pv": "pass", "recoater": "not-evaluated", "distortion": "not-evaluated",
+        "balling": "pass", "literature_pv": "pass", "recoater": "not-evaluated", "distortion": "not-evaluated",
         "downskin": "pass"}, cv["gates"]
     assert cv["dominantGate"] == "keyhole"
     assert cv["blockingGates"] == [], (dh, cv["blockingGates"])
-    assert cv["advisoryGates"] == ["balling"]
-    assert comp["thermal"]["defectDiagnostics"]["ballingScreen"]["band"] == "moderate"
+    assert cv["advisoryGates"] == []
+    assert comp["thermal"]["defectDiagnostics"]["ballingScreen"]["band"] == "stable"
     assert all("reason" not in g and g["measured"] is not None or g["id"] in ("downskin", "recoater", "distortion")
                for g in cv["gates"])
     assert any(a.startswith("Advisory: keyhole porosity legacy level") for a in cv["advisories"])
@@ -679,8 +684,9 @@ def main():
         "lpbf-build-job-p1-sourced-v21",
         "lpbf-build-job-p1-sourced-v22",
         "lpbf-build-job-p6-containment-v23",
+        "lpbf-build-job-p7a-rules-and-nulls-v24",
     ), BUILD_JOB_SOLVER_REVISION
-    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-p7a-rules-and-nulls-v24"
+    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-p7b-sourced-constants-v25"  # P7b (2026-10-14)
     assert ti["processSeed"] == 42
     assert ti["scanStrategy"]["id"] == "stripe"
     assert ti["uq"] is None  # lazy default
@@ -809,9 +815,23 @@ def main():
         assert changed["materialPropertySha256"] != a["materialPropertySha256"]
         assert changed["buildJobIdentity"]["sha256"] != a["buildJobIdentity"]["sha256"]
         assert changed["materialPropertySnapshot"]["thermal"]["thermal_conductivity_W_mK"] == old_conductivity + 1.0
-        assert changed["thermal"]["processParameters"]["effectiveConductivity_W_mK"] != a["thermal"]["processParameters"]["effectiveConductivity_W_mK"]
+        # P7b (2026-10-14): IN718 serves the melting-point k (29.6, Mills 2002 b) in the conduction kernel, so a solid
+        # k change moves the identity but not the served kernel; the melting-point key moves it (next block).
+        assert changed["thermal"]["processParameters"]["effectiveConductivity_W_mK"] == a["thermal"]["processParameters"]["effectiveConductivity_W_mK"]
     finally:
         _THERMAL["in718"]["thermal_conductivity_W_mK"] = old_conductivity
+    old_melt_conductivity = _THERMAL["in718"]["thermal_conductivity_melt_W_mK"]
+    try:
+        _THERMAL["in718"]["thermal_conductivity_melt_W_mK"] = old_melt_conductivity + 1.0
+        melt_changed = run_job({"alloyId": "in718", "laserPower_W": 285,
+                                "scanSpeed_mm_s": 960, "beamDiameter_um": 80,
+                                "layerThickness_um": 40, "hatchSpacing_um": 110})
+        assert melt_changed["cache"]["hit"] is False
+        assert melt_changed["materialPropertySha256"] != a["materialPropertySha256"]
+        assert melt_changed["thermal"]["processParameters"]["effectiveConductivity_W_mK"] == round(old_melt_conductivity + 1.0, 3)
+        assert melt_changed["thermal"]["processParameters"]["effectiveConductivity_W_mK"] != a["thermal"]["processParameters"]["effectiveConductivity_W_mK"]
+    finally:
+        _THERMAL["in718"]["thermal_conductivity_melt_W_mK"] = old_melt_conductivity
 
     # Source-only fields are part of the shared authority revision even when the
     # build-job effective-property projection does not consume them.
@@ -1055,7 +1075,11 @@ def main():
     else:
         assert lof["verdict"]["verdict"] == "inconclusive", lof["verdict"]
         assert "lof_tang" in lof["verdict"]["unavailableGates"]
-    assert lof["verdict"]["suggestedPatch"] is not None
+    # P7b (2026-10-14): with the smaller IN718 pools no point of the 5x5 search grid passes Tang at a 110 um hatch and
+    # 40 um layer (a grid property, as the P7a reasons file states for 100 / 40), so no patch is suggested and the
+    # note says why; before P7b the grid still held a printable point.
+    assert lof["verdict"]["suggestedPatch"] is None, lof["verdict"]["suggestedPatch"]
+    assert lof["verdict"]["suggestedPatchNote"].startswith("No parameter patch: no point of a 5x5 power-speed grid"), lof["verdict"]["suggestedPatchNote"]
 
     kh = run_job(
         {
