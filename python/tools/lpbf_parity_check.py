@@ -1572,7 +1572,8 @@ IDENTITY_PATTERNS = ("*materialRevisionSha256*", "*materialSha256*", "*inputSha2
 # every numeric observation of the case stays protected (fixture.strippedResultEqualExceptMaterialIdentity carries the
 # replay claim). They may drift only when named exactly, like every identity observation. The replay-claim observation
 # fixture.strippedResultEqualExceptMaterialIdentity itself is recorded True and falls under the fixture.* never-drift
-# rule (P7b gate ruling): it is the G2 replay claim, not an identity flag.
+# rule (P7b gate ruling): it is the G2 replay claim, not an identity flag. Its first appearance against a golden that
+# never recorded it is allowed by an entry naming it exactly (evaluate_drift), as any new observation is.
 REFERENCE_IDENTITY_FLAGS = ("fixture.strippedResultEqual", "fixture.materialSha256Equal")
 # Reference numerics: a change in a REFERENCE_CASES case always fails, whatever the allowlist.
 REFERENCE_NUMERICS_PATTERNS = (
@@ -1766,6 +1767,23 @@ def evaluate_drift(case: Case, outcome: Dict[str, Any], entries: List[DriftEntry
     problems = list(outcome["implementationProblems"])
     allowed: List[str] = []
     for key in diff_keys(golden["observations"], outcome["observations"]):
+        if key not in golden["observations"]:
+            # A first appearance (the golden never recorded this key) is not a drift of a recorded value. An
+            # ordinary key is allowed by any matching entry (a new artifact frame under a glob); a key of a
+            # protected class (reference numerics, identity) is allowed only by an entry naming it exactly, and an
+            # honesty key never (P7b gate: the G2 replay claim fixture.strippedResultEqualExceptMaterialIdentity is
+            # new on this tree and protected by fixture.* from then on).
+            reason = _protected_reason(case.id, key, mine)
+            if reason is not None and reason.startswith("honesty"):
+                problems.append(f"new observation {key}: {reason}")
+            elif reason is not None and not any(entry.pattern == key for entry in mine):
+                problems.append(f"new observation {key}: allowed only by an entry naming this exact key")
+            elif not any(entry.matches(key) for entry in mine):
+                problems.append(f"new observation {key}: not named by --expect-drift "
+                                f"({', '.join(entry.text for entry in mine)})")
+            else:
+                allowed.append(key)
+            continue
         reason = _protected_reason(case.id, key, mine)
         if reason is not None:
             problems.append(f"changed {key}: {reason}")

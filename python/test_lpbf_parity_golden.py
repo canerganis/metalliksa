@@ -565,6 +565,33 @@ class ParityHarnessTests(unittest.TestCase):
             case, self._synthetic_outcome({"result.key.settings": "0" * 64}, {"result.key.settings": "1" * 64}), entries)
         self.assertEqual((result["status"], result["problems"]), ("DRIFT", []))
 
+    def test_expect_drift_allows_a_first_appearance_only_by_its_exact_key(self):
+        # P7b gate: a key the golden never recorded is not a drift of a recorded value. It is allowed only by an entry
+        # naming it exactly, even in a never-drift class of a reference case (the G2 replay claim under fixture.*);
+        # once recorded it is a reference numeric and never drifts.
+        case = parity.CASE_BY_ID["g2_bare_plate_100w_corridor"]
+        key = "fixture.strippedResultEqualExceptMaterialIdentity"
+        outcome = self._synthetic_outcome({}, {key: True})
+        exact = parity.evaluate_drift(case, outcome, parity.parse_expect_drift([f"{case.id}:{key}"]))
+        self.assertEqual((exact["status"], exact["problems"]), ("DRIFT", []))
+        other = parity.evaluate_drift(case, outcome, parity.parse_expect_drift([f"{case.id}:fixture.strippedResultEqual"]))
+        self.assertEqual(other["status"], "FAIL")
+        self.assertIn(f"new observation {key}: allowed only by an entry naming this exact key", other["problems"])
+        recorded = parity.evaluate_drift(case, self._synthetic_outcome({key: True}, {key: False}),
+                                         parity.parse_expect_drift([f"{case.id}:{key}"]))
+        self.assertEqual(recorded["status"], "FAIL")
+        self.assertIn(f"changed {key}: reference-case numerics never drift under --expect-drift", recorded["problems"])
+        # An ordinary new key of a non-reference case is allowed by a glob (a new artifact frame); a new honesty key never.
+        island = parity.CASE_BY_ID["g3_powder_island"]
+        frame = parity.evaluate_drift(island, self._synthetic_outcome({}, {"artifact.field-frame-060.bin": "0" * 64}),
+                                      parity.parse_expect_drift(["g3_powder_island:artifact.field-frame-*.bin"]))
+        self.assertEqual((frame["status"], frame["problems"]), ("DRIFT", []))
+        honesty = parity.evaluate_drift(island, self._synthetic_outcome({}, {"result.productionReady": False}),
+                                        parity.parse_expect_drift(["g3_powder_island:result.productionReady"]))
+        self.assertEqual(honesty["status"], "FAIL")
+        self.assertIn("new observation result.productionReady: honesty observation never drifts under --expect-drift",
+                      honesty["problems"])
+
     def test_expect_drift_never_lets_an_honesty_observation_drift_in_any_case(self):
         names = ("validationStatus", "productionReady", "confidence", "effectiveMode")
         keys = [f"result.{name}" for name in names] + [f"result.key.{name}" for name in names]
