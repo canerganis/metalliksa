@@ -46,6 +46,15 @@ HONESTY_STATEMENT = (
 HEADER_MD = ("**Comparison of application absorptivity and prescribed-cavity ray tracing against NIST "
              "mds2-2525 measured laser absorptance; not experimental validation; application outputs "
              "are screening and unvalidated; nothing was tuned.**")
+# P7b (2026-10-14): the Ti-6Al-4V absorptivity of record (0.32) was sourced in part from this very dataset (the NIST
+# mds2-2525 pre-keyhole mean 32.5 percent and Simonds 2021, the paper behind it), so the flat-plate row and the Model 2
+# base_absorption are a consistency of a sourced input with its own source, not an independent comparison and never a
+# validation.
+CIRCULARITY_NOTE = ("the application's Ti-6Al-4V absorptivity of record (0.32 since P7b, 2026-10-14) was sourced in part "
+                    "from this dataset (NIST mds2-2525 pre-keyhole mean 32.5 percent, Simonds 2021 Sec. 3.2) together "
+                    "with Ye 2019 Table 1 Am 0.26; the flat-plate row and the ray tracer's base_absorption therefore "
+                    "report the consistency of a sourced input with its own source, not an independent comparison and "
+                    "never a validation")
 
 LABELS = {
     "experimentalValidation": False,
@@ -364,7 +373,8 @@ def build_document(quick: bool, generated_at: str, root: Path = SOURCE_DIR) -> D
             "authority": authority,
             "comparedWith": {"measuredMean_pct": pre, "measuredStd_pct": summary["pre_keyhole_std_pct"],
                              "window_ms": summary["pre_keyhole_window_ms"]},
-            "difference_pp": diff_pp, "difference_relative_pct": 100.0 * diff_pp / pre}
+            "difference_pp": diff_pp, "difference_relative_pct": 100.0 * diff_pp / pre,
+            "circularity": CIRCULARITY_NOTE}
 
     # model 2: keyhole ray tracing
     n_rays = RT_RAYS_QUICK if quick else RT_RAYS_FULL
@@ -402,7 +412,8 @@ def build_document(quick: bool, generated_at: str, root: Path = SOURCE_DIR) -> D
                  "differenceUnit": "percentage points (model - measured)",
                  "differenceRelative_pct": 100.0 * diff_pp / pre, "status": "compared",
                  "reason": "flat polished surface before any cavity: the like-for-like comparison; 7 deg incidence, "
-                           "thin coupon and temperature dependence not represented by the constant"})
+                           "thin coupon and temperature dependence not represented by the constant; "
+                           + CIRCULARITY_NOTE})
     if rt["status"] == "success":
         sw = rt["sweep"]
         rows.append({"id": "ti64-spot-keyhole-raytracer-sensitivity", "quantity": "keyhole-phase absorptance, prescribed-depth sweep",
@@ -499,7 +510,7 @@ def build_document(quick: bool, generated_at: str, root: Path = SOURCE_DIR) -> D
     doc = {
         "schema": SCHEMA, "generatedAt": generated_at, "quick": quick,
         "implementationFingerprint": read_fingerprint(),
-        "honesty": HONESTY_STATEMENT, "loaderUsed": loader_used,
+        "honesty": HONESTY_STATEMENT, "circularity": CIRCULARITY_NOTE, "loaderUsed": loader_used,
         "dataset": dataset, "experiment": EXPERIMENT, "measured": measured, "measuredOnly": measured_only,
         "models": {"flatPlateAbsorptivity": flat, "keyholeRayTracing": rt,
                    "thermalSolverEtaEff": {"ti64Spot": thermal_spot, "ti64Scan": thermal_scan}},
