@@ -498,7 +498,8 @@ class PropertyConvention(unittest.TestCase):
     def test_uq_scales(self):  # 8
         out = apply_uq_prop_scales(SYNTHETIC_MELT, {"_uq_k_scale": 1.1})
         self.assertAlmostEqual(out["thermal_conductivity_melt_W_mK"], 27.5, places=12)
-        self.assertAlmostEqual(out["specific_heat_melt_J_kgK"], 715.0, places=12)
+        # Gate ruling: the conductivity scale never touches a specific heat (the spec 3.3.4 "two melt keys" was a slip).
+        self.assertNotIn("specific_heat_melt_J_kgK", out)
         out = apply_uq_prop_scales(SYNTHETIC_MELT, {"_uq_absorptivity_scale": 1.2})
         self.assertAlmostEqual(out["absorptivity_IR"], 0.48, places=12)
         self.assertNotIn("absorptivity_index_IR", out)
@@ -967,7 +968,8 @@ class KernelLedger(unittest.TestCase):
         out = apply_uq_prop_scales(snap["thermal"], {"_uq_k_scale": 1.1, "_uq_absorptivity_scale": 0.9, "_uq_rho_scale": 1.05},
                                    kernel=kernel)
         self.assertAlmostEqual(out["kernel_conductivity_W_mK"], 1.1 * kernel["kernel_conductivity_W_mK"], places=9)
-        self.assertAlmostEqual(out["kernel_specific_heat_J_kgK"], 1.1 * kernel["kernel_specific_heat_J_kgK"], places=9)
+        # Gate ruling: the kernel specific heat is materialised unscaled (conductivity_rel scales k and alpha only).
+        self.assertAlmostEqual(out["kernel_specific_heat_J_kgK"], kernel["kernel_specific_heat_J_kgK"], places=9)
         self.assertAlmostEqual(out["kernel_density_kg_m3"], 1.05 * 2696.0, places=9)
         self.assertAlmostEqual(out["absorptivity_IR"], 0.27, places=12)
         self.assertNotIn("absorptivity_index_IR", out)

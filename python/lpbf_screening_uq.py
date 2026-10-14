@@ -229,15 +229,17 @@ def apply_uq_prop_scales(props: Dict[str, Any], overrides: Optional[Dict[str, fl
         )
         out["thermal_conductivity_W_mK"] = ks
         out["thermal_conductivity_liquid_W_mK"] = kl
-        # P7b (spec 3.3.4): the two melting-point keys follow the same scale when the property set carries them.
-        for melt_key in ("thermal_conductivity_melt_W_mK", "specific_heat_melt_J_kgK"):
-            if melt_key in props:
-                out[melt_key] = float(props[melt_key]) * float(k_scale)
+        # P7b gate ruling: _uq_k_scale scales conductivity only (k_s, k_l, the melting-point k and the kernel K), never
+        # a specific heat, so "conductivity_rel" keeps one meaning for base, blend and ledger alloys (alpha scales with
+        # k). The spec 3.3.4 "two melt keys" wording was a slip.
+        if "thermal_conductivity_melt_W_mK" in props:
+            out["thermal_conductivity_melt_W_mK"] = float(props["thermal_conductivity_melt_W_mK"]) * float(k_scale)
     if kernel is not None and (k_scale is not None or rho_scale is not None):
-        # Materialise the ledger kernel at the job preheat into explicit kernel keys (precedence rule (i)).
+        # Materialise the ledger kernel at the job preheat into explicit kernel keys (precedence rule (i)); the
+        # specific heat is carried unscaled so the three kernel keys stay a complete override.
         kk = float(k_scale) if k_scale is not None else 1.0
         out["kernel_conductivity_W_mK"] = float(kernel["kernel_conductivity_W_mK"]) * kk
-        out["kernel_specific_heat_J_kgK"] = float(kernel["kernel_specific_heat_J_kgK"]) * kk
+        out["kernel_specific_heat_J_kgK"] = float(kernel["kernel_specific_heat_J_kgK"])
         out["kernel_density_kg_m3"] = float(kernel["kernel_density_kg_m3"]) * (
             float(rho_scale) if rho_scale is not None else 1.0)
     if rho_scale is not None:
