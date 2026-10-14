@@ -53,9 +53,17 @@ class CommittedReport(unittest.TestCase):
                 self.assertEqual(a["rowId"], b["rowId"])
                 for k in INDEX_KEYS:
                     self.assertEqual(a[k], b[k], (group, a["rowId"], k))
-        for key in ("cunninghamLines", "zhaoPores", "zhaoBoundary", "hannRelationCheck", "heldOut", "kingConversion",
-                    "ganData1Check"):
+        for key in ("cunninghamLines", "zhaoPores", "zhaoBoundary", "hannRelationCheck", "heldOut", "ganData1Check"):
             self.assertEqual(self.doc[key], self.idx[key], key)
+        # P7b (2026-10-14): king_conversion reads the index convention constant (absorptivity_index_IR 0.42, the value
+        # the cut 20 was derived with) and lists the physical authority (0.30) next to it; every number of the committed
+        # 2026-10-07 record reproduces, only the property listing carries the new key names.
+        want = dict(self.doc["kingConversion"])
+        got = dict(self.idx["kingConversion"])
+        self.assertEqual(want.pop("app316lProperties")["absorptivity_IR"], 0.42)
+        props = got.pop("app316lProperties")
+        self.assertEqual((props["absorptivity_index_IR"], props["absorptivity_IR_physical_not_used"]), (0.42, 0.30))
+        self.assertEqual(want, got)
         for k in ("legacy_15_30", "current", "ganKe_1.4_6", "hann_HvHs_12.34"):
             self.assertEqual(self.doc["confusion"][k], self.idx["confusion"][k], k)
         for name, block in self.idx["depth"].items():
