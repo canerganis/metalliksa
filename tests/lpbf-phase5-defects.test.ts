@@ -45,7 +45,9 @@ samples = [diag_balling, diag_keyhole]
 agg = aggregate_part_porosity(samples, powder_gas_prior_percent=0.01)
 assert agg['status'] == 'aggregated'
 assert agg['mechanismCounts']['keyhole'] == 0, "a null keyhole risk adds no keyhole porosity"
-assert agg['mechanismCounts']['balling'] == 1
+# P7b (2026-10-14): the High band is removed for every alloy, so no track carries balling risk 'high' and the aggregator's
+# balling mechanism count is 0; a Moderate advisory still adds 0.3 of the balling penalty to the screening index.
+assert agg['mechanismCounts']['balling'] == 0, "moderate balling is an advisory weight, not a counted mechanism (no High band since P7b)"
 assert agg['screeningIndex']['mean_percent'] < 100.0
 
 print(json.dumps(agg))

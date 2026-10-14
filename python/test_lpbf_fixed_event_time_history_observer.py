@@ -1,7 +1,10 @@
 """Opt-in scalar history at accepted LPBF steps; no field history copies."""
 
+import hashlib
 import json
+import tempfile
 import unittest
+from pathlib import Path
 from unittest import mock
 
 import numpy as np
@@ -70,10 +73,30 @@ class LocalTimeHistoryObserverTests(unittest.TestCase):
     def test_runner_preflight_binds_prior_fields_without_solving(self):
         # The completed diagnostic owns these frozen destinations. Bypass only
         # freshness and source identity only for this historical archive fixture.
-        with mock.patch.object(probe, "fresh_destinations"), \
-                mock.patch.object(lpbf_simulation, "implementation_fingerprint", return_value=FROZEN_IMPLEMENTATION):
-            with mock.patch.object(lpbf_simulation, "run", side_effect=AssertionError("must not solve")):
-                plan = probe.preflight()
+        # P7b (2026-10-14): the archive ran at the former IN718 default absorptivity 0.38; the served default is now the
+        # authority 0.32, and the registry identity carries the authority keys and kernelLedgerSha256. Like the parity
+        # reference replays, this test replays the archived request with its absorptivity explicit (the resolved-input
+        # digests then reproduce the archive rows bit for bit) and binds the plan through a temporary protocol copy
+        # whose materialRevisionSha256 is the re-identified material of that request. The frozen protocol keeps its
+        # 2026-10-02 identities as a record; the diagnostic is not re-runnable at today's defaults.
+        real_validate = lpbf_simulation.validate
+        archived_request = lambda request: real_validate({**request, "absorptivity": 0.38})  # noqa: E731
+        protocol = json.loads(probe.PROTOCOL_PATH.read_bytes())
+        scenario = json.loads(probe.safe_path(protocol["scenarioFile"]).read_bytes())["scenario"]
+        scenario.update(protocol["scenarioOverrides"])
+        for dt in protocol["levels"]:
+            resolved, material = archived_request({**scenario, "maxDt_s": dt})
+            self.assertEqual(hashlib.sha256(json.dumps(resolved, sort_keys=True, allow_nan=False).encode()).hexdigest(),
+                             protocol["expectedInputSha256ByMaxDt"][str(dt)])
+            protocol["materialRevisionSha256"] = material["materialRevisionSha256"]
+        with tempfile.TemporaryDirectory() as tmp:
+            copy = Path(tmp) / "protocol.json"
+            copy.write_bytes(json.dumps(protocol).encode())
+            with mock.patch.object(probe, "PROTOCOL_PATH", copy), mock.patch.object(probe, "fresh_destinations"), \
+                    mock.patch.object(lpbf_simulation, "validate", side_effect=archived_request), \
+                    mock.patch.object(lpbf_simulation, "implementation_fingerprint", return_value=FROZEN_IMPLEMENTATION):
+                with mock.patch.object(lpbf_simulation, "run", side_effect=AssertionError("must not solve")):
+                    plan = probe.preflight()
         self.assertEqual(len(plan["cases"]), 2)
         self.assertEqual(len(plan["cases"][0]["indices"]), 19)
         self.assertEqual(plan["cases"][0]["centerIndices"],
