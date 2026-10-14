@@ -47,11 +47,15 @@ BASE_REF = BASE_REF_CANDIDATES[0]
 # re-pinned at the P7a rules-and-nulls bump (2026-10-11, 0e1599b4: lackOfFusionStatus Pass or Fail with the margin
 # flag, stress and distortion null with the reason, PDAS scalar and SDAS null with the band keys, marangoni doi null
 # with a basis, regimeKeyholeCutBasis, highBandApplicable, the Fabbro basis text; geometry unchanged, all three
+# digests change); re-pinned at the P7b sourced-constants bump (2026-10-14, 36cd9d4a: the 316L field absorbs the
+# authority 0.30 instead of 0.42 and the conduction kernel reads the melting-point k 28.5 / cp 830, so width, depth
+# and length move in every kernel; the index keeps absorptivity_index_IR 0.42 so normalizedEnthalpy and the regime
+# label are unchanged; the new basis keys, the field-extent grid with nullable cells, the High band removed; all three
 # digests change).
 HTTP_GOLDEN = {
-    "eagar-tsai": "fe497684ba7c43a0f6ad30fc05d6ccf4b0b9b3eb28e7ff1e794775fac78a5e84",
-    "goldak": "8fb42e1956ce64d4269fda6cfb9b1713f547522736712aef08f960a404839c28",
-    "rosenthal": "a461dc87994c378cfed6792ab009b8d69bc4a993347263643f4e3f07e0b3e733",
+    "eagar-tsai": "84e7cdd8c0018053046a4488d8ca3a949f3aed89c9c97577e9149bb947d9ecf6",
+    "goldak": "4e898835200d22ec154a0b2a00c530d137a3bf7857a3ef840b8b51c530d6ee4b",
+    "rosenthal": "e74869355304712d9d5ff9804e7bd6149dd5035f54ba4762b62350972523ae09",
 }
 HTTP_INPUT = {"material": "316L Stainless Steel", "laserPower_W": 200, "scanSpeed_mm_s": 900, "beamDiameter_um": 80,
               "preheatTemp_C": 20, "layerThickness_um": 30, "hatchSpacing_um": 100}

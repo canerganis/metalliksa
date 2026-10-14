@@ -53,8 +53,12 @@ PRE_BUMP_REVISION = "520903802a5cb89e368af60f68e53f232c99046d"
 # P7a rules-and-nulls bump (2026-10-11, 807d74b3 -> 0e1599b4, re-pin commit 31c14648 of feat/p7a-rules) re-recorded all
 # goldens again: 9 allowlisted observations (G11 digests, G12 marangoni.screening and solidification.evaluate, G18
 # meltpool.in625) moved; geometry is bit equal.
-GOLDEN_FINGERPRINT = "0e1599b463fdd68165df40c0fb73cd852190b7b65e629b3a02662a6b25369736"
-GOLDEN_REVISION = "31c146489cd62b2f350c30dc6e2aa91d0cd1af8c"
+# P7b sourced-constants bump (2026-10-14, 0e1599b4 -> 36cd9d4a, re-pin commit ae637a73 of feat/p7b-combined) re-recorded
+# all goldens: 546 allowlisted observations moved (the absorptivity authority, the index convention and the conduction
+# kernel: G11 and G18 geometry, the IN718 / Ti64 / 316L / AlSi10Mg transient frames and digests, G9 material tables,
+# identity digests of the reference replays), G12, G13 and the NPZ case bit equal; the rest recording metadata.
+GOLDEN_FINGERPRINT = "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
+GOLDEN_REVISION = "ae637a73c465c4588dc2c6dd45e055c271362b52"
 SLOW = os.environ.get("LPBF_PARITY_SLOW") == "1"
 # Off the reference machine every case test is skipped (the goldens are bit-exact for one
 # environment). METALLIKSA_REQUIRE_PARITY=1 turns such a "NOT VERIFIED" skip into a failure,
@@ -111,8 +115,11 @@ class ParityHarnessTests(unittest.TestCase):
         v1 = json.loads(parity.golden_path(parity.CASE_BY_ID["g1_v1_60w_in718"]).read_text(encoding="utf-8"))
         observations = v1["observations"]
         self.assertEqual(observations["result.coreContract.inputSha256"], parity.V1_INPUT_SHA256)
-        self.assertTrue(observations["result.coreContract.materialSha256"].startswith("6a8d7bde"))
-        self.assertTrue(observations["result.material.materialRevisionSha256"].startswith("5c9179e9"))
+        # P7b (2026-10-14): the IN718 identity carries the absorptivity authority 0.32, the index convention key and
+        # kernelLedgerSha256 (6a8d7bde... -> 582b23d5..., 5c9179e9... -> d04bcd19...); the replay keeps its explicit
+        # absorptivity 0.38, so the V1 numerics are bit equal.
+        self.assertTrue(observations["result.coreContract.materialSha256"].startswith("582b23d5"))
+        self.assertTrue(observations["result.material.materialRevisionSha256"].startswith("d04bcd19"))
         self.assertEqual(observations["result.validationStatus"], "unvalidated")
         self.assertIs(observations["result.productionReady"], False)
         # Corrected-physics bump: only analyticalComparison.goldak differs from the archived V1 run.
@@ -125,14 +132,20 @@ class ParityHarnessTests(unittest.TestCase):
         # without the Eagar-Tsai L/W ("low" -> null, new reason) and moves it ff428b93... -> f9b41280...
         # la6-gusarov (2026-10-08, cda80143 -> ec7e1f7a): assumptions sentence + geometricDefectScreen modelId v2 and
         # balling sources/basis move it f9b41280... -> e37e76ab... (V1 scans at 0 deg: metrics bit-equal).
+        # P7b (2026-10-14): the material identity block inside the result moves it e37e76ab... -> 50afda1f... (the
+        # stripped-except-identity comparison of the G2 fixture is the proof that nothing numeric moved).
         self.assertEqual(observations["result.canonicalSha256"],
-                         "e37e76ab061f62bb094f1092acc30cfa29bd2d3889653b6305fe9d083d4d7c53")
+                         "50afda1f8cf0778376623f6208e2599edeefe285d05629c2b05a72d34a660919")
         self.assertEqual(observations["result.key.solidificationResolution"] is not None, True)
         self.assertEqual(observations["result.implementationHashOccurrencesAfterStrip"], 0)
         self.assertEqual(observations["result.artifactsImplementationHashOccurrences"], 0)
         bare = json.loads(parity.golden_path(
             parity.CASE_BY_ID["g2_bare_plate_100w_corridor"]).read_text(encoding="utf-8"))["observations"]
-        self.assertIs(bare["fixture.strippedResultEqual"], True)
+        # P7b (2026-10-14): the recorded fixture carries the pre-P7b material identity, so the stripped result differs
+        # only in that identity (finding 1.3 b); the NPZ bytes and every artifact are still bit equal.
+        self.assertIs(bare["fixture.strippedResultEqual"], False)
+        self.assertIs(bare["fixture.materialSha256Equal"], False)
+        self.assertIs(bare["fixture.strippedResultEqualExceptMaterialIdentity"], True)
         self.assertIs(bare["fixture.npzBytesEqual"], True)
         self.assertEqual(bare["fixture.artifactsMismatched"], [])
         self.assertEqual(bare["fixture.fieldArtifactsCompared"], 67)
@@ -146,8 +159,17 @@ class ParityHarnessTests(unittest.TestCase):
             with self.subTest(case=case_id):
                 observations = json.loads(parity.golden_path(parity.CASE_BY_ID[case_id]).read_text(
                     encoding="utf-8"))["observations"]
-                self.assertGreater(observations["evaporation.inversionCalls"], 0)
-                self.assertEqual(observations["evaporation.latentHeatVapUsed_J_kg"], [[value, value.hex()]])
+                if case_id == "g17_evaporation_316l":
+                    # P7b (2026-10-14): at the 316L absorptivity authority 0.30 (was 0.42) this transient case no
+                    # longer reaches the boiling point, so the evaporation inversion is never called (0 calls, no
+                    # vapour fraction). The Ti-6Al-4V and AlSi10Mg cases still exercise it. A descriptive record of
+                    # the sourced input, not a physics claim.
+                    self.assertEqual(observations["evaporation.inversionCalls"], 0)
+                    self.assertEqual(observations["evaporation.latentHeatVapUsed_J_kg"], [])
+                    self.assertIsNone(observations["evaporation.maxVaporFraction"])
+                else:
+                    self.assertGreater(observations["evaporation.inversionCalls"], 0)
+                    self.assertEqual(observations["evaporation.latentHeatVapUsed_J_kg"], [[value, value.hex()]])
                 self.assertEqual(observations["evaporation.authorityLatentHeatVap_J_kg"], [value, value.hex()])
                 self.assertIs(observations["evaporation.materialSnapshotHasLatentHeatVap"], False)
                 self.assertIs(observations["evaporation.authorityProbe.resultCanonicalEqual"], True)
@@ -166,13 +188,20 @@ class ParityHarnessTests(unittest.TestCase):
             encoding="utf-8"))["rawValues"]
         # P6 containment (2026-10-11): the geometry is unchanged; the served peak is null (IN718 has no sourced
         # vapour temperature; the regularised 21250.8 C value is no longer served).
-        self.assertEqual(g11["meltpool.0.geometry_um"], [119.3, 57.9, 490.3, 0.0])
+        # P7b (2026-10-14): the IN718 field absorbs the authority 0.32 (was 0.38) and the conduction kernel reads the
+        # melting-point k 29.6 / cp 720 (was the equal-weight blend): 119.3/57.9/490.3/0.0 -> 96.0/46.5/286.1/0.0 um;
+        # dH/hs 23.67 and the label are unchanged (index convention 0.38); the peak stays null.
+        self.assertEqual(g11["meltpool.0.geometry_um"], [96.0, 46.5, 286.1, 0.0])
         self.assertIsNone(g11["meltpool.0.peakTemperature_C"])
         emissivity = json.loads(parity.golden_path(parity.CASE_BY_ID["g19_emissivity_echo"]).read_text(
             encoding="utf-8"))["observations"]
         for name in ("Ti-6Al-4V", "316L Stainless Steel", "AlSi10Mg", "Inconel 718"):
             self.assertEqual(emissivity[f"validate.{name}.emissivity"], [[0.35, (0.35).hex()]] * 2)
-        self.assertEqual(emissivity["run.override0.36"], {"error": "ValueError: LPBF material revision identity mismatch"})
+        # P7b (2026-10-14, finding 1.3 f): a request emissivity that differs from the registry re-identifies the
+        # transient material (lpbf_material_registry.reidentify) instead of raising, so the override run now
+        # completes and is recorded as a digest.
+        self.assertNotEqual(emissivity["run.override0.36"], {"error": "ValueError: LPBF material revision identity mismatch"})
+        self.assertRegex(emissivity["run.override0.36"], r"^[0-9a-f]{64}$")
         self.assertIs(emissivity["explicit0.35.canonicalEqualsImplicit"], True)
 
     def test_evaporation_wrapper_records_an_unknown_call_shape_as_a_note(self):
