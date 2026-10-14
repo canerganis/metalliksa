@@ -1,21 +1,94 @@
 {
-  "schema": "solidification-coupling-audit-1",
-  "evidenceKind": "Screening only",
-  "moduleMaturity": "Research",
+  "schema": "solidification-coupling-audit-2",
+  "baselinePolicy": "Expected-defect assertions against served source, not future implementation acceptance.",
   "checkKind": "synthetic software and algebra checks",
   "experimentalValidation": false,
   "readsMeasuredMeltPoolDepths": false,
-  "sourceHead": "835466fabca27d0209b29599fde7fa05a9b9ee75",
-  "sourceSha256": {
-    "python/calphad_solver.py": "69a038f169fcd054a0bf13c41061b425db50152180e6ce6f97644d5afb0961ee",
-    "python/lpbf_solidification_segregation.py": "8d316f6787499e804bb6af8e7c52c787d28edc9583617cfb09b3b03857c38cce",
-    "python/lpbf_solidification_microstructure.py": "1f78e4acb386eb5c2efee740acc2e7a294be2f49a9b2bcbd29dfb8bd309ae43f",
-    "python/lpbf_gr_solidification.py": "b8fb31cb2f8b96b06f1daad152e954c8b2202a391857dd36209cce5197c0d3dd",
-    "python/lpbf_cet_screening.py": "f92bc737c21d40397722a65076bd05b999adf6978774877637640dc789fc71c1",
-    "python/solidification_front.py": "9c9c84de67108cd59f8d22edcb3dcf4f54c596727ce1ec6becb3a35ecd6aa083",
-    "python/kinetics_ttt_cct_solver.py": "d1e75bb9de51801c35bdf6e2f64c7278a554417d16f8bc1b916c4a19d1710641",
-    "python/lpbf_simulation.py": "e9b42209917e39d112dd5f869c4f6fe83ce714abb1bfc3c6fb13e055775f9b85",
-    "python/openfoam/meltPoolFoam/solidificationModel.H": "4c229ab3eb4f52e34d2acbfe0a1a45e9dd60f30d6a1b64e89b383ec3ebdfdc27"
+  "analyticCoolingOracle": {
+    "definition": "v*dT/dx at unrounded original sample positions in laboratory frame; translating quasi-steady field",
+    "relativeTolerance": 3e-06,
+    "maximumRelativeResidual": 1.764706022422402e-07,
+    "R_equals_scanSpeed_mutantResidual": 49.561577709421165
+  },
+  "evenCountFront": {
+    "sampleCount": 8,
+    "productOfUpperMedians_K_s": 78538.87773872206,
+    "maximumLocalCooling_K_s": 61998.21806035288
+  },
+  "nonmonotonePairedEvaluation": {
+    "samples": [
+      {
+        "G_K_m": 100000.0,
+        "R_m_s": 1
+      },
+      {
+        "G_K_m": 20000000.0,
+        "R_m_s": 0.01
+      },
+      {
+        "G_K_m": 1000000.0,
+        "R_m_s": 0.8
+      },
+      {
+        "G_K_m": 80000000.0,
+        "R_m_s": 0.02
+      },
+      {
+        "G_K_m": 300000.0,
+        "R_m_s": 0.5
+      },
+      {
+        "G_K_m": 10000000.0,
+        "R_m_s": 0.04
+      },
+      {
+        "G_K_m": 4000000.0,
+        "R_m_s": 0.3
+      },
+      {
+        "G_K_m": 60000000.0,
+        "R_m_s": 0.06
+      }
+    ],
+    "separateUpperMedians": {
+      "G_K_m": 10000000.0,
+      "R_m_s": 0.3
+    },
+    "localMorphology": [
+      "Mixed / equiaxed tendency (Hunt G/R screening)",
+      "Cellular (Hunt G/R screening)",
+      "Mixed / equiaxed tendency (Hunt G/R screening)",
+      "Cellular (Hunt G/R screening)",
+      "Mixed / equiaxed tendency (Hunt G/R screening)",
+      "Columnar dendritic (Hunt G/R screening)",
+      "Columnar dendritic (Hunt G/R screening)",
+      "Cellular (Hunt G/R screening)"
+    ],
+    "aggregateMorphology": "Columnar dendritic (Hunt G/R screening)",
+    "localCET": [
+      "mixed",
+      "columnar",
+      "columnar",
+      "columnar",
+      "columnar",
+      "columnar",
+      "columnar",
+      "columnar"
+    ],
+    "aggregateCET": "columnar",
+    "localTrapping_k": [
+      0.8266666666666667,
+      0.49019607843137253,
+      0.8,
+      0.5,
+      0.74,
+      0.5185185185185184,
+      0.675,
+      0.5357142857142857
+    ],
+    "trappingAtMedianR": 0.675,
+    "meanLocalTrapping_k": 0.6357619436663554,
+    "note": "Morphology/CET distributions and mean k differ from one median result. Scalar upper-median k does commute with upper-median R because this k(V) is monotone."
   },
   "manufacturedFront": {
     "fieldDefinition": "T=1700+100*(1-(x/0.001)^2-(z/0.0002)^2)*(1+0.8*x/0.001), y-independent",
@@ -113,20 +186,21 @@
     ],
     "interpretation": "Local G*R is internally consistent; separate statistic cooling is not the product of the displayed median G and R. Wrapper GtimesR aliases a different statistic."
   },
-  "genuineLowPositiveRateProjection": {
+  "transportRoundingPositiveRateProjection": {
     "input": {
       "solidificationKinetics": {
         "usedFieldMap": true,
         "gradientSource": "conduction-field-interface",
         "thermalGradient_G_K_m": 100000.0,
-        "solidificationRate_R_m_s": 5e-05,
-        "solidificationRate_R_mm_s": 0.05,
-        "coolingRate_K_s": 5.0
+        "solidificationRate_R_m_s": 0.0,
+        "solidificationRate_R_mm_s": 0.1,
+        "coolingRate_K_s": 10.0
       }
     },
+    "fixtureType": "synthetic transport-rounding probe, not a real served low-rate run",
     "status": "degenerate-floor",
     "reason": "solidification front degenerate: floor-clamped R/cooling (R <= 1e-4 m/s or cooling <= 1 K/s), not a computed value",
-    "interpretation": "Projection still treats a true small positive front speed as an old clamp floor, although P6 removed the upstream clamps."
+    "interpretation": "Projection still treats a true small positive front speed (represented by R_mm_s=0.1, R_m_s rounded to 0 by the producer) as an old clamp floor, although P6 removed the upstream clamps."
   },
   "stationaryLiquidMovingPlanarInterface": {
     "manufacturedField": "T=Tl+G*(x-v*t); normal points along +x into liquid",
@@ -163,7 +237,13 @@
     "legacyCfdHeaderMember": false
   },
   "checks": {
-    "localKinematicIdentity": true,
+    "analyticCoolingOracle": true,
+    "R_equals_scanSpeed_mutantDetected": true,
+    "evenUpperMedianPairExceedsLocalMaximum": true,
+    "pairedMorphologyDistributionDiffers": true,
+    "pairedCETDistributionDiffers": true,
+    "pairedMeanTrappingDiffers": true,
+    "localKinematicIdentityAccountingOnly": true,
     "aggregateAliasMismatchReproduced": true,
     "obsoleteFloorMisclassificationReproduced": true,
     "cfdFluidVelocityCounterexample": true,
@@ -174,5 +254,24 @@
     "Manufactured fields do not establish real-alloy applicability.",
     "No package installed.",
     "No mesh/time-step convergence, browser execution, or blind experiment test performed."
-  ]
+  ],
+  "sourceIdentityAlgorithm": "sha256-utf8-lf-v1",
+  "sourceSha256": {
+    "docs/research/scripts/_solidification_check_common.py": "d4ec3e59f1aa55b05e4ab5f23df19c518b98f74b2d2b77d1d27ede970e699029",
+    "docs/research/scripts/check_solidification_coupling.py": "4a4a73580ed845d6b723435cf14f21733bb29c07ab644da87770658484efa1d8",
+    "python/alloy_data_calphad_battery_icme.py": "8253a0407b12887ff010163276755cc1cc22d2ede5e6f057d91b93d94afc0fd0",
+    "python/alloy_data_kinetics_uq_fatigue.py": "9d1349085981f2f86ed465bbc048e9fc9704138ebec68e9d1a4e7eee5f5ecf95",
+    "python/alloy_registry.py": "ec2a6f4fc8dda5c322b60444d197af5fd81e908363cd6eba44de21f2839a7268",
+    "python/calphad_solver.py": "a266bbabfcb8d6db9c337de07db41e6ea2d3321fcc3d9fde831f056b59581ac2",
+    "python/four_alloy_materials.py": "b5aedb24b5261c7ef8dfd7bcb80c723ca1eb32c9be4e94a6519f06db951c90a9",
+    "python/kinetics_ttt_cct_solver.py": "954fa53e7a0e2610f807d2364146e28887910a07eb945dd3a9004875d1f1467d",
+    "python/lpbf_cet_screening.py": "d63532332c164bc8f1272e8e510d27626f7b840b6be95a0873272f629d014e6e",
+    "python/lpbf_gr_solidification.py": "c262158960e1e886506f0799da89c70c8c8b0ac08ee9ed880ce3c8c764a311a5",
+    "python/lpbf_simulation.py": "e9b42209917e39d112dd5f869c4f6fe83ce714abb1bfc3c6fb13e055775f9b85",
+    "python/lpbf_solidification_microstructure.py": "211a40e1c018b5839c566c589523c884028e3bd0fc6d64fc500aa04a03df4bdf",
+    "python/lpbf_solidification_segregation.py": "d6c2c2421aec83c2e279dd93e7727c765b86f939d5620e0baaeb39e38f26f5f3",
+    "python/openfoam/meltPoolFoam/solidificationModel.H": "fd31e9c65e9d4aa78fcd75b8ac78a49c4532f27da7227a6d6be687abd69f58b4",
+    "python/physical_constants.py": "ae07777055febf111903c81f08d6a948ccedff6339cbec5339317e12e8aeef87",
+    "python/solidification_front.py": "a8841a2ceeaed2522bad6fa5d8642833f5e8b059592759b7f9874aa69303793d"
+  }
 }

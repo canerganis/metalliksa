@@ -1,17 +1,34 @@
 {
-  "schema": "solidification-kinetics-software-audit-1",
-  "evidenceKind": "Screening only",
-  "moduleMaturity": "Research",
+  "schema": "solidification-kinetics-software-audit-2",
+  "baselinePolicy": "Expected-defect assertions against served source, not future implementation acceptance.",
   "experimentalValidation": false,
   "scope": "synthetic counterexamples and source-form software reproduction only; no physical or blind validation",
-  "revision": "835466fabca27d0209b29599fde7fa05a9b9ee75",
-  "sourceSha256": {
-    "kinetics_ttt_cct_solver.py": "d1e75bb9de51801c35bdf6e2f64c7278a554417d16f8bc1b916c4a19d1710641",
-    "lpbf_cet_screening.py": "f92bc737c21d40397722a65076bd05b999adf6978774877637640dc789fc71c1",
-    "lpbf_solidification_microstructure.py": "1f78e4acb386eb5c2efee740acc2e7a294be2f49a9b2bcbd29dfb8bd309ae43f",
-    "lpbf_solidification_segregation.py": "8d316f6787499e804bb6af8e7c52c787d28edc9583617cfb09b3b03857c38cce",
-    "solidification_front.py": "9c9c84de67108cd59f8d22edcb3dcf4f54c596727ce1ec6becb3a35ecd6aa083",
-    "alloy_registry.py": "c118ceb543fb878494f5d29490f55d66b8c61c416ebf8565c1a05cdf1431c510"
+  "checks": {
+    "HuntEquationArithmeticExpectedValue": true,
+    "KnappPrintedColumnarWithin2Percent": true,
+    "KnappPrintedEquiaxedWithin2Percent": true,
+    "HuntArithmeticWithinRoundedSource3PerMille": true,
+    "servedHuntCoefficientMismatchReproduced": true,
+    "sameGRMorphologyDisagreement": true,
+    "zeroMixedFractionReproduced": true,
+    "positiveLowRateObsoleteFloor": true,
+    "in625MisclassifiedAsIN718": true,
+    "Ti64LiquidusSwitchReproduced": true,
+    "unverifiedCETStillListed": true,
+    "absoluteZeroExplicitException": true,
+    "unsupportedLSW_Ti-6Al-4V": true,
+    "unsupportedLSW_Inconel 718": true,
+    "unsupportedAlloyExplicitException_AlSi10Mg": true,
+    "unsupportedAlloyExplicitException_Inconel 625": true,
+    "unsupportedAlloyExplicitException_316L SS": true,
+    "segregationNotApplicable_ti6al4v": true,
+    "segregationNotApplicable_alsi10mg": true,
+    "segregationNotApplicable_ss316l": true,
+    "printedKnappConstantsRetained": true,
+    "nonpositiveCETGradientAccepted": true,
+    "nonfiniteCETGradientAccepted": true,
+    "PDAS_planarSideStillServed": true,
+    "PDAS_absoluteStabilitySideStillServed": true
   },
   "cases": {
     "synthetic_same_GR_different_morphology_rules": {
@@ -38,8 +55,8 @@
       "normalizedEnthalpy": null,
       "regimeNote": null,
       "G_K_m": 1000000.0,
-      "R_m_s": 5e-05,
-      "coolingRate_K_s": 50.0,
+      "R_m_s": 0.0001,
+      "coolingRate_K_s": 100.0,
       "PDAS_um": null,
       "pdasBand_um": null,
       "pdasBasis": null,
@@ -85,7 +102,10 @@
     "CET_source_limits_software_reproduction": {
       "quantity": "Gcrit**2 / R in K**2 s / m**3 (Knapp Eq.12)",
       "columnar": 152010043633.87595,
-      "equiaxed": 6977525390.911521
+      "equiaxed": 6977525390.911521,
+      "printedColumnar": 152000000000.0,
+      "printedEquiaxed": 6980000000.0,
+      "relativeTolerance": 0.02
     },
     "direct_kinetics_Ti-6Al-4V": {
       "kineticsModel_status": "unavailable",
@@ -192,6 +212,76 @@
       "alloyId": "ss316l",
       "reason": "no Nb-bearing gamma/Laves model for this alloy",
       "evidenceLabel": null
-    }
+    },
+    "independentHuntArithmetic": {
+      "formula": "2.83*(k_e*Gamma*DeltaT0*D_l)^0.25",
+      "inputs": {
+        "k_e": 0.48,
+        "Gamma_K_m": 3.65e-07,
+        "DeltaT0_K": 57,
+        "D_l_m2_s": 3e-09
+      },
+      "expected_A_SI": 0.0011773863284676703,
+      "served_A_SI": 0.000956,
+      "roundedSource_A_SI": 0.00118,
+      "roundedRelativeTolerance": 0.003
+    },
+    "PDAS_sourceStabilityCounterexamples": [
+      {
+        "G_K_m": 50000000.0,
+        "R_m_s": 0.0012,
+        "Vcs_m_s": 0.002631578947368421,
+        "Vab_m_s": 0.9760273972602741,
+        "sourceStableCellularRange": false,
+        "fixedSourceGradient": false,
+        "served": {
+          "pdasBand_um": {
+            "hunt": 0.7264029154829225,
+            "kurzFisher": 1.9755727826941405
+          },
+          "pdasOutOfRange": false,
+          "pdasUnavailableReason": null,
+          "pdasBasis": "Ni-Nb model alloy band, Ghosh et al. 2017 (Modelling Simul. Mater. Sci. Eng. 25, 065002, doi 10.1088/1361-651X/aa7369) Fig. 6 caption: Eq. 7 Hunt A = 9.56e-4 and Eq. 8 Kurz-Fisher A = 2.6e-3 (m^0.75 s^-0.25 K^0.5), λ1 = A G^-0.5 R^-0.25. The phase-field PDAS values lie near Hunt (p.11); the line of best fit has a slope close to Kurz-Fisher with a constant offset (p.12), so the slope-only member is not served. The system is a dilute binary Ni-Nb model alloy (Table 2), applied to IN625 and IN718 as the closest sourced Ni-Nb system and not a measurement of those alloys; the coefficients are alloy specific. Validity: x = G^-0.5 R^-0.25 in [4e-4, 1.2e-3] and cooling rate 5e4 to 3e6 K/s (Fig. 6 abscissa and operating range, p.11); outside it the band is null (pdasOutOfRange)",
+          "x": 0.0007598356856515925
+        }
+      },
+      {
+        "G_K_m": 1000000.0,
+        "R_m_s": 1.5,
+        "Vcs_m_s": 5.2631578947368424e-05,
+        "Vab_m_s": 0.9760273972602741,
+        "sourceStableCellularRange": false,
+        "fixedSourceGradient": false,
+        "served": {
+          "pdasBand_um": {
+            "hunt": 0.8638435154510118,
+            "kurzFisher": 2.3493652093855966
+          },
+          "pdasOutOfRange": false,
+          "pdasUnavailableReason": null,
+          "pdasBasis": "Ni-Nb model alloy band, Ghosh et al. 2017 (Modelling Simul. Mater. Sci. Eng. 25, 065002, doi 10.1088/1361-651X/aa7369) Fig. 6 caption: Eq. 7 Hunt A = 9.56e-4 and Eq. 8 Kurz-Fisher A = 2.6e-3 (m^0.75 s^-0.25 K^0.5), λ1 = A G^-0.5 R^-0.25. The phase-field PDAS values lie near Hunt (p.11); the line of best fit has a slope close to Kurz-Fisher with a constant offset (p.12), so the slope-only member is not served. The system is a dilute binary Ni-Nb model alloy (Table 2), applied to IN625 and IN718 as the closest sourced Ni-Nb system and not a measurement of those alloys; the coefficients are alloy specific. Validity: x = G^-0.5 R^-0.25 in [4e-4, 1.2e-3] and cooling rate 5e4 to 3e6 K/s (Fig. 6 abscissa and operating range, p.11); outside it the band is null (pdasOutOfRange)",
+          "x": 0.0009036020036098449
+        }
+      }
+    ]
+  },
+  "checkKind": "synthetic software and algebra checks",
+  "readsMeasuredMeltPoolDepths": false,
+  "sourceIdentityAlgorithm": "sha256-utf8-lf-v1",
+  "sourceSha256": {
+    "docs/research/scripts/_solidification_check_common.py": "d4ec3e59f1aa55b05e4ab5f23df19c518b98f74b2d2b77d1d27ede970e699029",
+    "docs/research/scripts/check_solidification_kinetics.py": "bec0bdb18e2707754aa750659630d53c627c93fef980fd5e20e81663334dd917",
+    "python/alloy_data_calphad_battery_icme.py": "8253a0407b12887ff010163276755cc1cc22d2ede5e6f057d91b93d94afc0fd0",
+    "python/alloy_data_kinetics_uq_fatigue.py": "9d1349085981f2f86ed465bbc048e9fc9704138ebec68e9d1a4e7eee5f5ecf95",
+    "python/alloy_registry.py": "ec2a6f4fc8dda5c322b60444d197af5fd81e908363cd6eba44de21f2839a7268",
+    "python/four_alloy_materials.py": "b5aedb24b5261c7ef8dfd7bcb80c723ca1eb32c9be4e94a6519f06db951c90a9",
+    "python/hardness_conversion_e140.py": "fd250e094fcb3207d430b3ad2ab13e16a9f7ed80ecb3d2f3df6480ce70265b41",
+    "python/input_validation.py": "e31f7bf8aec687f1f03f25da4de63a3967bcdaf5ca47dc4af4f83c5712521489",
+    "python/kinetics_ttt_cct_solver.py": "954fa53e7a0e2610f807d2364146e28887910a07eb945dd3a9004875d1f1467d",
+    "python/lpbf_cet_screening.py": "d63532332c164bc8f1272e8e510d27626f7b840b6be95a0873272f629d014e6e",
+    "python/lpbf_solidification_microstructure.py": "211a40e1c018b5839c566c589523c884028e3bd0fc6d64fc500aa04a03df4bdf",
+    "python/lpbf_solidification_segregation.py": "d6c2c2421aec83c2e279dd93e7727c765b86f939d5620e0baaeb39e38f26f5f3",
+    "python/physical_constants.py": "ae07777055febf111903c81f08d6a948ccedff6339cbec5339317e12e8aeef87",
+    "python/solidification_front.py": "a8841a2ceeaed2522bad6fa5d8642833f5e8b059592759b7f9874aa69303793d"
   }
 }

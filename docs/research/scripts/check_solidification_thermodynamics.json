@@ -1,8 +1,7 @@
 {
+  "schema": "solidification-thermodynamics-software-audit-2",
+  "baselinePolicy": "Expected-defect assertions against served source, not future implementation acceptance.",
   "source": "python/calphad_solver.py",
-  "evidenceKind": "Screening only",
-  "moduleMaturity": "Research",
-  "sourceSha256": "69a038f169fcd054a0bf13c41061b425db50152180e6ce6f97644d5afb0961ee",
   "historicalMinus028ExponentPresent": false,
   "cutoffCounterexample": {
     "kind": "synthetic software counterexample, not experimental validation",
@@ -11,13 +10,14 @@
     "rawEquilibriumAtomBalanceMaxAbsError": 0.0,
     "reportedStatus": "complete",
     "reportedTerminationReason": "liquid-exhausted-within-step",
+    "firstStepUnresolved": true,
     "reportedFractionSolid": 1.0,
     "reportedRemainingLiquidFraction": 0.0,
     "reportedPhaseAmountSum": 0.9995,
     "reportedMassBalanceMaxAbsError": 0.0,
     "independentAtomBalanceErrorUsingReportedPhaseAmounts": 0.00039999999999995595
   },
-  "clampedCompositionExample": {
+  "kernelOnlyClampedCompositionExample": {
     "kind": "synthetic software policy check, not a real alloy",
     "requestedMoleFractionB": 1e-08,
     "usedSolidMoleFractionB": 9.9999901000098e-07,
@@ -216,9 +216,220 @@
       "scopeFlag": "Valid for beta transus, liquidus/solidus and single-phase beta. Not for alpha/beta fractions below about 900 C. No Fe or O in this database."
     }
   ],
-  "pycalphadInstalledVersion": "0.11.2",
-  "pycalphadInstalledLicense": "MIT",
+  "environmentPackages": {
+    "pycalphad": {
+      "version": "0.11.2",
+      "license": "MIT"
+    },
+    "scheil": {
+      "version": "0.3.0",
+      "license": "MIT"
+    }
+  },
   "servedSolverImported": false,
   "datasetsRead": false,
-  "physicalValidationPerformed": false
+  "physicalValidationPerformed": false,
+  "checks": {
+    "invalidCallbackIdentityCannotFire": true,
+    "independentOracleAcceptsConservedControl": true,
+    "reportedInventoryMatchesIndependentTwoStepLedger": true,
+    "phaseCompositionMutantDetected": true,
+    "positiveResidualLiquidCalledComplete": true,
+    "actualRequestClampBeforeKernel": true,
+    "actualPointAdapterDropsPositiveLiquid": true,
+    "actualPointAdapterHidesMiscibilityVertex": true,
+    "lowLiquidCutoffDefectReproduced": true,
+    "minus028Retired": true
+  },
+  "invalidCallbackExamples": [
+    {
+      "callback": {
+        "liquid": 0.0,
+        "liquidX": {},
+        "phases": {
+          "SOLID": 0.4
+        },
+        "phasesX": {
+          "SOLID": {
+            "A": 0.8,
+            "B": 0.2
+          }
+        }
+      },
+      "independentOracle": {
+        "phaseAmountSumError": 0.6,
+        "phaseCompositionSumError": 0.0,
+        "nonphysicalComposition": false,
+        "elementInventory": {
+          "A": 0.32000000000000006,
+          "B": 0.08000000000000002
+        },
+        "maximumElementResidual": 0.48,
+        "valid": false
+      },
+      "servedStatus": "complete",
+      "firstStepUnresolved": true,
+      "servedIdentityResidual": 0.0,
+      "reportedPhaseAmounts": {
+        "SOLID": 0.4
+      }
+    },
+    {
+      "callback": {
+        "liquid": 0.0,
+        "liquidX": {},
+        "phases": {
+          "SOLID": 18.5
+        },
+        "phasesX": {
+          "SOLID": {
+            "A": 1.1,
+            "B": -0.1
+          }
+        }
+      },
+      "independentOracle": {
+        "phaseAmountSumError": 17.5,
+        "phaseCompositionSumError": 0.0,
+        "nonphysicalComposition": true,
+        "elementInventory": {
+          "A": 20.35,
+          "B": -1.85
+        },
+        "maximumElementResidual": 19.55,
+        "valid": false
+      },
+      "servedStatus": "complete",
+      "firstStepUnresolved": true,
+      "servedIdentityResidual": 0.0,
+      "reportedPhaseAmounts": {
+        "SOLID": 18.5
+      }
+    }
+  ],
+  "independentConservationControl": {
+    "phaseAmountSumError": 0.0,
+    "phaseCompositionSumError": 0.0,
+    "nonphysicalComposition": false,
+    "elementInventory": {
+      "A": 0.8,
+      "B": 0.2
+    },
+    "maximumElementResidual": 0.0,
+    "valid": true
+  },
+  "independentTwoStepLedger": {
+    "expectedSolidAmount": 0.9991,
+    "expectedRemainingLiquidAmount": 0.0009,
+    "expectedElementInventory": {
+      "A": 0.8,
+      "B": 0.2
+    },
+    "reportedSolidAmount": 0.9991
+  },
+  "phaseCompositionMutant": {
+    "phaseAmountSumError": 0.0,
+    "phaseCompositionSumError": 0.0,
+    "nonphysicalComposition": false,
+    "elementInventory": {
+      "A": 0.703,
+      "B": 0.297
+    },
+    "maximumElementResidual": 0.09700000000000009,
+    "valid": false
+  },
+  "positiveResidualLiquidStop": {
+    "remainingLiquidFraction": 0.0009,
+    "terminationReason": "liquid-below-0.1-percent",
+    "reportedStatus": "complete",
+    "firstStepUnresolved": false
+  },
+  "servedRequestClamp": {
+    "requestedMoleFraction": 4.78e-11,
+    "usedMoleFraction": 1e-05,
+    "enrichmentFactor": 209205.0209205021,
+    "kernelClampedSteps": 0,
+    "identityResidual": 0.0
+  },
+  "actualPointAdapterSyntheticVertices": {
+    "positiveLowLiquid": {
+      "rawPhaseNames": [
+        "LIQUID",
+        "SOLID"
+      ],
+      "rawPhaseAmounts": [
+        0.0005,
+        0.9995
+      ],
+      "rawLiquidVertexCount": 1,
+      "servedAdapter": {
+        "liquid": 0.0,
+        "liquidVertices": 0,
+        "liquidX": {},
+        "phases": {
+          "SOLID": 0.9995
+        },
+        "phasesX": {
+          "SOLID": {
+            "A": 0.8,
+            "B": 0.2
+          }
+        }
+      },
+      "servedRunPointAccepted": true
+    },
+    "hiddenSecondLiquidVertex": {
+      "rawPhaseNames": [
+        "LIQUID",
+        "LIQUID",
+        "SOLID"
+      ],
+      "rawPhaseAmounts": [
+        0.2,
+        0.0005,
+        0.7995
+      ],
+      "rawLiquidVertexCount": 2,
+      "servedAdapter": {
+        "liquid": 0.2,
+        "liquidVertices": 1,
+        "liquidX": {
+          "A": 0.8,
+          "B": 0.2
+        },
+        "phases": {
+          "SOLID": 0.7995
+        },
+        "phasesX": {
+          "SOLID": {
+            "A": 0.8,
+            "B": 0.2
+          }
+        }
+      },
+      "servedRunPointAccepted": true
+    }
+  },
+  "tolerances": {
+    "callbackInventoryAbsolute": 1e-12,
+    "sixDecimalInventoryAbsolute": 5e-07
+  },
+  "limitations": [
+    "Checks reproduce served defects; passing does not claim fixes implemented.",
+    "No database equilibrium calculation or measured dataset read.",
+    "The extracted kernel floor is distinct from the served request clamp."
+  ],
+  "checkKind": "synthetic software and algebra checks",
+  "experimentalValidation": false,
+  "readsMeasuredMeltPoolDepths": false,
+  "sourceIdentityAlgorithm": "sha256-utf8-lf-v1",
+  "sourceSha256": {
+    "docs/research/scripts/_solidification_check_common.py": "d4ec3e59f1aa55b05e4ab5f23df19c518b98f74b2d2b77d1d27ede970e699029",
+    "docs/research/scripts/check_solidification_thermodynamics.py": "99aad20aad4bf17af371621e58301a2504f7dfc918726de4be5a8ef43b401736",
+    "python/calphad_solver.py": "a266bbabfcb8d6db9c337de07db41e6ea2d3321fcc3d9fde831f056b59581ac2",
+    "python/databases/COST507.tdb": "6565f4d67695fbbf779d68b9eeeb83e86e44a1a3dde9bafd612d99daffb9c34d",
+    "python/databases/mc_fe_v2062_repaired.tdb": "cb0a7f9f747b9b16bc8bb5085250f9449091e0031480e3d7527eb0ad1e1f3fd4",
+    "python/databases/mc_ni_v2036_repaired.tdb": "c914f534cc99f5fc2f7aab0373cfe5bc720bd2b85b545027d35ac4e0bcc6f94d",
+    "python/databases/mc_ti_v203_repaired.tdb": "f8758e12d8a96109b4dee0e0d95365ebe6ec19b0d1b8e3b249465c46a12e94ff"
+  }
 }
