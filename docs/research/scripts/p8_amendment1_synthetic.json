@@ -1,0 +1,396 @@
+{
+  "evidence": "synthetic software reproduction; not experimental validation",
+  "sourceBase": "835466fa",
+  "sourceP3": "c4470b017cfe533c74b23dc5712a2df720ae00c4",
+  "bandMethod": "one-at-a-time union; no interactions or statistical coverage",
+  "points": [
+    {
+      "alloy": "ti6al4v",
+      "power_W": 100.0,
+      "values": {
+        "peclet": 5.565243612478677,
+        "powerOverOnset": 4.509159058308806,
+        "onsetPower_W": 22.177084176202413,
+        "cavityDepth_um": 43.76964260476196,
+        "conditionalMeltDepth_um": 61.267015829582455,
+        "conductionDepth_um": 36.714326386914756,
+        "linkedMeltDepth_um": 61.267015829582455,
+        "marangoniNumber": 193.87191946308724,
+        "surfaceVelocityScale_m_s": 1.7673701967062463,
+        "liquidPecletScale": 18.03386591775232,
+        "peakTemperatureProxy_K": 4484.031962320394,
+        "evaporationMassFlux_kg_m2_s": 808.6705248865483,
+        "recoilPressure_Pa": 1339842.1468148462,
+        "lossFreeCenterTemperature_K": 10473.876933124699,
+        "energyResidualRelative": 6.458358722621184e-11
+      }
+    },
+    {
+      "alloy": "ti6al4v",
+      "power_W": 200.0,
+      "values": {
+        "peclet": 5.565243612478677,
+        "powerOverOnset": 9.018318116617612,
+        "onsetPower_W": 22.177084176202413,
+        "cavityDepth_um": 161.87816780069804,
+        "conditionalMeltDepth_um": 177.53210255395066,
+        "conductionDepth_um": 56.73753504779265,
+        "linkedMeltDepth_um": 177.53210255395066,
+        "marangoniNumber": 193.87191946308724,
+        "surfaceVelocityScale_m_s": 1.7673701967062463,
+        "liquidPecletScale": 18.03386591775232,
+        "peakTemperatureProxy_K": 4900.143685391751,
+        "evaporationMassFlux_kg_m2_s": 2127.8558382008255,
+        "recoilPressure_Pa": 3685481.8785314965,
+        "lossFreeCenterTemperature_K": 20654.6038662494,
+        "energyResidualRelative": -5.875041555634085e-11
+      }
+    },
+    {
+      "alloy": "ti6al4v",
+      "power_W": 400.0,
+      "values": {
+        "peclet": 5.565243612478677,
+        "powerOverOnset": 18.036636233235225,
+        "onsetPower_W": 22.177084176202413,
+        "cavityDepth_um": 378.5164846096274,
+        "conditionalMeltDepth_um": 393.59870650007025,
+        "conductionDepth_um": 83.56097499705457,
+        "linkedMeltDepth_um": 393.59870650007025,
+        "marangoniNumber": 193.87191946308724,
+        "surfaceVelocityScale_m_s": 1.7673701967062463,
+        "liquidPecletScale": 18.03386591775232,
+        "peakTemperatureProxy_K": 5319.280210726243,
+        "evaporationMassFlux_kg_m2_s": 4822.268796508503,
+        "recoilPressure_Pa": 8702129.068975732,
+        "lossFreeCenterTemperature_K": 41016.0577324988,
+        "energyResidualRelative": -2.632934211706839e-12
+      }
+    },
+    {
+      "alloy": "alsi10mg",
+      "power_W": 100.0,
+      "values": {
+        "peclet": 0.5769870061515482,
+        "powerOverOnset": 0.9001608235933668,
+        "onsetPower_W": 111.09125989376915,
+        "cavityDepth_um": 0.0,
+        "conditionalMeltDepth_um": 41.751523568400984,
+        "conductionDepth_um": 33.692557622125335,
+        "linkedMeltDepth_um": 41.751523568400984,
+        "marangoniNumber": 297.24257068044005,
+        "surfaceVelocityScale_m_s": 2.828916757979244,
+        "liquidPecletScale": 9.988494879494803,
+        "peakTemperatureProxy_K": 2055.157267684136,
+        "evaporationMassFlux_kg_m2_s": 0.6293269392968219,
+        "recoilPressure_Pa": 941.5291911622226,
+        "lossFreeCenterTemperature_K": 2056.1879199974314,
+        "energyResidualRelative": 5.753386692563584e-11
+      }
+    },
+    {
+      "alloy": "alsi10mg",
+      "power_W": 200.0,
+      "values": {
+        "peclet": 0.5769870061515482,
+        "powerOverOnset": 1.8003216471867336,
+        "onsetPower_W": 111.09125989376915,
+        "cavityDepth_um": 17.9051282496735,
+        "conditionalMeltDepth_um": 71.88811464168596,
+        "conductionDepth_um": 66.60075658757887,
+        "linkedMeltDepth_um": 71.88811464168596,
+        "marangoniNumber": 297.24257068044005,
+        "surfaceVelocityScale_m_s": 2.828916757979244,
+        "liquidPecletScale": 9.988494879494803,
+        "peakTemperatureProxy_K": 3348.482177384919,
+        "evaporationMassFlux_kg_m2_s": 302.5606883593864,
+        "recoilPressure_Pa": 577791.8763803134,
+        "lossFreeCenterTemperature_K": 3819.225839994863,
+        "energyResidualRelative": -7.907798793282805e-11
+      }
+    },
+    {
+      "alloy": "alsi10mg",
+      "power_W": 400.0,
+      "values": {
+        "peclet": 0.5769870061515482,
+        "powerOverOnset": 3.600643294373467,
+        "onsetPower_W": 111.09125989376915,
+        "cavityDepth_um": 155.84002935646734,
+        "conditionalMeltDepth_um": 242.23173691915682,
+        "conductionDepth_um": 113.1075613906078,
+        "linkedMeltDepth_um": 242.23173691915682,
+        "marangoniNumber": 297.24257068044005,
+        "surfaceVelocityScale_m_s": 2.828916757979244,
+        "liquidPecletScale": 9.988494879494803,
+        "peakTemperatureProxy_K": 4174.364363752393,
+        "evaporationMassFlux_kg_m2_s": 2039.0780442130165,
+        "recoilPressure_Pa": 4347743.97134132,
+        "lossFreeCenterTemperature_K": 7345.301679989725,
+        "energyResidualRelative": -4.641282579279575e-11
+      }
+    }
+  ],
+  "bands": [
+    {
+      "alloy": "ti6al4v",
+      "power_W": 200.0,
+      "armIds": [
+        "nominal",
+        "absorptance_0.26",
+        "absorptance_0.33",
+        "melt_front_means",
+        "melt_front_kl_28.7",
+        "melt_front_kl_33.4",
+        "melt_front_cpl_831",
+        "melt_front_cpl_1126",
+        "melt_front_rhol_3920",
+        "melt_front_rhol_4123",
+        "enthalpy_cp",
+        "srv",
+        "vapour_3360",
+        "vapour_3760",
+        "power_0.95",
+        "beam_0.95",
+        "power_1.05",
+        "beam_1.05"
+      ],
+      "successfulArms": 18,
+      "failedArms": [],
+      "cavityExistsArms": 18,
+      "fields": {
+        "peclet": {
+          "min": 3.864315298448479,
+          "nominal": 5.565243612478677,
+          "max": 7.089227934076262,
+          "minArmId": "melt_front_kl_33.4",
+          "maxArmId": "enthalpy_cp"
+        },
+        "powerOverOnset": {
+          "min": 5.418810403740313,
+          "nominal": 9.018318116617612,
+          "max": 9.629401662879708,
+          "minArmId": "melt_front_kl_33.4",
+          "maxArmId": "beam_0.95"
+        },
+        "onsetPower_W": {
+          "min": 20.769722460636174,
+          "nominal": 22.177084176202413,
+          "max": 36.908469774463924,
+          "minArmId": "beam_0.95",
+          "maxArmId": "melt_front_kl_33.4"
+        },
+        "cavityDepth_um": {
+          "min": 77.65115551619853,
+          "nominal": 161.87816780069804,
+          "max": 179.57122965483956,
+          "minArmId": "melt_front_cpl_1126",
+          "maxArmId": "vapour_3360"
+        },
+        "conditionalMeltDepth_um": {
+          "min": 94.33369473906244,
+          "nominal": 177.53210255395066,
+          "max": 194.11763092104272,
+          "minArmId": "melt_front_cpl_1126",
+          "maxArmId": "vapour_3360"
+        },
+        "conductionDepth_um": {
+          "min": 45.108370046271745,
+          "nominal": 56.73753504779265,
+          "max": 58.37087575021618,
+          "minArmId": "melt_front_cpl_1126",
+          "maxArmId": "power_1.05"
+        },
+        "linkedMeltDepth_um": {
+          "min": 94.33369473906244,
+          "nominal": 177.53210255395066,
+          "max": 194.11763092104272,
+          "minArmId": "melt_front_cpl_1126",
+          "maxArmId": "vapour_3360"
+        },
+        "marangoniNumber": {
+          "min": 172.97554491017965,
+          "nominal": 193.87191946308724,
+          "max": 234.73094765100672,
+          "minArmId": "melt_front_kl_33.4",
+          "maxArmId": "melt_front_cpl_1126"
+        },
+        "surfaceVelocityScale_m_s": {
+          "min": 1.7388592401538785,
+          "nominal": 1.7673701967062463,
+          "max": 1.7978480860563062,
+          "minArmId": "beam_1.05",
+          "maxArmId": "beam_0.95"
+        },
+        "liquidPecletScale": {
+          "min": 16.090095938593386,
+          "nominal": 18.03386591775232,
+          "max": 21.834551638052808,
+          "minArmId": "melt_front_kl_33.4",
+          "maxArmId": "melt_front_cpl_1126"
+        },
+        "peakTemperatureProxy_K": {
+          "min": 4522.841060824936,
+          "nominal": 4900.143685391751,
+          "max": 5294.136225148051,
+          "minArmId": "vapour_3360",
+          "maxArmId": "vapour_3760"
+        },
+        "evaporationMassFlux_kg_m2_s": {
+          "min": 1628.6397168015462,
+          "nominal": 2127.8558382008255,
+          "max": 2397.2337943339126,
+          "minArmId": "absorptance_0.26",
+          "maxArmId": "beam_0.95"
+        },
+        "recoilPressure_Pa": {
+          "min": 2785289.5011622733,
+          "nominal": 3685481.8785314965,
+          "max": 4176048.1479171556,
+          "minArmId": "absorptance_0.26",
+          "maxArmId": "beam_0.95"
+        },
+        "lossFreeCenterTemperature_K": {
+          "min": 13009.404854390245,
+          "nominal": 20654.6038662494,
+          "max": 22155.501858076022,
+          "minArmId": "melt_front_kl_33.4",
+          "maxArmId": "beam_0.95"
+        }
+      }
+    },
+    {
+      "alloy": "alsi10mg",
+      "power_W": 200.0,
+      "armIds": [
+        "nominal",
+        "absorptance_0.28",
+        "absorptance_0.4",
+        "absorptance_0.14",
+        "absorptance_0.18",
+        "state_HT_low",
+        "state_HT",
+        "state_AB_unrelaxed",
+        "linear_last_100K",
+        "cp_fetni_end",
+        "liquidus_863.15",
+        "liquidus_872.15",
+        "rho_s_2620",
+        "rho_s_2715",
+        "melt_front_assael",
+        "melt_front_adc12",
+        "enthalpy_cp_397000",
+        "enthalpy_cp_500000",
+        "srv",
+        "vapour_o8",
+        "power_0.95",
+        "beam_0.95",
+        "power_1.05",
+        "beam_1.05"
+      ],
+      "successfulArms": 24,
+      "failedArms": [],
+      "cavityExistsArms": 23,
+      "fields": {
+        "peclet": {
+          "min": 0.45950928308904154,
+          "nominal": 0.5769870061515482,
+          "max": 1.068837202556399,
+          "minArmId": "state_HT",
+          "maxArmId": "enthalpy_cp_500000"
+        },
+        "powerOverOnset": {
+          "min": 0.8401501020204759,
+          "nominal": 1.8003216471867336,
+          "max": 2.4569645809401797,
+          "minArmId": "absorptance_0.14",
+          "maxArmId": "srv"
+        },
+        "onsetPower_W": {
+          "min": 81.40125484571219,
+          "nominal": 111.09125989376915,
+          "max": 238.05269977236242,
+          "minArmId": "srv",
+          "maxArmId": "absorptance_0.14"
+        },
+        "cavityDepth_um": {
+          "min": 0.0,
+          "nominal": 17.9051282496735,
+          "max": 47.58544983516427,
+          "minArmId": "absorptance_0.14",
+          "maxArmId": "absorptance_0.4"
+        },
+        "conditionalMeltDepth_um": {
+          "min": 39.47649249348764,
+          "nominal": 71.88811464168596,
+          "max": 120.8499484773047,
+          "minArmId": "absorptance_0.14",
+          "maxArmId": "absorptance_0.4"
+        },
+        "conductionDepth_um": {
+          "min": 31.028556856441494,
+          "nominal": 66.60075658757887,
+          "max": 84.00492495737203,
+          "minArmId": "absorptance_0.14",
+          "maxArmId": "absorptance_0.4"
+        },
+        "linkedMeltDepth_um": {
+          "min": 39.47649249348764,
+          "nominal": 71.88811464168596,
+          "max": 120.8499484773047,
+          "minArmId": "absorptance_0.14",
+          "maxArmId": "absorptance_0.4"
+        },
+        "marangoniNumber": {
+          "min": 282.3804421464181,
+          "nominal": 297.24257068044005,
+          "max": 312.1046992144621,
+          "minArmId": "beam_0.95",
+          "maxArmId": "beam_1.05"
+        },
+        "surfaceVelocityScale_m_s": {
+          "min": 2.783281088142034,
+          "nominal": 2.828916757979244,
+          "max": 2.8777007717025165,
+          "minArmId": "beam_1.05",
+          "maxArmId": "beam_0.95"
+        },
+        "liquidPecletScale": {
+          "min": 9.652706950356206,
+          "nominal": 9.988494879494803,
+          "max": 10.31873004379533,
+          "minArmId": "beam_0.95",
+          "maxArmId": "beam_1.05"
+        },
+        "peakTemperatureProxy_K": {
+          "min": 1938.2410307665716,
+          "nominal": 3348.482177384919,
+          "max": 3729.7079195532197,
+          "minArmId": "absorptance_0.14",
+          "maxArmId": "absorptance_0.4"
+        },
+        "evaporationMassFlux_kg_m2_s": {
+          "min": 0.23778964068862563,
+          "nominal": 302.5606883593864,
+          "max": 813.2450920029379,
+          "minArmId": "absorptance_0.14",
+          "maxArmId": "absorptance_0.4"
+        },
+        "recoilPressure_Pa": {
+          "min": 345.48703802530775,
+          "nominal": 577791.8763803134,
+          "max": 1639056.024297411,
+          "minArmId": "absorptance_0.14",
+          "maxArmId": "absorptance_0.4"
+        },
+        "lossFreeCenterTemperature_K": {
+          "min": 1938.6520586642696,
+          "nominal": 3819.225839994863,
+          "max": 5086.886370289854,
+          "minArmId": "absorptance_0.14",
+          "maxArmId": "srv"
+        }
+      }
+    }
+  ]
+}
