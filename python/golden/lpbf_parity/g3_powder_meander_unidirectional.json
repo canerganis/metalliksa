@@ -6,7 +6,7 @@
  "slow": false,
  "recordedImplementationHash": "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "1d12629701ceedc5e60784207c30e50e09412d64",
+ "recordedGitHead": "49e17b04e5b25301235a4b0b9357382d763b22cd",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,8 +68,8 @@
   }
  },
  "recordedRuns_s": [
-  4.0,
-  3.9
+  3.3,
+  3.3
  ],
  "recordedTwice": true,
  "observations": {
