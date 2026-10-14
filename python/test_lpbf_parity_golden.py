@@ -159,17 +159,10 @@ class ParityHarnessTests(unittest.TestCase):
             with self.subTest(case=case_id):
                 observations = json.loads(parity.golden_path(parity.CASE_BY_ID[case_id]).read_text(
                     encoding="utf-8"))["observations"]
-                if case_id == "g17_evaporation_316l":
-                    # P7b (2026-10-14): at the 316L absorptivity authority 0.30 (was 0.42) this transient case no
-                    # longer reaches the boiling point, so the evaporation inversion is never called (0 calls, no
-                    # vapour fraction). The Ti-6Al-4V and AlSi10Mg cases still exercise it. A descriptive record of
-                    # the sourced input, not a physics claim.
-                    self.assertEqual(observations["evaporation.inversionCalls"], 0)
-                    self.assertEqual(observations["evaporation.latentHeatVapUsed_J_kg"], [])
-                    self.assertIsNone(observations["evaporation.maxVaporFraction"])
-                else:
-                    self.assertGreater(observations["evaporation.inversionCalls"], 0)
-                    self.assertEqual(observations["evaporation.latentHeatVapUsed_J_kg"], [[value, value.hex()]])
+                # P7b (2026-10-14): the 316L case carries its recorded absorptivity 0.42 explicitly (at the authority
+                # 0.30 the 80 W case would no longer boil), so every case still exercises the inversion.
+                self.assertGreater(observations["evaporation.inversionCalls"], 0)
+                self.assertEqual(observations["evaporation.latentHeatVapUsed_J_kg"], [[value, value.hex()]])
                 self.assertEqual(observations["evaporation.authorityLatentHeatVap_J_kg"], [value, value.hex()])
                 self.assertIs(observations["evaporation.materialSnapshotHasLatentHeatVap"], False)
                 self.assertIs(observations["evaporation.authorityProbe.resultCanonicalEqual"], True)

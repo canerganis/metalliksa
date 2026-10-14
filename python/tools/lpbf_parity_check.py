@@ -572,8 +572,11 @@ def value_hex(value: Any) -> Any:
 # sensitive to L_v).
 EVAPORATION_CASES = {
     "ti6al4v": ("Ti-6Al-4V", {**SMALL, "material": "Ti-6Al-4V", "power_W": 80, "evaporationModel": True}),
+    # P7b gate (2026-10-14): the 316L case keeps the absorptivity it was recorded with (0.42, explicit, like G8 and
+    # G15) so the inversion and its L_v 6.25e6 stay exercised at the authority 0.30 (at 0.30 the 80 W case no
+    # longer boils); the request re-identifies the material, so its identity digests drift, named exactly.
     "ss316l": ("316L Stainless Steel", {**SMALL, "material": "316L Stainless Steel", "power_W": 80,
-                                         "evaporationModel": True}),
+                                         "absorptivity": 0.42, "evaporationModel": True}),
     "alsi10mg": ("AlSi10Mg", {**SMALL, "material": "AlSi10Mg", "power_W": 500, "evaporationModel": True}),
 }
 
@@ -1567,10 +1570,10 @@ IDENTITY_PATTERNS = ("*materialRevisionSha256*", "*materialSha256*", "*inputSha2
 # P7b (2026-10-14): the two G2 fixture booleans that compare the whole stripped result and the core-contract material
 # digest with the real capture are identity-class, not numerics: they flip when the material authority moves while
 # every numeric observation of the case stays protected (fixture.strippedResultEqualExceptMaterialIdentity carries the
-# replay claim). They may drift only when named exactly, like every identity observation. The third key is the new
-# replay-claim observation itself (absent from the pre-P7b golden, so its first appearance is named exactly once).
-REFERENCE_IDENTITY_FLAGS = ("fixture.strippedResultEqual", "fixture.materialSha256Equal",
-                            "fixture.strippedResultEqualExceptMaterialIdentity")
+# replay claim). They may drift only when named exactly, like every identity observation. The replay-claim observation
+# fixture.strippedResultEqualExceptMaterialIdentity itself is recorded True and falls under the fixture.* never-drift
+# rule (P7b gate ruling): it is the G2 replay claim, not an identity flag.
+REFERENCE_IDENTITY_FLAGS = ("fixture.strippedResultEqual", "fixture.materialSha256Equal")
 # Reference numerics: a change in a REFERENCE_CASES case always fails, whatever the allowlist.
 REFERENCE_NUMERICS_PATTERNS = (
     "*.key.metrics", "*.key.thermalHistory", "*.key.energyBalance", "*.key.field*",
