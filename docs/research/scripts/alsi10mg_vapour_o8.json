@@ -1,0 +1,357 @@
+{
+  "composition_rule": "Measured feedstock Al/Si/Mg/Fe entries sum to100 wt%; other elements unreported and omitted, not measured zeros; liquid surface chemistry unknown",
+  "element_constants": {
+    "Al": {
+      "H_J_mol": 284000.0,
+      "M_kg_mol": 0.0269815384,
+      "Tb_K": 2743.0
+    },
+    "Fe": {
+      "H_J_mol": 354000.0,
+      "M_kg_mol": 0.055845,
+      "Tb_K": 3134.0
+    },
+    "Mg": {
+      "H_J_mol": 132000.0,
+      "M_kg_mol": 0.024305,
+      "Tb_K": 1383.0
+    },
+    "Si": {
+      "H_J_mol": 383000.0,
+      "M_kg_mol": 0.028085,
+      "Tb_K": 3533.0
+    }
+  },
+  "equations": {
+    "cc": "p_i/atm=exp[(H_i/R)(1/Tb_i-1/T)]",
+    "effective_constants": "M=sum_i y_i M_i; H_table=sum_i y_i H_i; H_local=sum_i y_i R T^2 dln(p_i)/dT; L=H/M",
+    "fit": "log10(p_i/atm)=-A_i/T+B_i+C_i log10(T)+1e-3 D_i T",
+    "liquid": "x_i=(w_i/M_i)/sum_j(w_j/M_j)",
+    "mixture": "P/atm=sum_i x_i p_i/atm; solve P=1atm; y_i=x_i p_i/P"
+  },
+  "evidenceKind": "Literature estimate",
+  "experimentalValidation": false,
+  "fit_coefficients": {
+    "Al": {
+      "coefficients": [
+        12210.0,
+        -27.06,
+        10.09,
+        -1.16
+      ],
+      "range_K": [
+        1200.0,
+        3370.0
+      ]
+    },
+    "Fe": {
+      "coefficients": [
+        27180.0,
+        50.1,
+        -12.62,
+        0.8586
+      ],
+      "range_K": [
+        1400.0,
+        3775.0
+      ]
+    },
+    "Si": {
+      "coefficients": [
+        17250.0,
+        -15.97,
+        6.403,
+        -0.5281
+      ],
+      "range_K": [
+        1700.0,
+        4300.0
+      ]
+    }
+  },
+  "independent_all_cc": {
+    "H_local_slope_J_mol": 166983.52430624998,
+    "H_table_weighted_J_mol": 166983.52430624998,
+    "L_local_slope_J_kg": 6700437.223773384,
+    "L_table_weighted_J_kg": 6700437.223773384,
+    "M_vapour_kg_mol": 0.024921287780114803,
+    "T_v_K": 2471.72850385532,
+    "composition_wt_pct": {
+      "Al": 89.67,
+      "Fe": 0.14,
+      "Mg": 0.44,
+      "Si": 9.75
+    },
+    "liquid_mole_fractions": {
+      "Al": 0.900364329853648,
+      "Fe": 0.0006791747941217771,
+      "Mg": 0.004904501485938073,
+      "Si": 0.09405199386629205
+    },
+    "mg_above_fitted_temperature_range": true,
+    "mg_above_mondal_synthesized_pressure_limit": true,
+    "mg_activity_factor": 1.0,
+    "mg_pure_pressure_atm": 157.01501633338046,
+    "mixture_pressure_atm": 1.000000000000134,
+    "partial_pressures_atm": {
+      "Al": 0.22955336395752274,
+      "Fe": 1.782933271559769e-05,
+      "Mg": 0.7700803809216553,
+      "Si": 0.0003484257882403373
+    },
+    "pressure_route": "cc",
+    "root_pressure_residual_atm": 1.3389289676979388e-13,
+    "vapour_mole_fractions": {
+      "Al": 0.229553363957492,
+      "Fe": 1.78293327155953e-05,
+      "Mg": 0.7700803809215522,
+      "Si": 0.0003484257882402906
+    }
+  },
+  "limitations": [
+    "Ideal Raoult activities, equilibrium monatomic ideal vapour, no selective depletion or Knudsen layer",
+    "Mg CC extrapolation reaches >150atm pure pressure; Mondal synthesizes only to10atm; not a located validated vapour law at this pressure",
+    "Hybrid local-slope H differs from weighted tabulated H; rounded6.8MJ/kg corresponds to the former, not a universal latent heat",
+    "Nominal powder composition is not the evolving liquid surface composition; missing Zn and other trace activities could move the root",
+    "No alloy boiling/latent-heat measurement, blind test, fitted depth or measured depth enters this calculation",
+    "Registered MELT O8 additionally required independent Opus recomputation before a scored S2 freeze; this script does not grant it"
+  ],
+  "moduleMaturity": "Research",
+  "numerics": {
+    "R_J_molK": 8.31446261815324,
+    "max_iterations": 80,
+    "monotonicity": "Each included pressure law increases throughout this bracket",
+    "temperature_abs_tolerance_K": 1e-09,
+    "temperature_bracket_K": [
+      1800,
+      3000
+    ]
+  },
+  "o8Status": "reproducible calculation closed; material validity unresolved",
+  "primary_hybrid": {
+    "H_local_slope_J_mol": 169822.1550649666,
+    "H_table_weighted_J_mol": 165180.96033533727,
+    "L_local_slope_J_kg": 6823019.62479557,
+    "L_table_weighted_J_kg": 6636548.297125489,
+    "M_vapour_kg_mol": 0.024889589126757754,
+    "T_v_K": 2477.605213217703,
+    "composition_wt_pct": {
+      "Al": 89.67,
+      "Fe": 0.14,
+      "Mg": 0.44,
+      "Si": 9.75
+    },
+    "liquid_mole_fractions": {
+      "Al": 0.900364329853648,
+      "Fe": 0.0006791747941217771,
+      "Mg": 0.004904501485938073,
+      "Si": 0.09405199386629205
+    },
+    "mg_above_fitted_temperature_range": true,
+    "mg_above_mondal_synthesized_pressure_limit": true,
+    "mg_activity_factor": 1.0,
+    "mg_pure_pressure_atm": 159.4254473301418,
+    "mixture_pressure_atm": 0.9999999999994991,
+    "partial_pressures_atm": {
+      "Al": 0.21778816420267272,
+      "Fe": 1.8042531255159978e-05,
+      "Mg": 0.7819023433270225,
+      "Si": 0.00029144993854876377
+    },
+    "pressure_route": "hybrid",
+    "root_pressure_residual_atm": 5.009326287108706e-13,
+    "vapour_mole_fractions": {
+      "Al": 0.21778816420278183,
+      "Fe": 1.8042531255169018e-05,
+      "Mg": 0.7819023433274142,
+      "Si": 0.00029144993854890975
+    }
+  },
+  "proposed_relative_errors": {
+    "L_v_local_slope": -0.003373817761261333,
+    "M": 0.004436026351417377,
+    "T_v": 0.000966573193146969
+  },
+  "proposed_rounded_triple": {
+    "L_v_J_kg": 6800000.0,
+    "M_kg_mol": 0.025,
+    "T_v_K": 2480.0
+  },
+  "pure_al_proxy": {
+    "H_J_mol": 284000.0,
+    "L_v_J_kg": 10525715.613013377,
+    "M_kg_mol": 0.0269815384,
+    "T_v_K": 2743.0,
+    "basis": "pure Al constant-H proxy, not measured AlSi10Mg"
+  },
+  "registeredMeltS2Licence": false,
+  "schema": "metalliksa-alsi10mg-vapour-o8-v1",
+  "servedChange": false,
+  "sources": {
+    "atomic_masses": "CIAAW aluminium.htm (Al 26.9815384); abridged-atomic-weights.htm 2024 (Mg24.305 Si28.085 Fe55.845); accessed 2026-10-14",
+    "composition": "Liu and Gibbons, SFF 2023, Controlling chemical composition changes in laser powder bed fusion of AlSi10Mg; Table1 printed p.341/PDFp.3; feedstock composition, not depth data; https://utw10945.utweb.utexas.edu/sites/default/files/2023/027%20ControllingChemicalCompositionChangesinLaserPowderBedFusionofAlSi10Mg.pdf",
+    "elemental_pressure_fits": "Same paper Eq.2 p.4, Table2 p.7; Al/Si/Fe valid locally; Mg polynomial never extrapolated",
+    "elemental_thermodynamics": "Mondal et al. 2023, Materials 16, 50; Eq.1 p.2, Table1 p.3; https://doi.org/10.3390/ma16010050"
+  },
+  "synthetic_composition_sensitivities": [
+    {
+      "H_local_slope_J_mol": 296193.6415411579,
+      "H_table_weighted_J_mol": 284224.4293709662,
+      "L_local_slope_J_kg": 10975369.039205616,
+      "L_table_weighted_J_kg": 10531853.37157387,
+      "M_vapour_kg_mol": 0.026987123666011692,
+      "T_v_K": 2764.433435472074,
+      "composition_wt_pct": {
+        "Al": 90.11,
+        "Fe": 0.14,
+        "Mg": 0.0,
+        "Si": 9.75
+      },
+      "liquid_mole_fractions": {
+        "Al": 0.9052227201973138,
+        "Fe": 0.0006795053878007359,
+        "Mg": 0.0,
+        "Si": 0.09409777441488541
+      },
+      "mg_above_fitted_temperature_range": true,
+      "mg_above_mondal_synthesized_pressure_limit": true,
+      "mg_activity_factor": 1.0,
+      "mg_pure_pressure_atm": 309.954637363361,
+      "mixture_pressure_atm": 1.0000000000001605,
+      "partial_pressures_atm": {
+        "Al": 0.997700870729314,
+        "Fe": 0.00010980782232981183,
+        "Mg": 0.0,
+        "Si": 0.002189321448516696
+      },
+      "pressure_route": "hybrid",
+      "root_pressure_residual_atm": 1.6053824936079764e-13,
+      "vapour_mole_fractions": {
+        "Al": 0.9977008707291538,
+        "Fe": 0.0001098078223297942,
+        "Mg": 0.0,
+        "Si": 0.002189321448516345
+      }
+    },
+    {
+      "H_local_slope_J_mol": 215506.7057200214,
+      "H_table_weighted_J_mol": 207101.31625492816,
+      "L_local_slope_J_kg": 8408965.29395961,
+      "L_table_weighted_J_kg": 8080991.145507782,
+      "M_vapour_kg_mol": 0.025628207298563327,
+      "T_v_K": 2622.4704962031865,
+      "composition_wt_pct": {
+        "Al": 89.91,
+        "Fe": 0.14,
+        "Mg": 0.2,
+        "Si": 9.75
+      },
+      "liquid_mole_fractions": {
+        "Al": 0.9030137747510267,
+        "Fe": 0.0006793550780581975,
+        "Mg": 0.002229910620046436,
+        "Si": 0.09407695955086863
+      },
+      "mg_above_fitted_temperature_range": true,
+      "mg_above_mondal_synthesized_pressure_limit": true,
+      "mg_activity_factor": 1.0,
+      "mg_pure_pressure_atm": 227.1344732225288,
+      "mixture_pressure_atm": 1.000000000000544,
+      "partial_pressures_atm": {
+        "Al": 0.4926103780257946,
+        "Fe": 4.735317944343913e-05,
+        "Mg": 0.5064895740175698,
+        "Si": 0.000852694777736243
+      },
+      "pressure_route": "hybrid",
+      "root_pressure_residual_atm": 5.440092820663267e-13,
+      "vapour_mole_fractions": {
+        "Al": 0.4926103780255266,
+        "Fe": 4.735317944341337e-05,
+        "Mg": 0.5064895740172942,
+        "Si": 0.0008526947777357792
+      }
+    },
+    {
+      "H_local_slope_J_mol": 191528.35962809625,
+      "H_table_weighted_J_mol": 184909.46827863785,
+      "L_local_slope_J_kg": 7589130.715863536,
+      "L_table_weighted_J_kg": 7326863.385100216,
+      "M_vapour_kg_mol": 0.025237193401840493,
+      "T_v_K": 2558.0767144931997,
+      "composition_wt_pct": {
+        "Al": 89.81,
+        "Fe": 0.14,
+        "Mg": 0.3,
+        "Si": 9.75
+      },
+      "liquid_mole_fractions": {
+        "Al": 0.9019096684590865,
+        "Fe": 0.0006792799481210797,
+        "Mg": 0.003344496021055781,
+        "Si": 0.0940665555717367
+      },
+      "mg_above_fitted_temperature_range": true,
+      "mg_above_mondal_synthesized_pressure_limit": true,
+      "mg_activity_factor": 1.0,
+      "mg_pure_pressure_atm": 195.0295666598429,
+      "mixture_pressure_atm": 0.9999999999995879,
+      "partial_pressures_atm": {
+        "Al": 0.34715602370173326,
+        "Fe": 3.1287745081913356e-05,
+        "Mg": 0.6522756096820779,
+        "Si": 0.0005370788706948838
+      },
+      "pressure_route": "hybrid",
+      "root_pressure_residual_atm": 4.121147867408581e-13,
+      "vapour_mole_fractions": {
+        "Al": 0.3471560237018763,
+        "Fe": 3.128774508192625e-05,
+        "Mg": 0.6522756096823467,
+        "Si": 0.0005370788706951051
+      }
+    },
+    {
+      "H_local_slope_J_mol": 168662.91470260266,
+      "H_table_weighted_J_mol": 164138.39042748546,
+      "L_local_slope_J_kg": 6781449.211658335,
+      "L_table_weighted_J_kg": 6599531.143701758,
+      "M_vapour_kg_mol": 0.024871219917513447,
+      "T_v_K": 2472.30468285552,
+      "composition_wt_pct": {
+        "Al": 89.66,
+        "Fe": 0.14,
+        "Mg": 0.45,
+        "Si": 9.75
+      },
+      "liquid_mole_fractions": {
+        "Al": 0.9002539668322724,
+        "Fe": 0.0006791672843675835,
+        "Mg": 0.005015911966373311,
+        "Si": 0.09405095391698672
+      },
+      "mg_above_fitted_temperature_range": true,
+      "mg_above_mondal_synthesized_pressure_limit": true,
+      "mg_activity_factor": 1.0,
+      "mg_pure_pressure_atm": 157.25022899299626,
+      "mixture_pressure_atm": 0.9999999999992495,
+      "partial_pressures_atm": {
+        "Al": 0.21094975778974925,
+        "Fe": 1.73764005476247e-05,
+        "Mg": 0.7887533053209133,
+        "Si": 0.00027956048803935506
+      },
+      "pressure_route": "hybrid",
+      "root_pressure_residual_atm": 7.505107646466058e-13,
+      "vapour_mole_fractions": {
+        "Al": 0.21094975778990757,
+        "Fe": 1.737640054763774e-05,
+        "Mg": 0.7887533053215052,
+        "Si": 0.00027956048803956486
+      }
+    }
+  ],
+  "uiSentence": "Ideal-mixture vapour sensitivity; extrapolated Mg pressure, no blind validation.",
+  "use": "research sensitivity only; never replace the served Al proxy",
+  "validationStatus": "not validated: no blind test passed (open data unavailable, see GOAL.md)"
+}
