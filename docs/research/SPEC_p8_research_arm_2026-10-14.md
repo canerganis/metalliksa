@@ -5,7 +5,7 @@ Base: `research/p8-research-arm`, `835466fa` (rebased tree; `1400f7a9` was its p
 
 Amendment baseline: specification `439979d2`, rebased onto pushed main `835466fa`. Amendment 1 supersedes the original unavailable-only presentation of Marangoni and flat surface balance. It authorizes research diagnostics and user exploration, not promotion into the served predictor.
 
-**Current authority:** Amendment 2 below supersedes conflicting physics, manifests, labels and numerical claims in the original text and Amendment 1. Sections 9/9.1 contain replacement pins. The architect-owned `SPEC_p8_integration_contract_2026-10-15.md` owns transport, gating, caching, provenance vocabulary, names and reason-code serialization; its final schema must satisfy Amendment 2's physics requirements. Implementation remains blocked pending a full re-gate of both documents and the regenerated fixtures.
+**Current authority:** Amendment 3 below supersedes conflicting physics, manifests, labels and numerical claims in the original text and Amendments 1–2. Sections 9/9.1 contain replacement pins. The architect-owned `SPEC_p8_integration_contract_2026-10-15.md` owns transport, gating, caching, provenance vocabulary, names and reason-code serialization. The Opus re-gate returned APPROVE_WITH_CHANGES: the lead checks R1–R15 before their dependent phases, with no further full re-gate. A narrow independent numerics check is required only if the above-onset field changes; Amendment 3 retains it.
 
 **Decision:** publish the derived hypotheses beside the served predictor, with explicit research labels, without waiting indefinitely for blind data. This document specifies the future integration; this commit contains the specification and a reproducible O8 calculation, **not an implemented API or UI**. The maintainer authorized this scope on 2026-10-14. G2 and G3o remain **BLOCKED BY DATA**, P3 **INCONCLUSIVE**, G3 permanently blocked under its original laboratory contract, N3 NOT PASSED, N4 NOT EVALUATED. Numerical agreement below is synthetic software evidence, never experimental validation.
 
@@ -266,20 +266,20 @@ Amendment 1 adds the two new model fixtures at these same six points and two com
 
 Nominal onset pins: **Ti31.363133215875212W; Al157.1067664028826W**. Ti Pe5.565243612478677, Al Pe.5769870061515482; onset normalization changes the Ti100W nominal into a three-root case, whose lowest strictly stable root is pinned per root, not inferred from an envelope. The Al100W link now equals its Gaussian floor by below-onset dispatch; its old41.75um point-source number is superseded. Table values are rounded for reading; the committed JSON holds full doubles.
 
-### 9.1 Amendment 2 reproduction, envelopes and artifact pins
+### 9.1 Amendment 3 reproduction, envelopes and artifact pins
 
-Run `python -B docs/research/scripts/p8_amendment1_synthetic.py --check` and `python -I docs/research/scripts/alsi10mg_vapour_o8.py --check`. The first stem is retained for continuity; its content and model identity are now Amendment2 / `p8-research-synthetic-v2`. Runtime cavity/link IDs are v2. Replay uses committed local `p8_cavity_kernel.py`, not `git show` of the unpushed P3 branch. Only registry/ET field source blobs at ancestor835466fa are loaded; their exact SHA256 values are recorded in the fixture. No full thermal solver, catalog, target runner or measured payload is imported.
+Run `python -B docs/research/scripts/p8_amendment1_synthetic.py --check` and `python -I docs/research/scripts/alsi10mg_vapour_o8.py --check`. The first stem is retained for continuity; its content and fixture identity are now Amendment3 / `p8-research-synthetic-v3`; the retained field physics keeps the cavity/link v2 model IDs. Also run `python -B docs/research/scripts/p8_input_provenance.py --check` for per-input provenance and secondary-alloy manifests. Replay uses committed local `p8_cavity_kernel.py`, not `git show` of the unpushed P3 branch. Only registry/ET field source blobs at ancestor835466fa are loaded; their exact SHA256 values are recorded in the fixture. No full thermal solver, catalog, target runner or measured payload is imported.
 
 | Alloy, 200W | Cavity/link arms; onset scenarios | Marangoni arms | Surface arms |
 |---|---|---:|---:|
-| Ti64 | 21; 20/21 | 17 | 19 |
-| AlSi10Mg | 26; 22/26 | 13 | 24 |
+| Ti64 | 20; 20/20 | 17 | 19 |
+| AlSi10Mg | 25; 22/25 | 13 | 24 |
 
-No unresolved arms at these two fixtures. O2 is an explicitly different piston criterion, not recoil inception; its no-positive-depth Ti200W case sets the lower end of the cavity/link envelope. The support fraction counts declared competing conventions and carries that warning; it is neither physical existence nor probability. Module-local flow/surface arms do not dilute cavity support.
+No numerically unresolved arms at these two fixtures; this does not mean every input has a resolved source label. O2 is retained only in geometricThresholdDiagnostics, excluded from every inception envelope and support count (C1). O1/O3 remain explicitly different inception conventions. The support fraction counts declared inception scenarios and carries that warning; it is neither physical existence nor probability. Module-local flow/surface arms do not dilute cavity support.
 
 | Alloy, 200W | Cavity min/nom/max um | Linked min/nom/max um | Ma min/nom/max | uBL min/nom/max m/s |
 |---|---|---|---|---|
-| Ti64 | 0.000000 / 153.515799 / 166.945777 | 58.362678 / 169.808546 / 182.463064 | 96.935960 / 193.871919 / 498.681233 | 1.113373 / 1.767370 / 2.805525 |
+| Ti64 | 57.013576 / 153.515799 / 166.945777 | 75.020231 / 169.808546 / 182.463064 | 96.935960 / 193.871919 / 498.681233 | 1.113373 / 1.767370 / 2.805525 |
 | AlSi10Mg | 0.000000 / 8.638170 / 22.064018 | 31.154537 / 71.423533 / 88.452912 | 125.307303 / 297.242571 / 761.600428 | 1.683573 / 2.828917 / 5.027151 |
 
 **One-at-a-time scenario envelope; no interactions, confidence interval, error bar or physical bounds.** Full per-arm tuples/provenance, root counts/branches, categorical support and extrema-generating IDs are in JSON. This covers the scalar physics quantities the script actually evaluates, not the complete future runtime schema. Surface numbers retain the falsified-closure artefact warning; Marangoni uses assumed deltaT/L and is not a melt-depth correction.
@@ -299,13 +299,14 @@ Artifact SHA256 below uses UTF-8 **canonical LF source/JSON bytes**; CRLF checko
 
 | Artifact under scripts/ | Canonical LF SHA256 |
 |---|---|
-| `p8_cavity_kernel.py` | `02127845ef0605bf37a6e3edf16cd6cf78292d8af09e40d6c266a810e263a1ad` |
-| `p8_amendment1_synthetic.py` | `200af2bd05ef22c72adc2113b18fe05af32b7feb5f79be35190127fb8b3dcb0f` |
-| `p8_amendment1_synthetic.json` | `1a2dfcb49341a176abcc37119be5f012a61df529d611a1105e66ba7f98a7ba1a` |
+| `p8_cavity_kernel.py` | `9c5af07a86b4589b5de597ce4b8f2970392345d9b8937ee27e634cc5019d6ce0` |
+| `p8_amendment1_synthetic.py` | `5a17c7ef5510cd6d05fe79e940fe3741cb04a40f8604794d50531a9753bdde0a` |
+| `p8_amendment1_synthetic.json` | `0786d84240f17489ae7f7cc8bed6efd6cf2c98e4fd5fafbdd114b7e180229457` |
+| `p8_input_provenance.py` | `f325835a9d55f84bc96e29814477b57e8740ad9355712e635bafa5aeee7937c9` |
 | `alsi10mg_vapour_o8.py` | `66af8363324ea9244c81998623913337cb7419a89da9540cba33e99f95b959f3` |
 | `alsi10mg_vapour_o8.json` | `23b190dbe6dd21991ae50630af380a6f73825be9f4c61e9fa0882f0c1a22dad2` |
 
-Verification environment: Python3.12.10, NumPy2.5.3, SciPy1.18.1 on Windows. Runtime must include the exact used artifact and constants identity in its fingerprint/cache provenance; it may embed approved constants or read a pinned JSON, but never add an unmanifested dependency. Old model/fixture hashes and onset-dependent pins are superseded, while the unchanged835466fa material and ET source hashes retain their identities. ExperimentalValidation=false; P3 Stage1 INCONCLUSIVE, N3 NOT PASSED and N4 NOT EVALUATED.
+Verification environment: Python3.12.10, NumPy2.5.3, SciPy1.18.1 on Windows. Runtime must include the exact used artifact and constants identity in its fingerprint/cache provenance; it may embed approved constants or read a pinned JSON, but never add an unmanifested dependency. Old fixture/artifact hashes and the O2-contaminated extrema/support counts are superseded; above-onset model physics and the unchanged835466fa material and ET source hashes retain their identities. ExperimentalValidation=false; P3 Stage1 INCONCLUSIVE, N3 NOT PASSED and N4 NOT EVALUATED.
 
 ## 10. Source index and continuation
 
@@ -575,3 +576,99 @@ The architect must carry: (1) distinct source/assumption/user/derived provenance
 Cheap source/wording corrections: Mohr Fig.3b is viscosity, not surface tension (use Eq.23 for the slope); Fabbro2020 section4.1 starts PDF p.10, not p.11. The DOI10.2351/1.5040624 belongs to the keyhole-depth-evolution paper, not the printed "Scaling laws" title previously attached to it. Unverified NBS density, Sahoo constants and Fabbro conduction-share source pages retain their existing locators with **not independently reverified in this amendment**; the gate's inability to inspect a library page is not proof the value is false. No new measured data/source verification claim is made. The local P3 kernel snapshot removes the unpushed-branch replay dependency. All source pins use canonical LF bytes; JSON replay compares parsed structure and field-specific numerical tolerances, not universal-newline text equality or exact libm output. Runtime code must pin/identify whichever sourced constants artifact it actually loads; no unmanifested JSON dependency.
 
 Continuation: attach this amendment and both freshly pinned synthetic records to the architect's contract for the required full Opus re-gate. Do not start implementation or open blind targets from these synthetic checks. The implementer is assigned by the lead, not presumed to be Fable. At implementation, add a distinct P8-RA evidence entry to PROOF.md with the actual runtime/golden/parity checks and their limits; this specification's synthetic reproduction is not a production acceptance record.
+
+## Amendment 3 (Opus re-gate 2026-10-15)
+
+### C0. Authority, decisions and evidence boundary
+
+This amendment resolves the physics/data side of re-gate R1, R2, R6, R7 and R15. It supersedes conflicting original, Amendment 1 and Amendment 2 rules, including the unconditional inside-range sentence and the inclusion of O2 in the inception envelope. The companion `SPEC_p8_integration_contract_2026-10-15.md` remains supreme for final transport/schema names, closed enums, availability, gating, caching, reason-code serialization and rendering; its revised implementation contract must preserve the physics and evidence rules here. The Opus re-gate verdict is APPROVE_WITH_CHANGES: the lead checks closure of R1-R15 against both documents and regenerated records; no further full re-gate is required. A narrow independent numerical check is required only if the above-onset field physics changes; this amendment retains that field unchanged. A specification correction or synthetic replay does not establish numerical runtime parity, experimental validity or a production pass.
+
+The Astra physics resolutions recorded here are: retain O2 as a distinct geometric diagnostic outside the inception envelope (R1); retain the above-onset point/line model and explicitly disclose its Gaussian-to-point field-shape step with synthetic records on both sides of onset (R2). The maintainer evidence decision is to use per-value source support labels beneath a screening-only module ceiling, with Unresolved precedence (R6). No new blind measured depths, target papers, raw images or depth spreadsheets are used. Existing source locators retain their previously stated verification limits.
+
+### C1. O2 describes a geometric event, not zero-depth inception (R1)
+
+Fabbro 2018 Eq.2's O2 event is a geometric piston threshold near R=1. It cannot be substituted for P* in the shifted zero-at-inception law `K(Tv-T0)g e=A_tot(P-P*)`: doing so returns zero depth at an event that assumes a finite geometric depression. Retain its separately identified threshold and process-to-threshold ratio as a geometric diagnostic, with its original source/event provenance. Do not evaluate cavity depth, conditional/linked melt depth or an inception support vote from an O2-shifted arm. O2 contributes neither extrema nor support counts in the cavity/link inception envelope. Its threshold is not a replacement nominal onset and supplies no geometric depth-versus-power law.
+
+O1 and O3 retain their own event definitions and alternative-convention provenance; they must not masquerade as the B2 recoil-threshold comparison. Any threshold diagnostic with a different event reports event mismatch rather than a matching recoil-onset comparison. The synthetic record must retain O2 visibly outside the inception arm results, so its exclusion cannot be mistaken for removing an inconvenient value.
+
+### C2. Retained field-shape step and both-side records (R2)
+
+The chosen model remains unchanged: at or below recoil onset the conditional/linked depth dispatches to the converged Gaussian floor; above onset it uses the loss-free surface-point/uniform-line conditional envelope and the Gaussian floor safeguard. The positive-depth point/line limit approaches a singular surface-point field as cavity depth approaches zero, rather than the distributed Gaussian field. The `max` safeguard does not reconcile these fields. This is an explicit discontinuity of the hypothesis, not a resolved physical jump or a convergence failure, and no blending, clipping or fitted continuity correction is authorized.
+
+For the declared nominal synthetic tuples, an independent same-power surface-point calculation at the recoil onset gives the following computational field-shape differences (rounded here; regenerated records hold full numbers):
+
+| Synthetic tuple | Gaussian depth at P* (um) | Surface-point depth at the same P* (um) | Point-minus-Gaussian (um) | Point/Gaussian |
+|---|---:|---:|---:|---:|
+| Ti6Al4V | 12.543714 | 22.156815 | 9.613101 | 1.76637 |
+| AlSi10Mg | 53.824726 | 59.543258 | 5.718533 | 1.10624 |
+
+Include records at `P*(1-1e-9)`, exactly P*, and `P*(1+1e-9)` with actual power, ratio, cavity depth, Gaussian floor, conditional depth, linked depth and controlling leg. The same-power point baseline is a separate diagnostic, never the selected conditional result at or below onset. Above the nominal onset by that synthetic relative offset, cavity depth is about 1.11e-8 um (Ti) or 3.16e-8 um (Al), while linked depth approaches the point-field values above; below onset linked depth approaches the Gaussian values. These records isolate the field-shape switch without attributing the jump to a finite cavity.
+
+| Synthetic tuple | P* (W) | Linked depth at P*(1-1e-9) (um) | Linked depth at P*(1+1e-9) (um) | Exact-P* point-minus-Gaussian (um) |
+|---|---:|---:|---:|---:|
+| Ti6Al4V | 31.363133215875212 | 12.543713572595376 | 22.156814634738602 | 9.613101037051555 |
+| AlSi10Mg | 157.1067664028826 | 53.82472550131056 | 59.54325824184927 | 5.718532635386353 |
+
+For nominal AlSi10Mg at 200 W, the independent same-power point baseline is 71.365391 um, the Gaussian floor is 66.603314 um, and the conditional envelope is 71.423533 um. The field-shape excess is 4.7620767187599 um of the 4.820218877011769 um conditional-minus-floor excess; `(point-floor)/(conditional-floor)=98.79378593%`. This describes this model-model difference only. Keep the independently calculated point baseline and cavity/line increment distinguishable. Do not treat controlling-leg support or a positive linked-minus-floor difference as evidence that a cavity caused the full depth increase.
+
+Every cavity/link note whose conditional model uses this dispatch must carry the field-shape assumption, with the onset-side synthetic locator and explicit absence of physical validation. The primary sentence or its visible additional note must disclose the discontinuity when the result/arm is near or crosses onset. The integration contract owns the final carrier and UI wording; it must not drop this disclosure when another primary sentence wins.
+
+### C3. Availability, scope and sentence eligibility (R7)
+
+Keep three distinct axes: numerical availability; consistency scope (`outOfRange > extrapolated > inRange`); and experimental/closure validation status. An available numerical diagnostic may be extrapolated or a falsified-closure artefact. An unavailable value still carries its scientific status and reason. Neither an available number nor an `inRange` consistency state means experimental validity.
+
+The A5 scope classification still applies: source composition/state/phase/temperature transfer, an unestablished range for a custom or assumed physical coefficient, low Pe, and above-onset selected R<0.5 require `extrapolated`, unless an outOfRange cause has precedence. Source transfer is evaluated from the actual physical inputs and declared assumptions for each arm; a numerically admitted Pe/R does not suppress it. Runtime warnings are derived from each arm, and the nominal status is not silently applied to the band. A below-onset zero cavity is a valid model value but remains `extrapolated` if its inputs/assumptions are transferred. O2's geometric event has no below-onset zero-depth claim.
+
+The inside-range primary sentence is eligible **only** when that note's actual consistency status is `inRange`. The variant without an onset reference has the same guard. An available cavity/link note that is extrapolated due to source transfer or low aspect must have an eligible explanatory primary sentence even when Pe is above 2. The architect pins final wording with these required meanings:
+
+- Source transfer: the inputs or closure are transferred beyond their declared source scope; numerical admission is not a sourced physical range, and no blind validation is available.
+- Low aspect: above onset, selected R<0.5 falls outside the thermal-cylinder source geometry; the result is an extrapolated conditional estimate and cavity mechanics are omitted.
+- Low Pe: Pe<2 transfers the high-Pe thermal-cylinder closure used by the cavity/link estimate, and drilling, recoil-driven flow and melt transport are omitted. Both the thermal/source restriction and absent hydrodynamics must be named; a converged exact series does not remove either.
+- Below onset: the recoil-inception model gives zero cavity depth while conduction melting can occur; any source-transfer/extrapolation qualifier remains visible and cannot be replaced by an inside-range assertion.
+
+Use hard input/numerical/source refusal first, then the falsified surface-closure disclosure for a surface artefact, then applicable O8/source/low-Pe/low-aspect extrapolation disclosures, and finally an inside-range sentence only if eligible. A below-onset zero may be the primary sentence only with its applicable transfer/range qualification visible. Preserve all additional limitations and the C2 field-shape disclosure in the visible note. Specific syntax and order among equally applicable extrapolation sentences belong to the integration contract; a generic transfer sentence is the required fallback when no specific sentence covers an extrapolated arm.
+
+### C4. Closure-dependent validation status (R7)
+
+Use the explicit non-surface status **"Not experimentally validated; research diagnostic/model only."** on non-surface containers, populated leaves, bands and diagnostic notes, except where a more specific closure-dependent status applies. Its shipped evidence locator is this specification, Amendment 3 C4; keep that locator adjacent to the status without changing the pinned literal. Unavailable values retain that status beside their availability reason; do not use an undefined "data-unavailable status" as a substitute for validation status. O8 additionally retains its source-range extrapolation disclosure. `experimentalValidation` stays false throughout.
+
+Every surface-closure-dependent numeric artefact retains B2's explicit status: **"Falsified flat non-receding HKL closure against an open IN625 mass-loss test; numeric closure artefacts only, no physical prediction or blind-validation pass."** This includes surface-derived `onsetMismatch` temperature, recoil, scalar-balance threshold power and corresponding ratio/bands wherever they are displayed, including inside cavity/link notes. The status follows the dependency and does not depend on admission or availability of the cavity/link module. Missing/event-mismatched/tuple-mismatched comparison fields remain null with their cause and retain the closure-status disclosure where the surface closure is the proposed comparison. An independently sourced recoil threshold or thermal input echo does not become falsified merely because it shares the comparison container; distinguish its own dependencies.
+
+The primary cavity/link predictions do not consume the flat-balance scalar or losses and do not inherit its falsification automatically. They retain their own scope and unvalidated status while showing the unconditional B2 inconsistency statement. This separates a known falsified closure from an omitted-physics warning, a source-range exceedance and a model-model disagreement.
+
+### C5. Per-value provenance and module ceiling (R6)
+
+The research operation and its derived leaves remain under the registered **screening-only** evidence ceiling; the integration contract owns the exact `evidenceKind` enum and display mapping. The per-value `sourceEvidenceKind` is separate input/dependency support information, with user-visible labels **Literature estimate**, **User input**, and **Unresolved**. It cannot raise module maturity, validation status or the registry ceiling. This decision replaces a blanket Literature estimate on all derived outputs. Source support and closure validity remain separate axes.
+
+For derived support labels, inspect the physical/coefficient inputs that actually determine that leaf. Unresolved dominates User input, which dominates Literature estimate. Unverified physical assumptions or unsourced physical presets/blends yield Unresolved; a user coefficient yields User input only if no determining physical input is Unresolved. Conventions, solver settings, software resource limits and request bookkeeping have separately identified roles and do not alone force the weakest physical-input label. Closure falsification alone does not force Unresolved: a surface artefact whose relevant physical inputs are all sourced may have Literature estimate source support while retaining its explicit falsified validation status and the screening-only module ceiling. An unsourced emissivity or other relevant physical coefficient still yields Unresolved in the ordinary way. A source transfer retains its source locator and Literature estimate input label where the source is established, but its scope remains extrapolated; literature support does not establish applicability.
+
+Each band minimum and maximum uses the dependency support of the arm that generated that endpoint. Input echoes retain their own source/user/assumption provenance. Derived leaves record their determining input references rather than a misleading claim that an output number came directly from a paper. Source/model conventions, onsets with distinct events, a transferred absorptance, O8 sensitivity and the Ti vapour-temperature bracket must remain separately identifiable. Per-input records include phase, reference temperature, source range and locator when established; unknown bounds are explicit missing-source-range states, not fabricated limits. An arm-level generic PROPERTY_LEDGER fallback is insufficient for values absent from that ledger. The updated per-input manifests and fixture are the numerical/source-data authority; the companion integration contract owns their closed role vocabulary and serialization.
+
+### C6. Cross-module comparison identity and acceptance (R15/R7)
+
+Resolve a deduplicated arm ID through its declared alias to the retained equivalent arm before any cross-module lookup. P/P* and scan Pe may use the documented same-arm reference and otherwise the explicitly identified cavity nominal reference. They do not create new cavity arms or reopen an unsupported alloy.
+
+The B2 onset-mismatch calculation requires a matching thermal/vapour/event identity and the actual reading arm's relevant surface coefficients; nominal fallback is not a substitute for those dependencies. A changed vapour endpoint/custom triple or thermal tuple requires a matching/recomputed comparison or explicit tuple mismatch with null comparison outputs. A net-evaporation change must recompute its surface side using that arm's factor. O1/O3/O2 event changes produce event mismatch for the recoil comparison. All referenced record IDs, alias resolution and comparison dependencies enter their relevant research identities/cache keys. The architect owns the closed comparison enum, the per-property temperature-range status enum, and final field names.
+
+Phase-C acceptance must cover: transfer with numerically admitted Pe/R still extrapolated; above-onset R<0.5 with Pe>=2; low-Pe above-onset disclosure of both thermal/source transfer and absent flow; transferred below-onset zero; rejection of the inside-range primary for every extrapolated/outOfRange note; independent falsified-closure status on available or unavailable onset-mismatch comparisons; explicit non-surface unvalidated status; per-arm band status support and endpoint provenance; O2 excluded from inception extrema/votes but present as its geometric diagnostic; the C2 both-side records; alias lookup; vapour/thermal/event mismatch; and net-factor-specific recomputation. Use synthetic software fixtures with declared assumptions; none is an experimental acceptance test. Final replacement artifact pins and the extra-alloy arm lists are recorded by the root physics integration owner after regeneration; old pins and counts cannot be treated as current acceptance evidence.
+
+### C7. Located input records and secondary-alloy arm declarations (R6/R15)
+
+`p8_input_provenance.py` supplies each arm's `inputProvenance`, keyed by the actual fixture input. The canonical source vocabulary preserves `sourceDefault`, `sourceModelAssumption`, `declaredAssumption`, `legacyEstimate`, `userInput` and `followsInput`, and distinguishes `alloyTransfer`, `sourcedAlternative`, `modelConvention` and `derived` inputs. `sourceLocator` names a located physical source; an unsourced declaration has null sourceLocator and a separate declarationLocator. sourceId, phase, referenceTemperature_K and sourceRange_K belong to each input. The integration contract defines the runtime wrapper and role mapping for these physics records; do not collapse a transfer or convention into a sourced default.
+
+- Ti Tv3360/3760 are the declared Gan3560 +/-200 K sensitivity, sourceEvidenceKind Unresolved; Gan does not supply those endpoints. The unchanged Lv/M retain their own Gan records.
+- `vapour_o8` Tv/Lv/M are the separately reproduced hybrid/local-slope feedstock calculation in `alsi10mg_vapour_o8.py`/JSON, section 6 and B7. Its explicit dependencies include the composition, hybrid route, Mg Tb1383 convention and local-slope enthalpy. The 600–1730 K/10 atm Mg scope exceedance, pure-element/feedstock transfers, omitted depletion and non-dynamic wall composition remain visible. No PROPERTY_LEDGER "OPEN O8" placeholder becomes a source locator.
+- `absorptance_0.14` remains the located Trapp Al1100-to-AlSi10Mg wall-proxy transfer. Other absorption endpoints name their actual Ye/Simonds/Leis/Deisenroth alternatives. `srv` remains legacyEstimate with Unresolved source support.
+- Liquid and solid/mean properties have independent phase/reference/range records. Al evaluated viscosity propagates its assumed Tl/deltaT inputs while preserving the sourced viscosity-law record. Enthalpy arms record their actual applied latent heat and nominal cp snapshot; an assumed latent heat/liquidus propagates to the effective cp/alpha label. Missing property ranges stay null. These metadata checks do not independently reverify the original source pages.
+
+Secondary default/request example manifests use P200 W, v0.8 m/s, d80 um, T0=293.15 K solely to declare scenario inputs. After module-local exact value/source deduplication, the ordered arm IDs are:
+
+| Alloy | Marangoni manifest | Surface manifest |
+|---|---|---|
+| IN625 | n=7: nominal, beam_0.95, beam_1.05, deltaT_250, deltaT_1000, length_0.5, length_2 | n=8 without the explicit vapour alternative; n=9 including nominal, absorptance_0.28, absorptance_0.4, power_0.95, beam_0.95, power_1.05, beam_1.05, accommodation_effective_0.82, vapour_melt_in625_raoult |
+| IN718 | n=8: nominal, beam_0.95, beam_1.05, deltaT_250, deltaT_1000, length_0.5, length_2, slope_commercial_mills | n=8: nominal, absorptance_0.28, absorptance_0.38, power_0.95, beam_0.95, power_1.05, beam_1.05, accommodation_effective_0.82 |
+| 316L | n=7: nominal, beam_0.95, beam_1.05, deltaT_250, deltaT_1000, length_0.5, length_2 | n=8: nominal, absorptance_0.28, absorptance_0.31, power_0.95, beam_0.95, power_1.05, beam_1.05, accommodation_effective_0.82 |
+
+These are declared arm counts, not successful-arms counts: unresolved prerequisites remain null and their reason is recorded per module. The optional IN625 Raoult arm is an explicit all-CC/table-weighted alternative (Tv3001 K, Lv6479525.6 J/kg, M0.0559725 kg/mol); it does not fill the nominal silently or admit IN625 to the cavity/link chain. IN625 viscosity and otherwise missing tuples are never silently borrowed from IN718. Absorption/power/surface-factor scenarios alias the Marangoni nominal when its active inputs/source IDs are unchanged; source-distinct equal numbers remain separate. IN718 commercial slope is the explicitly located Mills alternative; 316L viscosity is the located 316-to-316L transfer. User endpoints, Belton modes and user vapour triples extend/rebuild these manifests under the contract rules; these lists define the declared default arms only.
+
+The regenerated fixture pins 163 primary module-arm records plus secondary descriptors, all actual input records, endpoint source labels, seven status-policy cases, six onset-side records, and the independent analytic point-field limit. Software/source/numerics reproduction remains separate from experimental validation. Run all three documented --check commands; runtime transport, panel sentences, protected served parity and Phase-C contract tests remain implementation work.

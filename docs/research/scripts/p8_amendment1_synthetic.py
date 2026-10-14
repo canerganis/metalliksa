@@ -1,4 +1,4 @@
-"""Synthetic P8 Amendment 2 reproduction; historical filename, no target data.
+"""Synthetic P8 Amendment 3 reproduction; historical filename, no target data.
 
 Loads only explicit immutable Python source blobs (no research runners).
 Run with python -B; --check compares the committed synthetic fixture.
@@ -16,10 +16,11 @@ import sys
 import types
 
 from scipy.integrate import quad
-from scipy.optimize import minimize_scalar
+from scipy.optimize import brentq, minimize_scalar
 from scipy.special import i0e, iv, kv, kvp
 import numpy as np
 import p8_cavity_kernel as kernel
+import p8_input_provenance as provenance_data
 
 BASE = "835466fa"
 P3 = "c4470b017cfe533c74b23dc5712a2df720ae00c4"
@@ -185,7 +186,7 @@ def arms(registry, alloy, s):
     for factor in [.95,1.05]:
         add(f"power_{factor:g}",P=s["P"]*factor)
         add(f"beam_{factor:g}",d=s["d"]*factor)
-    for method in ["O1","O2","O3"]:
+    for method in ["O1","O3"]:
         add(f"onset_{method}",onsetMethod=method)
     for slope in ([-.00014,-.00024] if ti else [-.0786e-3,-.244e-3]):
         add(f"slope_{slope:g}",slope=slope)
@@ -260,7 +261,8 @@ def material(s):
 
 def onset_power(s):
     mat=material(s);method=s["onsetMethod"]
-    if method=="O2":return kernel.piston_threshold_sensitivity(mat,s["v"],s["d"])
+    if method=="O2":
+        raise ValueError("GEOMETRIC_THRESHOLD_NOT_INCEPTION")
     if method=="O3":return kernel.onset_power(mat,s["v"],s["d"],method="gaussian_peak")
     onset=kernel.onset_power(mat,s["v"],s["d"])
     if method=="O1":onset*=2*(s["Tv"]-s["T0"])/(kernel.threshold_temperature(mat)-s["T0"])
@@ -332,26 +334,100 @@ MARANGONI_FIELDS=set(marangoni(dict(kl=1.,rhol=1.,cpl=1.,slope=-1.,L=1.,deltaT=1
 MODULE_FIELDS={"cavity":CAVITY_FIELDS,"meltDepthLink":LINK_FIELDS,"marangoni":MARANGONI_FIELDS}
 
 
-def provenance(alloy,name):
-    if name=="srv":return dict(kind="unsourcedDiagnostic",source="former served blend; no independent source locator",
-        scope="descriptive sensitivity only",status="extrapolated")
-    if name=="absorptance_0.14":return dict(kind="alloyTransfer",source="Trapp 2017 Table 2 and Fig.7 Al1100 absorptance 0.14",
-        scope="Al1100 transfer to AlSi10Mg molten-wall proxy",status="extrapolated")
-    if name.startswith("onset_"):return dict(kind="modelConvention",source=
-        "P3 PREDECLARED section 2.5, c4470b01; O1 Trapp 2Pb at Tv; O2 Fabbro 2018 Eq2; O3 derived steady Gaussian peak",
-        scope="O2 piston R about 1 is a different event, not interchangeable with recoil inception" if name=="onset_O2" else
-              "alternate diagnostic onset convention",status="extrapolated")
-    if name.startswith(("deltaT_","length_","power_","beam_")):return dict(kind="declaredAssumption",
-        source="P8 Amendment 2 deterministic scenario declaration; not measured",scope="one-at-a-time sensitivity",status="extrapolated")
-    if name.startswith("slope_") or name=="viscosity_mohr":
-        source=("Gan 2021 SI Table 1, paired Ti slope -2.6e-4 and viscosity .00266" if name=="slope_viscosity_gan" else
-          ("Mohr 2020 p6 slope +/-0.5e-4; viscosity approximately .004" if alloy=="ti6al4v" else
-           "four_alloy_materials PROPERTY_LEDGER Al slope sensitivity -0.0786e-3/-0.244e-3"))
-        return dict(kind="literatureModelInput",source=source,scope="liquid-property transfer/extrapolation",status="extrapolated")
-    if name.startswith("accommodation_"):return dict(kind="literatureModelInput",source="Anisimov effective 0.82 versus P6 0.8",
-          scope="effective net factor 0.82 with accommodation 1; independently held recoil 0.6 is an explicit decoupled diagnostic",status="extrapolated")
-    return dict(kind="literatureModelInput",source="835466fa four_alloy_materials PROPERTY_LEDGER; P8 source table and declared named arm",
-        scope="constant-property and molten-wall source transfers; no experimental validation",status="extrapolated")
+NON_SURFACE_VALIDATION = "Not experimentally validated; research diagnostic/model only."
+SURFACE_VALIDATION = ("Falsified flat non-receding HKL closure against an open IN625 mass-loss test; "
+                      "numeric closure artefacts only, no physical prediction or blind-validation pass.")
+
+
+def consistency_status(module, *, above_onset=True, peclet=3., aspect=1.,
+                       source_transfer=False, hard_failure=False):
+    """Availability is independent; inRange never implies experimental validity."""
+    if hard_failure or module == "surfaceBalance":
+        return "outOfRange"
+    if source_transfer or (module in {"cavity","meltDepthLink"} and
+                           (peclet < 2 or (above_onset and aspect < .5))):
+        return "extrapolated"
+    return "inRange"
+
+
+def input_scope_reasons(module, provenance):
+    """Classify actual coefficient/source scopes without borrowing another arm."""
+    reasons=[]
+    for key in provenance_data.PHYSICAL_INPUTS[module]:
+        record=provenance[key]
+        if record["sourceEvidenceKind"]=="Unresolved":reasons.append(key+": physical scope not established")
+        scope=record["scope"].lower()
+        if record["kind"]=="alloyTransfer" or "transferred" in scope or "molten-wall" in scope:
+            reasons.append(key+": source/material-state transfer")
+        temperature=record["referenceTemperature_K"];limits=record["sourceRange_K"]
+        if temperature is not None and limits is not None and not limits[0]<=temperature<=limits[1]:
+            reasons.append(key+": reference temperature outside source range")
+    return reasons
+
+
+def field_shape_diagnostic(s, output):
+    """Same-absorbed-power point counterfactual; not an alternate prediction."""
+    if not output["modeledAboveOnset"]:
+        return dict(applicable=False, reason="Gaussian dispatch at or below inception")
+    point = kernel.melt_depth_from_e(0.,output["absorbedPower_W"],s["v"],s["K"],
+        s["Tl"]-s["T0"],s["alpha"],chi=0.,observable="envelope",order=64,x_samples=129)*1e6
+    excess = output["conditionalMeltDepth_um"]-output["conductionDepth_um"]
+    shape = point-output["conductionDepth_um"]
+    return dict(applicable=True,samePowerPointDepth_um=point,fieldShapeExcess_um=shape,
+        conditionalExcessOverGaussian_um=excess,
+        fieldShapeShare=shape/excess if excess>0 else None,
+        caveat="Counterfactual decomposition at the same absorbed power; no physical validation.")
+
+
+def independent_point_depth(s, power):
+    """Stationary-x condition of Q exp[-beta(x+r)]/(2 pi K r).
+
+    Set u=-x/r, r=u/(beta(1-u)), then solve beta L(1-u) exp(-u)/u=1.
+    This uses neither the conditional-field optimizer nor its depth bisection.
+    """
+    beta=s["v"]/(2*s["alpha"])
+    length=s["A"]*power/(2*math.pi*s["K"]*(s["Tl"]-s["T0"]))
+    u=brentq(lambda value:beta*length*(1-value)*math.exp(-value)-value,
+             0.,1.,xtol=1e-14)
+    radius=u/(beta*(1-u))
+    return radius*math.sqrt(1-u*u)*1e6
+
+
+def value_provenance(module, values, inputs):
+    """Determine support from actual physical dependencies, separately from validity."""
+    echoes={"surfaceTensionSlope_N_mK":"slope","viscosity_Pa_s":"mu",
+            "deltaTemperature_K":"deltaT","length_m":"L",
+            "effectiveNetFactor":"effectiveNetFactor","evaporationAccommodation":"accommodation"}
+    conventions={"selectedBranch","rootTopologyStatus","modeledAboveOnset","flowDirection",
+                 "conductionStatus","linkDispatch","controllingLeg","roots"}
+    thermal=("K","cp","rho")
+    inception=thermal+("A","Tv","Lv","M")
+    floor=thermal+("A","Tl")
+    records={}
+    for key in values:
+        dependencies=provenance_data.PHYSICAL_INPUTS[module]
+        if key in echoes:dependencies=(echoes[key],)
+        elif key=="peclet":dependencies=thermal
+        elif module=="cavity":dependencies=inception
+        elif module=="meltDepthLink":
+            dependencies=(floor if key.startswith("conduction") else inception if key in {
+                "surfacePower_W","cavityPower_W","absorbedPower_W","lineFraction",
+                "cavityLedgerRatio","photonResidual_W"} else inception+("Tl",))
+        elif module=="marangoni" and key=="surfaceVelocityScale_m_s":
+            dependencies=("slope","deltaT","rhol","mu","L")
+        elif module=="surfaceBalance":
+            dependencies=tuple(k for k in dependencies if k!="recoil")
+            if key=="recoilPressure_Pa":dependencies=dependencies+("recoil",)
+            if key=="effectiveAccommodation":dependencies=("accommodation","effectiveNetFactor")
+            if key=="absorbedCenterFlux_W_m2":dependencies=("A",)
+            if key in {"conductiveAdmittance_W_m2K","surfaceGainRefinementRelative"}:dependencies=thermal
+            if key=="lossFreeCenterTemperature_K":dependencies=thermal+("A",)
+        if key in conventions:
+            records[key]=dict(sourceEvidenceKind=None,dependsOn=[],weakestInputs=[])
+        else:
+            evidence,weak=provenance_data.evidence_kind(inputs,dependencies)
+            records[key]=dict(sourceEvidenceKind=evidence,dependsOn=list(dependencies),weakestInputs=weak)
+    return records
 
 
 def band(values,nominal):
@@ -370,6 +446,20 @@ def band(values,nominal):
                 label=str(o[key]);counts[label]=counts.get(label,0)+1
             categories[key]=counts
     return dict(fields=fields,categoricalSupport=categories)
+
+
+def render_fixture(value, level=0):
+    """Keep repeated metadata records compact; preserve the full parsed fixture."""
+    if isinstance(value,dict):
+        if not value:return "{}"
+        if ("sourceId" in value and "kind" in value) or ("sourceEvidenceKind" in value and "dependsOn" in value):
+            return json.dumps(value,allow_nan=False,separators=(",",":"))
+        entries=["  "*(level+1)+json.dumps(key)+": "+render_fixture(item,level+1) for key,item in value.items()]
+        return "{\n"+",\n".join(entries)+"\n"+"  "*level+"}"
+    if isinstance(value,list):
+        if not value:return "[]"
+        return "[\n"+",\n".join("  "*(level+1)+render_fixture(item,level+1) for item in value)+"\n"+"  "*level+"]"
+    return json.dumps(value,allow_nan=False)
 
 
 def run():
@@ -396,20 +486,90 @@ def run():
                     if name=="nominal" or any(arm[k]!=s[k] for k in ["kl","rhol","cpl","slope","mu","L","deltaT"]):
                         applicable.append("marangoni")
                 for module in applicable:
-                    records[module].append(dict(armId=name,provenance=provenance(alloy,name),
-                        inputs=arm,values={k:output[k] for k in sorted(modules[module])}))
+                    row=dict(armId=name,provenance=provenance_data.arm_provenance(alloy,name),
+                        inputProvenance=provenance_data.input_provenance(alloy,name,arm,s),
+                        inputs=arm,values={k:output[k] for k in sorted(modules[module])},
+                        consistencyStatus=consistency_status(module,
+                            above_onset=output["modeledAboveOnset"],peclet=output["peclet"],
+                            aspect=output["cavityDepth_um"]*1e-6/arm["d"],source_transfer=bool(input_scope_reasons(
+                                module,provenance_data.input_provenance(alloy,name,arm,s)))),
+                        validationStatus=SURFACE_VALIDATION if module=="surfaceBalance" else NON_SURFACE_VALIDATION,
+                        experimentalValidation=False,moduleEvidenceCeiling="screening-only")
+                    row["valueProvenance"]=value_provenance(module,row["values"],row["inputProvenance"])
+                    row["inputScopeReasons"]=input_scope_reasons(module,row["inputProvenance"])
+                    if module=="meltDepthLink":row["fieldShapeDiagnostics"]=field_shape_diagnostic(arm,output)
+                    records[module].append(row)
             point=dict(alloy=alloy,power_W=power,values=nom,modules={})
             for module,rows in records.items():
                 module_band=band([(r["armId"],r["values"]) for r in rows],{k:nom[k] for k in sorted(modules[module])})
+                by_id={row["armId"]:row for row in rows}
+                for key,field in module_band["fields"].items():
+                    field["sourceEvidence"]={position:by_id[field[position+"ArmId"] if position!="nominal" else "nominal"]["valueProvenance"][key]
+                        for position in ("min","nominal","max")}
+                statuses={}
+                for row in rows:statuses[row["consistencyStatus"]]=statuses.get(row["consistencyStatus"],0)+1
                 module_band.update(armIds=[r["armId"] for r in rows],successfulArms=len(rows),failedArms=[],
-                                  armResults=rows,statusSupport={"outOfRange" if module=="surfaceBalance" else "extrapolated":len(rows)})
+                    armResults=rows,statusSupport=statuses,
+                    validationStatus=SURFACE_VALIDATION if module=="surfaceBalance" else NON_SURFACE_VALIDATION,
+                    experimentalValidation=False,moduleEvidenceCeiling="screening-only")
                 if module in {"cavity","meltDepthLink"}:
                     support=sum(r["inputs"]["P"]>onset_power(r["inputs"]) for r in rows)
                     module_band["modeledOnsetSupport"]=dict(above=support,total=len(rows),unresolved=0,
-                       caveat="Equal-weight named scenario conventions, not a calibrated probability; O2 is a different piston event.")
+                       caveat="Positive-depression inception scenarios only; equal-weight conventions, not a calibrated probability. O2 geometric threshold is excluded.")
                 point["modules"][module]=module_band
             points.append(dict(alloy=alloy,power_W=power,values=nom))
             bands.append(dict(alloy=alloy,power_W=power,modules=point["modules"]))
+    assert all("onset_O2" not in module["armIds"] for item in bands for module in item["modules"].values())
+    al_state=nominal(registry,"alsi10mg",200.)
+    al_inputs=provenance_data.input_provenance("alsi10mg","nominal",al_state,al_state)
+    support=value_provenance("cavity",{"onsetPower_W":1.,"cavityDepth_um":1.},al_inputs)
+    assert "Tl" not in support["onsetPower_W"]["dependsOn"]
+    legacy_inputs=provenance_data.input_provenance("alsi10mg","srv",al_state,al_state)
+    support=value_provenance("surfaceBalance",{"absorbedCenterFlux_W_m2":1.},legacy_inputs)
+    assert support["absorbedCenterFlux_W_m2"]["sourceEvidenceKind"]=="Literature estimate"
+    assert support["absorbedCenterFlux_W_m2"]["dependsOn"]==["A"]
+    geometric=[];field_steps=[]
+    for alloy in ["ti6al4v","alsi10mg"]:
+        state=nominal(registry,alloy,200.);pstar=onset_power(state)
+        geometric.append(dict(alloy=alloy,armId="onset_O2",event="geometric-R-about-1",
+            thresholdPower_W=kernel.piston_threshold_sensitivity(material(state),state["v"],state["d"]),
+            thresholdToInceptionRatio=kernel.piston_threshold_sensitivity(material(state),state["v"],state["d"])/pstar,
+            includedInInceptionEnvelope=False,includedInSupport=False,
+            cavityDepth_um=None,linkedMeltDepth_um=None,
+            provenance=provenance_data.arm_provenance(alloy,"onset_O2"),
+            inputProvenance=provenance_data.input_provenance(alloy,"onset_O2",{**state,"onsetMethod":"O2"},state)))
+        side_records=[]
+        for side,factor in [("below",1-1e-9),("at",1.),("above",1+1e-9)]:
+            near={**state,"P":pstar*factor};value=evaluate(near)
+            if side!="above":
+                assert value["cavityDepth_um"]==0. and value["linkedMeltDepth_um"]==value["conductionDepth_um"]
+                assert value["controllingLeg"]=="conduction" and value["roots"]==[]
+            else:
+                assert value["cavityDepth_um"]>0. and value["controllingLeg"]=="conditional-link"
+            side_records.append(dict(side=side,powerFactor=factor,inputs=near,values=value))
+        at=side_records[1]["values"];point=kernel.melt_depth_from_e(0.,state["A"]*pstar,state["v"],state["K"],
+            state["Tl"]-state["T0"],state["alpha"],chi=0.,observable="envelope",order=64,x_samples=129)*1e6
+        step=point-at["conductionDepth_um"]
+        analytic_point=independent_point_depth(state,pstar)
+        assert abs(analytic_point-point)*1e-6<=1e-13
+        assert step>0 and math.isclose(side_records[2]["values"]["linkedMeltDepth_um"],point,rel_tol=1e-8)
+        field_steps.append(dict(alloy=alloy,onsetPower_W=pstar,relativeBracket=1e-9,records=side_records,
+            atOnsetGaussianDepth_um=at["conductionDepth_um"],aboveOnsetPointLimitDepth_um=point,
+            independentPointLimitDepth_um=analytic_point,pointLimitIndependentDifference_m=abs(analytic_point-point)*1e-6,
+            fieldShapeStep_um=step,pointToGaussianRatio=point/at["conductionDepth_um"],
+            aboveOnsetFieldChanged=False,cause="Finite Gaussian below/at onset versus singular surface-point limit above onset."))
+    status_checks=[]
+    for name,parameters,expected in [
+        ("source-transfer",dict(source_transfer=True),"extrapolated"),
+        ("low-aspect",dict(aspect=.308),"extrapolated"),
+        ("low-Pe",dict(peclet=.577),"extrapolated"),
+        ("below-onset-transfer",dict(above_onset=False,aspect=0.,source_transfer=True),"extrapolated"),
+        ("below-onset-resolved-zero",dict(above_onset=False,aspect=0.),"inRange"),
+        ("hard-failure",dict(hard_failure=True),"outOfRange"),
+        ("admitted-synthetic-tuple",dict(),"inRange")]:
+        actual=consistency_status("cavity",**parameters);assert actual==expected
+        status_checks.append(dict(case=name,parameters=parameters,status=actual,
+            insideRangeSentenceEligible=actual=="inRange",validationStatus=NON_SURFACE_VALIDATION))
     gain=gaussian_gain(0,80e-6,20,1e-5)
     assert math.isclose(gain,1/(math.sqrt(2*math.pi)*20*40e-6),rel_tol=1e-10)
     s=nominal(registry,"ti6al4v",200.)
@@ -479,7 +639,9 @@ def run():
         reached=flux*math.pi*(state["d"]/2)**2/(2*state["A"])
         assert math.isclose(surface({**state,"P":reached})["peakTemperatureProxy_K"],threshold,rel_tol=1e-9)
         contradictions.append(dict(alloy=alloy,onsetPower_W=pstar,thresholdTemperature_K=threshold,
-          surfaceAtCavityOnset=at_onset,surfaceThresholdPower_W=reached,surfaceToCavityOnsetRatio=reached/pstar))
+          surfaceAtCavityOnset=at_onset,surfaceThresholdPower_W=reached,surfaceToCavityOnsetRatio=reached/pstar,
+          validationStatus=SURFACE_VALIDATION,experimentalValidation=False,
+          scope="Surface-derived comparison artefacts; cavity/link validationStatus stays independent."))
     t=1823.;gamma=1.30e-5;dh=-166200.;activity=.001
     def sigma(temp):return -4.3e-4*temp-RG*temp*gamma*math.log1p(.00318*activity*math.exp(-dh/(RG*temp)))
     b=.00318*activity*math.exp(-dh/(RG*t))
@@ -491,17 +653,19 @@ def run():
         assert clean==-4.3e-4
     kernel_bytes=Path(kernel.__file__).read_text(encoding="utf-8").replace("\r\n","\n").encode("utf-8")
     script_bytes=Path(__file__).read_text(encoding="utf-8").replace("\r\n","\n").encode("utf-8")
+    provenance_bytes=Path(provenance_data.__file__).read_text(encoding="utf-8").replace("\r\n","\n").encode("utf-8")
     return dict(evidence="synthetic software reproduction; not experimental validation",sourceBase=BASE,
        sourceP3=P3,sourceP3Blob="b762dc6268b82f15f9e1fe529845b5e3e9013415",
-       kernelAmendment="p8-amendment2-kernel-2026-10-15",modelIdentity="p8-research-synthetic-v2",
+       kernelAmendment="p8-amendment3-kernel-2026-10-15",modelIdentity="p8-research-synthetic-v3",
        belowOnsetPolicy="Gaussian floor dispatch; above-onset point/line field has a residual discontinuity at P* despite continuous energy allocation",
        kernelCanonicalLfSha256=hashlib.sha256(kernel_bytes).hexdigest(),
-       scriptCanonicalLfSha256=hashlib.sha256(script_bytes).hexdigest(),sourceCanonicalLfSha256=SOURCE_HASHES,
+       scriptCanonicalLfSha256=hashlib.sha256(script_bytes).hexdigest(),
+       provenanceCanonicalLfSha256=hashlib.sha256(provenance_bytes).hexdigest(),sourceCanonicalLfSha256=SOURCE_HASHES,
        bandMethod="module-local one-at-a-time union; no interactions, confidence interval, error bar or bounds",
        labels=dict(cavity="conditional scalar cavity hypothesis; numerical relaxation is not keyhole stability",
           meltDepthLink="conditional thermal construction; Gaussian finite-source dispatch below onset",
           marangoni="diagnostic scales from assumed deltaT and length; not a transport correction",
-          surfaceBalance="closure contradicted by IN625 mass-loss test; Ti/Al transfer; T, evaporation and recoil are closure artefacts"),
+          surfaceBalance="falsified flat HKL closure against IN625 mass-loss test; Ti/Al transfer; T, evaporation and recoil are closure artefacts"),
        tolerances=dict(replay="abs(a-b) <= max(absTol, relTol*max(abs(a),abs(b)))",
           relative=2e-6,absolute=1e-7,rootScanResidual="2e-9 max(1,S)",
           cavityEnergyAbsolute_W=1e-6,cavityEnergyRelative=1e-8,photonRelative=1e-10,
@@ -510,6 +674,8 @@ def run():
           gaussianFloorConvergenceAbsolute_m=2e-11,gaussianFloorConvergenceRelative=1e-6,
           extremumTieBreak="first manifest arm among equal values"),
        points=points,bands=bands,noMeltLimits=no_melt,onsetSurfaceContradictions=contradictions,
+       geometricThresholdDiagnostics=geometric,fieldShapeStepChecks=field_steps,
+       statusSemanticsChecks=status_checks,secondaryAlloyManifests=provenance_data.secondary_manifests(registry),
        independentTransientChecks=onset_checks,gaussianFieldCrosschecks=gaussian_crosschecks,syntheticRootTopology=folds)
 
 
@@ -520,7 +686,8 @@ if __name__=="__main__":
         pinned=json.loads(FIXTURE.read_text(encoding="utf-8"))
         def compare(a,b,path=""):
             if isinstance(a,float):
-                if ".inputs." in path or path.startswith(".tolerances.") or path.endswith(".power_W"):
+                if (".inputs." in path or ".inputProvenance." in path or path.startswith(".tolerances.")
+                    or path.endswith((".power_W",".relativeBracket",".powerFactor"))):
                     assert a==b,(path,a,b)
                 else:
                     assert math.isclose(a,b,rel_tol=2e-6,abs_tol=1e-7),(path,a,b)
@@ -534,5 +701,7 @@ if __name__=="__main__":
         compare(result,pinned)
         print("PASS: six synthetic points with module-local per-arm roots/bands and analytic/energy/Gaussian limits")
     else:
-        FIXTURE.write_text(json.dumps(result,indent=2,allow_nan=False)+"\n",encoding="utf-8")
+        rendered=render_fixture(result)+"\n"
+        assert json.loads(rendered)==result
+        FIXTURE.write_text(rendered,encoding="utf-8",newline="\n")
         print(f"Wrote synthetic fixture: {len(result['points'])} points with full module-local arm records")

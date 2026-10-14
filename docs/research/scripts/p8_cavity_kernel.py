@@ -167,7 +167,9 @@ def energy_balance_residual(e: float, P: float, v: float, d: float,
     """Residual in W: K*delta_Tv*g*e - A_tot(e/d)*(P-Pstar)+.
 
     Fabbro 2020 Eqs13-14, replacing *front* A_F with total A is inference.
-    P_star is supplied by onset_power or an explicitly labeled sensitivity.
+    P_star is supplied by onset_power or an explicitly labeled inception
+    sensitivity. A finite-aspect geometric threshold is a different event;
+    piston_threshold_sensitivity must not supply this e=0 inception offset.
     P_star=0 reproduces unshifted Eq13 and has no physical onset gate.
     Low Pe values are diagnostic extrapolations; see solve_e warnings.
     """
@@ -401,6 +403,12 @@ def melt_depth_from_e(e: float, Q_net: float, v: float, K: float,
     and its Neumann image are derived in the companion; chi is REQUIRED from
     energy_partition, or explicitly chi=1 pure-Fabbro sensitivity. Never fit chi.
     Q_net already excludes vapour/export loss: never add AP on top again.
+    This function's e=0 limit is a singular surface point, not a finite
+    Gaussian beam. The P8 caller dispatches P<=P_star to its independent
+    Gaussian floor instead; the retained above-onset field therefore has a
+    field-shape depth step at inception even with continuous photon power.
+    A same-Q_net e=0 evaluation is a counterfactual field-shape diagnostic,
+    not the P8 below-onset prediction or a cavity contribution.
     Rai 2007 pp5757-5758 Eqs4-6,11 include physics omitted here.
     axial returns x=y=0 depth; envelope maximizes trailing x numerically and
     is the conditional etched-depth observable. Requires grid convergence.
@@ -531,6 +539,9 @@ def piston_threshold_sensitivity(mat: Material,v: float,d: float) -> float:
     u=20.7,nu=.7 are explicitly the source's strip geometry example only.
     Gan SI Table1 provides Lm and liquid cp; solid cp is fixed at T0.
     Transferring these strip constants is a declared synthetic sensitivity.
+    Return a power diagnostic only: Eq2 supplies no geometric cavity e(P)
+    law here. Do not use this power as the e=0 offset in solve_e, include it
+    in an inception depth envelope, or count it as an inception-support vote.
     """
     _positive(v=v,d=d,Lm=mat.Lm,cp_liquid=mat.cp_liquid)
     Pe=v*d/(2*mat.alpha)
