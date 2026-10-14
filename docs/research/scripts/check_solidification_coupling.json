@@ -1,0 +1,178 @@
+{
+  "schema": "solidification-coupling-audit-1",
+  "evidenceKind": "Screening only",
+  "moduleMaturity": "Research",
+  "checkKind": "synthetic software and algebra checks",
+  "experimentalValidation": false,
+  "readsMeasuredMeltPoolDepths": false,
+  "sourceHead": "835466fabca27d0209b29599fde7fa05a9b9ee75",
+  "sourceSha256": {
+    "python/calphad_solver.py": "69a038f169fcd054a0bf13c41061b425db50152180e6ce6f97644d5afb0961ee",
+    "python/lpbf_solidification_segregation.py": "8d316f6787499e804bb6af8e7c52c787d28edc9583617cfb09b3b03857c38cce",
+    "python/lpbf_solidification_microstructure.py": "1f78e4acb386eb5c2efee740acc2e7a294be2f49a9b2bcbd29dfb8bd309ae43f",
+    "python/lpbf_gr_solidification.py": "b8fb31cb2f8b96b06f1daad152e954c8b2202a391857dd36209cce5197c0d3dd",
+    "python/lpbf_cet_screening.py": "f92bc737c21d40397722a65076bd05b999adf6978774877637640dc789fc71c1",
+    "python/solidification_front.py": "9c9c84de67108cd59f8d22edcb3dcf4f54c596727ce1ec6becb3a35ecd6aa083",
+    "python/kinetics_ttt_cct_solver.py": "d1e75bb9de51801c35bdf6e2f64c7278a554417d16f8bc1b916c4a19d1710641",
+    "python/lpbf_simulation.py": "e9b42209917e39d112dd5f869c4f6fe83ce714abb1bfc3c6fb13e055775f9b85",
+    "python/openfoam/meltPoolFoam/solidificationModel.H": "4c229ab3eb4f52e34d2acbfe0a1a45e9dd60f30d6a1b64e89b383ec3ebdfdc27"
+  },
+  "manufacturedFront": {
+    "fieldDefinition": "T=1700+100*(1-(x/0.001)^2-(z/0.0002)^2)*(1+0.8*x/0.001), y-independent",
+    "scanSpeed_m_s": 1.0,
+    "sampleCount": 9,
+    "medianG_K_m": 512787.53473896306,
+    "medianR_m_s": 0.1177579616338539,
+    "medianLocalCooling_K_s": 54906.492177337896,
+    "productOfMedians_K_s": 60384.814842109336,
+    "wrapperGtimesR_K_s": 54906.492177337896,
+    "aliasRelativeMismatch": -0.09072351516015797,
+    "perSampleKinematicMaximumResidual_K_s": 0.0,
+    "samples": [
+      {
+        "x_um": -98.4,
+        "z_um": 199.0,
+        "G_K_m": 916960.920982905,
+        "R_m_s": 0.019777860360221063,
+        "coolingRate_K_s": 18135.525050979595,
+        "g_over_r": 46362999.04448591,
+        "n_x": 0.019777860360221063
+      },
+      {
+        "x_um": -201.3,
+        "z_um": 195.9,
+        "G_K_m": 822474.2557855931,
+        "R_m_s": 0.041068291902760054,
+        "coolingRate_K_s": 33777.61281910807,
+        "g_over_r": 20026989.623357516,
+        "n_x": 0.041068291902760054
+      },
+      {
+        "x_um": -304.2,
+        "z_um": 190.5,
+        "G_K_m": 722248.5027544999,
+        "R_m_s": 0.06373744917920683,
+        "coolingRate_K_s": 46034.27723907316,
+        "g_over_r": 11331619.19806041,
+        "n_x": 0.06373744917920683
+      },
+      {
+        "x_um": -407.1,
+        "z_um": 182.7,
+        "G_K_m": 618339.8966922939,
+        "R_m_s": 0.08879661893248521,
+        "coolingRate_K_s": 54906.492177337896,
+        "g_over_r": 6963552.262754922,
+        "n_x": 0.08879661893248521
+      },
+      {
+        "x_um": -510.0,
+        "z_um": 172.0,
+        "G_K_m": 512787.53473896306,
+        "R_m_s": 0.1177579616338539,
+        "coolingRate_K_s": 60384.814842109336,
+        "g_over_r": 4354589.087856147,
+        "n_x": 0.1177579616338539
+      },
+      {
+        "x_um": -612.9,
+        "z_um": 158.0,
+        "G_K_m": 407531.8097171445,
+        "R_m_s": 0.1533140377757589,
+        "coolingRate_K_s": 62480.347269797676,
+        "g_over_r": 2658150.6535834065,
+        "n_x": 0.1533140377757589
+      },
+      {
+        "x_um": -715.8,
+        "z_um": 139.7,
+        "G_K_m": 304633.7471531264,
+        "R_m_s": 0.20083491244848325,
+        "coolingRate_K_s": 61181.09193835153,
+        "g_over_r": 1516836.6069383922,
+        "n_x": 0.20083491244848325
+      },
+      {
+        "x_um": -818.7,
+        "z_um": 114.8,
+        "G_K_m": 206026.21133636267,
+        "R_m_s": 0.27422286225184905,
+        "coolingRate_K_s": 56497.09737156172,
+        "g_over_r": 751309.3899047195,
+        "n_x": 0.27422286225184905
+      },
+      {
+        "x_um": -921.6,
+        "z_um": 77.6,
+        "G_K_m": 112882.37561723498,
+        "R_m_s": 0.42899250211682977,
+        "coolingRate_K_s": 48425.69276092945,
+        "g_over_r": 263133.67963362014,
+        "n_x": 0.42899250211682977
+      }
+    ],
+    "interpretation": "Local G*R is internally consistent; separate statistic cooling is not the product of the displayed median G and R. Wrapper GtimesR aliases a different statistic."
+  },
+  "genuineLowPositiveRateProjection": {
+    "input": {
+      "solidificationKinetics": {
+        "usedFieldMap": true,
+        "gradientSource": "conduction-field-interface",
+        "thermalGradient_G_K_m": 100000.0,
+        "solidificationRate_R_m_s": 5e-05,
+        "solidificationRate_R_mm_s": 0.05,
+        "coolingRate_K_s": 5.0
+      }
+    },
+    "status": "degenerate-floor",
+    "reason": "solidification front degenerate: floor-clamped R/cooling (R <= 1e-4 m/s or cooling <= 1 K/s), not a computed value",
+    "interpretation": "Projection still treats a true small positive front speed as an old clamp floor, although P6 removed the upstream clamps."
+  },
+  "stationaryLiquidMovingPlanarInterface": {
+    "manufacturedField": "T=Tl+G*(x-v*t); normal points along +x into liquid",
+    "partialTimeDerivative_K_s": -100000.0,
+    "gradient_K_m": 1000000.0,
+    "liquidVelocity_m_s": 0.0,
+    "levelSetInterfaceSpeed_m_s": 0.1,
+    "legacyCfdReportedSpeed_m_s": 1e-06,
+    "interpretation": "Fluid velocity is not interface migration speed; floor gives 1e-6 for a manufactured interface migrating at 0.1 m/s."
+  },
+  "legacyCfdMorphologyFractions": {
+    "input": {
+      "G_K_m": 10000000.0,
+      "R_m_s": 1.0
+    },
+    "fractions": {
+      "columnar": 0.5,
+      "equiaxed": 0.5,
+      "mixed": 0.0
+    },
+    "interpretation": "A mixed label produces zero mixed fraction; complement interpolation is not a grain-volume model."
+  },
+  "implementationManifest": {
+    "manifestCount": 36,
+    "targetMembership": {
+      "calphad_solver.py": false,
+      "lpbf_solidification_segregation.py": false,
+      "lpbf_solidification_microstructure.py": false,
+      "lpbf_gr_solidification.py": false,
+      "lpbf_cet_screening.py": false,
+      "solidification_front.py": true,
+      "kinetics_ttt_cct_solver.py": false
+    },
+    "legacyCfdHeaderMember": false
+  },
+  "checks": {
+    "localKinematicIdentity": true,
+    "aggregateAliasMismatchReproduced": true,
+    "obsoleteFloorMisclassificationReproduced": true,
+    "cfdFluidVelocityCounterexample": true,
+    "zeroMixedFractionReproduced": true
+  },
+  "limits": [
+    "No thermal solver or measured dataset imported.",
+    "Manufactured fields do not establish real-alloy applicability.",
+    "No package installed.",
+    "No mesh/time-step convergence, browser execution, or blind experiment test performed."
+  ]
+}
