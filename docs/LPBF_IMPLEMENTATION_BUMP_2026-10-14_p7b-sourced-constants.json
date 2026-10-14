@@ -3739,8 +3739,8 @@
  },
  "commits": {
   "fromRevision": "b578da71ae362e5b0a6b6e930dae97b8dbf66e81",
-  "toRevision": "5b41d5d2bb093e1a260fb6ca9315a647499624dc",
-  "worktreeDirty": false
+  "toRevision": "c70843c4b7581e7b33a00480568fc73e3482d676",
+  "worktreeDirty": true
  },
  "expectDrift": [
   "g1_v1_60w_in718:result.canonicalSha256",
@@ -4096,40 +4096,10 @@
   "g17_evaporation_ti6al4v:result.key.thermalHistory",
   "g17_evaporation_ti6al4v:result.material.materialRevisionSha256",
   "g17_evaporation_ti6al4v:result.orderedTypedSha256",
-  "g17_evaporation_316l:artifact.field-frame-*.bin",
-  "g17_evaporation_316l:artifact.field-series.json",
-  "g17_evaporation_316l:artifact.peak-field.npz",
-  "g17_evaporation_316l:artifact.phase-slice.svg",
-  "g17_evaporation_316l:artifact.temperature-slice.svg",
-  "g17_evaporation_316l:artifact.thermal-history.csv",
-  "g17_evaporation_316l:artifacts.files",
-  "g17_evaporation_316l:evaporation.authorityProbe.latentHeatVapUsed_J_kg",
-  "g17_evaporation_316l:evaporation.authorityProbe.maxVaporFraction",
-  "g17_evaporation_316l:evaporation.inversionCalls",
-  "g17_evaporation_316l:evaporation.latentHeatVapUsed_J_kg",
-  "g17_evaporation_316l:evaporation.maxVaporFraction",
-  "g17_evaporation_316l:npz.peak-field.npz.array.T_K",
-  "g17_evaporation_316l:npz.peak-field.npz.array.liquid_fraction",
-  "g17_evaporation_316l:npz.peak-field.npz.array.step",
-  "g17_evaporation_316l:npz.peak-field.npz.array.time_s",
   "g17_evaporation_316l:result.canonicalSha256",
-  "g17_evaporation_316l:result.coreContract.inputSha256",
   "g17_evaporation_316l:result.coreContract.materialSha256",
-  "g17_evaporation_316l:result.key.analyticalComparison",
-  "g17_evaporation_316l:result.key.artifacts",
-  "g17_evaporation_316l:result.key.boilingCap",
   "g17_evaporation_316l:result.key.coreContract",
-  "g17_evaporation_316l:result.key.discretization",
-  "g17_evaporation_316l:result.key.energyBalance",
-  "g17_evaporation_316l:result.key.geometricDefectScreen",
   "g17_evaporation_316l:result.key.material",
-  "g17_evaporation_316l:result.key.metrics",
-  "g17_evaporation_316l:result.key.numericalDiagnostics",
-  "g17_evaporation_316l:result.key.peakInterpolatedMeltPool",
-  "g17_evaporation_316l:result.key.phaseAudit",
-  "g17_evaporation_316l:result.key.provenance",
-  "g17_evaporation_316l:result.key.settings",
-  "g17_evaporation_316l:result.key.thermalHistory",
   "g17_evaporation_316l:result.material.materialRevisionSha256",
   "g17_evaporation_316l:result.orderedTypedSha256",
   "g17_evaporation_alsi10mg:artifact.field-frame-*.bin",
@@ -4487,7 +4457,7 @@
      "after": "8e8887a0d9fdfa017eb8a6954ab6a5cbf49acd0a04cc4385fcbd6cb1d8b558b3"
     }
    ],
-   "elapsed_s": 14.7,
+   "elapsed_s": 14.9,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -4704,7 +4674,7 @@
      "after": "986350746c8323dde34fd63e43cda6df47fc59cede07dd76b935e275192e76dc"
     }
    ],
-   "elapsed_s": 90.7,
+   "elapsed_s": 94.3,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -6228,7 +6198,7 @@
      "after": "54725e482b3a1a2417cda8459fae9b99156f02d1c06fdfa92015d77ec41f4969"
     }
    ],
-   "elapsed_s": 3.1,
+   "elapsed_s": 3.3,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -6933,7 +6903,7 @@
      "after": "b7f44ec199a57a7addec5166d7c4d158a4ca060cedac63feb9a414b671bf1f6c"
     }
    ],
-   "elapsed_s": 2.1,
+   "elapsed_s": 2.3,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -7153,7 +7123,7 @@
      "after": "a2a427db40d4656cfe06f0a3aa866d2b445bb13bfe3c8c384d143246bfb67da2"
     }
    ],
-   "elapsed_s": 8.0,
+   "elapsed_s": 7.9,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -8752,7 +8722,7 @@
      "after": "088caac71d9937657d16e15577023de70d7531057fa0f0922e663d1387793570"
     }
    ],
-   "elapsed_s": 4.6,
+   "elapsed_s": 4.4,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -12236,7 +12206,7 @@
      "after": "15164f2dd8d1564fb2f7977cf2b7b06b91edbbaece114aaa75d9deca00795b92"
     }
    ],
-   "elapsed_s": 3.6,
+   "elapsed_s": 4.2,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -12960,7 +12930,7 @@
      "after": "cb6540b0740113100d99b268876490c028de0c60d20faf04c61e7817473c0ecd"
     }
    ],
-   "elapsed_s": 2.6,
+   "elapsed_s": 2.7,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -14353,7 +14323,7 @@
      "after": "7d83b889ef1d6a3f9b571567e5d6775c989deed3df13e477c9e0432065d2b711"
     }
    ],
-   "elapsed_s": 4.5,
+   "elapsed_s": 4.6,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -15947,7 +15917,7 @@
      "after": "dc6832ea381323faf4dbea82f227776ee00f33e88615279af865573b2aa5f02f"
     }
    ],
-   "elapsed_s": 3.7,
+   "elapsed_s": 3.8,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -18488,7 +18458,7 @@
      "after": "32aad64e0ea4f0849b41a49b6136ae821e91324f3eaf1024d70a286446ee44eb"
     }
    ],
-   "elapsed_s": 5.1,
+   "elapsed_s": 5.2,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -20202,7 +20172,7 @@
      "after": "6888da32d725e5a8e0d5fe6a417c2d4c1c572f22701b1df04b14afa19ae47b8d"
     }
    ],
-   "elapsed_s": 5.1,
+   "elapsed_s": 5.7,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -20213,1066 +20183,19 @@
    "problems": [],
    "drift": [
     {
-     "key": "artifact.field-frame-000.bin",
-     "before": [
-      4356,
-      "2209bfabf31fca3117c3c66c0e47172062a81f51cf524e6104eef19ce615823b"
-     ],
-     "after": [
-      4356,
-      "595a1e883aa955ccfbccd7fb0301542a3a87d54f6f99688ee091fbffb171cb66"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-001.bin",
-     "before": [
-      4356,
-      "9710fb62f7343f8d18c3ce8ddd202ea6a72a2ead3a99dda5deed4d3299e0e6ef"
-     ],
-     "after": [
-      4356,
-      "955ae14c253e6652cc928f0cd3478b836fd3d5fec3511f61039c3fa5aec8f73d"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-002.bin",
-     "before": [
-      4356,
-      "83b6172e232f1e6aea339b89dd86329ba662871883a37167dc2e9867694fd8fd"
-     ],
-     "after": [
-      4356,
-      "f27d8d6d09f4641146df8823959011626f5b0bd57c47cf825ded2bb13b6a0e04"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-003.bin",
-     "before": [
-      4356,
-      "d7ce5c914429c09ad1df1347a79e52f8d20f698cb2db0b4564391d89d361b975"
-     ],
-     "after": [
-      4356,
-      "736ee2a3bd54c08be7238b8fb0d92314d9cb3ff1d0617dbdc31dc0ca74dfa0e7"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-004.bin",
-     "before": [
-      4356,
-      "a95f397028e6e69702ff4861d6f36c90d24a8ce1f174f7bd25dc65490f92dd03"
-     ],
-     "after": [
-      4356,
-      "95248917b3e47e2d02889cc6af45bd1f29eda379b2c2e408c7daba28e558bf41"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-005.bin",
-     "before": [
-      4356,
-      "d9bb8ec6ffed4240ceafc68fd632b4dbc9a7ac3f299fca8f05c1e157d78d6722"
-     ],
-     "after": [
-      4356,
-      "4fcfcf836a3a767320c7197fb5d2d10ae84751f5e4298f31f679c6377b0556f1"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-006.bin",
-     "before": [
-      4356,
-      "1986905d046d502affa9e36a647f1d393b0b310c5abe284ca2516fc78853c440"
-     ],
-     "after": [
-      4356,
-      "873444ecddcec109083b5763d6d02881f7e83e68a9115ed030dc327611222173"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-007.bin",
-     "before": [
-      4356,
-      "fb573425db8605a76bde45d1f1218cb1eedaf7fbe48555e53953395724d0f290"
-     ],
-     "after": [
-      4356,
-      "ac147975cde0bd92fbe67d332fbf8f050ce84f79101042940dd7958fe0b58536"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-008.bin",
-     "before": [
-      4356,
-      "e61e838fe7de65e086666cbd2ce10d00ec99d2cc941decdf8de77821fa80d72e"
-     ],
-     "after": [
-      4356,
-      "6bd5153235e35902df36691440f97852cf59582b5edb0d7c16282d9d644d0a20"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-009.bin",
-     "before": [
-      4356,
-      "a694b233eb385296f61de0fdaf3168cdd7c023ebb4a4bd7dd9c292b6450c65b9"
-     ],
-     "after": [
-      4356,
-      "50751314cf40f4508f741cdfcb67933b347edf2f84ced306aafdf8aafbe5d569"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-010.bin",
-     "before": [
-      4356,
-      "df35f40a041bc208cd5a5a5794a01ed7b2abd15953e07889ef4111e3dccacf00"
-     ],
-     "after": [
-      4356,
-      "8ea507802d509b01fd45dca637db41f4e7a7565cf0c28f581b5fbcddc5f55f87"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-011.bin",
-     "before": [
-      4356,
-      "2dd46c68e02d7494effd33ac5a453b0a58f784497459c02d1e7bbec14ea0362d"
-     ],
-     "after": [
-      4356,
-      "6f4b10c49459134a66907b24d34aceab24375736bdcff126dbfb1bc8f863c4d1"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-012.bin",
-     "before": [
-      4356,
-      "54069ea2fd4b572e23a8308bc7769893eec5b96a619c16b86c6aeefd16385773"
-     ],
-     "after": [
-      4356,
-      "f5f6874e717c811378fabd572ac03722ba9f95e9381412f4095bf7b6ad9d250a"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-013.bin",
-     "before": [
-      4356,
-      "b1fef0906828c02331d50c2070acd04f9ccbe53bd1dc07722bb13674dd9af8be"
-     ],
-     "after": [
-      4356,
-      "6ce8afa88fb80a0e6eb97dc6b9dddc10a83feb0656cb9a84769b2fcac493eaf7"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-014.bin",
-     "before": [
-      4356,
-      "e1121c5d5c5f308252f9b9b249798cdfec46e72341596aaea95b9a0c35c4c314"
-     ],
-     "after": [
-      4356,
-      "8a9535896bca2a253ecfe22d1c818dc83cf7dcb89d1fbb7b5e24b2c16a5134a8"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-015.bin",
-     "before": [
-      4356,
-      "9f050f28578c54a94891d132d77b8f466c9688907c9eeeb12901c7a5f7a8f3ec"
-     ],
-     "after": [
-      4356,
-      "362cc90f827c13c0e70dc8a2b579698ab4c1ac42f0334e52600f438b9e4e7016"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-016.bin",
-     "before": [
-      4356,
-      "5b516db69ceae9b8cae2a18220b50c7a9bf9893e4f37ecbff3d0249f7e920ade"
-     ],
-     "after": [
-      4356,
-      "01d786a506643304776f72e1c07e6bbc0e5a1481477c4d83d46c436c6a143670"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-017.bin",
-     "before": [
-      4356,
-      "bececc567a49691e29f3e930ed15fd21079c7ca30cb72d02d8357a5b4f114fe5"
-     ],
-     "after": [
-      4356,
-      "36d557192eb8789e4f744b68ea38133020d5f7b37d76ea02bbd582b5215c9d69"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-018.bin",
-     "before": [
-      4356,
-      "9618bb97cd5146258b4ee55b3ee3cc0ca0aab653dd195b83368597aa0c1a9390"
-     ],
-     "after": [
-      4356,
-      "759098ec9cfef46e904be9a3ac78e8e70a937b842ea3ae7a57056c5fe6f5cb6f"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-019.bin",
-     "before": [
-      4356,
-      "bb3785a2380e6815254bfcf9afbe73c84ca55fa10aebaeeecbbae3ec804eab37"
-     ],
-     "after": [
-      4356,
-      "d9f940598d569a7fbdfce9b7f5a125f6f4b8437510ddf8eeee3fce44702da381"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-020.bin",
-     "before": [
-      4356,
-      "a18eb3de6660661c3150b484856504c18e11a1d2591e92c1374517dc4ab6ecbe"
-     ],
-     "after": [
-      4356,
-      "64f0c0d4a197b27e15ee0250c50e5889be3f660361b0e5879e7a3f7211ba78c3"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-021.bin",
-     "before": [
-      4356,
-      "b1538e306c0d94cae08c7c17be429d669454111793b38d81a4d6cb9ae757a809"
-     ],
-     "after": [
-      4356,
-      "0d5468123df0b35eadd2471aa4aaed621432a16943a891b58682f0d9f64bd331"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-022.bin",
-     "before": [
-      4356,
-      "61efd93c407f266e54684e578e139a2835f4acdc5528634e62e322a30fde2b66"
-     ],
-     "after": [
-      4356,
-      "3a92a2f69aae67870a5c124dc9cfa28eea5644227efc805e31883f0288ea0ad2"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-023.bin",
-     "before": [
-      4356,
-      "ec28e9944d493559d3c9dec12a45015b5811e8c72c79d3c7722af32f0074d8ec"
-     ],
-     "after": [
-      4356,
-      "28feaa1786f4c98a85d8b64fd307586dd6b6b16c0c1a05f3da3636857489975d"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-024.bin",
-     "before": [
-      4356,
-      "d14681eafc10344922c4aa1a95b1fcfdf47eb9fa726d83f1820bb1ab1cc40e9c"
-     ],
-     "after": [
-      4356,
-      "8e05180fa14b1a2d97ef573050d3787fb53a56cd5b70f6e207f305411e0820ab"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-025.bin",
-     "before": [
-      4356,
-      "82540c29e5becb446ba52e14338da3671666baaff068ec88f6b1f452d5d4e796"
-     ],
-     "after": [
-      4356,
-      "709f8ed1a86643a389af0185700ecb0526bbf1cc7f56aa352591c47e47f902f2"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-026.bin",
-     "before": [
-      4356,
-      "e386de48b8f53a11950c36b11754037fdc45c428238bf6686fee09dccabdda36"
-     ],
-     "after": [
-      4356,
-      "ff4077b19d6fb15fa8e0c82a25606db44ceaf622adb03e9a66443b47fdf5b12c"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-027.bin",
-     "before": [
-      4356,
-      "7f5d81f27e9584929cf8f959ea1d4df65ed008445db6da715fa73fed98083116"
-     ],
-     "after": [
-      4356,
-      "ae9ccad289f1e45fe08c7adc84023e05aa112269146be6b6e7d0f3060ced2c86"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-028.bin",
-     "before": [
-      4356,
-      "20450bac5c55165bd73755da2b6c4a73f4489d0a2718cb58fc8aaae60f6a532f"
-     ],
-     "after": [
-      4356,
-      "2ccbba345dca764b30714119dff51832d7a989b7d14a5c3943dbb038106a5d4a"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-029.bin",
-     "before": [
-      4356,
-      "3b40ecac512f1044977bfeaea364bb0f8e0007f580c06f9cffb26da5dbb15850"
-     ],
-     "after": [
-      4356,
-      "612cbbf010d44bca327006e5a203e8f7a505eaf5a082ce7fc69166c6a4050ec7"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-030.bin",
-     "before": [
-      4356,
-      "d36c430c7a7c25190028edc17f16cd4f702b1b4fa4af961bc3a7ff12c5019786"
-     ],
-     "after": [
-      4356,
-      "db673b9dce18c4f195b739c365d72df892cd424db8950417781817e876283e4e"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-031.bin",
-     "before": [
-      4356,
-      "f3f8623d02a7e8bbbf2456c3092dedd0f29f5f4d8afe71b8be0340cabc17b00a"
-     ],
-     "after": [
-      4356,
-      "4f83f2d0809e1265c5402cc987ed9addf8d94f434bd46592517b1bcc01fe8dbd"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-032.bin",
-     "before": [
-      4356,
-      "6b8387d21538588a093888329f19b9e70db0fc436ec952c3355a6fbb1635e6ac"
-     ],
-     "after": [
-      4356,
-      "6043c74815a65dfe25a17e40690fedae54be0841bcc68e42b1c2f3f7ebf69b93"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-033.bin",
-     "before": [
-      4356,
-      "d2cda36d1c4c2848c997c60a11dcc607a0c1f2b1cee01219b9355ad5daf6ab74"
-     ],
-     "after": [
-      4356,
-      "01cc9f6c25265ff75f6fd5ce84f00afd009d56d0ba32e7a0d703b7789d07b2ed"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-034.bin",
-     "before": [
-      4356,
-      "a430a3e98460752629066fb746b625e2bec769674058cc1724c3c972d2463e30"
-     ],
-     "after": [
-      4356,
-      "432472aa8ad89fef8151f8c38245bdae7cf279d1141a3f239c4b268bf97a4cad"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-035.bin",
-     "before": [
-      4356,
-      "91fefb5d6727fa372ec4221c324909435af332d807639a32a878e2f74355799c"
-     ],
-     "after": [
-      4356,
-      "84b1f39fa3cb4e72b5d63af712b9cebc266c43824eb8b76245e713450b37cd20"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-036.bin",
-     "before": [
-      4356,
-      "f13ee886f95b91a027ac5f61feaa8b321f4480eb0bd2c8f5ebd37f22c0d697ca"
-     ],
-     "after": [
-      4356,
-      "7743c79129fc4db2411efa94486fca8b9caab0557644971bfac18436759f53be"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-037.bin",
-     "before": [
-      4356,
-      "02c7761694fc77832567976582a14fa3175769e02a78451c67130a7d5c8e8ef3"
-     ],
-     "after": [
-      4356,
-      "412039ae47c807759bf29892d024a571468d0aca8cfbb855468ee093f5c4aacf"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-038.bin",
-     "before": [
-      4356,
-      "50cd12bff3c930b2583bd11875ce5bc1f6c8224861addf1e369638e8e16fd6eb"
-     ],
-     "after": [
-      4356,
-      "976d3a1c26893a31ea42b5e9cf142c1dd4e8ed50dcbb5c084d2e7140a29d8007"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-039.bin",
-     "before": [
-      4356,
-      "4793ca0cb430522ee17719e228e1524423d0ac82ac0fedfca8ad1b3fa492e9de"
-     ],
-     "after": [
-      4356,
-      "e5be929c79a84c86ca3e6a660ce9b2416578b6fe8758b2ab785ddf5067cd2021"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-040.bin",
-     "before": [
-      4356,
-      "a08c7394518e35edf346e09da722ed516d45e5a2c8f214dcb47d62cbd5a8eb07"
-     ],
-     "after": [
-      4356,
-      "8036ea405f4eafc47b9210d96c3d61f7f857c1d34c65d1662a59492a2a9bf438"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-041.bin",
-     "before": [
-      4356,
-      "429728258bdab3c22ce2418087b7d4179ac958c70a27b12c5cd1d0d590c7b0e8"
-     ],
-     "after": [
-      4356,
-      "0cfddc8f40b581b2cad79f2a8a98d0ced93568b6fb7928a2ff2dcf6eca80d3e0"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-042.bin",
-     "before": [
-      4356,
-      "1edd3ebc6cfda5ccb785ee1846b30eca1ced9e1cd1c2dea6141464aac39f3da1"
-     ],
-     "after": [
-      4356,
-      "5fc2cc20d2aa7dabc9debe5004e20a79b4c8f03b9188db5e733e0542da90a14b"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-043.bin",
-     "before": [
-      4356,
-      "9bc1ef2820b09813e0def248807f8cab5b7f45cc17cfc7c7877cbe7a5130d215"
-     ],
-     "after": [
-      4356,
-      "71855dcc9965bbba242f8e9b293beef535ecd6de29ebeb7591d7c8182e0e3563"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-044.bin",
-     "before": [
-      4356,
-      "a2d9718deaab1cabac709a06a3df62df3dd2b24929aa553b91de7cdd46f09e4c"
-     ],
-     "after": [
-      4356,
-      "2f654502fbb1983f91f5fb8675650dd5610a39e85da4acebd3396957752f8f1a"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-045.bin",
-     "before": [
-      4356,
-      "3fb37582948a5385d38d714d2ac65ac7411c1878eeea0796f026cb6ad5da83e2"
-     ],
-     "after": [
-      4356,
-      "e98c0597b7115716b796aff344f93473c4ce727ee51087bdc45ae0583ec50ec8"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-046.bin",
-     "before": [
-      4356,
-      "215298aaa83054547479f200bc344c6e657a3c6fc847619655f34c149a1c45b2"
-     ],
-     "after": [
-      4356,
-      "1ede321876bcbdff030322910292e94a0c694bcd92f6bf6a526b794a55492609"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-047.bin",
-     "before": [
-      4356,
-      "353e6545fa6d4a7492ae304204db7d0e3bacb7ed2499b85ffa8002d7e8d19d2f"
-     ],
-     "after": [
-      4356,
-      "f9a11c96ed06aeade224213c13956346137366354c406ce3913d6a94e117f31c"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-048.bin",
-     "before": [
-      4356,
-      "828530843ebe76348b55d4a0604839df954542d864dcd7727d225732262ce2bb"
-     ],
-     "after": [
-      4356,
-      "bacc3b5945bd83853850875896237417176fa17b278ae1ee00331926a5c8d76e"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-049.bin",
-     "before": [
-      4356,
-      "9defc0b05f333201885f8c6e79990f9d0dfbc57109594a1e90c919891384ab02"
-     ],
-     "after": [
-      4356,
-      "a69f8e2b0d7d000c64b3d02ee671a580ab2930ef1e0eba841abc8123ab7baced"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-050.bin",
-     "before": [
-      4356,
-      "0a41f0bdff0472b7422f36a3a860aa005a6063d8e15fbc5098209522f2515480"
-     ],
-     "after": [
-      4356,
-      "3ec3312baa39f9bd67b4ed7caae990ebe909c74f9a0cb8155b8ce20b61a07400"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-051.bin",
-     "before": [
-      4356,
-      "0d69cec8d08e4c778edb8fcb88f500765f9e34add04c252bbf3060e4dc7089f1"
-     ],
-     "after": [
-      4356,
-      "3d4890236962d3d36fd89759a5b3979bd09baac387834e9cb8650f044ea0fdb4"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-052.bin",
-     "before": [
-      4356,
-      "7c10bf244625b05ad2cd6bcedf71b7c8d95eefa72ba5363ce29d24561030541f"
-     ],
-     "after": [
-      4356,
-      "b957292b3eb37a0df5b10233280da028d7a639a9d70766982bf9221397aaf7e7"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-053.bin",
-     "before": [
-      4356,
-      "881c94631b5c95e98c82ba5f4724db83ec566406d03dbed9a7dd4d8e4afb5e11"
-     ],
-     "after": [
-      4356,
-      "fa9127c23fac5995c318a343559ba01dc72fee93e2d7486507981497cc922cb0"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-054.bin",
-     "before": [
-      4356,
-      "35472899516c5a985b4ab8fa24ad26d0ce4bb183fc64e22748138ffb4802c391"
-     ],
-     "after": [
-      4356,
-      "1e9670382fb15dbc05e93586cbb482fa8971c4f73200b3406ea5b0872e8d672f"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-055.bin",
-     "before": [
-      4356,
-      "063baa70712823e571b50c0d8fdaf80a8e122aa33d7dba05c161ed72a86766db"
-     ],
-     "after": [
-      4356,
-      "c83fede4fcb21e49642323a8f5919a112cafcd90546c9c59053ccf582fa3bcc3"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-056.bin",
-     "before": [
-      4356,
-      "2db046032758835c145db6f91b032259fe1252a66e1d4863149ccc3ea3a1a87c"
-     ],
-     "after": [
-      4356,
-      "ac443d1ca65388d4c7f7ccc2b5ce5787cf05a88285f55103cae9b750e6b34510"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-057.bin",
-     "before": [
-      4356,
-      "8533f8b7613bd84ab5bc973692a60f6997b21cfd308ec491b012839a91f38c60"
-     ],
-     "after": [
-      4356,
-      "c26916f230e9f8ffe2447f75431f9720d7107082bdfffd89f9ec9cf823ab4b03"
-     ]
-    },
-    {
-     "key": "artifact.field-frame-058.bin",
-     "before": [
-      4356,
-      "d1762e0fd168c46c8fd7f6ec068f52566d5231f7ab2c75cd77b579d68e86b511"
-     ],
-     "after": "<missing>"
-    },
-    {
-     "key": "artifact.field-series.json",
-     "before": [
-      24133,
-      "0479a0d91c2b58b135d8d8e3a26a35861279ad0742fc3a1b29462dd8eed45a83"
-     ],
-     "after": [
-      22964,
-      "7b6411e819e3712044a95508efcd51e6672706738c1536a894d22e982e801fd0"
-     ]
-    },
-    {
-     "key": "artifact.peak-field.npz",
-     "before": [
-      8685,
-      "b539130136cae0f743fec187ebab7db8c23586b4b3215c8d517b99e9107c7854"
-     ],
-     "after": [
-      8400,
-      "aff8fb934a3d7bdb384d4a3d7c6dce53d753534d06ba3991c5d5ce184e48fea7"
-     ]
-    },
-    {
-     "key": "artifact.phase-slice.svg",
-     "before": [
-      8655,
-      "127096bc583f56bb2e4c0135b73bc5a50a18d3515114c9030ca339fc9607db4d"
-     ],
-     "after": [
-      8655,
-      "e5494c5079a4d3017e726f658bc8d7cc8a6c37a7770e2dc1f0781c35862aa987"
-     ]
-    },
-    {
-     "key": "artifact.temperature-slice.svg",
-     "before": [
-      8654,
-      "c7475d3a3ed6350129321203d7c675564f1317cee9bb4ebe51fa623f9eb588e7"
-     ],
-     "after": [
-      8653,
-      "3ae55445286931c3380dd9a6e373cf4131c8bde493698df65b7ca3884e5fa2a3"
-     ]
-    },
-    {
-     "key": "artifact.thermal-history.csv",
-     "before": [
-      6955,
-      "3cc10a1569c01897a6fbcaa5a0224fdd67f4a1d2bd320aabfa5d5c867030199a"
-     ],
-     "after": [
-      7337,
-      "7dc06b0f90834830b11d8cb2b0aae9037f75466f1ea46e5b618a78fc402270a4"
-     ]
-    },
-    {
-     "key": "artifacts.files",
-     "before": [
-      "field-coordinates.bin",
-      "field-frame-000.bin",
-      "field-frame-001.bin",
-      "field-frame-002.bin",
-      "field-frame-003.bin",
-      "field-frame-004.bin",
-      "field-frame-005.bin",
-      "field-frame-006.bin",
-      "field-frame-007.bin",
-      "field-frame-008.bin",
-      "field-frame-009.bin",
-      "field-frame-010.bin",
-      "field-frame-011.bin",
-      "field-frame-012.bin",
-      "field-frame-013.bin",
-      "field-frame-014.bin",
-      "field-frame-015.bin",
-      "field-frame-016.bin",
-      "field-frame-017.bin",
-      "field-frame-018.bin",
-      "field-frame-019.bin",
-      "field-frame-020.bin",
-      "field-frame-021.bin",
-      "field-frame-022.bin",
-      "field-frame-023.bin",
-      "field-frame-024.bin",
-      "field-frame-025.bin",
-      "field-frame-026.bin",
-      "field-frame-027.bin",
-      "field-frame-028.bin",
-      "field-frame-029.bin",
-      "field-frame-030.bin",
-      "field-frame-031.bin",
-      "field-frame-032.bin",
-      "field-frame-033.bin",
-      "field-frame-034.bin",
-      "field-frame-035.bin",
-      "field-frame-036.bin",
-      "field-frame-037.bin",
-      "field-frame-038.bin",
-      "field-frame-039.bin",
-      "field-frame-040.bin",
-      "field-frame-041.bin",
-      "field-frame-042.bin",
-      "field-frame-043.bin",
-      "field-frame-044.bin",
-      "field-frame-045.bin",
-      "field-frame-046.bin",
-      "field-frame-047.bin",
-      "field-frame-048.bin",
-      "field-frame-049.bin",
-      "field-frame-050.bin",
-      "field-frame-051.bin",
-      "field-frame-052.bin",
-      "field-frame-053.bin",
-      "field-frame-054.bin",
-      "field-frame-055.bin",
-      "field-frame-056.bin",
-      "field-frame-057.bin",
-      "field-frame-058.bin",
-      "field-series.json",
-      "peak-field.npz",
-      "phase-slice.svg",
-      "temperature-slice.svg",
-      "thermal-history.csv"
-     ],
-     "after": [
-      "field-coordinates.bin",
-      "field-frame-000.bin",
-      "field-frame-001.bin",
-      "field-frame-002.bin",
-      "field-frame-003.bin",
-      "field-frame-004.bin",
-      "field-frame-005.bin",
-      "field-frame-006.bin",
-      "field-frame-007.bin",
-      "field-frame-008.bin",
-      "field-frame-009.bin",
-      "field-frame-010.bin",
-      "field-frame-011.bin",
-      "field-frame-012.bin",
-      "field-frame-013.bin",
-      "field-frame-014.bin",
-      "field-frame-015.bin",
-      "field-frame-016.bin",
-      "field-frame-017.bin",
-      "field-frame-018.bin",
-      "field-frame-019.bin",
-      "field-frame-020.bin",
-      "field-frame-021.bin",
-      "field-frame-022.bin",
-      "field-frame-023.bin",
-      "field-frame-024.bin",
-      "field-frame-025.bin",
-      "field-frame-026.bin",
-      "field-frame-027.bin",
-      "field-frame-028.bin",
-      "field-frame-029.bin",
-      "field-frame-030.bin",
-      "field-frame-031.bin",
-      "field-frame-032.bin",
-      "field-frame-033.bin",
-      "field-frame-034.bin",
-      "field-frame-035.bin",
-      "field-frame-036.bin",
-      "field-frame-037.bin",
-      "field-frame-038.bin",
-      "field-frame-039.bin",
-      "field-frame-040.bin",
-      "field-frame-041.bin",
-      "field-frame-042.bin",
-      "field-frame-043.bin",
-      "field-frame-044.bin",
-      "field-frame-045.bin",
-      "field-frame-046.bin",
-      "field-frame-047.bin",
-      "field-frame-048.bin",
-      "field-frame-049.bin",
-      "field-frame-050.bin",
-      "field-frame-051.bin",
-      "field-frame-052.bin",
-      "field-frame-053.bin",
-      "field-frame-054.bin",
-      "field-frame-055.bin",
-      "field-frame-056.bin",
-      "field-frame-057.bin",
-      "field-series.json",
-      "peak-field.npz",
-      "phase-slice.svg",
-      "temperature-slice.svg",
-      "thermal-history.csv"
-     ]
-    },
-    {
-     "key": "evaporation.authorityProbe.latentHeatVapUsed_J_kg",
-     "before": [
-      [
-       6250000.0,
-       "0x1.7d78400000000p+22"
-      ]
-     ],
-     "after": []
-    },
-    {
-     "key": "evaporation.authorityProbe.maxVaporFraction",
-     "before": [
-      0.11114950223937266,
-      "0x1.c744b3515b46dp-4"
-     ],
-     "after": null
-    },
-    {
-     "key": "evaporation.inversionCalls",
-     "before": 402,
-     "after": 0
-    },
-    {
-     "key": "evaporation.latentHeatVapUsed_J_kg",
-     "before": [
-      [
-       6250000.0,
-       "0x1.7d78400000000p+22"
-      ]
-     ],
-     "after": []
-    },
-    {
-     "key": "evaporation.maxVaporFraction",
-     "before": [
-      0.11114950223937266,
-      "0x1.c744b3515b46dp-4"
-     ],
-     "after": null
-    },
-    {
-     "key": "npz.peak-field.npz.array.T_K",
-     "before": [
-      "<f8",
-      [
-       1089
-      ],
-      "45b8bf3e2aa3f6295f750eb12e9ab368551212ccac402d04fa694ab64a3d9910"
-     ],
-     "after": [
-      "<f8",
-      [
-       1089
-      ],
-      "091564e51ee24c0f993b9ed791b3ee92335c95e2621ca5e2bf48ee7acd6d78ab"
-     ]
-    },
-    {
-     "key": "npz.peak-field.npz.array.liquid_fraction",
-     "before": [
-      "<f8",
-      [
-       1089
-      ],
-      "89c6d4bab910f4b09d4d51b0938b1a2424ebedfc60a2ff2c15563b3a8d3ec603"
-     ],
-     "after": [
-      "<f8",
-      [
-       1089
-      ],
-      "d3623c85b27d4eafab7c793553615713826ea1fcf713172d4b44335a2ef26075"
-     ]
-    },
-    {
-     "key": "npz.peak-field.npz.array.step",
-     "before": [
-      "<i8",
-      [
-       1
-      ],
-      "5fc5a25044387cf8a6ff488f9a3a496502964b32c9e16979f1c9d0debc169387"
-     ],
-     "after": [
-      "<i8",
-      [
-       1
-      ],
-      "80385ab7650a9d4c198e8805d1f52624a8ff708577310f1c95dbf1b3a454204e"
-     ]
-    },
-    {
-     "key": "npz.peak-field.npz.array.time_s",
-     "before": [
-      "<f8",
-      [
-       1
-      ],
-      "71b2b3fb3978cb7baff972fe205a6cce38d01e162ce5f795c988c40764a1d41f"
-     ],
-     "after": [
-      "<f8",
-      [
-       1
-      ],
-      "74ec33606128e480ef82854691a2eafcafe4abda6747a6ca12d85ffbd5ef5ee3"
-     ]
-    },
-    {
      "key": "result.canonicalSha256",
      "before": "6fd0c17651ed7e996c8eac91509c2a17e0a4084353ca9e695f03591afb4471f3",
-     "after": "165333230ce064cd9efdd1e5df71276fc61924362e864ddf28a7d7da946262b2"
-    },
-    {
-     "key": "result.coreContract.inputSha256",
-     "before": "ad86a5d311da3ea1545c53b12319410ddaa75c3e70bbcdff39c5657f282806ab",
-     "after": "5e4ec48a6ec706b0d72a884f0e1e63d68b1b4b9e5814243bb0867bc791bcc773"
+     "after": "d5d3c8602dae3a173b292733ab9f4a5a78ac2fc51d4d04a667b486ef049893a8"
     },
     {
      "key": "result.coreContract.materialSha256",
      "before": "702af3957df4b5ecbae9f2f9c197725bee24cdb34c602d7eaa3655b6e69592e2",
-     "after": "3b84f989e9f09ab1fe1d34a8463976ef7246906734b5c30df3ff6056ea360823"
-    },
-    {
-     "key": "result.key.analyticalComparison",
-     "before": "1cecdbd22bb3a129eaad66f4795a94005620c8493c8ede9c66ebd37a59d09fa7",
-     "after": "773303abf7b4d66d5173470bc47984bc362e4ffce0c9f037aa537848e615ae4c",
-     "rawBefore": {
-      "rosenthal": {
-       "width_um": 66.66666666666667,
-       "depth_um": 33.333333333333336,
-       "length_um": 245.0,
-       "gridResolution_um": [
-        11.666666666666769,
-        8.333333333333334
-       ],
-       "truncated": false,
-       "assumptions": "Constant preheat properties; conduction only; discrete liquidus extent; no keyhole correction."
-      },
-      "goldak": {
-       "width_um": 66.66666666666667,
-       "depth_um": 33.333333333333336,
-       "length_um": 233.33333333333366,
-       "gridResolution_um": [
-        11.666666666666769,
-        8.333333333333334
-       ],
-       "truncated": false,
-       "assumptions": "Constant preheat properties; conduction only; discrete liquidus extent; no keyhole correction."
-      }
-     },
-     "rawAfter": {
-      "rosenthal": {
-       "width_um": 66.66666666666667,
-       "depth_um": 33.333333333333336,
-       "length_um": 175.00000000000026,
-       "gridResolution_um": [
-        11.666666666666769,
-        8.333333333333334
-       ],
-       "truncated": false,
-       "assumptions": "Constant preheat properties; conduction only; discrete liquidus extent; no keyhole correction."
-      },
-      "goldak": {
-       "width_um": 66.66666666666667,
-       "depth_um": 33.333333333333336,
-       "length_um": 163.33333333333348,
-       "gridResolution_um": [
-        11.666666666666769,
-        8.333333333333334
-       ],
-       "truncated": false,
-       "assumptions": "Constant preheat properties; conduction only; discrete liquidus extent; no keyhole correction."
-      }
-     },
-     "rawChanges": [
-      "rosenthal.length_um: 245.0 (0x1.ea00000000000p+7) -> 175.00000000000026 (0x1.5e00000000009p+7)",
-      "goldak.length_um: 233.33333333333366 (0x1.d2aaaaaaaaab6p+7) -> 163.33333333333348 (0x1.46aaaaaaaaab0p+7)"
-     ]
-    },
-    {
-     "key": "result.key.artifacts",
-     "before": "80d3767537f1087882cb83c148745a412c28f9f1b032faae9a2f139d9b6cb19c",
-     "after": "cf52789343ad1ad2174c909a883f5e63bc4b8c4a338bea9bb8558bafd7ce47aa"
-    },
-    {
-     "key": "result.key.boilingCap",
-     "before": "35b7911e6faed740657de589bc23b6d8b9bb87588144ab695ca14e9bbd7c6588",
-     "after": "de236c69a5fa617bbca14be32bb5d76672e81f1cd449c8a351d5ab5bf43503df",
-     "rawBefore": {
-      "modelId": "boiling-cap-v1",
-      "active": true,
-      "cappedSteps": 402,
-      "maxExcessEnthalpy_J_kg": 694684.3889960791,
-      "maxVaporFractionProxy": 0.11114950223937266,
-      "latentHeatVap_J_kg": 6250000.0,
-      "energyLeavesDomain": false,
-      "isReferenceSolution": false,
-      "isEvaporationModel": false,
-      "note": "Diagnostic of the boiling cap: the inversion clips T at T_boil and keeps the excess enthalpy in the cell; the vapor-fraction proxy excess_h/L_v is not a mass loss and is not conserved. Not an evaporation model."
-     },
-     "rawAfter": {
-      "modelId": "boiling-cap-v1",
-      "active": true,
-      "cappedSteps": 0,
-      "maxExcessEnthalpy_J_kg": 0.0,
-      "maxVaporFractionProxy": 0.0,
-      "latentHeatVap_J_kg": 6250000.0,
-      "energyLeavesDomain": false,
-      "isReferenceSolution": false,
-      "isEvaporationModel": false,
-      "note": "Diagnostic of the boiling cap: the inversion clips T at T_boil and keeps the excess enthalpy in the cell; the vapor-fraction proxy excess_h/L_v is not a mass loss and is not conserved. Not an evaporation model."
-     },
-     "rawChanges": [
-      "cappedSteps: 402 -> 0",
-      "maxExcessEnthalpy_J_kg: 694684.3889960791 (0x1.53338c72a7e7cp+19) -> 0.0 (0x0.0p+0)",
-      "maxVaporFractionProxy: 0.11114950223937266 (0x1.c744b3515b46dp-4) -> 0.0 (0x0.0p+0)"
-     ]
+     "after": "1577c233637dcafbc1797f3ed2e82b7479c9a64860cd94cea972db33b50ee588"
     },
     {
      "key": "result.key.coreContract",
      "before": "30c2afedce89ae4cc51553fb48abf4f962bd27a709b94b145a6a5b7d2dbc6de9",
-     "after": "6e5e2d610d2bc35de7e84cb27959330008e57205a184dcb828f928364c231f2d",
+     "after": "706a736cd44b0a8a692a39074f4f925e032dc555c4d732eab024073a32a9f039",
      "rawBefore": {
       "schemaVersion": 1,
       "modelId": "stationary-enthalpy-conduction-layer-conforming-v1",
@@ -21310,8 +20233,8 @@
       "requestedBackend": "reference",
       "effectiveMode": "standard",
       "solverId": "enthalpy-fv-6",
-      "inputSha256": "5e4ec48a6ec706b0d72a884f0e1e63d68b1b4b9e5814243bb0867bc791bcc773",
-      "materialSha256": "3b84f989e9f09ab1fe1d34a8463976ef7246906734b5c30df3ff6056ea360823",
+      "inputSha256": "ad86a5d311da3ea1545c53b12319410ddaa75c3e70bbcdff39c5657f282806ab",
+      "materialSha256": "1577c233637dcafbc1797f3ed2e82b7479c9a64860cd94cea972db33b50ee588",
       "units": {
        "power": "W",
        "speed": "mm/s",
@@ -21334,173 +20257,13 @@
       "evidenceClass": "unvalidated-model"
      },
      "rawChanges": [
-      "inputSha256: sha256 ad86a5d311da3ea1 -> sha256 5e4ec48a6ec706b0",
-      "materialSha256: sha256 702af3957df4b5ec -> sha256 3b84f989e9f09ab1"
-     ]
-    },
-    {
-     "key": "result.key.discretization",
-     "before": "1454171b0f29bb2d11f4f3bf11f28652c82cc0fd83d4d4c4913598c42d95cb43",
-     "after": "58c2116bb007ce16073cd66df599a6a7d90e99b024da2061d0df7925c4cf775c",
-     "rawBefore": {
-      "cells": 1089,
-      "mesh_m": 3.9999999999999996e-05,
-      "minimumDt_s": 3.068362022523455e-07,
-      "meanDt_s": 5.208333333333333e-07,
-      "steps": 672
-     },
-     "rawAfter": {
-      "cells": 1089,
-      "mesh_m": 3.9999999999999996e-05,
-      "minimumDt_s": 2.1995770799226226e-07,
-      "meanDt_s": 6.641366223908917e-07,
-      "steps": 527
-     },
-     "rawChanges": [
-      "minimumDt_s: 3.068362022523455e-07 (0x1.49767e3882800p-22) -> 2.1995770799226226e-07 (0x1.d85b075e02800p-23)",
-      "meanDt_s: 5.208333333333333e-07 (0x1.179ec9cbd821dp-21) -> 6.641366223908917e-07 (0x1.648e3e0a3ed52p-21)",
-      "steps: 672 -> 527"
-     ]
-    },
-    {
-     "key": "result.key.energyBalance",
-     "before": "bd3709ab0b843ca5acc0a3329d5ce3ed86ab633cf7a04c99c98b858b9178dccb",
-     "after": "d4bf5589a45dfa621d393fd0a7c2a8d68594ab94743811e742871d166bcc2c6c",
-     "rawBefore": {
-      "input_J": 0.008400000000000001,
-      "losses_J": 2.467987649610871e-06,
-      "stored_J": 0.008397532012350394,
-      "relativeError": 4.130293990420969e-16
-     },
-     "rawAfter": {
-      "input_J": 0.005999999999999997,
-      "losses_J": 1.127307625485493e-06,
-      "stored_J": 0.005998872692374512,
-      "relativeError": 1.4456028966473401e-16
-     },
-     "rawChanges": [
-      "input_J: 0.008400000000000001 (0x1.13404ea4a8c16p-7) -> 0.005999999999999997 (0x1.89374bc6a7ef6p-8)",
-      "losses_J: 2.467987649610871e-06 (0x1.4b3f68f1923dap-19) -> 1.127307625485493e-06 (0x1.2e9bfd7a1181bp-20)",
-      "stored_J: 0.008397532012350394 (0x1.132b9aae19a86p-7) -> 0.005998872692374512 (0x1.89246206d04e5p-8)",
-      "relativeError: 4.130293990420969e-16 (0x1.dc30c30c30c30p-52) -> 1.4456028966473401e-16 (0x1.4d55555555559p-53)"
-     ]
-    },
-    {
-     "key": "result.key.geometricDefectScreen",
-     "before": "30df789f638635e1937f1ec981f63150a96b466c1c87a04452044d37349867ee",
-     "after": "04b2b4b50f901d05d259186282ef7ebdab10b39dedf4299886f8278762b1c7a9",
-     "rawBefore": {
-      "modelId": "elliptic-overlap-screening-v2",
-      "scope": "single-track-cross-section",
-      "status": "geometry-screened",
-      "limitations": [
-       "Geometric screening only; no pore probability, porosity estimate, or certification.",
-       "Requires local single-track width and penetration depth for an aligned semi-elliptical cross-section.",
-       "Ignores local pool fluctuations, track registration, powder packing, and remelting history.",
-       "Accuracy depends on supplied geometry; Rosenthal-derived dimensions can fail this screen.",
-       "No Ti-6Al-4V-specific correction or universal keyhole/balling threshold is applied."
-      ],
-      "lackOfFusion": {
-       "status": "lack-of-fusion-screened",
-       "ellipseIndex": 7.25,
-       "signedMargin": -6.25,
-       "overlapDepth_um": 0.0,
-       "maximumHatch_um": 0.0,
-       "riskScreened": true,
-       "reason": "Only the idealized elliptical overlap condition is evaluated."
-      },
-      "keyhole": {
-       "depthToWidth": 1.0,
-       "risk": null,
-       "kingModeIndicator": "keyhole-mode",
-       "reason": "D/W 1.00 > 0.5: keyhole-mode by the King et al. 2014 depth > half-width classification. Aspect ratio alone cannot resolve vapor depression stability or keyhole pore formation, so no risk is assigned."
-      },
-      "balling": {
-       "lengthToWidth": 4.999999999999999,
-       "risk": null,
-       "reason": "No balling risk from this geometry: the balling screen uses the Eagar-Tsai liquidus L/W (eagar-tsai-aspect-balling-screen-v1), which was not supplied for this result."
-      },
-      "gasPore": {
-       "risk": null,
-       "reason": "Gas inventory, transport, and pore nucleation are not resolved."
-      },
-      "porosity": {
-       "value": null,
-       "reason": "Geometry screening does not predict volumetric porosity."
-      },
-      "provenance": [
-       {
-        "title": "Harkin et al. (2023), Equation 5",
-        "url": "https://link.springer.com/article/10.1007/s00170-023-11163-0",
-        "use": "Semi-elliptical overlap criterion; empirical material-specific correction excluded."
-       },
-       {
-        "title": "King et al. (2014), J. Mater. Process. Technol. 214, 2915, sec. 5.2",
-        "url": "https://doi.org/10.1016/j.jmatprotec.2014.06.005",
-        "use": "Keyhole-mode classification when melt-pool depth exceeds the half-width (D/W > 0.5); label only."
-       }
-      ]
-     },
-     "rawAfter": {
-      "modelId": "elliptic-overlap-screening-v2",
-      "scope": "single-track-cross-section",
-      "status": "geometry-screened",
-      "limitations": [
-       "Geometric screening only; no pore probability, porosity estimate, or certification.",
-       "Requires local single-track width and penetration depth for an aligned semi-elliptical cross-section.",
-       "Ignores local pool fluctuations, track registration, powder packing, and remelting history.",
-       "Accuracy depends on supplied geometry; Rosenthal-derived dimensions can fail this screen.",
-       "No Ti-6Al-4V-specific correction or universal keyhole/balling threshold is applied."
-      ],
-      "lackOfFusion": {
-       "status": "lack-of-fusion-screened",
-       "ellipseIndex": 7.25,
-       "signedMargin": -6.25,
-       "overlapDepth_um": 0.0,
-       "maximumHatch_um": 0.0,
-       "riskScreened": true,
-       "reason": "Only the idealized elliptical overlap condition is evaluated."
-      },
-      "keyhole": {
-       "depthToWidth": 1.0,
-       "risk": null,
-       "kingModeIndicator": "keyhole-mode",
-       "reason": "D/W 1.00 > 0.5: keyhole-mode by the King et al. 2014 depth > half-width classification. Aspect ratio alone cannot resolve vapor depression stability or keyhole pore formation, so no risk is assigned."
-      },
-      "balling": {
-       "lengthToWidth": 4.0,
-       "risk": null,
-       "reason": "No balling risk from this geometry: the balling screen uses the Eagar-Tsai liquidus L/W (eagar-tsai-aspect-balling-screen-v1), which was not supplied for this result."
-      },
-      "gasPore": {
-       "risk": null,
-       "reason": "Gas inventory, transport, and pore nucleation are not resolved."
-      },
-      "porosity": {
-       "value": null,
-       "reason": "Geometry screening does not predict volumetric porosity."
-      },
-      "provenance": [
-       {
-        "title": "Harkin et al. (2023), Equation 5",
-        "url": "https://link.springer.com/article/10.1007/s00170-023-11163-0",
-        "use": "Semi-elliptical overlap criterion; empirical material-specific correction excluded."
-       },
-       {
-        "title": "King et al. (2014), J. Mater. Process. Technol. 214, 2915, sec. 5.2",
-        "url": "https://doi.org/10.1016/j.jmatprotec.2014.06.005",
-        "use": "Keyhole-mode classification when melt-pool depth exceeds the half-width (D/W > 0.5); label only."
-       }
-      ]
-     },
-     "rawChanges": [
-      "balling.lengthToWidth: 4.999999999999999 (0x1.3ffffffffffffp+2) -> 4.0 (0x1.0000000000000p+2)"
+      "materialSha256: sha256 702af3957df4b5ec -> sha256 1577c233637dcafb"
      ]
     },
     {
      "key": "result.key.material",
      "before": "bed90b8221bf3268362a968c47ca81246b7a6f4ca5b3fa9bf614d7b6a7198539",
-     "after": "fddcc88ddee370a54260f1ba72a3c1a97b876d003dab8657dbecba7f706153d8",
+     "after": "8aab62af9a083fe11e1e4d9817eea7831d928cb73216f6e86c2300887b0e1b8f",
      "rawBefore": {
       "solidus_K": 1648.15,
       "liquidus_K": 1673.15,
@@ -21553,7 +20316,7 @@
       "liquidus_K": 1673.15,
       "boiling_K": 3087.15,
       "latentHeat_J_kg": 270000.0,
-      "absorptivity": 0.3,
+      "absorptivity": 0.42,
       "emissivity": 0.35,
       "dGamma_dT": -0.00045,
       "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
@@ -21593,360 +20356,29 @@
       "materialIdentitySchemaVersion": 1,
       "materialAuthority": "four_alloy_materials.py",
       "materialAuthorityRevisionSha256": "70d125f359d849e05bd46844739101074ec0e6902a54ecc09701d4217baa16a6",
-      "materialRevisionSha256": "51f124e66e8681f13ddece2032b97f74d05bc1425813ad54055dd866fa9a174d"
+      "materialRevisionSha256": "d719bf308d5686b074b6db4f54ac7f97424a01d0375f38177b3536961b5e1e9a"
      },
      "rawChanges": [
-      "absorptivity: 0.42 (0x1.ae147ae147ae1p-2) -> 0.3 (0x1.3333333333333p-2)",
       "materialAuthorityRevisionSha256: sha256 9a466d2ce3ad79aa -> sha256 70d125f359d849e0",
-      "materialRevisionSha256: sha256 d4d89609d9ab13d1 -> sha256 51f124e66e8681f1"
+      "materialRevisionSha256: sha256 d4d89609d9ab13d1 -> sha256 d719bf308d5686b0"
      ]
-    },
-    {
-     "key": "result.key.metrics",
-     "before": "5c7d628cdee06f2271847d4287749e48a50552d786318fd1d123e4ade60581c5",
-     "after": "46b8d7735f823ae0fe85f3ee6a031e87da92b04fb9bcd2f0757d102bdd4141ca",
-     "rawBefore": {
-      "length_um": 199.99999999999997,
-      "width_um": 40.0,
-      "depth_um": 40.0,
-      "volume_um3": 319999.9999999999,
-      "crossSectionArea_um2": 1599.9999999999995,
-      "peakTemperature_K": 3087.15,
-      "thermalGradient_K_m": 18667058.950686585,
-      "solidificationRate_m_s": 0.15478575037366288,
-      "coolingRate_K_s": 2889394.726951423,
-      "keyholeDepth_um": null,
-      "recoilPressure_Pa": null,
-      "marangoniNumber": 745.0046709677418,
-      "pecletNumber": 5.620025806451612,
-      "aspectRatio": 1.0,
-      "trackOverlapRatio": null,
-      "remeltingRatio": 0.0
-     },
-     "rawAfter": {
-      "length_um": 160.0,
-      "width_um": 40.0,
-      "depth_um": 40.0,
-      "volume_um3": 255999.9999999999,
-      "crossSectionArea_um2": 1599.9999999999995,
-      "peakTemperature_K": 2817.403160822621,
-      "thermalGradient_K_m": 19170534.50473462,
-      "solidificationRate_m_s": 0.13337259489833359,
-      "coolingRate_K_s": 2558399.963838986,
-      "keyholeDepth_um": null,
-      "recoilPressure_Pa": null,
-      "marangoniNumber": 602.8811524628397,
-      "pecletNumber": 5.620025806451612,
-      "aspectRatio": 1.0,
-      "trackOverlapRatio": null,
-      "remeltingRatio": 0.0
-     },
-     "rawChanges": [
-      "length_um: 199.99999999999997 (0x1.8ffffffffffffp+7) -> 160.0 (0x1.4000000000000p+7)",
-      "volume_um3: 319999.9999999999 (0x1.387fffffffffep+18) -> 255999.9999999999 (0x1.f3ffffffffffdp+17)",
-      "peakTemperature_K: 3087.15 (0x1.81e4ccccccccdp+11) -> 2817.403160822621 (0x1.602ce6b18685fp+11)",
-      "thermalGradient_K_m: 18667058.950686585 (0x1.1cd632f360323p+24) -> 19170534.50473462 (0x1.2484e6813649cp+24)",
-      "solidificationRate_m_s: 0.15478575037366288 (0x1.3d004fbdef016p-3) -> 0.13337259489833359 (0x1.1125a6aa2b01ap-3)",
-      "coolingRate_K_s: 2889394.726951423 (0x1.60b595d0cbe86p+21) -> 2558399.963838986 (0x1.384dffb5f136ep+21)",
-      "marangoniNumber: 745.0046709677418 (0x1.7480990eead89p+9) -> 602.8811524628397 (0x1.2d70c99a9957ep+9)"
-     ]
-    },
-    {
-     "key": "result.key.numericalDiagnostics",
-     "before": "d4bd737150d0549bb145f26b1a115bca1db43f5c7e0276586046c735c2a5ed79",
-     "after": "0c942e17a0b4968f9301737f74b3d49672a390c0548ae6c0d60fdca22eee414c",
-     "rawBefore": {
-      "meltPoolExtraction": "accepted-step-molten-volume-v1",
-      "peakMeltTime_s": 0.00020803972121924226,
-      "peakMeltStep": 476,
-      "meltPoolObservedSteps": 672,
-      "peakMeltCellCount": 5,
-      "equalMaximumEndpointCount": 149,
-      "firstEqualMaximumTime_s": 0.00020803972121924226,
-      "lastEqualMaximumTime_s": 0.00030211209749153047,
-      "sampledPeakMeltVolume_um3": 319999.9999999999,
-      "peakMeltSamplingLossFraction": 0.0,
-      "overlapExtraction": "field-inter-track-overlap-v1",
-      "sourceIntegration": "cell-integrated-gaussian-adaptive-gl-v2",
-      "solidificationExtraction": "linear-liquidus-crossing-v1",
-      "stabilityLimit": "local-conductance-row-sum",
-      "minimumCapturedSourceFraction": 0.9999999990290492,
-      "maximumSourceRenormalization": 1.0000000009709509,
-      "maximumSurfaceOffset_um": 0.0,
-      "maximumTimestep_s": 1e-06,
-      "maximumEnthalpyIncrement_K": 24.2581324044452,
-      "sourceTimestepRetries": 589,
-      "acceptedTimestepDistribution": {
-       "methodId": "accepted-timestep-distribution-v1",
-       "count": 672,
-       "total_s": 0.0003499999999999982,
-       "sumSquared_s2": 2.1113024356885448e-10,
-       "mean_s": 5.208333333333307e-07,
-       "minimum_s": 3.068362022523455e-07,
-       "p50_s": 4.524978813054108e-07,
-       "p90_s": 1e-06,
-       "p99_s": 1e-06,
-       "maximum_s": 1e-06,
-       "eulerFirstOrderWeightedDt_s": 6.032292673395873e-07,
-       "requestedMaxDt_s": 1e-06,
-       "requestedMaxDtHitFraction": 0.12053571428571429,
-       "sourceLimitedStepCount": 589,
-       "sourceTimestepRetries": 589
-      }
-     },
-     "rawAfter": {
-      "meltPoolExtraction": "accepted-step-molten-volume-v1",
-      "peakMeltTime_s": 0.00016757649077304992,
-      "peakMeltStep": 290,
-      "meltPoolObservedSteps": 527,
-      "peakMeltCellCount": 4,
-      "equalMaximumEndpointCount": 143,
-      "firstEqualMaximumTime_s": 0.00016757649077304992,
-      "lastEqualMaximumTime_s": 0.00026600000000000034,
-      "sampledPeakMeltVolume_um3": 255999.9999999999,
-      "peakMeltSamplingLossFraction": 0.0,
-      "overlapExtraction": "field-inter-track-overlap-v1",
-      "sourceIntegration": "cell-integrated-gaussian-adaptive-gl-v2",
-      "solidificationExtraction": "linear-liquidus-crossing-v1",
-      "stabilityLimit": "local-conductance-row-sum",
-      "minimumCapturedSourceFraction": 0.9999999990246464,
-      "maximumSourceRenormalization": 1.0000000009753536,
-      "maximumSurfaceOffset_um": 0.0,
-      "maximumTimestep_s": 1e-06,
-      "maximumEnthalpyIncrement_K": 23.821152636675066,
-      "sourceTimestepRetries": 426,
-      "acceptedTimestepDistribution": {
-       "methodId": "accepted-timestep-distribution-v1",
-       "count": 527,
-       "total_s": 0.00034999999999999745,
-       "sumSquared_s2": 2.50465759726788e-10,
-       "mean_s": 6.64136622390887e-07,
-       "minimum_s": 2.1995770799226226e-07,
-       "p50_s": 5.993215502185702e-07,
-       "p90_s": 1e-06,
-       "p99_s": 1e-06,
-       "maximum_s": 1e-06,
-       "eulerFirstOrderWeightedDt_s": 7.156164563622566e-07,
-       "requestedMaxDt_s": 1e-06,
-       "requestedMaxDtHitFraction": 0.18785578747628084,
-       "sourceLimitedStepCount": 426,
-       "sourceTimestepRetries": 426
-      }
-     },
-     "rawChanges": [
-      "peakMeltTime_s: 0.00020803972121924226 (0x1.b44a7990a27b9p-13) -> 0.00016757649077304992 (0x1.5f6ef184b3204p-13)",
-      "peakMeltStep: 476 -> 290",
-      "meltPoolObservedSteps: 672 -> 527",
-      "peakMeltCellCount: 5 -> 4",
-      "equalMaximumEndpointCount: 149 -> 143",
-      "firstEqualMaximumTime_s: 0.00020803972121924226 (0x1.b44a7990a27b9p-13) -> 0.00016757649077304992 (0x1.5f6ef184b3204p-13)",
-      "lastEqualMaximumTime_s: 0.00030211209749153047 (0x1.3cc9994156f9cp-12) -> 0.00026600000000000034 (0x1.16ebd4cfd08dbp-12)",
-      "sampledPeakMeltVolume_um3: 319999.9999999999 (0x1.387fffffffffep+18) -> 255999.9999999999 (0x1.f3ffffffffffdp+17)",
-      "minimumCapturedSourceFraction: 0.9999999990290492 (0x1.fffffff7a8db5p-1) -> 0.9999999990246464 (0x1.fffffff79f2ccp-1)",
-      "maximumSourceRenormalization: 1.0000000009709509 (0x1.000000042b926p+0) -> 1.0000000009753536 (0x1.000000043069ap+0)",
-      "maximumEnthalpyIncrement_K: 24.2581324044452 (0x1.84214f71b2146p+4) -> 23.821152636675066 (0x1.7d2370f278b28p+4)",
-      "sourceTimestepRetries: 589 -> 426",
-      "acceptedTimestepDistribution.count: 672 -> 527",
-      "acceptedTimestepDistribution.total_s: 0.0003499999999999982 (0x1.6f0068db8baa6p-12) -> 0.00034999999999999745 (0x1.6f0068db8ba98p-12)",
-      "acceptedTimestepDistribution.sumSquared_s2: 2.1113024356885448e-10 (0x1.d047c2c2ab536p-33) -> 2.50465759726788e-10 (0x1.1363d808e843fp-32)",
-      "acceptedTimestepDistribution.mean_s: 5.208333333333307e-07 (0x1.179ec9cbd8205p-21) -> 6.64136622390887e-07 (0x1.648e3e0a3ed25p-21)",
-      "acceptedTimestepDistribution.minimum_s: 3.068362022523455e-07 (0x1.49767e3882800p-22) -> 2.1995770799226226e-07 (0x1.d85b075e02800p-23)",
-      "acceptedTimestepDistribution.p50_s: 4.524978813054108e-07 (0x1.e5ddaba6882dcp-22) -> 5.993215502185702e-07 (0x1.41c2206c7a9aap-21)",
-      "acceptedTimestepDistribution.eulerFirstOrderWeightedDt_s: 6.032292673395873e-07 (0x1.43db32ff38160p-21) -> 7.156164563622566e-07 (0x1.803193ac6d2f9p-21)",
-      "acceptedTimestepDistribution.requestedMaxDtHitFraction: 0.12053571428571429 (0x1.edb6db6db6db7p-4) -> 0.18785578747628084 (0x1.80ba88fc9980cp-3)",
-      "acceptedTimestepDistribution.sourceLimitedStepCount: 589 -> 426",
-      "acceptedTimestepDistribution.sourceTimestepRetries: 589 -> 426"
-     ]
-    },
-    {
-     "key": "result.key.peakInterpolatedMeltPool",
-     "before": "3bccfddaa52a01f68a986c198b48bf5304a1883ed576e4a5f0620d8027f82340",
-     "after": "d5b126ee4e56c4bcb4c9415b99b164e49c7bd19542850d4d5ae34c69e661c6ff",
-     "rawBefore": {
-      "status": "thermal-proxy",
-      "operator": "peak-liquidus-cell-edge-linear-contour-v1",
-      "temporalSelection": "accepted-step-molten-volume-v1",
-      "contour": "linear liquidus crossings between neighboring active cell centers",
-      "surfaceTreatment": "No temperature extrapolation to the model surface",
-      "width_um": 79.01678597632869,
-      "depth_um": 48.991546314250456,
-      "evidenceScope": "Numerical thermal proxy; no experimental validation",
-      "sampleCells": 5,
-      "crossingCount": 17
-     },
-     "rawAfter": {
-      "status": "thermal-proxy",
-      "operator": "peak-liquidus-cell-edge-linear-contour-v1",
-      "temporalSelection": "accepted-step-molten-volume-v1",
-      "contour": "linear liquidus crossings between neighboring active cell centers",
-      "surfaceTreatment": "No temperature extrapolation to the model surface",
-      "width_um": 62.18480892049142,
-      "depth_um": 42.46127029341847,
-      "evidenceScope": "Numerical thermal proxy; no experimental validation",
-      "sampleCells": 4,
-      "crossingCount": 14
-     },
-     "rawChanges": [
-      "width_um: 79.01678597632869 (0x1.3c113057cd73ep+6) -> 62.18480892049142 (0x1.f17a7d196c286p+5)",
-      "depth_um: 48.991546314250456 (0x1.87eeafd581668p+5) -> 42.46127029341847 (0x1.53b0ae7ac6ca1p+5)",
-      "sampleCells: 5 -> 4",
-      "crossingCount: 17 -> 14"
-     ]
-    },
-    {
-     "key": "result.key.phaseAudit",
-     "before": "5d92de3cff897699738364517ab87df268638bd995c940fea8b2018b6dc10893",
-     "after": "dd8258103722e9adefe4d4049392899d8072f8854821334fb40b9af758251dc5",
-     "rawBefore": {
-      "liquidVolume_m3": 2.967158153567555e-13,
-      "solidVolume_m3": 6.939928418464322e-11,
-      "activeVolume_m3": 6.969599999999997e-11,
-      "minFraction": 0.0,
-      "maxFraction": 1.0,
-      "interfaceConservation": null,
-      "scope": "Enthalpy liquid fraction partition; not a metal/gas interface conservation test"
-     },
-     "rawAfter": {
-      "liquidVolume_m3": 1.2632423801589694e-13,
-      "solidVolume_m3": 6.956967576198407e-11,
-      "activeVolume_m3": 6.969599999999997e-11,
-      "minFraction": 0.0,
-      "maxFraction": 0.7482039459052612,
-      "interfaceConservation": null,
-      "scope": "Enthalpy liquid fraction partition; not a metal/gas interface conservation test"
-     },
-     "rawChanges": [
-      "liquidVolume_m3: 2.967158153567555e-13 (0x1.4e1282d583279p-42) -> 1.2632423801589694e-13 (0x1.1c74f71ca47e6p-43)",
-      "solidVolume_m3: 6.939928418464322e-11 (0x1.3138a5c902d18p-34) -> 6.956967576198407e-11 (0x1.31f87dd04a026p-34)",
-      "maxFraction: 1.0 (0x1.0000000000000p+0) -> 0.7482039459052612 (0x1.7f14966ccd70ap-1)"
-     ]
-    },
-    {
-     "key": "result.key.provenance",
-     "before": "f46d93ef2e7d5d12479a9f567bdcb25194bfa101bce60e971931a6bc70f82615",
-     "after": "f32b84b02162442eaf12ae6cb2e5bda26b2ff1b1b84bcdfaa907314653c3cf95",
-     "rawBefore": {
-      "inputHash": "e6bee2b2dda04a75d3509b15019448748a249881d7d0c688274ec47c810ca801",
-      "executionInputHash": "e6bee2b2dda04a75d3509b15019448748a249881d7d0c688274ec47c810ca801",
-      "implementationFingerprintSchema": "lpbf-thermal-implementation-manifest-v3-canonical-utf8-crlf",
-      "materialVersion": "lpbf-materials-1",
-      "solverBinaryHash": null
-     },
-     "rawAfter": {
-      "inputHash": "708f1e3b33814f1b7027a0cbccc14068b3606e2082f66d2b9c9ed90f2b3377b8",
-      "executionInputHash": "708f1e3b33814f1b7027a0cbccc14068b3606e2082f66d2b9c9ed90f2b3377b8",
-      "implementationFingerprintSchema": "lpbf-thermal-implementation-manifest-v3-canonical-utf8-crlf",
-      "materialVersion": "lpbf-materials-1",
-      "solverBinaryHash": null
-     },
-     "rawChanges": [
-      "inputHash: sha256 e6bee2b2dda04a75 -> sha256 708f1e3b33814f1b",
-      "executionInputHash: sha256 e6bee2b2dda04a75 -> sha256 708f1e3b33814f1b"
-     ]
-    },
-    {
-     "key": "result.key.settings",
-     "before": "e6bee2b2dda04a75d3509b15019448748a249881d7d0c688274ec47c810ca801",
-     "after": "708f1e3b33814f1b7027a0cbccc14068b3606e2082f66d2b9c9ed90f2b3377b8",
-     "rawBefore": {
-      "mode": "standard",
-      "material": "316L Stainless Steel",
-      "power_W": 80,
-      "speed_mm_s": 800.0,
-      "beamDiameter_um": 80.0,
-      "preheat_C": 80.0,
-      "layer_um": 40.0,
-      "hatch_um": 100.0,
-      "mesh_um": 40,
-      "maxDt_s": 1e-06,
-      "trackLength_um": 200,
-      "tracks": 1,
-      "layers": 1,
-      "dwell_s": 0,
-      "cooling_s": 0.0001,
-      "scanAngle_deg": 0.0,
-      "layerRotation_deg": 67.0,
-      "strategy": "meander",
-      "stripeWidth_um": 500.0,
-      "islandSize_um": 200.0,
-      "packingFraction": 0.55,
-      "powderConductivityRatio": 0.12,
-      "convection_W_m2K": 20.0,
-      "timeout_s": 300.0,
-      "study": "none",
-      "backend": "reference",
-      "surfaceMode": "powder-layer",
-      "sourcePenetration_um": null,
-      "barePlateGeometry": "square",
-      "evaporationModel": true,
-      "marangoniMultiplier": 2.2,
-      "opticalObserver": null,
-      "powderGridPolicy": "layer-conforming",
-      "absorptivity": 0.42,
-      "emissivity": 0.35
-     },
-     "rawAfter": {
-      "mode": "standard",
-      "material": "316L Stainless Steel",
-      "power_W": 80,
-      "speed_mm_s": 800.0,
-      "beamDiameter_um": 80.0,
-      "preheat_C": 80.0,
-      "layer_um": 40.0,
-      "hatch_um": 100.0,
-      "mesh_um": 40,
-      "maxDt_s": 1e-06,
-      "trackLength_um": 200,
-      "tracks": 1,
-      "layers": 1,
-      "dwell_s": 0,
-      "cooling_s": 0.0001,
-      "scanAngle_deg": 0.0,
-      "layerRotation_deg": 67.0,
-      "strategy": "meander",
-      "stripeWidth_um": 500.0,
-      "islandSize_um": 200.0,
-      "packingFraction": 0.55,
-      "powderConductivityRatio": 0.12,
-      "convection_W_m2K": 20.0,
-      "timeout_s": 300.0,
-      "study": "none",
-      "backend": "reference",
-      "surfaceMode": "powder-layer",
-      "sourcePenetration_um": null,
-      "barePlateGeometry": "square",
-      "evaporationModel": true,
-      "marangoniMultiplier": 2.2,
-      "opticalObserver": null,
-      "powderGridPolicy": "layer-conforming",
-      "absorptivity": 0.3,
-      "emissivity": 0.35
-     },
-     "rawChanges": [
-      "absorptivity: 0.42 (0x1.ae147ae147ae1p-2) -> 0.3 (0x1.3333333333333p-2)"
-     ]
-    },
-    {
-     "key": "result.key.thermalHistory",
-     "before": "62f76b142dadb7058870e5d843e1e48638064625754a3d038f4ca94ca7dd1a0c",
-     "after": "e37ec661cee08efdd1a6663249a874e76567a0d34b21fa6a14382a16411e05f5"
     },
     {
      "key": "result.material.materialRevisionSha256",
      "before": "d4d89609d9ab13d12e495cde406dc9d2419e10593cd55bbdc876b35b3f6a9eeb",
-     "after": "51f124e66e8681f13ddece2032b97f74d05bc1425813ad54055dd866fa9a174d"
+     "after": "d719bf308d5686b074b6db4f54ac7f97424a01d0375f38177b3536961b5e1e9a"
     },
     {
      "key": "result.orderedTypedSha256",
      "before": "9641571b48bbb47b219b04efc65b9e71dd9bd814fec633160bb02c2c4e61abec",
-     "after": "de496cd1fbad6092414384cdd76a5cf1213708ded7bd453921b64530829c9b9a"
+     "after": "95011b2a8d27eed0aa21aebc4ec8a6545644b0631922397ac4a43c6bdae68ebf"
     }
    ],
-   "elapsed_s": 4.4,
+   "elapsed_s": 5.3,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
-   "observationsSha256": "aad21cf6fd2812a0e7d019d2a375a8f6700b1a4e70032d26b320ddf30bfda6ca"
+   "observationsSha256": "aaddf61f01014acc2273ff5f03c103eb5b20b51411a2c4aeee9667e495e2c611"
   },
   "g17_evaporation_alsi10mg": {
    "status": "DRIFT",
@@ -23792,7 +22224,7 @@
      "after": "1264eb220c71f83e187272356416c13e994dde4dca5a766a7360bdf38d13fe84"
     }
    ],
-   "elapsed_s": 14.2,
+   "elapsed_s": 16.6,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -23831,7 +22263,7 @@
      ]
     }
    ],
-   "elapsed_s": 0.4,
+   "elapsed_s": 0.3,
    "implementationHashes": [],
    "observationsSha256": "42ece62938bd57e428cafe0004d0e2e666baf595d952f04bc68e55826d7fc2b8"
   },
@@ -24593,7 +23025,7 @@
      "after": "67ec805c5ae1a23e76f06eabca995395b615e11bbd1d75ae28295bb1245c19cc"
     }
    ],
-   "elapsed_s": 5.5,
+   "elapsed_s": 5.8,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -24800,7 +23232,7 @@
      "after": "7383203952c7eabf81e509cd47bc8cc6eb3484cd62b7e905ccc22e5f10d543e0"
     }
    ],
-   "elapsed_s": 28.8,
+   "elapsed_s": 30.0,
    "implementationHashes": [
     "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
    ],
@@ -29603,7 +28035,7 @@
      ]
     }
    ],
-   "elapsed_s": 0.5,
+   "elapsed_s": 0.7,
    "implementationHashes": [],
    "observationsSha256": "cbd0ba57d7f7529993f5e43d308998a5e2addd658d5595ce8700f5d311e12580"
   },
@@ -29715,7 +28147,7 @@
      "after": "2032f4be6e5d9f4e1a596851263274f0ce8b59f2d9f82cfab4c12fa6978a1b30"
     }
    ],
-   "elapsed_s": 0.6,
+   "elapsed_s": 0.8,
    "implementationHashes": [],
    "observationsSha256": "9edd4253a0c99a723488902de5e573317a14b5474e25112884151eba987c0ed0"
   },
