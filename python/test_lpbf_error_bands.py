@@ -328,25 +328,31 @@ class CommittedArtefactTests(unittest.TestCase):
 
     def test_eagar_tsai_316l_depth_all(self):
         c = self.cell("depth", "eagar-tsai", "316L", "all")
-        self.assertEqual((c["n"], c["nSets"], c["nSources"]), (731, 432, 3))
-        self.assertAlmostEqual(c["median"], -0.20, places=2)
-        self.assertAlmostEqual(c["p10"], -0.43, places=2)
-        self.assertAlmostEqual(c["p90"], 0.41, places=2)
-        self.assertAlmostEqual(c["loso"]["coverageEqualWeight"], 0.68, places=2)
+        # P7b bands (2026-10-14, 36cd9d4a): the 316L authority 0.30 and the melting-point k / cp shrink every pool, so
+        # the cell moves to a deeper underprediction (P1 values: n 731 / 432, median -0.20, p10 -0.43, p90 +0.41,
+        # coverage 0.68, source medians +0.07 / -0.28 / -0.37); one Hofmann row leaves the computed set.
+        self.assertEqual((c["n"], c["nSets"], c["nSources"]), (730, 431, 3))
+        self.assertAlmostEqual(c["median"], -0.44, places=2)
+        self.assertAlmostEqual(c["p10"], -0.61, places=2)
+        self.assertAlmostEqual(c["p90"], -0.02, places=2)
+        self.assertAlmostEqual(c["loso"]["coverageEqualWeight"], 0.65, places=2)
         self.assertEqual(c["state"], "band-under-covers")
-        self.assertAlmostEqual(c["sourceMedian"]["hofmann-316l-2026"], 0.07, places=2)
-        self.assertAlmostEqual(c["sourceMedian"]["ku-leuven-316l-2021"], -0.28, places=2)
-        self.assertAlmostEqual(c["sourceMedian"]["trapp-316l-2017"], -0.37, places=2)
+        self.assertAlmostEqual(c["sourceMedian"]["hofmann-316l-2026"], -0.28, places=2)
+        self.assertAlmostEqual(c["sourceMedian"]["ku-leuven-316l-2021"], -0.49, places=2)
+        self.assertAlmostEqual(c["sourceMedian"]["trapp-316l-2017"], -0.55, places=2)
 
     def test_no_depth_cell_reaches_the_coverage_floor_and_five_width_cells_pass(self):
-        depth_ok = [c for c in self.art["cells"] if c["quantity"] == "depth" and c["state"] == "band"]
-        self.assertEqual(depth_ok, [])
+        # P7b bands (2026-10-14): one depth cell reaches the coverage floor (Eagar-Tsai 316L conduction, a descriptive
+        # record at the new fingerprint, not evidence for the bump) and seven width cells pass (P1: none and five).
+        depth_ok = sorted((c["kernel"], c["family"], c["regime"]) for c in self.art["cells"]
+                          if c["quantity"] == "depth" and c["state"] == "band" and c["family"] in ("316L", "Ti64", "Ni"))
+        self.assertEqual(depth_ok, [("eagar-tsai", "316L", "conduction")])
         width_ok = sorted((c["kernel"], c["family"], c["regime"]) for c in self.art["cells"]
                           if c["quantity"] == "width" and c["state"] == "band"
                           and c["family"] in ("316L", "Ti64", "Ni"))  # family cells; the per-alloy Ni views repeat them
         self.assertEqual(width_ok, [("eagar-tsai", "316L", "all"), ("eagar-tsai", "316L", "keyhole"),
-                                    ("goldak", "316L", "keyhole"), ("goldak", "Ni", "conduction"),
-                                    ("rosenthal", "316L", "keyhole")])
+                                    ("eagar-tsai", "Ni", "all"), ("goldak", "316L", "keyhole"), ("goldak", "Ni", "all"),
+                                    ("rosenthal", "316L", "keyhole"), ("rosenthal", "Ni", "all")])
 
     def test_evidence_fields_and_sources(self):
         self.assertEqual(self.art["evidenceKind"], "screening-only")

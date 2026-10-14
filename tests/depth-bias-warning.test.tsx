@@ -37,8 +37,8 @@ test("the band class follows the enthalpy index edges, not the served label", ()
   const c = computeDepthBiasWarning("Keyhole Mode", "Inconel 625", "rosenthal", 13.94);
   assert.equal(c.direction, null);
   assert.match(c.text ?? "", /served regime label \(keyhole\) and the error-band class from the enthalpy index \(conduction, dH\/hs 13\.94\) disagree here/);
-  // Bands at c61ab6a8 (P1, 2026-10-11): the IN625 Rosenthal conduction cell is +0.413 with n=18 (was +0.254, n=16).
-  assert.match(c.text ?? "", /median depth error of 41% \(overpredicted, n=18, 2 sources\)\. No direction is given/);
+  // Bands at 36cd9d4a (P7b, 2026-10-14): the IN625 Rosenthal conduction cell is +0.112 with n=12 (P1: +0.413, n=18).
+  assert.match(c.text ?? "", /median depth error of 11% \(overpredicted, n=12, 2 sources\)\. No direction is given/);
   for (const k of ["rosenthal", "eagar-tsai", "goldak"]) assert.equal(computeDepthBiasWarning("Keyhole Mode", "Inconel 625", k, 13.94).direction, null);
   assert.equal(computeDepthBiasWarning("Keyhole Mode", "Inconel 625", "rosenthal", 17.1).direction, "may-underestimate");
   // Without an index the label decides (n=1 keyhole cell: no direction).
@@ -51,26 +51,29 @@ test("direction follows the served kernel, alloy and regime class from the summa
   const regime = "Conduction Mode (Stable)";
   const ro = computeDepthBiasWarning(regime, "Inconel 625", "rosenthal");
   assert.equal(ro.direction, "may-overestimate");
-  assert.match(ro.text ?? "", /Rosenthal kernel on Inconel 625 overpredicted the depth by a median of 41% \(n=18, 2 sources\)/);
+  assert.match(ro.text ?? "", /Rosenthal kernel on Inconel 625 overpredicted the depth by a median of 11% \(n=12, 2 sources\)/);
   // P7b (2026-10-14): every conduction-band direction text ends with the alloy-neutral P7b note.
   assert.ok((ro.text ?? "").endsWith(DEPTH_BIAS_P1_OVER_NOTE + DEPTH_BIAS_P7B_CONDUCTION_NOTE));
   const gk = computeDepthBiasWarning(regime, "Inconel 625", "goldak");
   assert.ok((gk.text ?? "").endsWith(DEPTH_BIAS_P7B_CONDUCTION_NOTE));
   assert.doesNotMatch(DEPTH_BIAS_P7B_CONDUCTION_NOTE, /lower|shallower/);
-  assert.match(gk.text ?? "", /Goldak kernel on Inconel 625 overpredicted the depth by a median of 44% \(n=17/);
+  // P7b bands: the IN625 Goldak conduction cell flips to underprediction (-0.364, n=7; P1: +0.437, n=17).
+  assert.equal(gk.direction, "may-underestimate");
+  assert.match(gk.text ?? "", /Goldak kernel on Inconel 625 underpredicted the depth by a median of 36% \(n=7/);
   const tr = computeDepthBiasWarning("Transition Mode", "Inconel 625", "goldak");
   assert.equal(tr.direction, "may-underestimate");
-  assert.match(tr.text ?? "", /underpredicted the depth by a median of 48% \(n=6, 1 source\)/);
+  assert.match(tr.text ?? "", /underpredicted the depth by a median of 57% \(n=6, 1 source\)/);
   assert.ok((tr.text ?? "").endsWith(DEPTH_BIAS_P1_UNDER_NOTE));
   assert.doesNotMatch(gk.text ?? "", /2026-10-11/);
 });
 
-test("Ti-6Al-4V Rosenthal keyhole has no clear direction after P1 (cell equals the Eagar-Tsai and Goldak cell)", () => {
-  // Bands at c61ab6a8 (P1, 2026-10-11): -0.047, n=80, below the 0.05 direction floor (was +0.284, may-overestimate).
+test("Ti-6Al-4V Rosenthal keyhole follows the shared Fabbro leg (cell equals the Eagar-Tsai and Goldak cell)", () => {
+  // Bands at c61ab6a8 (P1): -0.047, n=80, below the 0.05 direction floor. P7b (2026-10-14): the leg follows the
+  // Ti-6Al-4V authority 0.32 (was 0.35), so the shared cell is -0.129 and the direction is may-underestimate.
   const w = computeDepthBiasWarning("Keyhole Mode (melt-pool D/W > 0.5 screening onset)", "Ti-6Al-4V", "rosenthal", 25);
-  assert.equal(w.direction, null);
-  assert.match(w.text ?? "", /No clear depth bias direction/);
-  assert.doesNotMatch(w.text ?? "", /underestimated/);
+  assert.equal(w.direction, "may-underestimate");
+  assert.match(w.text ?? "", /underpredicted the depth by a median of 13% \(n=80, 2 sources\)/);
+  assert.ok((w.text ?? "").endsWith(DEPTH_BIAS_P1_UNDER_NOTE));
   assert.deepEqual(DEPTH_BIAS_CELLS["Ti-6Al-4V|rosenthal|keyhole"], DEPTH_BIAS_CELLS["Ti-6Al-4V|eagar-tsai|keyhole"]);
 });
 

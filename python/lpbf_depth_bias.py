@@ -13,6 +13,7 @@ The TypeScript mirror is src/utils/depthBiasWarning.ts; python/test_lpbf_depth_b
 equal to this module and to the summary.
 """
 import json
+import math
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -85,7 +86,9 @@ def build_cells(summary: Dict[str, Any]) -> Dict[str, Any]:
         if c.get("quantity") != "depth" or len(alloys) != 1 or c.get("regime") not in ("conduction", "transition", "keyhole"):
             continue
         key = f"{alloys[0]}|{c['kernel']}|{c['regime']}"
-        cells[key] = [round(float(c["median"]), 3), int(c["n"]), int(c["nSources"])]
+        # Rounded exactly as the TypeScript mirror (Math.round(median * 1000) / 1000: a half rounds toward +infinity),
+        # so the two tables agree on an exact half such as -0.6125 (P7b bands: the 316L Eagar-Tsai transition cell).
+        cells[key] = [math.floor(float(c["median"]) * 1000.0 + 0.5) / 1000.0, int(c["n"]), int(c["nSources"])]
     return {"bandsId": summary.get("bandsId"), "cells": cells, "edges": _edges(summary)}
 
 

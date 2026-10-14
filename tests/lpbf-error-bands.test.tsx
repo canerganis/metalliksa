@@ -83,11 +83,12 @@ test("regime class thresholds and lookup match the artefact (family, regime clas
   assert.equal(bandRegimeClass(19.99), "transition");
   assert.equal(bandRegimeClass(20), "keyhole");
   assert.equal(bandRegimeClass(30), "keyhole");
+  // P7b bands (2026-10-14): n 730 (was 731), coverage 65 % (was 68 %).
   const c = bandFor(summary, "eagar-tsai", "316L Stainless Steel", "all", "depth") as BandCell;
-  assert.equal(c.n, 731);
+  assert.equal(c.n, 730);
   assert.equal(c.nSources, 3);
   assert.equal(c.state, "band-under-covers");
-  assert.equal(Math.round((c.loso?.coverageEqualWeight ?? 0) * 100), 68);
+  assert.equal(Math.round((c.loso?.coverageEqualWeight ?? 0) * 100), 65);
   assert.equal(bandFor(summary, "eagar-tsai", "AlSi10Mg", "all", "depth"), null);
   assert.equal(bandKernelOfModelId("rosenthal-screening-v1"), "rosenthal");
   assert.equal(bandKernelOfModelId("goldak-half-space-v3"), "goldak");
@@ -141,7 +142,9 @@ test("3-state display: the three states are reachable from the committed artefac
   assert.ok(seen.has("band-under-covers"), JSON.stringify([...states]));
   assert.ok(seen.has("insufficient-data") || seen.has("band"), JSON.stringify([...states]));
   // every depth cell is under-covers or insufficient today: no depth cell reaches the 0.70 held-out coverage floor
-  assert.ok(summary.cells.filter((c) => c.quantity === "depth").every((c) => c.state !== "band"));
+  // P7b bands (2026-10-14): one depth cell reaches the coverage floor (Eagar-Tsai 316L conduction); every other depth cell stays below it.
+  const depthBand = summary.cells.filter((c) => c.quantity === "depth" && c.state === "band");
+  assert.deepEqual(depthBand.map((c) => [c.kernel, c.family, c.regime]), [["eagar-tsai", "316L", "conduction"]]);
 });
 
 test("IN718 (Ni family) names the pooled alloys and the sentinel source", () => {

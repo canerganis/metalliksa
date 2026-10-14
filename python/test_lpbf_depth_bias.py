@@ -46,10 +46,17 @@ class LaneConditionsPerKernel(unittest.TestCase):
                     self.assertLess(pin, 1.0)
                     self.assertEqual(w["direction"], db.UNDER, (kernel, name))
                 else:
+                    # P7b (2026-10-14): the AMMT ratios fall (the IN625 authority 0.34 and the melting-point k / cp);
+                    # the Rosenthal kernel still overpredicts these two conditions, Eagar-Tsai and Goldak no longer do,
+                    # and the band cell direction (conduction, every source) is OVER for Rosenthal (+0.112, n=12) and
+                    # UNDER for Eagar-Tsai (-0.140) and Goldak (-0.364).
                     self.assertTrue(g["regime"].startswith("Conduction"), g["regime"])
                     self.assertEqual(db.enthalpy_class(idx), "conduction", (name, idx))
-                    self.assertGreater(pin, 1.0)
-                    self.assertEqual(w["direction"], db.OVER, (kernel, name))
+                    if kernel == "rosenthal":
+                        self.assertGreater(pin, 1.0)
+                        self.assertEqual(w["direction"], db.OVER, (kernel, name))
+                    else:
+                        self.assertEqual(w["direction"], db.UNDER, (kernel, name))
                 self.assertIn(db.KERNEL_LABELS[kernel], w["text"])
                 self.assertIn("not a validated correction", w["text"])
 
@@ -77,7 +84,7 @@ class LaneConditionsPerKernel(unittest.TestCase):
             self.assertIn("conduction, dH/hs", w["text"])
             self.assertIn(f"dH/hs {idx:g}", w["text"])
             self.assertIn("No direction is given", w["text"])
-            self.assertIn("n=18", w["text"]) if kernel == "rosenthal" else None  # bands at c61ab6a8 (P1): n=16 -> 18
+            self.assertIn("n=12", w["text"]) if kernel == "rosenthal" else None  # bands at 36cd9d4a (P7b): n=18 -> 12
             db.attach_depth_bias_warning(res)
             self.assertIsNone(res["meltPoolGeometry"]["depthBiasWarning"]["direction"])
         # Adjacent classes (IN625 keyhole label, transition index) keep the transition direction.
@@ -118,12 +125,12 @@ class SummaryDerived(unittest.TestCase):
 
     def test_ti64_rosenthal_keyhole_has_no_clear_direction_after_p1(self):
         # Bands at c61ab6a8 (P1, 2026-10-11): the Rosenthal keyhole cell equals the Eagar-Tsai and Goldak cell
-        # (-0.047, n=80: every kernel serves the same Fabbro leg there), below the 0.05 direction floor. Before P1 the
-        # Rosenthal cell was +0.284 (OVER).
+        # (-0.047, n=80: every kernel serves the same Fabbro leg there), below the 0.05 direction floor. P7b
+        # (2026-10-14): the leg follows the Ti-6Al-4V authority 0.32 (was 0.35), the shared cell is -0.129 and the
+        # direction is UNDER (the name of this test is kept; the shared-cell property is what it pins).
         w = db.depth_bias_warning("Keyhole Mode (x)", "Ti-6Al-4V", "rosenthal")
-        self.assertIsNone(w["direction"])
-        self.assertIn("No clear depth bias direction", w["text"])
-        self.assertNotIn("underestimated", w["text"])
+        self.assertEqual(w["direction"], db.UNDER)
+        self.assertIn("underpredicted the depth by a median of 13% (n=80, 2 sources)", w["text"])
         self.assertEqual(db.TABLE["cells"]["Ti-6Al-4V|rosenthal|keyhole"], db.TABLE["cells"]["Ti-6Al-4V|eagar-tsai|keyhole"])
 
     def test_316l_keyhole_is_under_for_every_kernel(self):
@@ -141,7 +148,7 @@ class SummaryDerived(unittest.TestCase):
         self.assertEqual(ro["direction"], db.OVER)
         self.assertTrue(ro["text"].endswith(db.P1_OVER_NOTE + db.P7B_CONDUCTION_NOTE))
         gk = db.depth_bias_warning("Conduction Mode (Stable)", "Inconel 625", "goldak")
-        self.assertEqual(gk["direction"], db.OVER)
+        self.assertEqual(gk["direction"], db.UNDER)   # P7b bands: the IN625 Goldak conduction cell is -0.364 (n=7)
         self.assertNotIn("2026-10-11", gk["text"])
         self.assertTrue(gk["text"].endswith(db.P7B_CONDUCTION_NOTE))
         for t in (db.P1_UNDER_NOTE, db.P1_OVER_NOTE, db.P7B_CONDUCTION_NOTE):
