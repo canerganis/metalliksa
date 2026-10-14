@@ -215,6 +215,12 @@ _THERMAL_UNITS = {
     "latent_heat_fusion_J_kg": "J/kg",
     "latent_heat_vap_J_kg": "J/kg",
     "absorptivity_IR": "1",
+    # P7b (2026-10-14): the dH/hs index convention constant, the melting-point k / cp of the conduction field and the
+    # AlSi10Mg kernel density (the conduction kernel's rho, Akwaboa 2023 Table 3).
+    "absorptivity_index_IR": "1",
+    "thermal_conductivity_melt_W_mK": "W/(m*K)",
+    "specific_heat_melt_J_kgK": "J/(kg*K)",
+    "kernel_density_kg_m3": "kg/m^3",
     "absorptivity_Green": "1",
     "surface_tension_N_m": "N/m",
     "d_gamma_dT_N_mK": "N/(m*K)",
@@ -234,13 +240,13 @@ _MARANGONI_UNITS = {
     "critical_Ma": "1",
     "sulfur_activity_factor": "unspecified",
     "d_gamma_dT_pure_N_mK": "N/(m*K)",
-    "absorptivity": "1",
 }
 
+# P7b: the former per-table "absorptivity" duplicates are deleted from _MARANGONI and _ISM; the one authority value is
+# the lpbf-thermal domain's absorptivity_IR.
 _ISM_UNITS = {
     "yield_MPa": "MPa",
     "uts_MPa": "MPa",
-    "absorptivity": "1",
     "cracking_susceptibility": "category",
 }
 

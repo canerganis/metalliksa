@@ -7,9 +7,9 @@ Each model retains its own constitutive inputs; this report never merges them.
 import json
 
 from four_alloy_materials import (
-    ALLOY_MATERIALS, FOUR_ALLOY_IDS, LITERATURE_MELT_POOL_CASES,
-    THERMAL_NAME, canonical_material_source, inherent_strain_props,
-    marangoni_props, resolve_alloy_id, PROPERTY_PROVENANCE,
+    ALLOY_MATERIALS, FOUR_ALLOY_IDS, LITERATURE_MELT_POOL_CASES, PROPERTY_LEDGER,
+    THERMAL_NAME, absorptivity_authority, canonical_material_source, inherent_strain_props,
+    kernel_ledger_sha256, kernel_properties, marangoni_props, resolve_alloy_id, PROPERTY_PROVENANCE,
 )
 from in625_thermal_material import (
     SOLID_TEMPERATURE_RANGE_C, SOURCE_URL, in625_lpbf_thermal_snapshot,
@@ -104,7 +104,23 @@ def _four_alloy_capability(alloy_id):
             "transient": transient["absorptivity"],
             "marangoni": marangoni["absorptivity"],
             "inherentStrain": inherent_strain["absorptivity"],
-            "note": "Model-specific assumptions; differing values are not silently reconciled.",
+            # P7b (2026-10-14): one authority value for every model (the former per-table duplicates are deleted); the
+            # dH/hs regime index reads the separate convention constant absorptivity_index_IR.
+            "indexConvention": build_snapshot["thermal"]["absorptivity_index_IR"],
+            "authority": absorptivity_authority(alloy_id),
+            "note": ("One authority value since P7b (a sourcing correction, not validation); the regime index reads "
+                     "the index convention constant."),
+        },
+        # P7b: the kernel ledger (Ti-6Al-4V, AlSi10Mg) that the conduction kernel reduces per call (Kirchhoff mean at
+        # the request preheat); the 293.15 K evaluation is the test anchor, not the served value at every preheat.
+        "kernelLedger": None if alloy_id not in PROPERTY_LEDGER else {
+            "authority": "four_alloy_materials.PROPERTY_LEDGER",
+            "kernelLedgerSha256": kernel_ledger_sha256(alloy_id),
+            "numeric": PROPERTY_LEDGER[alloy_id]["numeric"],
+            "text": PROPERTY_LEDGER[alloy_id]["text"],
+            "kernelAt293_15K": kernel_properties(alloy_id, 293.15),
+            "evidenceKind": "Literature estimate",
+            "evidenceStatus": "sourcing-correction-not-validation",
         },
         "crossModelDGammaDT": {
             "buildJob": build_snapshot["thermal"]["d_gamma_dT_N_mK"],

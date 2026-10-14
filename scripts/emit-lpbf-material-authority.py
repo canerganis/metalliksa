@@ -94,6 +94,7 @@ def build_document():
         name = fam.THERMAL_NAME[aid]
         evidence = registry.material(name)
         _snapshot, source_sha256 = fam.canonical_material_source(aid)
+        authority = fam.absorptivity_authority(aid)
         alloys[aid] = {
             "thermalName": name,
             "slicerName": fam.SLICER_NAME[aid],
@@ -102,6 +103,14 @@ def build_document():
             "canonicalSourceSha256": source_sha256,
             "thermal": dict(db[name]),
             "literaturePvWindow": dict(fam.LITERATURE_PV_WINDOWS[aid]),
+            # P7b (2026-10-14): the physical absorptivity authority entry (basis, band, source, locator; not a new
+            # value, the same number as thermal.absorptivity_IR) and the kernel ledger identity of the ledger alloys
+            # (Ti-6Al-4V, AlSi10Mg: the numeric projection that kernel_properties evaluates per call and its sha256).
+            "absorptivityAuthority": {key: authority[key] for key in ("basis", "band", "wavelength_nm", "source",
+                                                                     "locator", "conditions", "unsourced")},
+            "kernelLedgerSha256": fam.kernel_ledger_sha256(aid),
+            "kernelLedger": None if aid not in fam.PROPERTY_LEDGER else json.loads(json.dumps(
+                fam.PROPERTY_LEDGER[aid]["numeric"], sort_keys=True)),
         }
     in625_catalog = next(entry for entry in registry.catalog() if entry["name"] == IN625_THERMAL_NAME)
     conflicts = in625_unreconciled_values()

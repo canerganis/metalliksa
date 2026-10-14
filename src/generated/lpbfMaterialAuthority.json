@@ -15,7 +15,7 @@
       "slicerName": "Ti-6Al-4V ELI",
       "quality": "estimated",
       "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-      "canonicalSourceSha256": "6fc9117779fd43da844955cf06027b0993aae1e19ea6eaa49826549345e2bfe3",
+      "canonicalSourceSha256": "b8a8b54b794a126dd4470d8e3fc1863fa8b74c171fc0db1181d47dfa0bff782d",
       "thermal": {
         "base": "Ti",
         "liquidus_C": 1660.0,
@@ -23,14 +23,15 @@
         "boiling_C": 3287.0,
         "M_molar_kg_mol": 0.0459,
         "density_kg_m3": 4430.0,
-        "density_liquid_kg_m3": 3950.0,
+        "density_liquid_kg_m3": 4087.0,
         "thermal_conductivity_W_mK": 6.7,
-        "thermal_conductivity_liquid_W_mK": 23.0,
+        "thermal_conductivity_liquid_W_mK": 29.8,
         "specific_heat_J_kgK": 526.0,
-        "specific_heat_liquid_J_kgK": 830.0,
+        "specific_heat_liquid_J_kgK": 930.0,
         "latent_heat_fusion_J_kg": 290000.0,
         "latent_heat_vap_J_kg": 8900000.0,
-        "absorptivity_IR": 0.35,
+        "absorptivity_IR": 0.32,
+        "absorptivity_index_IR": 0.35,
         "absorptivity_Green": 0.52,
         "surface_tension_N_m": 1.55,
         "d_gamma_dT_N_mK": -0.00028,
@@ -46,6 +47,88 @@
         "powerMax_W": 280,
         "speedMin_mm_s": 700,
         "speedMax_mm_s": 1200
+      },
+      "absorptivityAuthority": {
+        "basis": "measured-conduction-bare-plate",
+        "band": [
+          0.26,
+          0.33
+        ],
+        "wavelength_nm": 1070.0,
+        "source": "Simonds et al. 2021 (simonds2021.pdf); NIST mds2-2525 (repo summary); Ye et al. 2019 (ye2019.pdf)",
+        "locator": "Simonds 2021 Sec. 3.2, PDF p.4, Fig. 3a: an average of 33 percent absorption in the first 2.4 ms, then 66 percent once the vapour cavity forms; NIST mds2-2525 pre keyhole mean 32.5 percent; Ye 2019 Table 1 Am 0.26",
+        "conditions": "polished bare plate, stationary 90 W, 5 ms, argon (Simonds 2021 and NIST mds2-2525, one campaign); scanning as machined Ra 0.52 um (Ye 2019); two independent measurements",
+        "unsourced": false
+      },
+      "kernelLedgerSha256": "16e3a5b6bcb8f9f1466e2482a48cea30e0868e68d0c19f6131107a7656914859",
+      "kernelLedger": {
+        "T_liq_K": 1933.15,
+        "T_sol_K": 1877.15,
+        "arms": {
+          "enthalpy_consistent_cp_J_kgK": 822.6,
+          "melt_front_means": {
+            "K_W_mK": 28.3,
+            "cp_J_kgK": 854.0
+          }
+        },
+        "cp_s_linear_J_kgK": {
+          "intercept": 452.72,
+          "range_K": [
+            293.15,
+            1933.15
+          ],
+          "slope": 0.1734
+        },
+        "disputed": {
+          "cp_l_J_kgK": [
+            831.0,
+            1126.0
+          ],
+          "k_l_W_mK": [
+            28.7,
+            33.4
+          ],
+          "k_s_solidus_cross_check_W_mK": 26.7,
+          "rho_l_kg_m3": [
+            3920.0,
+            4123.0
+          ]
+        },
+        "k_s_linear_W_mK": {
+          "intercept": 1.3097,
+          "range_K": [
+            293.15,
+            1933.15
+          ],
+          "slope": 0.0136
+        },
+        "kernel_density_kg_m3": 4430.0,
+        "latent_heat_fusion_J_kg": 290000.0,
+        "liquid": {
+          "cp_J_kgK": 930.0,
+          "k_W_mK": 29.8,
+          "rho_kg_m3": {
+            "T_liq_K": 1933.15,
+            "slope_kg_m3_per_K": -0.204,
+            "value_at_T_liq": 4087.0
+          }
+        },
+        "pins_T0_293_15K": {
+          "K_W_mK": 16.449,
+          "alpha_m2_s": 5.75e-06,
+          "cp_J_kgK": 645.74
+        },
+        "pins_T0_353_15K": {
+          "K_W_mK": 16.857,
+          "alpha_m2_s": 5.846e-06,
+          "cp_J_kgK": 650.94
+        },
+        "schema": "kernel-ledger-linear-v1",
+        "surface": {
+          "d_sigma_dT_N_mK": -0.00019,
+          "d_sigma_dT_u_N_mK": 5e-05,
+          "sigma_N_m": 1.493
+        }
       }
     },
     "ss316l": {
@@ -53,7 +136,7 @@
       "slicerName": "SS 316L",
       "quality": "estimated",
       "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-      "canonicalSourceSha256": "9a466d2ce3ad79aa52ff7d74e974c7b3153ad43b056de1bc98d52b3bb8a5ea3b",
+      "canonicalSourceSha256": "70d125f359d849e05bd46844739101074ec0e6902a54ecc09701d4217baa16a6",
       "thermal": {
         "base": "Fe",
         "liquidus_C": 1400.0,
@@ -68,8 +151,11 @@
         "specific_heat_liquid_J_kgK": 780.0,
         "latent_heat_fusion_J_kg": 270000.0,
         "latent_heat_vap_J_kg": 6250000.0,
-        "absorptivity_IR": 0.42,
+        "absorptivity_IR": 0.3,
+        "absorptivity_index_IR": 0.42,
         "absorptivity_Green": 0.62,
+        "thermal_conductivity_melt_W_mK": 28.5,
+        "specific_heat_melt_J_kgK": 830.0,
         "surface_tension_N_m": 1.7,
         "d_gamma_dT_N_mK": -0.00045,
         "viscosity_Pa_s": 0.006,
@@ -84,14 +170,28 @@
         "powerMax_W": 230,
         "speedMin_mm_s": 600,
         "speedMax_mm_s": 1000
-      }
+      },
+      "absorptivityAuthority": {
+        "basis": "measured-conduction-bare-plate",
+        "band": [
+          0.28,
+          0.31
+        ],
+        "wavelength_nm": 1070.0,
+        "source": "Trapp et al. 2017 (trapp2017.pdf); Ye et al. 2019 (ye2019.pdf); Matthews et al. 2018 (matthews2018.pdf, qualitative cross check)",
+        "locator": "Trapp 2017 Sec. 3.1, Fig. 3a: 0.29 to 0.31 (regime I); Ye 2019 Table 1 Am 0.28; Matthews 2018 Fig. 4 (bare and powder coated discs at 1500 mm/s; the powder coated curve differs at low power, so bare plate values do not describe a powder layer)",
+        "conditions": "polished bare discs (Trapp 2017), as machined Ra 0.17 um (Ye 2019); calorimetric, scanning",
+        "unsourced": false
+      },
+      "kernelLedgerSha256": null,
+      "kernelLedger": null
     },
     "alsi10mg": {
       "thermalName": "AlSi10Mg",
       "slicerName": "AlSi10Mg",
       "quality": "estimated",
       "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-      "canonicalSourceSha256": "5312833a6fb7f7fd632ca6a300349928c43dc04c271c579866a9bef050791e2c",
+      "canonicalSourceSha256": "4e2139cbf2f209da5092a5782ab9ec06501f15b5e85576b6a6460fe1b2c3169a",
       "thermal": {
         "base": "Al",
         "liquidus_C": 595.0,
@@ -99,17 +199,19 @@
         "boiling_C": 2470.0,
         "M_molar_kg_mol": 0.027,
         "density_kg_m3": 2680.0,
-        "density_liquid_kg_m3": 2390.0,
+        "density_liquid_kg_m3": 2393.8,
+        "kernel_density_kg_m3": 2696.0,
         "thermal_conductivity_W_mK": 130.0,
-        "thermal_conductivity_liquid_W_mK": 85.0,
+        "thermal_conductivity_liquid_W_mK": 64.0,
         "specific_heat_J_kgK": 910.0,
         "specific_heat_liquid_J_kgK": 1180.0,
         "latent_heat_fusion_J_kg": 397000.0,
         "latent_heat_vap_J_kg": 10500000.0,
-        "absorptivity_IR": 0.18,
+        "absorptivity_IR": 0.3,
+        "absorptivity_index_IR": 0.18,
         "absorptivity_Green": 0.38,
         "surface_tension_N_m": 0.85,
-        "d_gamma_dT_N_mK": -0.00035,
+        "d_gamma_dT_N_mK": -0.000103,
         "viscosity_Pa_s": 0.0013,
         "thermal_expansion_1_K": 2.05e-05,
         "youngs_modulus_GPa": 70.0,
@@ -122,6 +224,227 @@
         "powerMax_W": 380,
         "speedMin_mm_s": 900,
         "speedMax_mm_s": 1400
+      },
+      "absorptivityAuthority": {
+        "basis": "measured-conduction-as-built-surface",
+        "band": [
+          0.28,
+          0.4
+        ],
+        "wavelength_nm": 1075.0,
+        "source": "Leis, Weber, Graf 2020, Procedia CIRP 94, 173 to 176 (leis2020.pdf)",
+        "locator": "Sec. 3, Figs. 4 to 6 (pp.175 to 176): area II minimum 30 percent (35 and 100 um beams) and 28 percent (200 um); 30 to 40 percent below 1800 W/mm at 35 um; sensitivities 0.14 (Trapp 2017 Fig. 7, Al 1100 ground, a relative alloy) and 0.40 live in PROPERTY_LEDGER",
+        "conditions": "additively manufactured AlSi10Mg blocks without powder (Sa 22.3 um), N2, beams 35, 100 and 200 um at 1/e2, 0.7 to 1.3 m/s, calorimetry (EN ISO 11551); as-built rough AM surface, not a polished or ground plate (disclosure D9)",
+        "unsourced": false
+      },
+      "kernelLedgerSha256": "6d7183c07a4ded8bd7959f42e9448f4389396afc21306f660bd51f976f6fc060",
+      "kernelLedger": {
+        "HT_low_factor": 0.8418491484184915,
+        "T_liq_K": 868.15,
+        "T_sol_K": 830.15,
+        "arms": {
+          "AB_unrelaxed_K_W_mK": 117.89,
+          "HT_K_W_mK": 198.266,
+          "HT_low_K_W_mK": 166.91,
+          "enthalpy_consistent_cp_J_kgK": {
+            "397000": 1710.5,
+            "500000": 1889.6
+          },
+          "melt_front_means": {
+            "K_W_mK": 116.0,
+            "cp_J_kgK": 1150.5,
+            "rho_kg_m3": 2544.9
+          }
+        },
+        "cp_s_nodes_J_kgK": {
+          "AB": [
+            [
+              298.15,
+              893.0
+            ],
+            [
+              373.15,
+              934.0
+            ],
+            [
+              423.15,
+              952.0
+            ],
+            [
+              473.15,
+              965.0
+            ],
+            [
+              523.15,
+              974.0
+            ],
+            [
+              573.15,
+              978.0
+            ],
+            [
+              673.15,
+              1074.0
+            ],
+            [
+              723.15,
+              1121.0
+            ],
+            [
+              773.15,
+              1131.0
+            ]
+          ],
+          "HT": [
+            [
+              298.15,
+              927.0
+            ],
+            [
+              373.15,
+              970.0
+            ],
+            [
+              423.15,
+              988.0
+            ],
+            [
+              473.15,
+              1002.0
+            ],
+            [
+              523.15,
+              1012.0
+            ],
+            [
+              573.15,
+              1010.0
+            ],
+            [
+              623.15,
+              1046.0
+            ],
+            [
+              673.15,
+              1115.0
+            ],
+            [
+              723.15,
+              1158.0
+            ],
+            [
+              773.15,
+              1172.0
+            ]
+          ]
+        },
+        "default_state": "AB",
+        "disputed": {
+          "absorptivity": [
+            0.14,
+            0.4
+          ],
+          "rho_s_kg_m3": [
+            2620.0,
+            2715.0
+          ]
+        },
+        "hold_above_K": {
+          "cp_AB": 773.15,
+          "cp_HT": 773.15,
+          "k_AB": 800.15,
+          "k_HT": 773.15
+        },
+        "k_s_nodes_W_mK": {
+          "AB": [
+            [
+              298.15,
+              114.0
+            ],
+            [
+              373.15,
+              118.2
+            ],
+            [
+              473.15,
+              144.0
+            ],
+            [
+              573.15,
+              165.0
+            ],
+            [
+              673.15,
+              172.0
+            ],
+            [
+              800.15,
+              168.0
+            ]
+          ],
+          "HT": [
+            [
+              298.15,
+              205.5
+            ],
+            [
+              373.15,
+              206.3
+            ],
+            [
+              473.15,
+              201.6
+            ],
+            [
+              573.15,
+              193.6
+            ],
+            [
+              673.15,
+              198.0
+            ],
+            [
+              773.15,
+              192.4
+            ]
+          ]
+        },
+        "kernel_density_kg_m3": 2696.0,
+        "latent_heat_fusion_J_kg_proxy": 500000.0,
+        "latent_heat_fusion_J_kg_served": 397000.0,
+        "liquid": {
+          "cp_J_kgK_proxy": 1170.0,
+          "k_W_mK": 64.0,
+          "k_bracket_W_mK": [
+            63.0,
+            73.4
+          ],
+          "rho_arm_ADC12_kg_m3": {
+            "slope_per_K": -0.2652,
+            "value_at_865K": 2492.0,
+            "value_at_T_liq": 2491.2
+          },
+          "rho_law_kg_m3": {
+            "c1": 2603.0,
+            "c2_per_K": 0.241,
+            "value_at_T_liq": 2393.8
+          }
+        },
+        "pins_T0_293_15K": {
+          "K_W_mK": 152.524,
+          "alpha_m2_s": 5.546e-05,
+          "cp_J_kgK": 1020.08
+        },
+        "pins_T0_353_15K": {
+          "K_W_mK": 156.848,
+          "alpha_m2_s": 5.63e-05,
+          "cp_J_kgK": 1033.28
+        },
+        "rho_s_range_kg_m3": [
+          2620.0,
+          2715.0
+        ],
+        "schema": "kernel-ledger-nodes-v1"
       }
     },
     "in718": {
@@ -129,7 +452,7 @@
       "slicerName": "Inconel 718",
       "quality": "estimated",
       "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-      "canonicalSourceSha256": "b7788a745e9fa90bf7af0b2de4516233e33726638a3a06b33268995813db5d1f",
+      "canonicalSourceSha256": "114ed51b8b0262ea1bcfa1eca7b0b9eeb95e1bd46756ee73dc1308cbd5d8ad75",
       "thermal": {
         "base": "Ni",
         "liquidus_C": 1336.0,
@@ -144,8 +467,11 @@
         "specific_heat_liquid_J_kgK": 730.0,
         "latent_heat_fusion_J_kg": 270000.0,
         "latent_heat_vap_J_kg": 6400000.0,
-        "absorptivity_IR": 0.38,
+        "absorptivity_IR": 0.32,
+        "absorptivity_index_IR": 0.38,
         "absorptivity_Green": 0.58,
+        "thermal_conductivity_melt_W_mK": 29.6,
+        "specific_heat_melt_J_kgK": 720.0,
         "surface_tension_N_m": 1.78,
         "d_gamma_dT_N_mK": -0.0004,
         "viscosity_Pa_s": 0.0055,
@@ -160,7 +486,21 @@
         "powerMax_W": 300,
         "speedMin_mm_s": 550,
         "speedMax_mm_s": 1000
-      }
+      },
+      "absorptivityAuthority": {
+        "basis": "measured-conduction-bare-plate",
+        "band": [
+          0.28,
+          0.38
+        ],
+        "wavelength_nm": 1070.0,
+        "source": "Deisenroth et al. 2026 (deisenroth2026_in718_laser_reflections.pdf)",
+        "locator": "liquid IN718 nominal energy coupling 0.32; about 0.32 along the track length at 85 W (Fig. 11); solid ground surface 0.38 (Introduction); low end 0.28 = Ye 2019 Table 1 IN625 Am by analogy",
+        "conditions": "120 grit SiC ground bare plate, 72 um beam, 960 mm/s, argon; a laser coupling (one minus reflected), not a calorimetric absorptance; excludes plume and evaporation losses",
+        "unsourced": false
+      },
+      "kernelLedgerSha256": null,
+      "kernelLedger": null
     }
   },
   "secondary": {
@@ -170,7 +510,7 @@
       "source": "python/lpbf_thermal_solver.py SECONDARY_THERMOPHYSICAL_DB",
       "registryCatalogQuality": "missing",
       "registryCatalogNote": "Bounded fusion-enthalpy literature-model screening only; full transient solver unavailable.",
-      "note": "Secondary alloy, outside the four-alloy authority and not labelled by it. Constant properties are python/lpbf_thermal_solver.py SECONDARY_THERMOPHYSICAL_DB['Inconel 625'] (Rosenthal / build-job path). Python holds other IN625 values in python/in625_thermal_material.py (Sabau et al. 2020 screening snapshot; Mills-based transient specification) and the paths that differ are not reconciled (paths holding the same value are grouped): latent heat of fusion: 290000 J/kg in Rosenthal / build-job path [SECONDARY_THERMOPHYSICAL_DB] and Sabau et al. 2020 fusion-enthalpy screening [LATENT_HEAT_J_KG] vs 227000 J/kg in transient material spec [IN625_LATENT_HEAT_FUSION_MILLS_J_KG]; boiling point: 2880 C in Rosenthal / build-job path [SECONDARY_THERMOPHYSICAL_DB] vs 2900 C in transient material spec (K - 273.15) [IN625_BOILING_K]; IR absorptivity: 0.38 in Rosenthal / build-job path [SECONDARY_THERMOPHYSICAL_DB] vs 0.4 in transient material spec [IN625_ABSORPTIVITY_IR]. The material registry catalog does not offer this row as a material.",
+      "note": "Secondary alloy, outside the four-alloy authority and not labelled by it. Constant properties are python/lpbf_thermal_solver.py SECONDARY_THERMOPHYSICAL_DB['Inconel 625'] (Rosenthal / build-job path). Python holds other IN625 values in python/in625_thermal_material.py (Sabau et al. 2020 screening snapshot; Mills-based transient specification) and the paths that differ are not reconciled (paths holding the same value are grouped): latent heat of fusion: 290000 J/kg in Rosenthal / build-job path [SECONDARY_THERMOPHYSICAL_DB] and Sabau et al. 2020 fusion-enthalpy screening [LATENT_HEAT_J_KG] vs 227000 J/kg in transient material spec [IN625_LATENT_HEAT_FUSION_MILLS_J_KG]; boiling point: 2880 C in Rosenthal / build-job path [SECONDARY_THERMOPHYSICAL_DB] vs 2900 C in transient material spec (K - 273.15) [IN625_BOILING_K]; IR absorptivity: 0.34 in Rosenthal / build-job path [SECONDARY_THERMOPHYSICAL_DB] vs 0.4 in transient material spec [IN625_ABSORPTIVITY_IR]. The material registry catalog does not offer this row as a material.",
       "unreconciledPythonValues": [
         {
           "quantity": "latent heat of fusion",
@@ -216,7 +556,7 @@
             {
               "module": "python/lpbf_thermal_solver.py SECONDARY_THERMOPHYSICAL_DB",
               "use": "Rosenthal / build-job path",
-              "value": 0.38
+              "value": 0.34
             },
             {
               "module": "python/in625_thermal_material.py IN625_ABSORPTIVITY_IR",
@@ -240,8 +580,11 @@
         "specific_heat_liquid_J_kgK": 750.0,
         "latent_heat_fusion_J_kg": 290000.0,
         "latent_heat_vap_J_kg": 6300000.0,
-        "absorptivity_IR": 0.38,
+        "absorptivity_IR": 0.34,
+        "absorptivity_index_IR": 0.38,
         "absorptivity_Green": 0.58,
+        "thermal_conductivity_melt_W_mK": 28.78,
+        "specific_heat_melt_J_kgK": 719.92,
         "surface_tension_N_m": 1.76,
         "d_gamma_dT_N_mK": -0.00045,
         "viscosity_Pa_s": 0.0055,

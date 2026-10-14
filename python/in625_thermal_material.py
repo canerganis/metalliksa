@@ -232,6 +232,9 @@ IN625_VISCOSITY_LIQUID_PA_S = 0.0055              # 5.5 mPa.s
 IN625_SURFACE_TENSION_N_M = 1.75                  # 1.75 N/m
 IN625_D_GAMMA_DT_N_MK = -0.00040                  # -0.4 mN/(m K)
 IN625_ABSORPTIVITY_IR = 0.40
+# P7b (2026-10-14): the IN625 transient keeps 0.40 (bit equal); the screening authority moved to 0.34.
+IN625_ABSORPTIVITY_BASIS = ("unsourced, differs from the screening authority 0.34 (Deisenroth 2020 Sec. 3.4); kept so "
+                            "the IN625 transient stays bit equal; separate bump")
 IN625_EMISSIVITY = 0.35
 
 # Relative uncertainties labelled U95 (k=2): ASSUMED engineering budget, not derived from a cited
