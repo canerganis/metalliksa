@@ -4,9 +4,9 @@
  "group": "G2",
  "description": "Real bare-plate 100 W corridor job 7ec9dc57...; compared with the in-repo fixture (~106 s)",
  "slow": true,
- "recordedImplementationHash": "0e1599b463fdd68165df40c0fb73cd852190b7b65e629b3a02662a6b25369736",
+ "recordedImplementationHash": "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "31c146489cd62b2f350c30dc6e2aa91d0cd1af8c",
+ "recordedGitHead": "1d12629701ceedc5e60784207c30e50e09412d64",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,13 +68,13 @@
   }
  },
  "recordedRuns_s": [
-  63.6,
-  55.1
+  69.7,
+  69.0
  ],
  "recordedTwice": true,
  "observations": {
-  "result.canonicalSha256": "f0dd90c2bd1eecd52dc8041eb0d179fe3b59a70f6bfda8557c70dc0df1112556",
-  "result.orderedTypedSha256": "60093e4690ce2bae90af6ff181b6cc6cf8c462353a9f7fe088312997e21285aa",
+  "result.canonicalSha256": "e482988dc95474c1b1766f3a0aff0c53c59786c26eb7ee31ea05a648da4c0c2c",
+  "result.orderedTypedSha256": "986350746c8323dde34fd63e43cda6df47fc59cede07dd76b935e275192e76dc",
   "result.topLevelKeys": [
    "schemaVersion",
    "requestedMode",
@@ -127,7 +127,7 @@
   "result.key.effectiveMode": "cb2842d6687d19c69a6c0d4eb6a0f1af02951cef170de56ab331046ea5baac08",
   "result.key.solver": "379da9f17510ad5e9f42d7be64eda2f553ada427d6a389bd3552f81dbe7cd97d",
   "result.key.settings": "91d264278f13bfea6fecb3ffce516f6e5d8aae9dca084e6e158af4c88f6cb863",
-  "result.key.material": "cb542160a40afd7f836bb67fea59242175cda887c75d1b6dfc9ae530848b92eb",
+  "result.key.material": "31b2ace40b5f062758907c4a5393e12176a1c731ccea35a835a81886a50421b2",
   "result.key.requestedBackend": "86a3d4125c91d4621cfc34f7d2ac1f2fb7df908cae63aef232d0b9e0713171db",
   "result.key.confidence": "364bb7082249ee9fbc5247ee49735c4246f271b82c2745a35107ddda0d7cabcc",
   "result.key.validationStatus": "034d24b06221faeb3860b36b4069fe6436aeadc3db62a687efe73615cfb2541d",
@@ -163,15 +163,15 @@
   "result.key.resourceEstimate": "2ee8181004432603ea1129a662d7326b267438cad24e600ed280e41da6f1c394",
   "result.key.unresolvedPhysics": "e56903d893f881cd5a1e576df18872eed3708168d7a13e2e07afd6fc3734d9d1",
   "result.key.confidenceReason": "906944d2c579df879c4987a7d07a4e032bf053927f6b33f8e6c954537ac1f1e0",
-  "result.key.coreContract": "504824fa260ee7a2adb8d4db3139587c9e119f45939321cda3365ea4c1fadc69",
+  "result.key.coreContract": "48ae78b82651127c58267b1dd256dcfe8c8a4a874b9039fde755d4286595c092",
   "result.key.fieldPreviews": "063bd617bcf8a2240843fb42b737f1c1faedb1825e5ea306d6f222dba9726bf5",
   "result.key.artifacts": "e3d1e2980af65ab9d27a8d4e44d1aeb4f28ed0ce428be7dec73231eeeabb76a8",
   "result.key.retentionPolicy": "ab930f19e2eab573860fa3ee488c98026d2867e0b2408442da3c3d6415a31807",
   "result.coreContract.inputSha256": "a897fb1023ffe90280dab35e573ba8a0d0dcbc8d83baacf22b2bf11cd3d233ff",
-  "result.coreContract.materialSha256": "6a8d7bde8277b45093a26faab435e6a27167a9e3b67631a0c0b6b04f65b28ce4",
+  "result.coreContract.materialSha256": "582b23d5afc1f573cf871c2ad795ae8f4cb459cd9046cc243bc5c44d6ee3aa03",
   "result.coreContract.solverId": "enthalpy-fv-6",
   "result.coreContract.modelId": "stationary-enthalpy-conduction-v1",
-  "result.material.materialRevisionSha256": "5c9179e947ca19c3128e78e6ab9ce005c9b0ee6f86a8e6b579d368077b909749",
+  "result.material.materialRevisionSha256": "d04bcd199a1db84a325dc698dc86f0ce2cbf7239b43c3d851ce3537cccf6768b",
   "result.validationStatus": "unvalidated",
   "result.productionReady": false,
   "result.effectiveMode": "standard",
@@ -738,14 +738,15 @@
   ],
   "result.artifactsListedMatchDisk": true,
   "result.artifactsImplementationHashOccurrences": 0,
-  "fixture.strippedResultEqual": true,
+  "fixture.strippedResultEqual": false,
+  "fixture.strippedResultEqualExceptMaterialIdentity": true,
   "fixture.recordedImplementationHash": "7482697c458b6c1aa2a77829f2fbce0c4ce4ac9466e9a3583e97b9a799b5e483",
   "fixture.artifactsCompared": 68,
   "fixture.artifactsMismatched": [],
   "fixture.fieldArtifactsCompared": 67,
   "fixture.npzBytesEqual": true,
   "fixture.inputSha256Equal": true,
-  "fixture.materialSha256Equal": true
+  "fixture.materialSha256Equal": false
  },
  "rawValues": {
   "result.key.analyticalComparison": null,
@@ -847,7 +848,7 @@
    "effectiveMode": "standard",
    "solverId": "enthalpy-fv-6",
    "inputSha256": "a897fb1023ffe90280dab35e573ba8a0d0dcbc8d83baacf22b2bf11cd3d233ff",
-   "materialSha256": "6a8d7bde8277b45093a26faab435e6a27167a9e3b67631a0c0b6b04f65b28ce4",
+   "materialSha256": "582b23d5afc1f573cf871c2ad795ae8f4cb459cd9046cc243bc5c44d6ee3aa03",
    "units": {
     "power": "W",
     "speed": "mm/s",
@@ -950,8 +951,8 @@
    "provenanceClass": "estimated-legacy",
    "materialIdentitySchemaVersion": 1,
    "materialAuthority": "four_alloy_materials.py",
-   "materialAuthorityRevisionSha256": "b7788a745e9fa90bf7af0b2de4516233e33726638a3a06b33268995813db5d1f",
-   "materialRevisionSha256": "5c9179e947ca19c3128e78e6ab9ce005c9b0ee6f86a8e6b579d368077b909749"
+   "materialAuthorityRevisionSha256": "114ed51b8b0262ea1bcfa1eca7b0b9eeb95e1bd46756ee73dc1308cbd5d8ad75",
+   "materialRevisionSha256": "d04bcd199a1db84a325dc698dc86f0ce2cbf7239b43c3d851ce3537cccf6768b"
   },
   "result.key.metrics": {
    "length_um": 119.54296875000013,

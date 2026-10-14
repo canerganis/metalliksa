@@ -4,9 +4,9 @@
  "group": "G8",
  "description": "final-state, selected-time, local-history observers and CpuRunProgress; rejection messages",
  "slow": false,
- "recordedImplementationHash": "0e1599b463fdd68165df40c0fb73cd852190b7b65e629b3a02662a6b25369736",
+ "recordedImplementationHash": "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "31c146489cd62b2f350c30dc6e2aa91d0cd1af8c",
+ "recordedGitHead": "e9544a77bdb603a48eac7bf74327254e9a6d149d",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,13 +68,13 @@
   }
  },
  "recordedRuns_s": [
-  34.1,
-  28.8
+  28.6,
+  28.7
  ],
  "recordedTwice": true,
  "observations": {
-  "result.canonicalSha256": "699c2c0a969b802460e4a89aab13721a1d7ca7e98d33696a37c5aca9b92423d1",
-  "result.orderedTypedSha256": "0bb1400734bf7708047b516efb3a953d782e4fd7bbd66cf7f42220318d299dab",
+  "result.canonicalSha256": "8eead195043e00bdeb69d360bd9195bf56a8900fca9ec90dbe095ab5cda82a3d",
+  "result.orderedTypedSha256": "7383203952c7eabf81e509cd47bc8cc6eb3484cd62b7e905ccc22e5f10d543e0",
   "result.topLevelKeys": [
    "schemaVersion",
    "requestedMode",
@@ -123,7 +123,7 @@
   "result.key.effectiveMode": "cb2842d6687d19c69a6c0d4eb6a0f1af02951cef170de56ab331046ea5baac08",
   "result.key.solver": "379da9f17510ad5e9f42d7be64eda2f553ada427d6a389bd3552f81dbe7cd97d",
   "result.key.settings": "d75f88fc512b94c9454acfcaeacd2086ad22ad5388a137c1609d348d9a4945a7",
-  "result.key.material": "cb542160a40afd7f836bb67fea59242175cda887c75d1b6dfc9ae530848b92eb",
+  "result.key.material": "31b2ace40b5f062758907c4a5393e12176a1c731ccea35a835a81886a50421b2",
   "result.key.requestedBackend": "86a3d4125c91d4621cfc34f7d2ac1f2fb7df908cae63aef232d0b9e0713171db",
   "result.key.confidence": "364bb7082249ee9fbc5247ee49735c4246f271b82c2745a35107ddda0d7cabcc",
   "result.key.validationStatus": "034d24b06221faeb3860b36b4069fe6436aeadc3db62a687efe73615cfb2541d",
@@ -155,15 +155,15 @@
   "result.key.resourceEstimate": "8f41473ce22c450f9b106ac798c09c653a97822c0610d38241ecfeca9f9e2d1f",
   "result.key.unresolvedPhysics": "e56903d893f881cd5a1e576df18872eed3708168d7a13e2e07afd6fc3734d9d1",
   "result.key.confidenceReason": "906944d2c579df879c4987a7d07a4e032bf053927f6b33f8e6c954537ac1f1e0",
-  "result.key.coreContract": "aba560c00ea04957e4ca1995709eb3a94e62a0d1d4462136de7a88c304811c6c",
+  "result.key.coreContract": "cd2f81fac777d4396dfb96a1cb2df7043b8f167a8149a28bc45dbcb791fe8001",
   "result.key.fieldPreviews": "063bd617bcf8a2240843fb42b737f1c1faedb1825e5ea306d6f222dba9726bf5",
   "result.key.artifacts": "96abc41375fe6fbc419d4af8d4b73191949f983398c2d0ee230f7d0f9b6d9e7e",
   "result.key.retentionPolicy": "ab930f19e2eab573860fa3ee488c98026d2867e0b2408442da3c3d6415a31807",
   "result.coreContract.inputSha256": "31b5a470cec5793ab0327c568e955d3480d669e3de9ae3bc1b5d6d43174cb4b7",
-  "result.coreContract.materialSha256": "6a8d7bde8277b45093a26faab435e6a27167a9e3b67631a0c0b6b04f65b28ce4",
+  "result.coreContract.materialSha256": "582b23d5afc1f573cf871c2ad795ae8f4cb459cd9046cc243bc5c44d6ee3aa03",
   "result.coreContract.solverId": "enthalpy-fv-6",
   "result.coreContract.modelId": "stationary-enthalpy-conduction-layer-conforming-v1",
-  "result.material.materialRevisionSha256": "5c9179e947ca19c3128e78e6ab9ce005c9b0ee6f86a8e6b579d368077b909749",
+  "result.material.materialRevisionSha256": "d04bcd199a1db84a325dc698dc86f0ce2cbf7239b43c3d851ce3537cccf6768b",
   "result.validationStatus": "unvalidated",
   "result.productionReady": false,
   "result.effectiveMode": "standard",
@@ -605,7 +605,7 @@
   "observer.runProgress.count": 419,
   "observer.runProgress.chainSha256": "d010409affccdd4328e120b100f720a403ada99231b611626252f2ff2eb53670",
   "observer.runProgress.finalSnapshot": "499527d6ae5a1d3f5f61786a41a1d610c52c4e2d5172b5b40e6f01dc11d19fbb",
-  "plain.canonicalSha256": "5e1621d1248b807c1e6a8f4766a8a71c71cf3b2e84aa14cf8795fdf318718b8c",
+  "plain.canonicalSha256": "4e79773ec4bc2407b53b7a6d15d2f2d0bdcb988439e10c8ac16831a7bc13b14a",
   "plain.key.analyticalComparison": "fc0532aeb4bcacfaa25726de67f3aae2eda62225c48176c3355d0412c5fc8dc0",
   "reject.finalState.screening": "ValueError: Final state capture supports standard reference powder-layer runs only",
   "reject.finalState.meshStudy": "ValueError: Final state capture supports standard reference powder-layer runs only",
@@ -700,7 +700,7 @@
    "effectiveMode": "standard",
    "solverId": "enthalpy-fv-6",
    "inputSha256": "31b5a470cec5793ab0327c568e955d3480d669e3de9ae3bc1b5d6d43174cb4b7",
-   "materialSha256": "6a8d7bde8277b45093a26faab435e6a27167a9e3b67631a0c0b6b04f65b28ce4",
+   "materialSha256": "582b23d5afc1f573cf871c2ad795ae8f4cb459cd9046cc243bc5c44d6ee3aa03",
    "units": {
     "power": "W",
     "speed": "mm/s",
@@ -866,8 +866,8 @@
    "provenanceClass": "estimated-legacy",
    "materialIdentitySchemaVersion": 1,
    "materialAuthority": "four_alloy_materials.py",
-   "materialAuthorityRevisionSha256": "b7788a745e9fa90bf7af0b2de4516233e33726638a3a06b33268995813db5d1f",
-   "materialRevisionSha256": "5c9179e947ca19c3128e78e6ab9ce005c9b0ee6f86a8e6b579d368077b909749"
+   "materialAuthorityRevisionSha256": "114ed51b8b0262ea1bcfa1eca7b0b9eeb95e1bd46756ee73dc1308cbd5d8ad75",
+   "materialRevisionSha256": "d04bcd199a1db84a325dc698dc86f0ce2cbf7239b43c3d851ce3537cccf6768b"
   },
   "result.key.metrics": {
    "length_um": 40.0,
@@ -1034,8 +1034,8 @@
    "evaporationModel": false,
    "marangoniMultiplier": 2.2,
    "opticalObserver": null,
-   "powderGridPolicy": "layer-conforming",
    "absorptivity": 0.38,
+   "powderGridPolicy": "layer-conforming",
    "emissivity": 0.35
   },
   "result.key.solidificationResolution": {

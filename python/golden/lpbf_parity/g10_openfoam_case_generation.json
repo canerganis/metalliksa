@@ -4,9 +4,9 @@
  "group": "G10",
  "description": "OpenFOAM case writers (CFD setup_*_case, multiphysics, thermal) file-tree SHA-256",
  "slow": false,
- "recordedImplementationHash": "0e1599b463fdd68165df40c0fb73cd852190b7b65e629b3a02662a6b25369736",
+ "recordedImplementationHash": "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "31c146489cd62b2f350c30dc6e2aa91d0cd1af8c",
+ "recordedGitHead": "e9544a77bdb603a48eac7bf74327254e9a6d149d",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,8 +68,8 @@
   }
  },
  "recordedRuns_s": [
-  0.8,
-  0.4
+  0.5,
+  0.3
  ],
  "recordedTwice": true,
  "observations": {
@@ -663,7 +663,7 @@
   ],
   "cfd.setup_cfd_multiphysics_case.file.constant/thermalProperties": [
    1755,
-   "ec137c58a9e7b29746823880e6df4d55173f2e088ddd6720ab1d85061067533f"
+   "eb96c2cd44c2e837f4d0f963515fd49bb639cf370035dee1de0e8d950ebb54a2"
   ],
   "cfd.setup_cfd_multiphysics_case.file.system/blockMeshDict": [
    1567,
@@ -707,7 +707,7 @@
   ],
   "openfoam.generate_case.powder.file.thermalInput.dat": [
    1112988,
-   "d388e615176af2c218cca7e51231af8ca63b75fe1c1e228895ca0efe7922dcd1"
+   "e0ee6cabfff529897178045538d9488b199946d93ec625b7a75abe3f7050ee3b"
   ],
   "openfoam.generate_case.powderMultilayer.return": "3f7e518e03f817d41da0e4f57b06d072fd285e0f8d3e65060c832264ee7a4b06",
   "openfoam.generate_case.powderMultilayer.files": [
@@ -735,7 +735,7 @@
   ],
   "openfoam.generate_case.powderMultilayer.file.thermalInput.dat": [
    1113512,
-   "e4efdf9f2440b02c77b9dbb3f6bb234978b6122b58624ae260177c30280474f6"
+   "ecbac54e68fbbf706f8ef0c55f1bb79af5063c599bdbbace059f22d615586a24"
   ]
  },
  "rawValues": {

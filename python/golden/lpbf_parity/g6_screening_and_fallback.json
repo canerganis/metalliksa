@@ -4,9 +4,9 @@
  "group": "G6",
  "description": "Screening (Goldak/Rosenthal) and the honest high-fidelity fallback",
  "slow": false,
- "recordedImplementationHash": "0e1599b463fdd68165df40c0fb73cd852190b7b65e629b3a02662a6b25369736",
+ "recordedImplementationHash": "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "31c146489cd62b2f350c30dc6e2aa91d0cd1af8c",
+ "recordedGitHead": "1d12629701ceedc5e60784207c30e50e09412d64",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,13 +68,13 @@
   }
  },
  "recordedRuns_s": [
-  6.3,
-  6.2
+  5.7,
+  5.6
  ],
  "recordedTwice": true,
  "observations": {
-  "screening.canonicalSha256": "db4e0e2fce2d7df3007a97627f0d5102fb9c4f6ee5a4580664d65c6914d16634",
-  "screening.orderedTypedSha256": "7df29a1f4782559a9312f0aee3e3fc1961faf7935251ebd896129825b7334cb8",
+  "screening.canonicalSha256": "70d3703c2f28a182072c4a6942bf2ca271ca1ae657198b3da7cef198f2c2aa18",
+  "screening.orderedTypedSha256": "a937c5bfdc782361d9cbbe6cd70c3510a26aa74d1e33b0b278298a735cc776ed",
   "screening.topLevelKeys": [
    "schemaVersion",
    "requestedMode",
@@ -106,19 +106,19 @@
   "screening.key.requestedMode": "098b95b8d69e298ebe1b250d7bc1accaee3bd2e9fe8fa5e25a95dd6aea237e16",
   "screening.key.effectiveMode": "098b95b8d69e298ebe1b250d7bc1accaee3bd2e9fe8fa5e25a95dd6aea237e16",
   "screening.key.solver": "057702edee1a818be1a06268b952d7ffab6ce036e6afee59b5c78e1cac532bff",
-  "screening.key.settings": "6118a1df4bb616c72b5fafee828ebad3f80d96cc78f11ae80695682a74af19f9",
-  "screening.key.material": "cb542160a40afd7f836bb67fea59242175cda887c75d1b6dfc9ae530848b92eb",
+  "screening.key.settings": "fab07705a0d0f652a25a087cc3d95ca5274a2364fa8aaba3ae1064726d7a8626",
+  "screening.key.material": "977951f9ec826255f143d24b8997760a961eba6af2f0b5e102963e061fb651c2",
   "screening.key.requestedBackend": "634635a2166efa2ae765abd31d4ae807082287e329a8a7fff42b1fb30f65087e",
   "screening.key.confidence": "364bb7082249ee9fbc5247ee49735c4246f271b82c2745a35107ddda0d7cabcc",
   "screening.key.validationStatus": "034d24b06221faeb3860b36b4069fe6436aeadc3db62a687efe73615cfb2541d",
   "screening.key.productionReady": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
   "screening.key.label": "00da6632fd832ed8e508be4547d3e8da75a922225239b4fbe23f2e787e357044",
-  "screening.key.provenance": "74df40bbeab0763288ab49f4ad197c28b809f9c24b95413e2689e52225d88247",
-  "screening.key.analyticalComparison": "f8a0d50a8b991651f1b32595443902ebff583898c8625ab2b4706fc853df779d",
+  "screening.key.provenance": "cb31091141a6e1814c0aae510135fb6626f09d85df07b514a9a997bc06415fd2",
+  "screening.key.analyticalComparison": "dbe92b0125ac94243ce0bb08e6cf455a79943ef65040b4e7d2beba39b4361f3a",
   "screening.key.assumptions": "770cfebc851def952aebf9526bf42c30d25d991e7eed5d62fad739ce9ec48789",
   "screening.key.fallbackReason": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
-  "screening.key.metrics": "5662934c0f81df7b2d1b43891643f2ec1db6d3554284e6a0c67d16ee387a3538",
-  "screening.key.geometricDefectScreen": "01ccdb3f9ff8feeaa3299cd72924376a890829591c5f80a5c79d3ff3a8688462",
+  "screening.key.metrics": "aa424c087ae7fae91ce530e9d1179367b309ba344c3ee0f8cc26c5f0958fa267",
+  "screening.key.geometricDefectScreen": "cbf349d66edee01d250539ff6dbfad680fa17729a57670af3b17e53c9eae7d89",
   "screening.key.regime": "40fd22838049669095e60b9df57f0c4721939348b454b4c8d571bbdc8aedd490",
   "screening.key.mainRisk": "99524db4cbe5bfd2aa2a3b185c78355359043617d0c2f802a8fc0ab6e8ef1ef8",
   "screening.key.recommendation": "9f8af9e48aaf7e009bbf332a3176f5692a8c3f2778c53d195be0496ceb440575",
@@ -126,20 +126,20 @@
   "screening.key.resourceEstimate": "e1a1a19007daa86d3dd860ab8a76fc23c63a4d5d124cad690c928eb28528c868",
   "screening.key.unresolvedPhysics": "e56903d893f881cd5a1e576df18872eed3708168d7a13e2e07afd6fc3734d9d1",
   "screening.key.confidenceReason": "906944d2c579df879c4987a7d07a4e032bf053927f6b33f8e6c954537ac1f1e0",
-  "screening.key.coreContract": "e24c964cc8d9713cccf2e1457821b45b19505d7a98719e5034d70ab4cb82fce8",
-  "screening.coreContract.inputSha256": "2f2aa398f32178f879c6144ccb34da60d26635dfe1e8680f6710d42e470ef8a8",
-  "screening.coreContract.materialSha256": "6a8d7bde8277b45093a26faab435e6a27167a9e3b67631a0c0b6b04f65b28ce4",
+  "screening.key.coreContract": "9f41dfe3efe6dccd0055b96646da62b8c38d9432a944d25e69fe13b9f2c5e554",
+  "screening.coreContract.inputSha256": "f82d84e23e82886086d506ea364f2155ea1fad9812691d68de5a742adfb36b18",
+  "screening.coreContract.materialSha256": "24add765f3931e780d1a65b62888c4ae765cecc83314374bac713af3f70a6edf",
   "screening.coreContract.solverId": "rosenthal+goldak",
   "screening.coreContract.modelId": "analytical-conduction-screening-v1",
-  "screening.material.materialRevisionSha256": "5c9179e947ca19c3128e78e6ab9ce005c9b0ee6f86a8e6b579d368077b909749",
+  "screening.material.materialRevisionSha256": "8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8",
   "screening.validationStatus": "unvalidated",
   "screening.productionReady": false,
   "screening.effectiveMode": "screening",
   "screening.label": "Screening only",
   "screening.confidence": "low",
   "screening.implementationHashOccurrencesAfterStrip": 0,
-  "highFidelityFallback.canonicalSha256": "e9620185eed6ac8e04bc64cfc96f6aaea52f257515a9b6112165b269167f69fd",
-  "highFidelityFallback.orderedTypedSha256": "33efd7a44f4a015ca8ffbdbac3d023a950eb7cf54e675419d12601b2add7a97a",
+  "highFidelityFallback.canonicalSha256": "3be1c80293781f47ff58e5637bc4eb6097fd0751a1a637ab327893c9ff010e64",
+  "highFidelityFallback.orderedTypedSha256": "49799ae66937871cf6e35f08a3af6df9bb504f8a3df39ff76d5ba6c9d5b9cc41",
   "highFidelityFallback.topLevelKeys": [
    "schemaVersion",
    "requestedMode",
@@ -171,19 +171,19 @@
   "highFidelityFallback.key.requestedMode": "d0f4f53d989693b9edfa0d89f8cbaeb9f943463ce95c07aecb3efb140f7df3dd",
   "highFidelityFallback.key.effectiveMode": "098b95b8d69e298ebe1b250d7bc1accaee3bd2e9fe8fa5e25a95dd6aea237e16",
   "highFidelityFallback.key.solver": "057702edee1a818be1a06268b952d7ffab6ce036e6afee59b5c78e1cac532bff",
-  "highFidelityFallback.key.settings": "8787cbc80101c9d2b9f433700dc7308ea3ebf8871836b94f4f4bb96d371fbc88",
-  "highFidelityFallback.key.material": "cb542160a40afd7f836bb67fea59242175cda887c75d1b6dfc9ae530848b92eb",
+  "highFidelityFallback.key.settings": "8c5cceaf8f38582e361d4237e955afd90a3c9e8c4321df22eba235bd13b66a13",
+  "highFidelityFallback.key.material": "977951f9ec826255f143d24b8997760a961eba6af2f0b5e102963e061fb651c2",
   "highFidelityFallback.key.requestedBackend": "634635a2166efa2ae765abd31d4ae807082287e329a8a7fff42b1fb30f65087e",
   "highFidelityFallback.key.confidence": "364bb7082249ee9fbc5247ee49735c4246f271b82c2745a35107ddda0d7cabcc",
   "highFidelityFallback.key.validationStatus": "034d24b06221faeb3860b36b4069fe6436aeadc3db62a687efe73615cfb2541d",
   "highFidelityFallback.key.productionReady": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
   "highFidelityFallback.key.label": "00da6632fd832ed8e508be4547d3e8da75a922225239b4fbe23f2e787e357044",
-  "highFidelityFallback.key.provenance": "3c1b5c1e8e02cde96d39d2c99606abc6f6b502b55bea85309e5daaef648fc877",
-  "highFidelityFallback.key.analyticalComparison": "f8a0d50a8b991651f1b32595443902ebff583898c8625ab2b4706fc853df779d",
+  "highFidelityFallback.key.provenance": "1871bf5c7a8dcb788c3ef482ce5ec73ade42ce573208714993cd60ecc4b9be20",
+  "highFidelityFallback.key.analyticalComparison": "dbe92b0125ac94243ce0bb08e6cf455a79943ef65040b4e7d2beba39b4361f3a",
   "highFidelityFallback.key.assumptions": "770cfebc851def952aebf9526bf42c30d25d991e7eed5d62fad739ce9ec48789",
   "highFidelityFallback.key.fallbackReason": "6e4dd5716eb9a19c332be02caf7d68e7dcf8b128c09279475225cfc2ff3ddaec",
-  "highFidelityFallback.key.metrics": "5662934c0f81df7b2d1b43891643f2ec1db6d3554284e6a0c67d16ee387a3538",
-  "highFidelityFallback.key.geometricDefectScreen": "01ccdb3f9ff8feeaa3299cd72924376a890829591c5f80a5c79d3ff3a8688462",
+  "highFidelityFallback.key.metrics": "aa424c087ae7fae91ce530e9d1179367b309ba344c3ee0f8cc26c5f0958fa267",
+  "highFidelityFallback.key.geometricDefectScreen": "cbf349d66edee01d250539ff6dbfad680fa17729a57670af3b17e53c9eae7d89",
   "highFidelityFallback.key.regime": "40fd22838049669095e60b9df57f0c4721939348b454b4c8d571bbdc8aedd490",
   "highFidelityFallback.key.mainRisk": "99524db4cbe5bfd2aa2a3b185c78355359043617d0c2f802a8fc0ab6e8ef1ef8",
   "highFidelityFallback.key.recommendation": "9f8af9e48aaf7e009bbf332a3176f5692a8c3f2778c53d195be0496ceb440575",
@@ -191,20 +191,20 @@
   "highFidelityFallback.key.resourceEstimate": "e1a1a19007daa86d3dd860ab8a76fc23c63a4d5d124cad690c928eb28528c868",
   "highFidelityFallback.key.unresolvedPhysics": "e56903d893f881cd5a1e576df18872eed3708168d7a13e2e07afd6fc3734d9d1",
   "highFidelityFallback.key.confidenceReason": "906944d2c579df879c4987a7d07a4e032bf053927f6b33f8e6c954537ac1f1e0",
-  "highFidelityFallback.key.coreContract": "2061ceda20e1d0f7c4511fb42085748fc1195940124fd82fde66634ece3247c8",
-  "highFidelityFallback.coreContract.inputSha256": "abfee1aee6a2e07cb0c407def6a3167dbfb74bafea193df4306f7cb64a188b4f",
-  "highFidelityFallback.coreContract.materialSha256": "6a8d7bde8277b45093a26faab435e6a27167a9e3b67631a0c0b6b04f65b28ce4",
+  "highFidelityFallback.key.coreContract": "248344000a016e384ce8f611eb137fc125748a0c008005c6a6a3136218d207a1",
+  "highFidelityFallback.coreContract.inputSha256": "bf901cf6f81b8a59dc4efe03916c99e1b8e6c8848fadee712aaa2eed9e3fe883",
+  "highFidelityFallback.coreContract.materialSha256": "24add765f3931e780d1a65b62888c4ae765cecc83314374bac713af3f70a6edf",
   "highFidelityFallback.coreContract.solverId": "rosenthal+goldak",
   "highFidelityFallback.coreContract.modelId": "analytical-conduction-screening-v1",
-  "highFidelityFallback.material.materialRevisionSha256": "5c9179e947ca19c3128e78e6ab9ce005c9b0ee6f86a8e6b579d368077b909749",
+  "highFidelityFallback.material.materialRevisionSha256": "8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8",
   "highFidelityFallback.validationStatus": "unvalidated",
   "highFidelityFallback.productionReady": false,
   "highFidelityFallback.effectiveMode": "screening",
   "highFidelityFallback.label": "Screening only",
   "highFidelityFallback.confidence": "low",
   "highFidelityFallback.implementationHashOccurrencesAfterStrip": 0,
-  "screeningTi64.canonicalSha256": "b02e9834fe612a92496c2c850cddfee32f525d370fb4fc8c36664bf209427d89",
-  "screeningTi64.orderedTypedSha256": "e4b7d4e9ac9b9402799a3b3bb377f72fe963c2eb2a89157229efa8a0c13685f6",
+  "screeningTi64.canonicalSha256": "3740cefaa5a2c0509617c999bc069c44ca652e62363b731910ad421bfb9f54d1",
+  "screeningTi64.orderedTypedSha256": "dc96aa1d67c0c5bce0f9c42f6cc0208365f2d088faa1f21635d65e0946816f99",
   "screeningTi64.topLevelKeys": [
    "schemaVersion",
    "requestedMode",
@@ -236,19 +236,19 @@
   "screeningTi64.key.requestedMode": "098b95b8d69e298ebe1b250d7bc1accaee3bd2e9fe8fa5e25a95dd6aea237e16",
   "screeningTi64.key.effectiveMode": "098b95b8d69e298ebe1b250d7bc1accaee3bd2e9fe8fa5e25a95dd6aea237e16",
   "screeningTi64.key.solver": "057702edee1a818be1a06268b952d7ffab6ce036e6afee59b5c78e1cac532bff",
-  "screeningTi64.key.settings": "b8d2c29e9b2ed4cbaeb7db37434b36708d852cb4ab0f0cee07253929f9ea1a1a",
-  "screeningTi64.key.material": "53d77e8586b1ae39349714aabaec7f3c269bd0f7337aa347eb876b3d7b6a777c",
+  "screeningTi64.key.settings": "ec4e1e6856d3624eed3c4d7b5e7987232b8836b2c1c3cece45ed5c946646d5bf",
+  "screeningTi64.key.material": "8b82280cdeb47f2a5f5756437884c920bd8a75b78b598d46e62c28bca8c51071",
   "screeningTi64.key.requestedBackend": "634635a2166efa2ae765abd31d4ae807082287e329a8a7fff42b1fb30f65087e",
   "screeningTi64.key.confidence": "364bb7082249ee9fbc5247ee49735c4246f271b82c2745a35107ddda0d7cabcc",
   "screeningTi64.key.validationStatus": "034d24b06221faeb3860b36b4069fe6436aeadc3db62a687efe73615cfb2541d",
   "screeningTi64.key.productionReady": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
   "screeningTi64.key.label": "00da6632fd832ed8e508be4547d3e8da75a922225239b4fbe23f2e787e357044",
-  "screeningTi64.key.provenance": "9283ed73b70280b63981ad9c620273d0303be78fb5c648892e992c3f5dbe5e37",
-  "screeningTi64.key.analyticalComparison": "5265d234709a875f25cf8f1ea536b392d05828ebf08c07d13d4d7d4010df90fa",
+  "screeningTi64.key.provenance": "730fc83eb7c684664c30497c5e0ef110776cd5a90681dbb32139b7d37aee1fea",
+  "screeningTi64.key.analyticalComparison": "26fe41585c804f420510109b18848e615f4bac9c7b0ceb41ef2ea36022795c22",
   "screeningTi64.key.assumptions": "770cfebc851def952aebf9526bf42c30d25d991e7eed5d62fad739ce9ec48789",
   "screeningTi64.key.fallbackReason": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
-  "screeningTi64.key.metrics": "1a09a5e4d7b10c770cf0c737122a86c44c4b38cb543a95cd839bcc6ada46440d",
-  "screeningTi64.key.geometricDefectScreen": "478a2d77498015ab63710941cda8d6951eae9e7c05d314407afb5a7acea22132",
+  "screeningTi64.key.metrics": "441113f4aa60fa46ca350d12ce24429635af3603031434baeaac493f636f7109",
+  "screeningTi64.key.geometricDefectScreen": "69de388bd3aec1a28c7539021b35d77081a3a528f787d616e6e9b8044706e8d5",
   "screeningTi64.key.regime": "40fd22838049669095e60b9df57f0c4721939348b454b4c8d571bbdc8aedd490",
   "screeningTi64.key.mainRisk": "99524db4cbe5bfd2aa2a3b185c78355359043617d0c2f802a8fc0ab6e8ef1ef8",
   "screeningTi64.key.recommendation": "9f8af9e48aaf7e009bbf332a3176f5692a8c3f2778c53d195be0496ceb440575",
@@ -256,20 +256,20 @@
   "screeningTi64.key.resourceEstimate": "e74a48a39a602cb6c9c79f17a9f1dc608fe68ab7e31388ddc5e67c3fbe1b5d93",
   "screeningTi64.key.unresolvedPhysics": "e56903d893f881cd5a1e576df18872eed3708168d7a13e2e07afd6fc3734d9d1",
   "screeningTi64.key.confidenceReason": "906944d2c579df879c4987a7d07a4e032bf053927f6b33f8e6c954537ac1f1e0",
-  "screeningTi64.key.coreContract": "4711df9404bae51ac87e38fbe898cc45148df973109ad5eb87bf5d7c7003ced9",
-  "screeningTi64.coreContract.inputSha256": "369b2089197c6951416927e25699f058113217aeba9629e5e60af2a2e2e25733",
-  "screeningTi64.coreContract.materialSha256": "324a052b95d6f3212eec7a5e17ac81677c6af32e61cd20424ce74c7622c3f395",
+  "screeningTi64.key.coreContract": "c998fc84544d9ea2b5415eebaae107c5a393d142a5d14cdd08f14b92cbd67e37",
+  "screeningTi64.coreContract.inputSha256": "55aad9d7523eb400523f0783fc654455a5881bd69fc4ffde014c58d9a5997ab8",
+  "screeningTi64.coreContract.materialSha256": "138cc78c1aa35f9308559d2eba880a33e1b96b77a9ea7a206001867ffe49e138",
   "screeningTi64.coreContract.solverId": "rosenthal+goldak",
   "screeningTi64.coreContract.modelId": "analytical-conduction-screening-v1",
-  "screeningTi64.material.materialRevisionSha256": "a2d15d6c44ecc7c5a283b3ad457cc71cb3820cba03033b47bab697efff5c3c4e",
+  "screeningTi64.material.materialRevisionSha256": "ac61f95646392abe530b56f68fe4964ae64a1ef4df6c1478bfa445292ae0732f",
   "screeningTi64.validationStatus": "unvalidated",
   "screeningTi64.productionReady": false,
   "screeningTi64.effectiveMode": "screening",
   "screeningTi64.label": "Screening only",
   "screeningTi64.confidence": "low",
   "screeningTi64.implementationHashOccurrencesAfterStrip": 0,
-  "highFidelityFallbackWithOpenfoam.canonicalSha256": "740f96c24c1bb12f6d3dcfc33dc94c8232591747127703b58232401719e2e10b",
-  "highFidelityFallbackWithOpenfoam.orderedTypedSha256": "b01b2a13156de68b3cbadb5e04b3d5a9906287f82d055bd9d50f10880b0cb560",
+  "highFidelityFallbackWithOpenfoam.canonicalSha256": "4fa2d5c8d6256c711376d5d2f0c06e18646e8dfd1d7220fb6f7ae27f731fde57",
+  "highFidelityFallbackWithOpenfoam.orderedTypedSha256": "3c8beaef2b5fda3e7196f3a5e28e404cec148f52a1db529182dc736eb992dd32",
   "highFidelityFallbackWithOpenfoam.topLevelKeys": [
    "schemaVersion",
    "requestedMode",
@@ -301,19 +301,19 @@
   "highFidelityFallbackWithOpenfoam.key.requestedMode": "d0f4f53d989693b9edfa0d89f8cbaeb9f943463ce95c07aecb3efb140f7df3dd",
   "highFidelityFallbackWithOpenfoam.key.effectiveMode": "098b95b8d69e298ebe1b250d7bc1accaee3bd2e9fe8fa5e25a95dd6aea237e16",
   "highFidelityFallbackWithOpenfoam.key.solver": "1462edc0d7296d6416d9e985a16b8112802239584a4c8c41683c5e84057918c7",
-  "highFidelityFallbackWithOpenfoam.key.settings": "8787cbc80101c9d2b9f433700dc7308ea3ebf8871836b94f4f4bb96d371fbc88",
-  "highFidelityFallbackWithOpenfoam.key.material": "cb542160a40afd7f836bb67fea59242175cda887c75d1b6dfc9ae530848b92eb",
+  "highFidelityFallbackWithOpenfoam.key.settings": "8c5cceaf8f38582e361d4237e955afd90a3c9e8c4321df22eba235bd13b66a13",
+  "highFidelityFallbackWithOpenfoam.key.material": "977951f9ec826255f143d24b8997760a961eba6af2f0b5e102963e061fb651c2",
   "highFidelityFallbackWithOpenfoam.key.requestedBackend": "634635a2166efa2ae765abd31d4ae807082287e329a8a7fff42b1fb30f65087e",
   "highFidelityFallbackWithOpenfoam.key.confidence": "364bb7082249ee9fbc5247ee49735c4246f271b82c2745a35107ddda0d7cabcc",
   "highFidelityFallbackWithOpenfoam.key.validationStatus": "034d24b06221faeb3860b36b4069fe6436aeadc3db62a687efe73615cfb2541d",
   "highFidelityFallbackWithOpenfoam.key.productionReady": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
   "highFidelityFallbackWithOpenfoam.key.label": "00da6632fd832ed8e508be4547d3e8da75a922225239b4fbe23f2e787e357044",
-  "highFidelityFallbackWithOpenfoam.key.provenance": "3c1b5c1e8e02cde96d39d2c99606abc6f6b502b55bea85309e5daaef648fc877",
-  "highFidelityFallbackWithOpenfoam.key.analyticalComparison": "f8a0d50a8b991651f1b32595443902ebff583898c8625ab2b4706fc853df779d",
+  "highFidelityFallbackWithOpenfoam.key.provenance": "1871bf5c7a8dcb788c3ef482ce5ec73ade42ce573208714993cd60ecc4b9be20",
+  "highFidelityFallbackWithOpenfoam.key.analyticalComparison": "dbe92b0125ac94243ce0bb08e6cf455a79943ef65040b4e7d2beba39b4361f3a",
   "highFidelityFallbackWithOpenfoam.key.assumptions": "770cfebc851def952aebf9526bf42c30d25d991e7eed5d62fad739ce9ec48789",
   "highFidelityFallbackWithOpenfoam.key.fallbackReason": "6f422ebac6e741612c1f4552bcd6df77dfdaf0e405954690205b62f3ca79cea6",
-  "highFidelityFallbackWithOpenfoam.key.metrics": "5662934c0f81df7b2d1b43891643f2ec1db6d3554284e6a0c67d16ee387a3538",
-  "highFidelityFallbackWithOpenfoam.key.geometricDefectScreen": "01ccdb3f9ff8feeaa3299cd72924376a890829591c5f80a5c79d3ff3a8688462",
+  "highFidelityFallbackWithOpenfoam.key.metrics": "aa424c087ae7fae91ce530e9d1179367b309ba344c3ee0f8cc26c5f0958fa267",
+  "highFidelityFallbackWithOpenfoam.key.geometricDefectScreen": "cbf349d66edee01d250539ff6dbfad680fa17729a57670af3b17e53c9eae7d89",
   "highFidelityFallbackWithOpenfoam.key.regime": "40fd22838049669095e60b9df57f0c4721939348b454b4c8d571bbdc8aedd490",
   "highFidelityFallbackWithOpenfoam.key.mainRisk": "99524db4cbe5bfd2aa2a3b185c78355359043617d0c2f802a8fc0ab6e8ef1ef8",
   "highFidelityFallbackWithOpenfoam.key.recommendation": "9f8af9e48aaf7e009bbf332a3176f5692a8c3f2778c53d195be0496ceb440575",
@@ -321,12 +321,12 @@
   "highFidelityFallbackWithOpenfoam.key.resourceEstimate": "e1a1a19007daa86d3dd860ab8a76fc23c63a4d5d124cad690c928eb28528c868",
   "highFidelityFallbackWithOpenfoam.key.unresolvedPhysics": "e56903d893f881cd5a1e576df18872eed3708168d7a13e2e07afd6fc3734d9d1",
   "highFidelityFallbackWithOpenfoam.key.confidenceReason": "906944d2c579df879c4987a7d07a4e032bf053927f6b33f8e6c954537ac1f1e0",
-  "highFidelityFallbackWithOpenfoam.key.coreContract": "2061ceda20e1d0f7c4511fb42085748fc1195940124fd82fde66634ece3247c8",
-  "highFidelityFallbackWithOpenfoam.coreContract.inputSha256": "abfee1aee6a2e07cb0c407def6a3167dbfb74bafea193df4306f7cb64a188b4f",
-  "highFidelityFallbackWithOpenfoam.coreContract.materialSha256": "6a8d7bde8277b45093a26faab435e6a27167a9e3b67631a0c0b6b04f65b28ce4",
+  "highFidelityFallbackWithOpenfoam.key.coreContract": "248344000a016e384ce8f611eb137fc125748a0c008005c6a6a3136218d207a1",
+  "highFidelityFallbackWithOpenfoam.coreContract.inputSha256": "bf901cf6f81b8a59dc4efe03916c99e1b8e6c8848fadee712aaa2eed9e3fe883",
+  "highFidelityFallbackWithOpenfoam.coreContract.materialSha256": "24add765f3931e780d1a65b62888c4ae765cecc83314374bac713af3f70a6edf",
   "highFidelityFallbackWithOpenfoam.coreContract.solverId": "rosenthal+goldak",
   "highFidelityFallbackWithOpenfoam.coreContract.modelId": "analytical-conduction-screening-v1",
-  "highFidelityFallbackWithOpenfoam.material.materialRevisionSha256": "5c9179e947ca19c3128e78e6ab9ce005c9b0ee6f86a8e6b579d368077b909749",
+  "highFidelityFallbackWithOpenfoam.material.materialRevisionSha256": "8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8",
   "highFidelityFallbackWithOpenfoam.validationStatus": "unvalidated",
   "highFidelityFallbackWithOpenfoam.productionReady": false,
   "highFidelityFallbackWithOpenfoam.effectiveMode": "screening",
@@ -337,9 +337,9 @@
  "rawValues": {
   "highFidelityFallback.key.analyticalComparison": {
    "rosenthal": {
-    "width_um": 133.33333333333334,
-    "depth_um": 66.66666666666667,
-    "length_um": 781.6666666666671,
+    "width_um": 116.66666666666667,
+    "depth_um": 58.333333333333336,
+    "length_um": 653.3333333333335,
     "gridResolution_um": [
      11.666666666666769,
      8.333333333333334
@@ -348,9 +348,9 @@
     "assumptions": "Constant preheat properties; conduction only; discrete liquidus extent; no keyhole correction."
    },
    "goldak": {
-    "width_um": 133.33333333333334,
-    "depth_um": 66.66666666666667,
-    "length_um": 769.9999999999999,
+    "width_um": 116.66666666666667,
+    "depth_um": 58.333333333333336,
+    "length_um": 653.333333333333,
     "gridResolution_um": [
      11.666666666666769,
      8.333333333333334
@@ -381,8 +381,8 @@
    "requestedBackend": "auto",
    "effectiveMode": "screening",
    "solverId": "rosenthal+goldak",
-   "inputSha256": "abfee1aee6a2e07cb0c407def6a3167dbfb74bafea193df4306f7cb64a188b4f",
-   "materialSha256": "6a8d7bde8277b45093a26faab435e6a27167a9e3b67631a0c0b6b04f65b28ce4",
+   "inputSha256": "bf901cf6f81b8a59dc4efe03916c99e1b8e6c8848fadee712aaa2eed9e3fe883",
+   "materialSha256": "24add765f3931e780d1a65b62888c4ae765cecc83314374bac713af3f70a6edf",
    "units": {
     "power": "W",
     "speed": "mm/s",
@@ -418,12 +418,12 @@
     "No Ti-6Al-4V-specific correction or universal keyhole/balling threshold is applied."
    ],
    "lackOfFusion": {
-    "status": "covered-geometrically",
-    "ellipseIndex": 0.9225,
-    "signedMargin": 0.07750000000000001,
-    "overlapDepth_um": 44.09585518440985,
-    "maximumHatch_um": 106.66666666666669,
-    "riskScreened": false,
+    "status": "lack-of-fusion-screened",
+    "ellipseIndex": 1.2048979591836735,
+    "signedMargin": -0.20489795918367348,
+    "overlapDepth_um": 30.046260628866584,
+    "maximumHatch_um": 84.91826135237999,
+    "riskScreened": true,
     "reason": "Only the idealized elliptical overlap condition is evaluated."
    },
    "keyhole": {
@@ -433,7 +433,7 @@
     "reason": "D/W 0.50 <= 0.5: conduction-mode by the King et al. 2014 depth > half-width classification. Aspect ratio alone cannot resolve vapor depression stability or keyhole pore formation, so no risk is assigned."
    },
    "balling": {
-    "lengthToWidth": 5.774999999999999,
+    "lengthToWidth": 5.599999999999997,
     "risk": null,
     "reason": "No balling risk from this geometry: the balling screen uses the Eagar-Tsai liquidus L/W (eagar-tsai-aspect-balling-screen-v1), which was not supplied for this result."
    },
@@ -465,7 +465,7 @@
    "liquidus_K": 1609.15,
    "boiling_K": 3123.15,
    "latentHeat_J_kg": 270000.0,
-   "absorptivity": 0.38,
+   "absorptivity": 0.32,
    "emissivity": 0.35,
    "dGamma_dT": -0.0004,
    "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
@@ -504,13 +504,13 @@
    "provenanceClass": "estimated-legacy",
    "materialIdentitySchemaVersion": 1,
    "materialAuthority": "four_alloy_materials.py",
-   "materialAuthorityRevisionSha256": "b7788a745e9fa90bf7af0b2de4516233e33726638a3a06b33268995813db5d1f",
-   "materialRevisionSha256": "5c9179e947ca19c3128e78e6ab9ce005c9b0ee6f86a8e6b579d368077b909749"
+   "materialAuthorityRevisionSha256": "114ed51b8b0262ea1bcfa1eca7b0b9eeb95e1bd46756ee73dc1308cbd5d8ad75",
+   "materialRevisionSha256": "8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8"
   },
   "highFidelityFallback.key.metrics": {
-   "width_um": 133.33333333333334,
-   "depth_um": 66.66666666666667,
-   "length_um": 769.9999999999999,
+   "width_um": 116.66666666666667,
+   "depth_um": 58.333333333333336,
+   "length_um": 653.333333333333,
    "gridResolution_um": [
     11.666666666666769,
     8.333333333333334
@@ -520,8 +520,8 @@
   },
   "highFidelityFallback.key.productionReady": false,
   "highFidelityFallback.key.provenance": {
-   "inputHash": "8787cbc80101c9d2b9f433700dc7308ea3ebf8871836b94f4f4bb96d371fbc88",
-   "executionInputHash": "8787cbc80101c9d2b9f433700dc7308ea3ebf8871836b94f4f4bb96d371fbc88",
+   "inputHash": "8c5cceaf8f38582e361d4237e955afd90a3c9e8c4321df22eba235bd13b66a13",
+   "executionInputHash": "8c5cceaf8f38582e361d4237e955afd90a3c9e8c4321df22eba235bd13b66a13",
    "implementationFingerprintSchema": "lpbf-thermal-implementation-manifest-v3-canonical-utf8-crlf",
    "materialVersion": "lpbf-materials-1",
    "solverBinaryHash": null
@@ -585,7 +585,7 @@
    "evaporationModel": false,
    "marangoniMultiplier": 2.2,
    "opticalObserver": null,
-   "absorptivity": 0.38,
+   "absorptivity": 0.32,
    "emissivity": 0.35
   },
   "highFidelityFallback.key.solver": {
@@ -606,9 +606,9 @@
   "highFidelityFallback.key.validationStatus": "unvalidated",
   "highFidelityFallbackWithOpenfoam.key.analyticalComparison": {
    "rosenthal": {
-    "width_um": 133.33333333333334,
-    "depth_um": 66.66666666666667,
-    "length_um": 781.6666666666671,
+    "width_um": 116.66666666666667,
+    "depth_um": 58.333333333333336,
+    "length_um": 653.3333333333335,
     "gridResolution_um": [
      11.666666666666769,
      8.333333333333334
@@ -617,9 +617,9 @@
     "assumptions": "Constant preheat properties; conduction only; discrete liquidus extent; no keyhole correction."
    },
    "goldak": {
-    "width_um": 133.33333333333334,
-    "depth_um": 66.66666666666667,
-    "length_um": 769.9999999999999,
+    "width_um": 116.66666666666667,
+    "depth_um": 58.333333333333336,
+    "length_um": 653.333333333333,
     "gridResolution_um": [
      11.666666666666769,
      8.333333333333334
@@ -650,8 +650,8 @@
    "requestedBackend": "auto",
    "effectiveMode": "screening",
    "solverId": "rosenthal+goldak",
-   "inputSha256": "abfee1aee6a2e07cb0c407def6a3167dbfb74bafea193df4306f7cb64a188b4f",
-   "materialSha256": "6a8d7bde8277b45093a26faab435e6a27167a9e3b67631a0c0b6b04f65b28ce4",
+   "inputSha256": "bf901cf6f81b8a59dc4efe03916c99e1b8e6c8848fadee712aaa2eed9e3fe883",
+   "materialSha256": "24add765f3931e780d1a65b62888c4ae765cecc83314374bac713af3f70a6edf",
    "units": {
     "power": "W",
     "speed": "mm/s",
@@ -687,12 +687,12 @@
     "No Ti-6Al-4V-specific correction or universal keyhole/balling threshold is applied."
    ],
    "lackOfFusion": {
-    "status": "covered-geometrically",
-    "ellipseIndex": 0.9225,
-    "signedMargin": 0.07750000000000001,
-    "overlapDepth_um": 44.09585518440985,
-    "maximumHatch_um": 106.66666666666669,
-    "riskScreened": false,
+    "status": "lack-of-fusion-screened",
+    "ellipseIndex": 1.2048979591836735,
+    "signedMargin": -0.20489795918367348,
+    "overlapDepth_um": 30.046260628866584,
+    "maximumHatch_um": 84.91826135237999,
+    "riskScreened": true,
     "reason": "Only the idealized elliptical overlap condition is evaluated."
    },
    "keyhole": {
@@ -702,7 +702,7 @@
     "reason": "D/W 0.50 <= 0.5: conduction-mode by the King et al. 2014 depth > half-width classification. Aspect ratio alone cannot resolve vapor depression stability or keyhole pore formation, so no risk is assigned."
    },
    "balling": {
-    "lengthToWidth": 5.774999999999999,
+    "lengthToWidth": 5.599999999999997,
     "risk": null,
     "reason": "No balling risk from this geometry: the balling screen uses the Eagar-Tsai liquidus L/W (eagar-tsai-aspect-balling-screen-v1), which was not supplied for this result."
    },
@@ -734,7 +734,7 @@
    "liquidus_K": 1609.15,
    "boiling_K": 3123.15,
    "latentHeat_J_kg": 270000.0,
-   "absorptivity": 0.38,
+   "absorptivity": 0.32,
    "emissivity": 0.35,
    "dGamma_dT": -0.0004,
    "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
@@ -773,13 +773,13 @@
    "provenanceClass": "estimated-legacy",
    "materialIdentitySchemaVersion": 1,
    "materialAuthority": "four_alloy_materials.py",
-   "materialAuthorityRevisionSha256": "b7788a745e9fa90bf7af0b2de4516233e33726638a3a06b33268995813db5d1f",
-   "materialRevisionSha256": "5c9179e947ca19c3128e78e6ab9ce005c9b0ee6f86a8e6b579d368077b909749"
+   "materialAuthorityRevisionSha256": "114ed51b8b0262ea1bcfa1eca7b0b9eeb95e1bd46756ee73dc1308cbd5d8ad75",
+   "materialRevisionSha256": "8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8"
   },
   "highFidelityFallbackWithOpenfoam.key.metrics": {
-   "width_um": 133.33333333333334,
-   "depth_um": 66.66666666666667,
-   "length_um": 769.9999999999999,
+   "width_um": 116.66666666666667,
+   "depth_um": 58.333333333333336,
+   "length_um": 653.333333333333,
    "gridResolution_um": [
     11.666666666666769,
     8.333333333333334
@@ -789,8 +789,8 @@
   },
   "highFidelityFallbackWithOpenfoam.key.productionReady": false,
   "highFidelityFallbackWithOpenfoam.key.provenance": {
-   "inputHash": "8787cbc80101c9d2b9f433700dc7308ea3ebf8871836b94f4f4bb96d371fbc88",
-   "executionInputHash": "8787cbc80101c9d2b9f433700dc7308ea3ebf8871836b94f4f4bb96d371fbc88",
+   "inputHash": "8c5cceaf8f38582e361d4237e955afd90a3c9e8c4321df22eba235bd13b66a13",
+   "executionInputHash": "8c5cceaf8f38582e361d4237e955afd90a3c9e8c4321df22eba235bd13b66a13",
    "implementationFingerprintSchema": "lpbf-thermal-implementation-manifest-v3-canonical-utf8-crlf",
    "materialVersion": "lpbf-materials-1",
    "solverBinaryHash": null
@@ -854,7 +854,7 @@
    "evaporationModel": false,
    "marangoniMultiplier": 2.2,
    "opticalObserver": null,
-   "absorptivity": 0.38,
+   "absorptivity": 0.32,
    "emissivity": 0.35
   },
   "highFidelityFallbackWithOpenfoam.key.solver": {
@@ -875,9 +875,9 @@
   "highFidelityFallbackWithOpenfoam.key.validationStatus": "unvalidated",
   "screening.key.analyticalComparison": {
    "rosenthal": {
-    "width_um": 133.33333333333334,
-    "depth_um": 66.66666666666667,
-    "length_um": 781.6666666666671,
+    "width_um": 116.66666666666667,
+    "depth_um": 58.333333333333336,
+    "length_um": 653.3333333333335,
     "gridResolution_um": [
      11.666666666666769,
      8.333333333333334
@@ -886,9 +886,9 @@
     "assumptions": "Constant preheat properties; conduction only; discrete liquidus extent; no keyhole correction."
    },
    "goldak": {
-    "width_um": 133.33333333333334,
-    "depth_um": 66.66666666666667,
-    "length_um": 769.9999999999999,
+    "width_um": 116.66666666666667,
+    "depth_um": 58.333333333333336,
+    "length_um": 653.333333333333,
     "gridResolution_um": [
      11.666666666666769,
      8.333333333333334
@@ -919,8 +919,8 @@
    "requestedBackend": "auto",
    "effectiveMode": "screening",
    "solverId": "rosenthal+goldak",
-   "inputSha256": "2f2aa398f32178f879c6144ccb34da60d26635dfe1e8680f6710d42e470ef8a8",
-   "materialSha256": "6a8d7bde8277b45093a26faab435e6a27167a9e3b67631a0c0b6b04f65b28ce4",
+   "inputSha256": "f82d84e23e82886086d506ea364f2155ea1fad9812691d68de5a742adfb36b18",
+   "materialSha256": "24add765f3931e780d1a65b62888c4ae765cecc83314374bac713af3f70a6edf",
    "units": {
     "power": "W",
     "speed": "mm/s",
@@ -956,12 +956,12 @@
     "No Ti-6Al-4V-specific correction or universal keyhole/balling threshold is applied."
    ],
    "lackOfFusion": {
-    "status": "covered-geometrically",
-    "ellipseIndex": 0.9225,
-    "signedMargin": 0.07750000000000001,
-    "overlapDepth_um": 44.09585518440985,
-    "maximumHatch_um": 106.66666666666669,
-    "riskScreened": false,
+    "status": "lack-of-fusion-screened",
+    "ellipseIndex": 1.2048979591836735,
+    "signedMargin": -0.20489795918367348,
+    "overlapDepth_um": 30.046260628866584,
+    "maximumHatch_um": 84.91826135237999,
+    "riskScreened": true,
     "reason": "Only the idealized elliptical overlap condition is evaluated."
    },
    "keyhole": {
@@ -971,7 +971,7 @@
     "reason": "D/W 0.50 <= 0.5: conduction-mode by the King et al. 2014 depth > half-width classification. Aspect ratio alone cannot resolve vapor depression stability or keyhole pore formation, so no risk is assigned."
    },
    "balling": {
-    "lengthToWidth": 5.774999999999999,
+    "lengthToWidth": 5.599999999999997,
     "risk": null,
     "reason": "No balling risk from this geometry: the balling screen uses the Eagar-Tsai liquidus L/W (eagar-tsai-aspect-balling-screen-v1), which was not supplied for this result."
    },
@@ -1003,7 +1003,7 @@
    "liquidus_K": 1609.15,
    "boiling_K": 3123.15,
    "latentHeat_J_kg": 270000.0,
-   "absorptivity": 0.38,
+   "absorptivity": 0.32,
    "emissivity": 0.35,
    "dGamma_dT": -0.0004,
    "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
@@ -1042,13 +1042,13 @@
    "provenanceClass": "estimated-legacy",
    "materialIdentitySchemaVersion": 1,
    "materialAuthority": "four_alloy_materials.py",
-   "materialAuthorityRevisionSha256": "b7788a745e9fa90bf7af0b2de4516233e33726638a3a06b33268995813db5d1f",
-   "materialRevisionSha256": "5c9179e947ca19c3128e78e6ab9ce005c9b0ee6f86a8e6b579d368077b909749"
+   "materialAuthorityRevisionSha256": "114ed51b8b0262ea1bcfa1eca7b0b9eeb95e1bd46756ee73dc1308cbd5d8ad75",
+   "materialRevisionSha256": "8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8"
   },
   "screening.key.metrics": {
-   "width_um": 133.33333333333334,
-   "depth_um": 66.66666666666667,
-   "length_um": 769.9999999999999,
+   "width_um": 116.66666666666667,
+   "depth_um": 58.333333333333336,
+   "length_um": 653.333333333333,
    "gridResolution_um": [
     11.666666666666769,
     8.333333333333334
@@ -1058,8 +1058,8 @@
   },
   "screening.key.productionReady": false,
   "screening.key.provenance": {
-   "inputHash": "6118a1df4bb616c72b5fafee828ebad3f80d96cc78f11ae80695682a74af19f9",
-   "executionInputHash": "6118a1df4bb616c72b5fafee828ebad3f80d96cc78f11ae80695682a74af19f9",
+   "inputHash": "fab07705a0d0f652a25a087cc3d95ca5274a2364fa8aaba3ae1064726d7a8626",
+   "executionInputHash": "fab07705a0d0f652a25a087cc3d95ca5274a2364fa8aaba3ae1064726d7a8626",
    "implementationFingerprintSchema": "lpbf-thermal-implementation-manifest-v3-canonical-utf8-crlf",
    "materialVersion": "lpbf-materials-1",
    "solverBinaryHash": null
@@ -1123,7 +1123,7 @@
    "evaporationModel": false,
    "marangoniMultiplier": 2.2,
    "opticalObserver": null,
-   "absorptivity": 0.38,
+   "absorptivity": 0.32,
    "emissivity": 0.35
   },
   "screening.key.solver": {
@@ -1146,7 +1146,7 @@
    "rosenthal": {
     "width_um": 116.66666666666667,
     "depth_um": 58.333333333333336,
-    "length_um": 851.6666666666669,
+    "length_um": 746.6666666666667,
     "gridResolution_um": [
      11.666666666666769,
      8.333333333333334
@@ -1157,7 +1157,7 @@
    "goldak": {
     "width_um": 116.66666666666667,
     "depth_um": 58.333333333333336,
-    "length_um": 840.0,
+    "length_um": 735.0,
     "gridResolution_um": [
      11.666666666666769,
      8.333333333333334
@@ -1188,8 +1188,8 @@
    "requestedBackend": "auto",
    "effectiveMode": "screening",
    "solverId": "rosenthal+goldak",
-   "inputSha256": "369b2089197c6951416927e25699f058113217aeba9629e5e60af2a2e2e25733",
-   "materialSha256": "324a052b95d6f3212eec7a5e17ac81677c6af32e61cd20424ce74c7622c3f395",
+   "inputSha256": "55aad9d7523eb400523f0783fc654455a5881bd69fc4ffde014c58d9a5997ab8",
+   "materialSha256": "138cc78c1aa35f9308559d2eba880a33e1b96b77a9ea7a206001867ffe49e138",
    "units": {
     "power": "W",
     "speed": "mm/s",
@@ -1240,7 +1240,7 @@
     "reason": "D/W 0.50 <= 0.5: conduction-mode by the King et al. 2014 depth > half-width classification. Aspect ratio alone cannot resolve vapor depression stability or keyhole pore formation, so no risk is assigned."
    },
    "balling": {
-    "lengthToWidth": 7.199999999999999,
+    "lengthToWidth": 6.3,
     "risk": null,
     "reason": "No balling risk from this geometry: the balling screen uses the Eagar-Tsai liquidus L/W (eagar-tsai-aspect-balling-screen-v1), which was not supplied for this result."
    },
@@ -1272,7 +1272,7 @@
    "liquidus_K": 1933.15,
    "boiling_K": 3560.15,
    "latentHeat_J_kg": 290000.0,
-   "absorptivity": 0.35,
+   "absorptivity": 0.32,
    "emissivity": 0.35,
    "dGamma_dT": -0.00028,
    "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
@@ -1287,16 +1287,16 @@
     ],
     [
      1933.15,
-     3950.0,
-     23.0,
-     830.0,
+     4087.0,
+     29.8,
+     930.0,
      0.0042
     ],
     [
      3560.15,
-     3950.0,
-     23.0,
-     830.0,
+     4087.0,
+     29.8,
+     930.0,
      0.0042
     ]
    ],
@@ -1311,13 +1311,13 @@
    "provenanceClass": "estimated-legacy",
    "materialIdentitySchemaVersion": 1,
    "materialAuthority": "four_alloy_materials.py",
-   "materialAuthorityRevisionSha256": "6fc9117779fd43da844955cf06027b0993aae1e19ea6eaa49826549345e2bfe3",
-   "materialRevisionSha256": "a2d15d6c44ecc7c5a283b3ad457cc71cb3820cba03033b47bab697efff5c3c4e"
+   "materialAuthorityRevisionSha256": "b8a8b54b794a126dd4470d8e3fc1863fa8b74c171fc0db1181d47dfa0bff782d",
+   "materialRevisionSha256": "ac61f95646392abe530b56f68fe4964ae64a1ef4df6c1478bfa445292ae0732f"
   },
   "screeningTi64.key.metrics": {
    "width_um": 116.66666666666667,
    "depth_um": 58.333333333333336,
-   "length_um": 840.0,
+   "length_um": 735.0,
    "gridResolution_um": [
     11.666666666666769,
     8.333333333333334
@@ -1327,8 +1327,8 @@
   },
   "screeningTi64.key.productionReady": false,
   "screeningTi64.key.provenance": {
-   "inputHash": "b8d2c29e9b2ed4cbaeb7db37434b36708d852cb4ab0f0cee07253929f9ea1a1a",
-   "executionInputHash": "b8d2c29e9b2ed4cbaeb7db37434b36708d852cb4ab0f0cee07253929f9ea1a1a",
+   "inputHash": "ec4e1e6856d3624eed3c4d7b5e7987232b8836b2c1c3cece45ed5c946646d5bf",
+   "executionInputHash": "ec4e1e6856d3624eed3c4d7b5e7987232b8836b2c1c3cece45ed5c946646d5bf",
    "implementationFingerprintSchema": "lpbf-thermal-implementation-manifest-v3-canonical-utf8-crlf",
    "materialVersion": "lpbf-materials-1",
    "solverBinaryHash": null
@@ -1392,7 +1392,7 @@
    "evaporationModel": false,
    "marangoniMultiplier": 2.2,
    "opticalObserver": null,
-   "absorptivity": 0.35,
+   "absorptivity": 0.32,
    "emissivity": 0.35
   },
   "screeningTi64.key.solver": {
