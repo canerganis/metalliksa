@@ -1,0 +1,821 @@
+{
+  "rule": "decisions 1 and 2 (2026-10-15); contract 4.3; P8 13.12",
+  "cases": [
+    {
+      "name": "all-sourced",
+      "inputs": {
+        "k": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:k",
+          "sourceLocator": "Case source for k",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for k",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "cp": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:cp",
+          "sourceLocator": "Case source for cp",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for cp",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "k",
+        "cp"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "Literature estimate",
+        "weakestInputs": [],
+        "labelSources": [
+          "Case source for k",
+          "Case source for cp"
+        ]
+      }
+    },
+    {
+      "name": "one-user-input",
+      "inputs": {
+        "k": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:k",
+          "sourceLocator": "Case source for k",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for k",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "cp": {
+          "kind": "userInput",
+          "label": "user input",
+          "sourceId": "case:user:cp",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "",
+          "status": "inRange",
+          "sourceEvidenceKind": "User input",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "k",
+        "cp"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "User input",
+        "weakestInputs": [
+          "cp"
+        ],
+        "labelSources": []
+      }
+    },
+    {
+      "name": "unresolved-takes-precedence",
+      "inputs": {
+        "k": {
+          "kind": "declaredAssumption",
+          "label": "declared assumption (no source)",
+          "sourceId": "case:k",
+          "sourceLocator": null,
+          "declarationLocator": "Case declaration for k",
+          "source": null,
+          "scope": "",
+          "status": "inRange",
+          "sourceEvidenceKind": "Unresolved",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "cp": {
+          "kind": "userInput",
+          "label": "user input",
+          "sourceId": "case:user:cp",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "",
+          "status": "inRange",
+          "sourceEvidenceKind": "User input",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "rho": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:rho",
+          "sourceLocator": "Case source for rho",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for rho",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "k",
+        "cp",
+        "rho"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "Unresolved",
+        "weakestInputs": [
+          "k"
+        ],
+        "labelSources": []
+      }
+    },
+    {
+      "name": "legacy-estimate",
+      "inputs": {
+        "k": {
+          "kind": "legacyEstimate",
+          "label": "legacy estimate (no located source)",
+          "sourceId": "case:k",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "No located source",
+          "status": "inRange",
+          "sourceEvidenceKind": "Unresolved",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "cp": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:cp",
+          "sourceLocator": "Case source for cp",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for cp",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "k",
+        "cp"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "Unresolved",
+        "weakestInputs": [
+          "k"
+        ],
+        "labelSources": []
+      }
+    },
+    {
+      "name": "process-values-excluded",
+      "inputs": {
+        "k": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:k",
+          "sourceLocator": "Case source for k",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for k",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "P": {
+          "kind": "userInput",
+          "label": "user input",
+          "sourceId": "request:P",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Process request value; excluded from the source-label rule",
+          "status": "inRange",
+          "sourceEvidenceKind": "User input",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": "process",
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "v": {
+          "kind": "userInput",
+          "label": "user input",
+          "sourceId": "request:v",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Process request value; excluded from the source-label rule",
+          "status": "inRange",
+          "sourceEvidenceKind": "User input",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": "process",
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "P",
+        "v",
+        "k"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "Literature estimate",
+        "weakestInputs": [],
+        "labelSources": [
+          "Case source for k"
+        ]
+      }
+    },
+    {
+      "name": "process-only-never-upgraded",
+      "inputs": {
+        "P": {
+          "kind": "userInput",
+          "label": "user input",
+          "sourceId": "request:P",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Process request value; excluded from the source-label rule",
+          "status": "inRange",
+          "sourceEvidenceKind": "User input",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": "process",
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "d": {
+          "kind": "userInput",
+          "label": "user input",
+          "sourceId": "request:d",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Process request value; excluded from the source-label rule",
+          "status": "inRange",
+          "sourceEvidenceKind": "User input",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": "process",
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "P",
+        "d"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "Unresolved",
+        "weakestInputs": [],
+        "labelSources": []
+      }
+    },
+    {
+      "name": "follows-declared-rule",
+      "inputs": {
+        "L": {
+          "kind": "followsInput",
+          "label": "follows d",
+          "sourceId": "case:L-from-d",
+          "sourceLocator": null,
+          "declarationLocator": "Case rule L = d",
+          "source": null,
+          "scope": "",
+          "status": "inRange",
+          "sourceEvidenceKind": "Unresolved",
+          "defaultValue": null,
+          "defaultKind": "declaredAssumption",
+          "followsInput": "d",
+          "followState": "following",
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "d": {
+          "kind": "userInput",
+          "label": "user input",
+          "sourceId": "request:d",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Process request value; excluded from the source-label rule",
+          "status": "inRange",
+          "sourceEvidenceKind": "User input",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": "process",
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "k": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:k",
+          "sourceLocator": "Case source for k",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for k",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "L",
+        "k"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "Unresolved",
+        "weakestInputs": [
+          "L"
+        ],
+        "labelSources": []
+      }
+    },
+    {
+      "name": "follows-sourced-rule-of-user-input",
+      "inputs": {
+        "mu": {
+          "kind": "followsInput",
+          "label": "follows Tref",
+          "sourceId": "case:mu-from-Tref",
+          "sourceLocator": "Case viscosity law",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "",
+          "status": "inRange",
+          "sourceEvidenceKind": "User input",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": "Tref",
+          "followState": "following",
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "Tref": {
+          "kind": "userInput",
+          "label": "user input",
+          "sourceId": "case:user:Tref",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "",
+          "status": "inRange",
+          "sourceEvidenceKind": "User input",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "k": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:k",
+          "sourceLocator": "Case source for k",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for k",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "mu",
+        "k"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "User input",
+        "weakestInputs": [
+          "mu"
+        ],
+        "labelSources": []
+      }
+    },
+    {
+      "name": "derived-from-weakest",
+      "inputs": {
+        "alpha": {
+          "kind": "derived",
+          "label": "derived from k, cp",
+          "sourceId": "case:alpha",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "",
+          "status": "inRange",
+          "sourceEvidenceKind": "Unresolved",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [
+            "k",
+            "cp"
+          ],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "k": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:k",
+          "sourceLocator": "Case source for k",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for k",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "cp": {
+          "kind": "legacyEstimate",
+          "label": "legacy estimate (no located source)",
+          "sourceId": "case:cp",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "No located source",
+          "status": "inRange",
+          "sourceEvidenceKind": "Unresolved",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "alpha"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "Unresolved",
+        "weakestInputs": [
+          "alpha"
+        ],
+        "labelSources": []
+      }
+    },
+    {
+      "name": "typed-equal-to-default-keeps-source",
+      "inputs": {
+        "k": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:k",
+          "sourceLocator": "Case source for k",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for k",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": 25.0,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "cp": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:cp",
+          "sourceLocator": "Case source for cp",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for cp",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "k",
+        "cp"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "Literature estimate",
+        "weakestInputs": [],
+        "labelSources": [
+          "Case source for k",
+          "Case source for cp"
+        ]
+      }
+    },
+    {
+      "name": "typed-different-is-user-input",
+      "inputs": {
+        "k": {
+          "kind": "userInput",
+          "label": "user input",
+          "sourceId": "case:user:k",
+          "sourceLocator": null,
+          "declarationLocator": null,
+          "source": null,
+          "scope": "",
+          "status": "inRange",
+          "sourceEvidenceKind": "User input",
+          "defaultValue": 25.0,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "cp": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:cp",
+          "sourceLocator": "Case source for cp",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for cp",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "k",
+        "cp"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "User input",
+        "weakestInputs": [
+          "k"
+        ],
+        "labelSources": []
+      }
+    },
+    {
+      "name": "transfer-reads-literature-never-measured",
+      "inputs": {
+        "Tl": {
+          "kind": "alloyTransfer",
+          "label": "transferred: Case scope for Tl",
+          "sourceId": "case:Tl",
+          "sourceLocator": "Case source for Tl",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for Tl",
+          "status": "extrapolated",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "alloyTransfer",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "Tl"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "Literature estimate",
+        "weakestInputs": [],
+        "labelSources": [
+          "Case source for Tl"
+        ]
+      }
+    },
+    {
+      "name": "record-downgrade-is-kept",
+      "inputs": {
+        "Lf": {
+          "kind": "alloyTransfer",
+          "label": "transferred: Pure-Al fusion proxy",
+          "sourceId": "case:Lf",
+          "sourceLocator": "Case pure-Al fusion proxy",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Pure-Al fusion proxy",
+          "status": "extrapolated",
+          "sourceEvidenceKind": "Unresolved",
+          "defaultValue": null,
+          "defaultKind": null,
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        },
+        "k": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:k",
+          "sourceLocator": "Case source for k",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for k",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "Lf",
+        "k"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "Unresolved",
+        "weakestInputs": [
+          "Lf"
+        ],
+        "labelSources": []
+      }
+    },
+    {
+      "name": "missing-record-is-unresolved",
+      "inputs": {
+        "k": {
+          "kind": "sourceDefault",
+          "label": "sourced default",
+          "sourceId": "case:k",
+          "sourceLocator": "Case source for k",
+          "declarationLocator": null,
+          "source": null,
+          "scope": "Case scope for k",
+          "status": "inRange",
+          "sourceEvidenceKind": "Literature estimate",
+          "defaultValue": null,
+          "defaultKind": "sourceDefault",
+          "followsInput": null,
+          "followState": null,
+          "dependsOn": [],
+          "phase": null,
+          "referenceTemperature_K": null,
+          "sourceRange_K": null
+        }
+      },
+      "dependsOn": [
+        "k",
+        "Tl"
+      ],
+      "expected": {
+        "sourceEvidenceKind": "Unresolved",
+        "weakestInputs": [
+          "Tl"
+        ],
+        "labelSources": []
+      }
+    }
+  ]
+}
