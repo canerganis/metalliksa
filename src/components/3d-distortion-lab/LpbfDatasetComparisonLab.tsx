@@ -6,7 +6,7 @@ import {
   type ComparisonRow,
   type LpbfDatasetComparisonDocument,
 } from "../../data/lpbfDatasetComparison";
-import { COMMITTED_DATASET_COMPARISON } from "../../data/lpbfDatasetComparisonRecord";
+import { SpentDatasetPanel } from "./SpentDatasetPanel";
 
 // Read-only view of the Python-generated record docs/LPBF_DATASET_COMPARISON_2026-10-05.view.json.
 // Every number below is read from that JSON: no physics and no statistics are computed here.
@@ -410,6 +410,7 @@ export function NoComparisonRecord() {
   );
 }
 
-export function LpbfDatasetComparisonLab({ document = COMMITTED_DATASET_COMPARISON }: { document?: LpbfDatasetComparisonDocument | null }) {
+export function LpbfDatasetComparisonLab({ document }: { document?: LpbfDatasetComparisonDocument | null }) {
+  if (document === undefined) return <SpentDatasetPanel />;
   return document ? <DatasetComparisonView document={document} /> : <NoComparisonRecord />;
 }

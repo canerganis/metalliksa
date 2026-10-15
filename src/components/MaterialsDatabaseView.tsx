@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { AccessibleModal } from "./AccessibleModal";
+import { ServedConstantsView } from "./ServedConstantsView";
 import {
   Database,
   Search,
@@ -139,6 +140,7 @@ export const MaterialsDatabaseView: React.FC<MaterialsDatabaseViewProps> = ({ on
 
   return (
     <div id="materials-database-view" className="space-y-5">
+      <ServedConstantsView />
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl bg-[#090e18] border border-[#162032]">
         <div>
