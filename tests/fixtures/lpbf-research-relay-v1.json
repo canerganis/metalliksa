@@ -1,0 +1,950 @@
+{
+  "cache": {
+    "armsComputed": 21,
+    "armsHit": 0,
+    "cacheInstanceId": "0123456789abcdef0123456789abcdef"
+  },
+  "clientRequestId": "blind:1",
+  "digests": {
+    "labelsSha256": "11d2316af0e2c3b054ac4b30c13195f13efd5580468a89b8374ca1410af844ab",
+    "researchModelsSha256": "9010e39489e2716628f17c7ba7ade5ad5f733af3afeea6bfed54ad43f9bd5fc3"
+  },
+  "identity": {
+    "propertyContextKind": "nominal",
+    "propertySetSha256": "b4b88be232581aea2d5bbc8fbb402362db8f4b60415645b30e8db173cd30f433",
+    "researchImplementationSha256": "a3f7b6c55e4206153729475c221d96075ab5fb7455facf789eb536d2fcd1a89b",
+    "researchSchemaVersion": "p8-research-v3",
+    "servedImplementationFingerprint": "b36123e1c965feaf8f724668771b1f2a6a8cf374f3c15d4235caf39877f0a347"
+  },
+  "labels": {
+    "alSi10MgIndexDisclosure.syntheticIndexRatio": "Synthetic syntheticIndexRatio (fake evaluator, not physics)",
+    "alSi10MgVapourMgAware.syntheticScenario_K": "Synthetic syntheticScenario_K (fake evaluator, not physics)",
+    "keyholeCavity.cavityDepth_um": "Synthetic cavityDepth_um (fake evaluator, not physics)",
+    "keyholeCavity.onsetEvent": "Synthetic onsetEvent (fake evaluator, not physics)",
+    "keyholeCavity.onsetPower_W": "Synthetic onsetPower_W (fake evaluator, not physics)",
+    "keyholeCavity.peclet": "Synthetic peclet (fake evaluator, not physics)",
+    "keyholeCavity.powerOverOnset": "Synthetic powerOverOnset (fake evaluator, not physics)",
+    "keyholeCavity.syntheticDepth_um": "Synthetic syntheticDepth_um (fake evaluator, not physics)",
+    "keyholeCavity.syntheticRatio": "Synthetic syntheticRatio (fake evaluator, not physics)",
+    "keyholeCavity.syntheticRegime": "Synthetic syntheticRegime (fake evaluator, not physics)",
+    "marangoni.syntheticDirection": "Synthetic syntheticDirection (fake evaluator, not physics)",
+    "marangoni.syntheticVelocity_m_s": "Synthetic syntheticVelocity_m_s (fake evaluator, not physics)",
+    "meltDepthLink.cavityLedgerRatio": "Synthetic cavityLedgerRatio (fake evaluator, not physics)",
+    "meltDepthLink.conditionalMeltDepth_um": "Synthetic conditionalMeltDepth_um (fake evaluator, not physics)",
+    "meltDepthLink.conductionDepth_um": "Synthetic conductionDepth_um (fake evaluator, not physics)",
+    "meltDepthLink.conductionStatus": "Synthetic conductionStatus (fake evaluator, not physics)",
+    "meltDepthLink.controllingLeg": "Synthetic controllingLeg (fake evaluator, not physics)",
+    "meltDepthLink.floorExtractorId": "Synthetic floorExtractorId (fake evaluator, not physics)",
+    "meltDepthLink.floorFieldModelId": "Synthetic floorFieldModelId (fake evaluator, not physics)",
+    "meltDepthLink.linkDispatch": "Synthetic linkDispatch (fake evaluator, not physics)",
+    "meltDepthLink.linkedMeltDepth_um": "Synthetic linkedMeltDepth_um (fake evaluator, not physics)",
+    "meltDepthLink.syntheticLeg": "Synthetic syntheticLeg (fake evaluator, not physics)",
+    "meltDepthLink.syntheticLinkedDepth_um": "Synthetic syntheticLinkedDepth_um (fake evaluator, not physics)",
+    "surfaceBalance.syntheticFlux_W_m2": "Synthetic syntheticFlux_W_m2 (fake evaluator, not physics)",
+    "surfaceBalance.syntheticTemperature_K": "Synthetic syntheticTemperature_K (fake evaluator, not physics)",
+    "unavailablePhysics.syntheticClosure": "Synthetic syntheticClosure (fake evaluator, not physics)"
+  },
+  "progress": {
+    "armsDone": 21,
+    "armsTotal": 21,
+    "complete": true
+  },
+  "relay": {
+    "kind": "blind-freeze-v2",
+    "subsetJson": "{\"binding\":{\"conditionOrdinal\":0,\"previewSha256\":\"d07cf32ee7032bfecdc5b43ead3ee9425b9c1a691c683e81b0be9cd0b7ccd85a\"},\"context\":{\"keyholeCavity.fields.cavityDepth_um\":{\"band\":{\"completeness\":\"complete\",\"failedArms\":[],\"manifestLength\":6,\"manifestSha256\":\"74d9f6cacdc37c01d20786a69f2a2ac1b82f03d86e83c5b878cebb1de18192ed\",\"max\":42.1875,\"maxArmId\":\"absorptance_high\",\"maxArmTies\":1,\"min\":32.8125,\"minArmId\":\"absorptance_low\",\"minArmTies\":1,\"nominal\":37.5,\"successfulArms\":6,\"totalArms\":6},\"reasonCode\":null,\"sourceEvidenceKind\":null,\"value\":37.5},\"keyholeCavity.fields.onsetEvent\":\"dwell\",\"keyholeCavity.fields.onsetPower_W\":{\"reasonCode\":null,\"sourceEvidenceKind\":null,\"value\":39.0625},\"keyholeCavity.fields.powerOverOnset\":{\"reasonCode\":null,\"sourceEvidenceKind\":null,\"value\":5.12},\"meltDepthLink.fields.conditionalMeltDepth_um\":{\"reasonCode\":null,\"sourceEvidenceKind\":null,\"value\":77.5},\"meltDepthLink.fields.conductionDepth_um\":{\"reasonCode\":null,\"sourceEvidenceKind\":null,\"value\":40.0},\"meltDepthLink.fields.conductionStatus\":\"computed\",\"meltDepthLink.fields.controllingLeg\":\"conditional-link\",\"meltDepthLink.fields.linkDispatch\":\"fake-dispatch\"},\"digests\":{\"labelsSha256\":\"11d2316af0e2c3b054ac4b30c13195f13efd5580468a89b8374ca1410af844ab\",\"researchModelsSha256\":\"9010e39489e2716628f17c7ba7ade5ad5f733af3afeea6bfed54ad43f9bd5fc3\"},\"identity\":{\"propertyContextKind\":\"nominal\",\"propertySetSha256\":\"b4b88be232581aea2d5bbc8fbb402362db8f4b60415645b30e8db173cd30f433\",\"researchImplementationSha256\":\"a3f7b6c55e4206153729475c221d96075ab5fb7455facf789eb536d2fcd1a89b\",\"researchSchemaVersion\":\"p8-research-v3\",\"servedImplementationFingerprint\":\"b36123e1c965feaf8f724668771b1f2a6a8cf374f3c15d4235caf39877f0a347\"},\"notes\":{\"keyholeCavity.consistencyNote.FIELD_SHAPE_STEP_NEAR_ONSET\":false,\"keyholeCavity.consistencyNote.fieldShapeShare.nearOnset\":null,\"keyholeCavity.consistencyNote.knownContradictions[].id\":[\"fake-contradiction\"],\"keyholeCavity.consistencyNote.onsetMismatch.comparison\":\"unavailable\",\"keyholeCavity.consistencyNote.reasons[].code\":[],\"keyholeCavity.consistencyNote.sentenceId\":null,\"keyholeCavity.consistencyNote.status\":\"extrapolated\",\"keyholeCavity.consistencyNote.worstArmStatus\":\"extrapolated\",\"meltDepthLink.consistencyNote.FIELD_SHAPE_STEP_NEAR_ONSET\":false,\"meltDepthLink.consistencyNote.fieldShapeShare.nearOnset\":null,\"meltDepthLink.consistencyNote.knownContradictions[].id\":[\"fake-contradiction\"],\"meltDepthLink.consistencyNote.onsetMismatch.comparison\":\"unavailable\",\"meltDepthLink.consistencyNote.reasons[].code\":[],\"meltDepthLink.consistencyNote.sentenceId\":null,\"meltDepthLink.consistencyNote.status\":\"extrapolated\",\"meltDepthLink.consistencyNote.worstArmStatus\":\"extrapolated\"},\"relayPathsSha256\":\"c224f0163889e41411a141c91dab626cebf3a777d3cef463d01772cc5728d7fa\",\"relaySchemaVersion\":\"blind-freeze-v2\",\"request\":{\"process\":{\"absorptionModel\":\"flat-plate\",\"beamDiameter_um\":80.0,\"laserPower_W\":200.0,\"laserWavelength\":\"IR_1064nm\",\"material\":\"P8-Synthetic-Alloy\",\"preheatTemp_C\":20.0,\"scanSpeed_mm_s\":800.0},\"propertyContext\":{\"kind\":\"nominal\"},\"sender\":\"blind-freeze\",\"si\":{\"beamDiameter_m\":8e-05,\"power_W\":200.0,\"preheat_K\":293.15,\"speed_m_s\":0.8}},\"requestKey\":\"4b6bc5ef7f7e5653c89a94229b7cae8deec0e6fe33367ce5b6cbea9e340bdedb\",\"scored\":{\"meltDepthLink.fields.linkedMeltDepth_um\":{\"band\":{\"completeness\":\"complete\",\"failedArms\":[],\"manifestLength\":6,\"manifestSha256\":\"74d9f6cacdc37c01d20786a69f2a2ac1b82f03d86e83c5b878cebb1de18192ed\",\"max\":82.1875,\"maxArmId\":\"absorptance_high\",\"maxArmTies\":1,\"min\":72.8125,\"minArmId\":\"absorptance_low\",\"minArmTies\":1,\"nominal\":77.5,\"successfulArms\":6,\"totalArms\":6},\"reasonCode\":null,\"sourceEvidenceKind\":null,\"unit\":\"1\",\"value\":77.5,\"warnings\":null,\"weakestInputs\":null}},\"statements\":{\"keyholeCavity.experimentalValidation\":false,\"keyholeCavity.moduleEvidenceCeiling\":\"screening-only\",\"keyholeCavity.moduleMaturity\":\"Research\",\"keyholeCavity.validationStatus\":\"not-experimentally-validated\",\"meltDepthLink.experimentalValidation\":false,\"meltDepthLink.moduleEvidenceCeiling\":\"screening-only\",\"meltDepthLink.moduleMaturity\":\"Research\",\"meltDepthLink.validationStatus\":\"not-experimentally-validated\"},\"support\":{\"keyholeCavity.band.onsetSupport\":{\"supported\":6,\"total\":6,\"unresolved\":0},\"keyholeCavity.band.statusSupport\":[{\"count\":6,\"status\":\"extrapolated\"}],\"meltDepthLink.band.statusSupport\":[{\"count\":6,\"status\":\"extrapolated\"}]}}",
+    "subsetSha256": "a20b74adf7000898255b0d74585f9de162ea1003f8b8e4abe6a704837a1678bb"
+  },
+  "requestKey": "4b6bc5ef7f7e5653c89a94229b7cae8deec0e6fe33367ce5b6cbea9e340bdedb",
+  "researchModels": {
+    "alSi10MgIndexDisclosure": {
+      "band": null,
+      "fields": {
+        "syntheticIndexRatio": {
+          "band": null,
+          "reasonCode": null,
+          "unit": "1",
+          "value": 1.5
+        }
+      },
+      "modelId": "fake-alSi10MgIndexDisclosure-v1",
+      "reasonCode": "ALLOY_NOT_ALSI10MG",
+      "status": "not-applicable"
+    },
+    "alSi10MgVapourMgAware": {
+      "band": {
+        "categoricalSupport": [],
+        "failedArms": [],
+        "manifest": [
+          {
+            "armId": "nominal",
+            "label": "nominal"
+          }
+        ],
+        "method": "declared-ofat-envelope-v1",
+        "state": "not-declared"
+      },
+      "fields": {
+        "syntheticScenario_K": {
+          "band": {
+            "completeness": "unavailable",
+            "failedArms": [],
+            "max": null,
+            "maxArmId": null,
+            "maxArmTies": null,
+            "method": "declared-ofat-envelope-v1",
+            "min": null,
+            "minArmId": null,
+            "minArmTies": null,
+            "nominal": 2550.15,
+            "nominalReasonCode": null,
+            "reasonCode": "BAND_MANIFEST_NOT_DECLARED",
+            "successfulArms": null,
+            "totalArms": null
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 2550.15
+        }
+      },
+      "modelId": "fake-alSi10MgVapourMgAware-v1",
+      "reasonCode": null,
+      "status": "available"
+    },
+    "keyholeCavity": {
+      "band": {
+        "categoricalSupport": [
+          {
+            "count": 6,
+            "field": "onsetEvent",
+            "value": "dwell"
+          },
+          {
+            "count": 5,
+            "field": "syntheticRegime",
+            "value": "above"
+          },
+          {
+            "count": 1,
+            "field": "syntheticRegime",
+            "value": "below"
+          }
+        ],
+        "failedArms": [],
+        "manifest": [
+          {
+            "armId": "nominal",
+            "label": "nominal"
+          },
+          {
+            "armId": "absorptance_low",
+            "label": "absorptance_low"
+          },
+          {
+            "armId": "absorptance_high",
+            "label": "absorptance_high"
+          },
+          {
+            "armId": "power_minus5",
+            "label": "power_minus5"
+          },
+          {
+            "armId": "power_plus5",
+            "label": "power_plus5"
+          },
+          {
+            "armId": "diameter_plus5",
+            "label": "diameter_plus5"
+          }
+        ],
+        "method": "declared-ofat-envelope-v1",
+        "onsetSupport": {
+          "caveat": "Synthetic caveat.",
+          "supported": 6,
+          "total": 6,
+          "unresolved": 0
+        },
+        "state": "computed",
+        "statusSupport": [
+          {
+            "count": 6,
+            "status": "extrapolated"
+          }
+        ]
+      },
+      "consistencyNote": {
+        "assumptions": [
+          "Synthetic assumption."
+        ],
+        "knownContradictions": [
+          {
+            "id": "fake-contradiction",
+            "statement": "x"
+          }
+        ],
+        "onsetMismatch": {
+          "comparison": "unavailable"
+        },
+        "reasons": [],
+        "sentence": "Synthetic primary sentence.",
+        "status": "extrapolated",
+        "worstArmStatus": "extrapolated"
+      },
+      "experimentalValidation": false,
+      "fields": {
+        "cavityDepth_um": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "manifest": [
+              {
+                "armId": "nominal",
+                "label": "nominal"
+              },
+              {
+                "armId": "absorptance_low",
+                "label": "absorptance_low"
+              },
+              {
+                "armId": "absorptance_high",
+                "label": "absorptance_high"
+              },
+              {
+                "armId": "power_minus5",
+                "label": "power_minus5"
+              },
+              {
+                "armId": "power_plus5",
+                "label": "power_plus5"
+              },
+              {
+                "armId": "diameter_plus5",
+                "label": "diameter_plus5"
+              }
+            ],
+            "max": 42.1875,
+            "maxArmId": "absorptance_high",
+            "maxArmTies": 1,
+            "method": "declared-ofat-envelope-v1",
+            "min": 32.8125,
+            "minArmId": "absorptance_low",
+            "minArmTies": 1,
+            "nominal": 37.5,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 6,
+            "totalArms": 6
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 37.5
+        },
+        "onsetEvent": {
+          "band": null,
+          "reasonCode": null,
+          "unit": "1",
+          "value": "dwell"
+        },
+        "onsetPower_W": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "manifest": [
+              {
+                "armId": "nominal",
+                "label": "nominal"
+              },
+              {
+                "armId": "absorptance_low",
+                "label": "absorptance_low"
+              },
+              {
+                "armId": "absorptance_high",
+                "label": "absorptance_high"
+              },
+              {
+                "armId": "power_minus5",
+                "label": "power_minus5"
+              },
+              {
+                "armId": "power_plus5",
+                "label": "power_plus5"
+              },
+              {
+                "armId": "diameter_plus5",
+                "label": "diameter_plus5"
+              }
+            ],
+            "max": 39.0625,
+            "maxArmId": "nominal",
+            "maxArmTies": 6,
+            "method": "declared-ofat-envelope-v1",
+            "min": 39.0625,
+            "minArmId": "nominal",
+            "minArmTies": 6,
+            "nominal": 39.0625,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 6,
+            "totalArms": 6
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 39.0625
+        },
+        "peclet": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "manifest": [
+              {
+                "armId": "nominal",
+                "label": "nominal"
+              },
+              {
+                "armId": "absorptance_low",
+                "label": "absorptance_low"
+              },
+              {
+                "armId": "absorptance_high",
+                "label": "absorptance_high"
+              },
+              {
+                "armId": "power_minus5",
+                "label": "power_minus5"
+              },
+              {
+                "armId": "power_plus5",
+                "label": "power_plus5"
+              },
+              {
+                "armId": "diameter_plus5",
+                "label": "diameter_plus5"
+              }
+            ],
+            "max": 5.250000000000001,
+            "maxArmId": "diameter_plus5",
+            "maxArmTies": 1,
+            "method": "declared-ofat-envelope-v1",
+            "min": 5.000000000000001,
+            "minArmId": "nominal",
+            "minArmTies": 5,
+            "nominal": 5.000000000000001,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 6,
+            "totalArms": 6
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 5.000000000000001
+        },
+        "powerOverOnset": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "manifest": [
+              {
+                "armId": "nominal",
+                "label": "nominal"
+              },
+              {
+                "armId": "absorptance_low",
+                "label": "absorptance_low"
+              },
+              {
+                "armId": "absorptance_high",
+                "label": "absorptance_high"
+              },
+              {
+                "armId": "power_minus5",
+                "label": "power_minus5"
+              },
+              {
+                "armId": "power_plus5",
+                "label": "power_plus5"
+              },
+              {
+                "armId": "diameter_plus5",
+                "label": "diameter_plus5"
+              }
+            ],
+            "max": 5.376,
+            "maxArmId": "power_plus5",
+            "maxArmTies": 1,
+            "method": "declared-ofat-envelope-v1",
+            "min": 4.864,
+            "minArmId": "power_minus5",
+            "minArmTies": 1,
+            "nominal": 5.12,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 6,
+            "totalArms": 6
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 5.12
+        },
+        "syntheticDepth_um": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "max": 105.46875,
+            "maxArmId": "absorptance_high",
+            "maxArmTies": 1,
+            "method": "declared-ofat-envelope-v1",
+            "min": 82.03125,
+            "minArmId": "absorptance_low",
+            "minArmTies": 1,
+            "nominal": 93.75,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 6,
+            "totalArms": 6
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 93.75
+        },
+        "syntheticRatio": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "max": 2.1064000000000003,
+            "maxArmId": "power_plus5",
+            "maxArmTies": 1,
+            "method": "declared-ofat-envelope-v1",
+            "min": 1.9063999999999999,
+            "minArmId": "power_minus5",
+            "minArmTies": 1,
+            "nominal": 2.0064,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 6,
+            "totalArms": 6
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 2.0064
+        },
+        "syntheticRegime": {
+          "band": null,
+          "reasonCode": null,
+          "unit": "1",
+          "value": "above"
+        }
+      },
+      "modelId": "fake-keyholeCavity-v1",
+      "moduleEvidenceCeiling": "screening-only",
+      "moduleMaturity": "Research",
+      "reasonCode": null,
+      "status": "available",
+      "uiSentence": "Synthetic sentence (fake evaluator, not physics).",
+      "validationStatus": "Synthetic status (fake evaluator)",
+      "validationStatusLocator": "test_lpbf_research_harness.py"
+    },
+    "marangoni": {
+      "band": {
+        "categoricalSupport": [
+          {
+            "count": 3,
+            "field": "syntheticDirection",
+            "value": "outward"
+          }
+        ],
+        "failedArms": [],
+        "manifest": [
+          {
+            "armId": "nominal",
+            "label": "nominal"
+          },
+          {
+            "armId": "slope_transfer",
+            "label": "slope_transfer"
+          },
+          {
+            "armId": "length_short",
+            "label": "length_short"
+          }
+        ],
+        "method": "declared-ofat-envelope-v1",
+        "state": "computed"
+      },
+      "fields": {
+        "syntheticDirection": {
+          "band": null,
+          "reasonCode": null,
+          "unit": "1",
+          "value": "outward"
+        },
+        "syntheticVelocity_m_s": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "max": 2.375,
+            "maxArmId": "length_short",
+            "maxArmTies": 1,
+            "method": "declared-ofat-envelope-v1",
+            "min": 1.1875,
+            "minArmId": "nominal",
+            "minArmTies": 1,
+            "nominal": 1.1875,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 3,
+            "totalArms": 3
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 1.1875
+        }
+      },
+      "modelId": "fake-marangoni-v1",
+      "reasonCode": null,
+      "status": "available"
+    },
+    "meltDepthLink": {
+      "band": {
+        "categoricalSupport": [
+          {
+            "count": 6,
+            "field": "conductionStatus",
+            "value": "computed"
+          },
+          {
+            "count": 6,
+            "field": "controllingLeg",
+            "value": "conditional-link"
+          },
+          {
+            "count": 6,
+            "field": "floorExtractorId",
+            "value": "fake-extractor-v1"
+          },
+          {
+            "count": 6,
+            "field": "floorFieldModelId",
+            "value": "fake-field-v1"
+          },
+          {
+            "count": 6,
+            "field": "linkDispatch",
+            "value": "fake-dispatch"
+          },
+          {
+            "count": 3,
+            "field": "syntheticLeg",
+            "value": "conditional-link"
+          },
+          {
+            "count": 3,
+            "field": "syntheticLeg",
+            "value": "conduction"
+          }
+        ],
+        "failedArms": [],
+        "manifest": [
+          {
+            "armId": "nominal",
+            "label": "nominal"
+          },
+          {
+            "armId": "absorptance_low",
+            "label": "absorptance_low"
+          },
+          {
+            "armId": "absorptance_high",
+            "label": "absorptance_high"
+          },
+          {
+            "armId": "power_minus5",
+            "label": "power_minus5"
+          },
+          {
+            "armId": "power_plus5",
+            "label": "power_plus5"
+          },
+          {
+            "armId": "diameter_plus5",
+            "label": "diameter_plus5"
+          }
+        ],
+        "method": "declared-ofat-envelope-v1",
+        "state": "computed",
+        "statusSupport": [
+          {
+            "count": 6,
+            "status": "extrapolated"
+          }
+        ]
+      },
+      "consistencyNote": {
+        "assumptions": [
+          "Synthetic assumption."
+        ],
+        "fieldShapeShare": {
+          "applicable": false
+        },
+        "fieldShapeStep": {
+          "relativeBracket": 1e-09
+        },
+        "knownContradictions": [
+          {
+            "id": "fake-contradiction",
+            "statement": "x"
+          }
+        ],
+        "onsetMismatch": {
+          "comparison": "unavailable"
+        },
+        "reasons": [],
+        "sentence": "Synthetic primary sentence.",
+        "status": "extrapolated",
+        "worstArmStatus": "extrapolated"
+      },
+      "experimentalValidation": false,
+      "fields": {
+        "cavityLedgerRatio": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "manifest": [
+              {
+                "armId": "nominal",
+                "label": "nominal"
+              },
+              {
+                "armId": "absorptance_low",
+                "label": "absorptance_low"
+              },
+              {
+                "armId": "absorptance_high",
+                "label": "absorptance_high"
+              },
+              {
+                "armId": "power_minus5",
+                "label": "power_minus5"
+              },
+              {
+                "armId": "power_plus5",
+                "label": "power_plus5"
+              },
+              {
+                "armId": "diameter_plus5",
+                "label": "diameter_plus5"
+              }
+            ],
+            "max": 0.5,
+            "maxArmId": "nominal",
+            "maxArmTies": 6,
+            "method": "declared-ofat-envelope-v1",
+            "min": 0.5,
+            "minArmId": "nominal",
+            "minArmTies": 6,
+            "nominal": 0.5,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 6,
+            "totalArms": 6
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 0.5
+        },
+        "conditionalMeltDepth_um": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "manifest": [
+              {
+                "armId": "nominal",
+                "label": "nominal"
+              },
+              {
+                "armId": "absorptance_low",
+                "label": "absorptance_low"
+              },
+              {
+                "armId": "absorptance_high",
+                "label": "absorptance_high"
+              },
+              {
+                "armId": "power_minus5",
+                "label": "power_minus5"
+              },
+              {
+                "armId": "power_plus5",
+                "label": "power_plus5"
+              },
+              {
+                "armId": "diameter_plus5",
+                "label": "diameter_plus5"
+              }
+            ],
+            "max": 82.1875,
+            "maxArmId": "absorptance_high",
+            "maxArmTies": 1,
+            "method": "declared-ofat-envelope-v1",
+            "min": 72.8125,
+            "minArmId": "absorptance_low",
+            "minArmTies": 1,
+            "nominal": 77.5,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 6,
+            "totalArms": 6
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 77.5
+        },
+        "conductionDepth_um": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "manifest": [
+              {
+                "armId": "nominal",
+                "label": "nominal"
+              },
+              {
+                "armId": "absorptance_low",
+                "label": "absorptance_low"
+              },
+              {
+                "armId": "absorptance_high",
+                "label": "absorptance_high"
+              },
+              {
+                "armId": "power_minus5",
+                "label": "power_minus5"
+              },
+              {
+                "armId": "power_plus5",
+                "label": "power_plus5"
+              },
+              {
+                "armId": "diameter_plus5",
+                "label": "diameter_plus5"
+              }
+            ],
+            "max": 40.0,
+            "maxArmId": "nominal",
+            "maxArmTies": 6,
+            "method": "declared-ofat-envelope-v1",
+            "min": 40.0,
+            "minArmId": "nominal",
+            "minArmTies": 6,
+            "nominal": 40.0,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 6,
+            "totalArms": 6
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 40.0
+        },
+        "conductionStatus": {
+          "band": null,
+          "reasonCode": null,
+          "unit": "1",
+          "value": "computed"
+        },
+        "controllingLeg": {
+          "band": null,
+          "reasonCode": null,
+          "unit": "1",
+          "value": "conditional-link"
+        },
+        "floorExtractorId": {
+          "band": null,
+          "reasonCode": null,
+          "unit": "1",
+          "value": "fake-extractor-v1"
+        },
+        "floorFieldModelId": {
+          "band": null,
+          "reasonCode": null,
+          "unit": "1",
+          "value": "fake-field-v1"
+        },
+        "linkDispatch": {
+          "band": null,
+          "reasonCode": null,
+          "unit": "1",
+          "value": "fake-dispatch"
+        },
+        "linkedMeltDepth_um": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "manifest": [
+              {
+                "armId": "nominal",
+                "label": "nominal"
+              },
+              {
+                "armId": "absorptance_low",
+                "label": "absorptance_low"
+              },
+              {
+                "armId": "absorptance_high",
+                "label": "absorptance_high"
+              },
+              {
+                "armId": "power_minus5",
+                "label": "power_minus5"
+              },
+              {
+                "armId": "power_plus5",
+                "label": "power_plus5"
+              },
+              {
+                "armId": "diameter_plus5",
+                "label": "diameter_plus5"
+              }
+            ],
+            "max": 82.1875,
+            "maxArmId": "absorptance_high",
+            "maxArmTies": 1,
+            "method": "declared-ofat-envelope-v1",
+            "min": 72.8125,
+            "minArmId": "absorptance_low",
+            "minArmTies": 1,
+            "nominal": 77.5,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 6,
+            "totalArms": 6
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 77.5
+        },
+        "syntheticLeg": {
+          "band": null,
+          "reasonCode": null,
+          "unit": "1",
+          "value": "conditional-link"
+        },
+        "syntheticLinkedDepth_um": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "max": 168.203125,
+            "maxArmId": "absorptance_high",
+            "maxArmTies": 1,
+            "method": "declared-ofat-envelope-v1",
+            "min": 133.046875,
+            "minArmId": "absorptance_low",
+            "minArmTies": 1,
+            "nominal": 150.625,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 6,
+            "totalArms": 6
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 150.625
+        }
+      },
+      "modelId": "fake-meltDepthLink-v1",
+      "moduleEvidenceCeiling": "screening-only",
+      "moduleMaturity": "Research",
+      "reasonCode": null,
+      "status": "available",
+      "uiSentence": "Synthetic sentence (fake evaluator, not physics).",
+      "validationStatus": "Synthetic status (fake evaluator)",
+      "validationStatusLocator": "test_lpbf_research_harness.py"
+    },
+    "schemaVersion": "p8-research-v3",
+    "surfaceBalance": {
+      "band": {
+        "categoricalSupport": [],
+        "failedArms": [],
+        "manifest": [
+          {
+            "armId": "nominal",
+            "label": "nominal"
+          },
+          {
+            "armId": "emissivity_alt",
+            "label": "emissivity_alt"
+          },
+          {
+            "armId": "power_plus5",
+            "label": "power_plus5"
+          }
+        ],
+        "method": "declared-ofat-envelope-v1",
+        "state": "computed"
+      },
+      "fields": {
+        "syntheticFlux_W_m2": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "max": 78750000.0,
+            "maxArmId": "power_plus5",
+            "maxArmTies": 1,
+            "method": "declared-ofat-envelope-v1",
+            "min": 75000000.0,
+            "minArmId": "nominal",
+            "minArmTies": 2,
+            "nominal": 75000000.0,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 3,
+            "totalArms": 3
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 75000000.0
+        },
+        "syntheticTemperature_K": {
+          "band": {
+            "completeness": "complete",
+            "failedArms": [],
+            "max": 2850.0,
+            "maxArmId": "nominal",
+            "maxArmTies": 2,
+            "method": "declared-ofat-envelope-v1",
+            "min": 2775.0,
+            "minArmId": "emissivity_alt",
+            "minArmTies": 1,
+            "nominal": 2850.0,
+            "nominalReasonCode": null,
+            "reasonCode": null,
+            "successfulArms": 3,
+            "totalArms": 3
+          },
+          "reasonCode": null,
+          "unit": "1",
+          "value": 2850.0
+        }
+      },
+      "modelId": "fake-surfaceBalance-v1",
+      "reasonCode": null,
+      "status": "available"
+    },
+    "unavailablePhysics": {
+      "band": null,
+      "fields": {
+        "syntheticClosure": {
+          "band": null,
+          "reasonCode": "KEYHOLE_THERMAL_FLOW_CLOSURE_UNAVAILABLE",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "modelId": "fake-unavailablePhysics-v1",
+      "reasonCode": "KEYHOLE_THERMAL_FLOW_CLOSURE_UNAVAILABLE",
+      "status": "unavailable"
+    }
+  },
+  "schemaVersion": "p8-research-response-v1",
+  "stage": "band",
+  "success": true
+}

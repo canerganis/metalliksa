@@ -111,6 +111,7 @@ ALLOWED_SCRIPT_NAMES = frozenset({
     "lpbf_process_window",
     "lpbf_gr_solidification",
     "lpbf_machine_calibrated_meltpool",
+    "lpbf_research_models",
     "lpbf_thermal_solver",
     "stl_slicer_build_time_solver",
     "xrd_peak_deconvolution",
@@ -122,9 +123,16 @@ ALLOWED_SCRIPT_NAMES = frozenset({
 # random, so up to NUM_WORKERS cold builds and copies per system). Requests for such a script run
 # one at a time through an _AffinityLane (queue, supersede, budget). Metadata requests
 # (METADATA_ACTIONS) go to the shared pool and never wait behind a calculation.
-# METALLIX_IPC_AFFINITY=0 sends everything to the shared pool instead.
+# METALLIX_IPC_AFFINITY=0 sends everything to the shared pool instead, except ISOLATED_SCRIPT_NAMES.
+#
+# ISOLATED_SCRIPT_NAMES (P8 integration contract 2026-10-15, 3.3): research-only scripts that always run in their own
+# single-worker lane, independent of METALLIX_IPC_AFFINITY. Such a lane is created on its first request and never
+# prestarted; no payload of it reaches the shared pool or its in-process fallback (no metadata exemption); its
+# queue and run timeouts answer exit 124 with a research timeout envelope on stdout; and a result whose stdout JSON
+# carries "recycleWorker": true replaces its worker before the next request runs (stale research code).
+ISOLATED_SCRIPT_NAMES = frozenset({"lpbf_research_models"})
 AFFINITY_SCRIPT_NAMES = (frozenset({"calphad_solver"})
-                         if os.environ.get("METALLIX_IPC_AFFINITY", "1") != "0" else frozenset())
+                         if os.environ.get("METALLIX_IPC_AFFINITY", "1") != "0" else frozenset()) | ISOLATED_SCRIPT_NAMES
 METADATA_ACTIONS = frozenset({"list_databases"})
 MAX_SUPERSEDE_KEY_LENGTH = 128
 
@@ -137,6 +145,24 @@ def _payload_field(payload: Any, key: str) -> Any:
         except ValueError:
             return None
     return payload.get(key) if isinstance(payload, dict) else None
+
+
+def _research_timeout_envelope(timeout_kind: str) -> str:
+    """stdout of an isolated-lane timeout (exit 124): the route answers HTTP 504 with this code and kind."""
+    return json.dumps({"success": False, "errorKind": "research", "reasonCode": "RESEARCH_TIMEOUT",
+                       "timeoutKind": timeout_kind})
+
+
+def _requests_worker_recycle(result: Any) -> bool:
+    """True when a script result's stdout is a JSON object with the top-level flag "recycleWorker": true."""
+    stdout = result.get("stdout") if isinstance(result, dict) else None
+    if not isinstance(stdout, str) or '"recycleWorker"' not in stdout:
+        return False
+    try:
+        parsed = json.loads(stdout)
+    except ValueError:
+        return False
+    return isinstance(parsed, dict) and parsed.get("recycleWorker") is True
 
 
 def _supersede_key(payload: Any) -> Optional[str]:
@@ -619,7 +645,10 @@ class _AffinityLane:
                     "running": self.running is not None, "generation": self.generation, **self.stats}
 
     # -- one request --
-    def run(self, submit_args: tuple, timeout_s: float, key: Optional[str]) -> Dict[str, Any]:
+    def run(self, submit_args: tuple, timeout_s: float, key: Optional[str],
+            recycle_after: Optional[Any] = None) -> Dict[str, Any]:
+        """``recycle_after(result) -> bool``, when given, is asked about a completed result while the job still
+        holds the lane; True replaces the worker it ran in before the next queued request starts."""
         t0 = time.perf_counter()
         deadline = t0 + timeout_s
         ticket = _AffinityTicket(key)
@@ -674,7 +703,10 @@ class _AffinityLane:
                 return {"outcome": "worker-died", "queueWaitMs": queue_ms}
             with self.cond:
                 self.stats["completed"] += 1
-            return {"outcome": "ok", "result": res, "queueWaitMs": queue_ms}
+            recycled = False
+            if recycle_after is not None and recycle_after(res):
+                recycled = self.recycle(generation)
+            return {"outcome": "ok", "result": res, "queueWaitMs": queue_ms, "recycled": recycled}
         finally:
             with self.cond:
                 self.running = None
@@ -784,7 +816,7 @@ class ConcurrentModuleRegistry:
     def start_affinity_pools(self) -> None:
         """Starts the affinity workers in the background (no wait), so the first request does not
         pay for the process start and imports."""
-        for name in sorted(AFFINITY_SCRIPT_NAMES):
+        for name in sorted(AFFINITY_SCRIPT_NAMES.difference(ISOLATED_SCRIPT_NAMES)):
             try:
                 self._affinity_lane(name).prestart()
             except Exception as e:
@@ -809,7 +841,9 @@ class ConcurrentModuleRegistry:
         with self.stats_lock:
             self.active_jobs += 1
         try:
-            out = lane.run((_worker_run_script, full_path, input_str, args), timeout_sec, _supersede_key(payload))
+            isolated = name in ISOLATED_SCRIPT_NAMES
+            out = lane.run((_worker_run_script, full_path, input_str, args), timeout_sec, _supersede_key(payload),
+                           recycle_after=_requests_worker_recycle if isolated else None)
         finally:
             with self.stats_lock:
                 self.active_jobs = max(0, self.active_jobs - 1)
@@ -822,6 +856,8 @@ class ConcurrentModuleRegistry:
             with self.stats_lock:
                 self.request_count += 1
                 self.total_duration_ms += duration_ms
+            if out.get("recycled"):
+                base["workerRecycled"] = True
             return {"stdout": res["stdout"], "stderr": res["stderr"], "exitCode": res["exitCode"], **base}
         if outcome == "superseded":
             # Not an error of the request: a newer request from the same client replaced it before it
@@ -833,10 +869,12 @@ class ConcurrentModuleRegistry:
         if outcome == "queue-timeout":
             msg = (f"Execution timed out after {timeout_ms}ms (never started: {out['ahead']} {name} job(s) "
                    f"ahead in the queue)")
-            return {"stdout": "", "stderr": msg, "exitCode": 124, **base}
+            stdout = _research_timeout_envelope("queue") if isolated else ""
+            return {"stdout": stdout, "stderr": msg, "exitCode": 124, **base}
         if outcome == "run-timeout":
-            return {"stdout": "", "stderr": f"Execution timed out after {timeout_ms}ms "
-                                            f"(worker terminated and affinity worker replaced)",
+            stdout = _research_timeout_envelope("run") if isolated else ""
+            return {"stdout": stdout, "stderr": f"Execution timed out after {timeout_ms}ms "
+                                                f"(worker terminated and affinity worker replaced)",
                     "exitCode": 124, **base}
         return {"stdout": "", "stderr": "Worker process died during execution; the request was not re-run.",
                 "exitCode": 1, **base}
@@ -873,7 +911,8 @@ class ConcurrentModuleRegistry:
         timeout_sec = max(1.0, float(timeout_ms) / 1000.0)
 
         affinity = self._affinity_name(full_path)
-        if affinity and _payload_field(payload, "action") in METADATA_ACTIONS:
+        if (affinity and affinity not in ISOLATED_SCRIPT_NAMES
+                and _payload_field(payload, "action") in METADATA_ACTIONS):
             affinity = None  # metadata (database list, coverage) never waits behind a calculation
         if affinity:
             return self._execute_affinity(affinity, full_path, input_str, args, timeout_ms, timeout_sec,

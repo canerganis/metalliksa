@@ -16,6 +16,7 @@ import {
 import { parseTDBFile, PRELOADED_MULTI_COMPONENT_TDB } from "../physics/tdbParser";
 import { createSeededRandom } from "../utils/seededRandom";
 import { PythonValidationError, validationErrorFromResponse } from "../utils/pythonValidationError";
+import type { ResearchOutcome, ResearchRequest } from "../types/lpbfResearchModels";
 import {
   CLIENT_DATABASE_LABEL,
   CLIENT_MODEL_LABEL,
@@ -823,6 +824,32 @@ class PythonComputationService {
         typeof body.error === "string" ? body.error : "The engine returned a failure without a reason.");
     }
     return body;
+  }
+
+  /**
+   * P8 research models (python/lpbf_research_models.py; research only, not validation). Opt-in: only the Research model
+   * panel and the batch client call this, and nothing here feeds a served result. The server answer is classified,
+   * never thrown, so a refusal or a timeout cannot be mistaken for data. Only an aborted fetch rejects (AbortError),
+   * and the body of a request is sent exactly as given: the caller owns the request identity.
+   */
+  async solveLpbfResearchModels(request: ResearchRequest, signal?: AbortSignal): Promise<ResearchOutcome> {
+    let res: Response;
+    try {
+      res = await fetch("/api/python/lpbf-research-models", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
+        signal,
+      });
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") throw err;
+      return { kind: "http-error", httpStatus: 0, message: err instanceof Error ? err.message : "Network request failed." };
+    }
+    let body: unknown;
+    try { body = await res.json(); } catch { body = undefined; }
+    // The guards load on the first research request, so every other chunk that imports this service stays as small as before.
+    const { classifyResearchAnswer } = await import("../types/lpbfResearchModels");
+    return classifyResearchAnswer(res.status, body);
   }
 
   /**
