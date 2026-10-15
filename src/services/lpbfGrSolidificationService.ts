@@ -1,169 +1,43 @@
-/**
- * Client for the LPBF G/R solidification coupling (python/lpbf_gr_solidification.py; screening only, not validation).
- * Returns the raw JSON document: callers must pass it through checkedGrSolidification (src/data/lpbfGrSolidification.ts)
- * before rendering. Refusals (HTTP 422 / errorKind "validation") and unreachable-engine failures are thrown as typed
- * errors; nothing is retried or substituted.
- */
-
-export type GrAlloyId = "in718" | "in625";
-export type GrCellStatus = "available" | "screening-fallback" | "degenerate-floor" | "unavailable" | "error";
+import type { QuantityContainer } from "../data/quantityEnvelope";
+import type { QuantityStatus } from "../generated/quantityEnvelope";
+export type GrAlloyId = "in718" | "in625" | "ti6al4v" | "alsi10mg" | "ss316l";
+export type GrCellStatus = QuantityStatus;
 export type GrLocation = "bottom" | "median" | "tail";
-
 export interface GrSolidificationRequest {
-  mode: "point" | "map";
-  alloyId: GrAlloyId;
-  beamDiameter_um: number;
-  layer_um: number;
-  hatch_um: number;
-  preheatTemp_C: number;
-  power_W?: number;
-  speed_mm_s?: number;
-  powers?: number[];
-  speeds?: number[];
+  mode: "point" | "map"; alloyId: GrAlloyId; beamDiameter_um: number; layer_um: number;
+  hatch_um: number; preheatTemp_C: number; power_W?: number; speed_mm_s?: number; powers?: number[]; speeds?: number[];
 }
-
-export interface GrFrontLocation {
-  G_K_m: number | null;
-  R_m_s: number | null;
-  GoverR_K_s_m2: number | null;
-  GtimesR_K_s: number | null;
-  huntBand: string | null;
-  coolingRate_K_s?: number | null;
-  x_um?: number | null;
-  z_um?: number | null;
+export interface GrSourceChecks {
+  equationRead: { status: "read" | "not-read"; locator: string | null };
+  algebraReproduced: { status: "reproduced" | "not-reproduced" | "not-attempted"; test: string | null };
+  printedLimitComparison: { status: "agrees" | "disagrees" | "not-available" | "not-attempted"; [key: string]: unknown };
 }
-
-export interface GrRosenthalCenterline {
-  status: "available" | "unavailable";
-  reason: string | null;
-  xTail_um?: number;
-  G_K_m?: number;
-  R_m_s?: number;
-  GoverR_K_s_m2?: number;
-  GtimesR_K_s?: number;
-  label?: string;
-}
-
-export interface GrCetLocation { band: "columnar" | "mixed" | "equiaxed"; G_columnar_K_m: number; G_equiaxed_K_m: number }
-
 export interface GrCetConstant { value: number | null; unit: string; source: string | null; locator: string | null; verified: boolean }
-
-/** One sourced CET constant set of the registry (python/lpbf_cet_screening.py). */
 export interface GrCetSet {
-  id: string;
-  label: string;
-  transferLabel: string;
-  caveat: string;
-  citation: string;
-  doi?: string;
-  osti?: string;
-  equationVerified: boolean;
-  equationLocator: string | null;
-  phiSource: string;
-  note: string;
+  id: string; label: string; transferLabel: string; caveat: string; citation: string; doi?: string; osti?: string;
+  sourceChecks: GrSourceChecks; equationLocator: string | null; phiSource: string; note: string;
   constants: Record<"a" | "n" | "N0", GrCetConstant>;
 }
-
-/** Per-cell bands of one registry set. */
-export interface GrCetSetBands { label: string; transferLabel: string; locations: Record<GrLocation, GrCetLocation | null> }
-
-export interface GrLavesBand {
-  R_m_s: number;
-  kEff: { min: number; max: number };
-  f: { min: number; max: number };
-}
-
-export interface GrLavesCell {
-  status: "available" | "unavailable";
-  reason: string | null;
-  equilibriumKBound?: number;
-  sampledArcUpperBound?: { R_m_s: number; V_D_m_s: number; kEff: number; f: number; location: GrLocation };
-  atMedian?: GrLavesBand | null;
-  atTail?: GrLavesBand | null;
-  note?: string;
-}
-
 export interface GrCellBody {
-  status: GrCellStatus;
-  reason: string | null;
-  regime: string | null;
-  regimeNote: string | null;
-  normalizedEnthalpy: number | null;
-  extentStatus: string | null;
-  front: {
-    median: GrFrontLocation | null;
-    bottom: GrFrontLocation | null;
-    tail: GrFrontLocation | null;
-    R_range_m_s: number[] | null;
-    frontPointCount: number | null;
-    gradientSource: string | null;
-    usedFieldMap: boolean | null;
-    coolingBasis: string;
-  };
-  rosenthalCenterline: GrRosenthalCenterline;
-  morphology: { basis: string; bands: Record<GrLocation, string | null>; label: string };
-  cet: {
-    status: "available" | "unavailable";
-    reason: string | null;
-    locations: Record<GrLocation, GrCetLocation | null>;
-    sets: Record<string, GrCetSetBands>;
-  };
-  laves: GrLavesCell;
+  status: GrCellStatus; regime: string | null; normalizedEnthalpy: number | null; extentStatus: string | null;
+  front: QuantityContainer; cet: QuantityContainer & { status: GrCellStatus }; laves: QuantityContainer & { status: GrCellStatus };
 }
-
 export interface GrCell extends GrCellBody { iP: number; iV: number; power_W: number; speed_mm_s: number }
 export interface GrPoint extends GrCellBody { power_W: number; speed_mm_s: number }
-
 export interface GrSolidificationResponse {
-  success: true;
-  engine: string;
-  schema: string;
-  mode: "point" | "map";
-  alloyId: GrAlloyId;
-  materialName: string;
-  request: { alloyId: GrAlloyId; beamDiameter_um: number; layer_um: number; hatch_um: number; preheatTemp_C: number; power_W?: number; speed_mm_s?: number };
-  grid?: {
-    powers_W: number[];
-    speeds_mm_s: number[];
-    nP: number;
-    nV: number;
-    nCells: number;
-    rangeBasis: Record<string, unknown>;
-  };
-  point?: GrPoint;
-  cells?: GrCell[];
-  counts: Record<GrCellStatus, number>;
+  success: true; engine: string; schema: string; mode: "point" | "map"; alloyId: GrAlloyId; materialName: string;
+  request: { alloyId: GrAlloyId; beamDiameter_um: number; layer_um: number; hatch_um: number; preheatTemp_C: number };
+  grid?: { powers_W: number[]; speeds_mm_s: number[]; nP: number; nV: number; nCells: number; rangeBasis: Record<string, unknown> };
+  point?: GrPoint; cells?: GrCell[]; counts: Record<GrCellStatus, number>;
   cet: {
-    modelId: string;
-    equation: string;
-    equationVerified: boolean;
-    equationLocator: string | null;
-    phiColumnar: number;
-    phiEquiaxed: number;
-    note: string;
-    transferLabel?: string;
-    constantsStatus: {
-      status: "available" | "unavailable";
-      reason: string | null;
-      sets: GrCetSet[];
-      candidateSources: Array<{ citation: string; osti?: string; read: boolean }>;
-      referenceOnly?: { label: string; source: string; locator: string; constants: Record<"a" | "n" | "N0", GrCetConstant> };
-    };
+    modelId: string; equation: string; sourceChecks: GrSourceChecks;
+    constantsStatus: { status: "available" | "unavailable"; reason: string | null; sets: GrCetSet[] };
   };
-  laves: {
-    modelId: string;
-    k_e: number;
-    C_e_wt: number;
-    Nb_nominal_wt: number;
-    V_D_m_s: number[];
-    equilibriumKBound: number;
-    basis: string;
-  };
-  materialEvidence: Record<string, unknown> | null;
+  laves: Record<string, unknown>;
   evidence: { kind: "screening-only"; experimentalValidation: false; statement: string };
   limits: string[];
-  provenance: { heatSource: string; solidificationModelId: string; buildJobSolverRevision: string; frozenFilesModified: boolean };
-  computeMs: number;
+  provenance: { heatSource: string; solidificationModelId: string; buildJobSolverRevision: string; implementationHash: string };
+  computeMs?: number;
 }
 
 /** kind "validation": the engine refused the request (HTTP 422); "engine-unavailable": no usable answer. */

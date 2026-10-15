@@ -9,16 +9,12 @@
  */
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import {
-  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, BarChart, Bar, Cell,
-  LabelList,
-} from 'recharts';
+import { SolidificationQuantities } from './SolidificationQuantities';
+import { useMaterialSpecimenStore } from '../store/useMaterialSpecimenStore';
 import { pythonComputationService } from '../services/pythonComputationService';
 import type { SolidificationMicrostructureAvailable } from '../services/pythonComputationService';
 import { GrSolidificationMapCard } from './GrSolidificationMapCard';
 import { solidificationOutcome } from '../utils/solidificationOutcome';
-import { PDAS_BAND_LABEL, pdasBandText } from '../utils/pdasBandText';
 import { createLatestRequestGate, settleLatestRequest } from '../utils/solidificationRequest';
 import {
   authorityAlloy, authorityThermalProvenance, solidificationMaterialInputs, type AuthorityAlloyId, type SolidificationMaterialInputs,
@@ -76,45 +72,24 @@ export function solidificationRequest(
   return { params: { materialName, ...process } };
 }
 
-const MORPHOLOGY_COLORS: [prefix: string, color: string][] = [
-  ['Planar', '#9aa7b5'], ['Cellular', '#75b8ff'], ['Columnar', '#f0bd73'], ['Mixed', '#70d8b0'],
-];
-const morphologyColor = (morphology: string | null | undefined) =>
-  MORPHOLOGY_COLORS.find(([prefix]) => (morphology ?? '').startsWith(prefix))?.[1] ?? '#9aa7b5';
-
-// Growth-rate axis extent (m/s) of the G-R map; the Hunt band lines are drawn across it.
-const GR_AXIS_R: readonly [min: number, max: number] = [1e-5, 2];
-
-const panelClass = 'rounded-2xl border border-white/10 bg-[#111b25] shadow-[0_18px_50px_rgba(0,0,0,.18)]';
-const mutedText = 'text-slate-400';
-
-const Metric: React.FC<{ label: string; value: string; unit?: string; accent: string; detail?: string }> = ({ label, value, unit, accent, detail }) => (
-  <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0c151e] px-4 py-3">
-    <div className="mb-2 flex items-center gap-2">
-      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent, boxShadow: `0 0 12px ${accent}88` }} />
-      <span className="truncate text-[11px] font-semibold uppercase tracking-[.12em] text-slate-400">{label}</span>
-    </div>
-    <div className="flex flex-wrap items-baseline gap-x-1.5">
-      <span className="font-mono text-xl font-semibold tracking-tight text-slate-100">{value}</span>
-      {unit && <span className="text-xs text-slate-500">{unit}</span>}
-    </div>
-    {detail && <p className="mt-1 text-[11px] text-slate-500">{detail}</p>}
-  </div>
-);
+const panelClass = 'rounded-2xl border border-white/10 bg-[#111b25]';
 
 interface Props {
   onSendToModule?: (moduleId: string, data: unknown) => void;
 }
 
-type ChartTab = 'gr-map' | 'spacing' | 'diagnostics';
 
 export const SolidificationMicrostructureLab: React.FC<Props> = () => {
-  const [laserPower, setLaserPower] = useState(285);
-  const [scanSpeed, setScanSpeed] = useState(960);
-  const [hatch, setHatch] = useState(110);
-  const [layerThickness, setLayerThickness] = useState(40);
-  const [beamDiameter, setBeamDiameter] = useState(80);
-  const [preheat, setPreheat] = useState(80);
+  const lpbf = useMaterialSpecimenStore(s => s.activeSpecimen.lpbf);
+  const updateLpbfProcess = useMaterialSpecimenStore(s => s.updateLpbfProcess);
+  const laserPower = lpbf.laserPower_W, scanSpeed = lpbf.scanSpeed_mms, hatch = lpbf.hatch_um;
+  const layerThickness = lpbf.layer_um, beamDiameter = lpbf.beamDiameter_um, preheat = lpbf.preheatTemp_C;
+  const setLaserPower = (value: number) => updateLpbfProcess({ laserPower_W: value });
+  const setScanSpeed = (value: number) => updateLpbfProcess({ scanSpeed_mms: value });
+  const setHatch = (value: number) => updateLpbfProcess({ hatch_um: value });
+  const setLayerThickness = (value: number) => updateLpbfProcess({ layer_um: value });
+  const setBeamDiameter = (value: number) => updateLpbfProcess({ beamDiameter_um: value });
+  const setPreheat = (value: number) => updateLpbfProcess({ preheatTemp_C: value });
   const [heatSource, setHeatSource] = useState<SolidificationHeatSource>('rosenthal');
   const [selectedAlloy, setSelectedAlloy] = useState('Inconel 718');
   const [isLoading, setIsLoading] = useState(false);
@@ -122,7 +97,6 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
   const [error, setError] = useState<string | null>(null);
   const [unavailableReason, setUnavailableReason] = useState<string | null>(null);
   const [degenerate, setDegenerate] = useState(false);
-  const [activeTab, setActiveTab] = useState<ChartTab>('gr-map');
   const requestGate = useRef(createLatestRequestGate());
 
   useEffect(() => () => requestGate.current.invalidate(), []);
@@ -137,6 +111,8 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
     setUnavailableReason(null);
     setDegenerate(false);
   };
+
+  useEffect(() => { invalidateResult(); }, [laserPower, scanSpeed, hatch, layerThickness, beamDiameter, preheat]);
 
   const handleCompute = useCallback(async () => {
     const generation = requestGate.current.begin();
@@ -168,31 +144,6 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
         onFinally: () => setIsLoading(false),
       });
   }, [laserPower, scanSpeed, hatch, layerThickness, beamDiameter, preheat, heatSource, selectedAlloy]);
-
-  const grPoint = result ? [{ R_ms: result.R_m_s, G_K_m: result.G_K_m }] : [];
-  // P7a: the PDAS scalar and SDAS are null; the chart shows the sourced Ni-Nb band members (Ghosh 2017) when served.
-  const spacingData = result && result.pdasBand_um ? [
-    { name: 'PDAS · Hunt (Eq. 7)', value: result.pdasBand_um.hunt },
-    { name: 'PDAS · Kurz-Fisher (Eq. 8)', value: result.pdasBand_um.kurzFisher },
-  ] : [];
-  const morphColor = morphologyColor(result?.morphology);
-  const cellular = (result?.morphology ?? '').startsWith('Cellular');
-  // modelId and gradientSource are the same string on the field-map path: show each distinct value once.
-  const provenance = result ? Array.from(new Set([result.modelId, result.gradientSource].filter(Boolean))).join(' · ') || result.source : '';
-  // Hunt G/R band boundaries come from Python (solidification_front); the lab holds no thresholds.
-  const grBands = result?.morphologyBands_G_over_R
-    ? ([
-      ['Planar / cellular', result.morphologyBands_G_over_R.planar, '#bba3f4'],
-      ['Cellular / columnar', result.morphologyBands_G_over_R.cellular, '#75b8ff'],
-      ['Columnar / mixed', result.morphologyBands_G_over_R.columnar, '#70d8b0'],
-    ] as [string, number, string][])
-    : [];
-
-  const tabs: { id: ChartTab; label: string; index: string }[] = [
-    { id: 'gr-map', label: 'G–R map', index: '01' },
-    { id: 'spacing', label: 'Dendrite spacing', index: '02' },
-    { id: 'diagnostics', label: 'Diagnostics', index: '03' },
-  ];
 
   const numberField = (label: string, value: number, min: number, max: number, step: number, unit: string, update: (value: number) => void) => (
     <label className="block min-w-0">
@@ -329,7 +280,7 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
           <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/20 text-xs">i</span>
           <div className="min-w-0">
             <h2 className="font-semibold">{degenerate ? 'No computed solidification result' : 'Unavailable'}</h2>
-            <p className="mt-1 break-words text-xs leading-5 text-slate-400">{unavailableReason}. {degenerate ? 'The solver returned clamp-floor values, so no G/R, spacing or morphology is shown as a result.' : 'No numbers are shown: nothing is defaulted or substituted.'}</p>
+            <p className="mt-1 break-words text-xs leading-5 text-slate-400">{unavailableReason}</p>
           </div>
         </section>
       )}
@@ -366,119 +317,9 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
         </section>
       )}
 
-      {result && !isLoading && (
-        <>
-          {result.status === 'screening-fallback' && (
-            <section role="status" data-solidification-status="screening-fallback" className="rounded-xl border border-amber-300/25 bg-amber-300/[.07] px-4 py-3 text-xs leading-5 text-amber-100">
-              <b className="mr-1.5">Screening fallback.</b>{result.reason}
-            </section>
-          )}
-          {result.status === 'available' && <span hidden data-solidification-status="available" />}
-          {result.regimeNote && (
-            <section role="note" data-solidification-note="regime" className="rounded-xl border border-amber-300/25 bg-amber-300/[.07] px-4 py-3 text-xs leading-5 text-amber-100">{result.regimeNote}</section>
-          )}
-          <section aria-label="Analysis summary" className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-            <Metric label="Thermal gradient" value={result.G_K_m.toExponential(2)} unit="K/m" accent="#75b8ff" detail={provenance} />
-            <Metric label="Solidification rate" value={result.R_m_s.toExponential(2)} unit="m/s" accent="#70d8b0" detail="screening field" />
-            <Metric label="Cooling rate" value={result.coolingRate_K_s.toExponential(2)} unit="K/s" accent="#f08080" detail="median of G·R over front samples" />
-            <Metric label="Primary spacing · λ₁ band" value={result.pdasBand_um ? pdasBandText(result).replace(` (${PDAS_BAND_LABEL})`, '') : 'n/a'} unit={result.pdasBand_um ? '' : ''} accent="#bba3f4" detail={result.pdasBand_um ? `${PDAS_BAND_LABEL} (Hunt to Kurz-Fisher)` : (result.pdasUnavailableReason ?? 'no sourced PDAS parameters')} />
-            <Metric label="Secondary spacing · λ₂" value={typeof result.SDAS_um === 'number' ? result.SDAS_um.toFixed(2) : 'n/a'} unit={typeof result.SDAS_um === 'number' ? 'µm' : ''} accent="#f0bd73" detail={typeof result.SDAS_um === 'number' ? (cellular ? 'cells have no secondary arms · legacy payload' : 'legacy payload') : (result.sdasUnavailableReason ?? 'no sourced SDAS prefactor (P7a)')} />
-            <Metric label="Morphology tendency" value={result.morphology} accent={morphColor} detail={result.heatSourceModel ?? 'screening field'} />
-          </section>
-
-          <section className={`${panelClass} min-h-[420px] overflow-hidden`} aria-label="Analysis visualisations">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[.07] px-4 py-4 sm:px-5">
-              <div><div className="text-[10px] font-semibold uppercase tracking-[.17em] text-cyan-100/65">02 / Read the result</div><h2 className="mt-1 text-base font-semibold text-slate-100">Solidification response</h2></div>
-              <nav className="flex max-w-full gap-1 overflow-x-auto rounded-xl border border-white/[.07] bg-[#0b141d] p-1" aria-label="Result views">
-                {tabs.map(tab => (
-                  <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)} aria-current={activeTab === tab.id ? 'page' : undefined}
-                    className={`whitespace-nowrap rounded-lg px-3 py-2 text-xs transition ${activeTab === tab.id ? 'bg-cyan-100/[.12] text-cyan-50 shadow-sm' : 'text-slate-500 hover:text-slate-200'}`}>
-                    <span className="mr-1.5 font-mono text-[9px] opacity-55">{tab.index}</span>{tab.label}
-                  </button>
-                ))}
-              </nav>
-            </div>
-
-            <div className="px-4 pb-5 pt-4 sm:px-5">
-              {activeTab === 'gr-map' && <>
-                <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
-                  <div><h3 className="text-sm font-medium text-slate-200">Thermal gradient vs. growth rate</h3><p className="mt-1 text-xs text-slate-500">Hunt morphology regime map · logarithmic axes</p></div>
-                  <div className="flex flex-wrap gap-3 text-[10px] text-slate-400">{grBands.map(([name, ratio, color]) => <span key={name} className="flex items-center gap-1.5"><i className="h-0.5 w-4" style={{ background: color }} />{name} · G/R {ratio.toExponential(0)}</span>)}<span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full" style={{ background: morphColor }} />Operating point</span></div>
-                </div>
-                <div className="h-[300px] w-full sm:h-[360px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ScatterChart margin={{ top: 10, right: 18, bottom: 16, left: 12 }}>
-                      <CartesianGrid strokeDasharray="2 6" stroke="#263744" />
-                      <XAxis dataKey="R_ms" type="number" scale="log" domain={[GR_AXIS_R[0], GR_AXIS_R[1]]} name="R (m/s)" tickFormatter={v => Number(v).toExponential(0)} tick={{ fill: '#8595a3', fontSize: 10 }} axisLine={{ stroke: '#3a4a57' }} tickLine={false} label={{ value: 'Growth rate R (m/s)', position: 'insideBottom', offset: -8, fill: '#91a0ad', fontSize: 11 }} />
-                      <YAxis dataKey="G_K_m" type="number" scale="log" domain={[1e4, 1e10]} name="G (K/m)" tickFormatter={v => Number(v).toExponential(0)} tick={{ fill: '#8595a3', fontSize: 10 }} axisLine={false} tickLine={false} label={{ value: 'Thermal gradient G (K/m)', angle: -90, position: 'insideLeft', fill: '#91a0ad', fontSize: 11 }} />
-                      <Tooltip cursor={{ stroke: '#9ab5c5', strokeDasharray: '3 4' }} formatter={(value: number, name: string) => [Number(value).toExponential(3), name]} contentStyle={{ background: '#111b25', border: '1px solid #354653', borderRadius: '10px', color: '#edf4f7', fontSize: 12 }} />
-                      {grBands.map(([name, ratio, color]) => <ReferenceLine key={name} segment={[{ x: GR_AXIS_R[0], y: ratio * GR_AXIS_R[0] }, { x: GR_AXIS_R[1], y: ratio * GR_AXIS_R[1] }]} stroke={color} strokeDasharray="4 4" strokeOpacity={0.6} ifOverflow="hidden" />)}
-                      <Scatter data={grPoint} dataKey="G_K_m" fill={morphColor} name="Operating point" shape="star" />
-                    </ScatterChart>
-                  </ResponsiveContainer>
-                </div>
-                <p className="mt-2 border-t border-white/[.06] pt-3 text-[11px] leading-5 text-slate-500">Boundary lines are the Hunt G/R bands used by the Python solver (uncalibrated screening bands); the marker locates this operating point. They indicate a model regime, not a measured grain structure.</p>
-              </>}
-
-              {activeTab === 'spacing' && <>
-                <div className="mb-3"><h3 className="text-sm font-medium text-slate-200">Dendrite spacing estimates</h3><p className="mt-1 text-xs text-slate-500">Primary (Hunt–Lu 1996) and secondary (Kirkwood 1985) arm spacing returned by Python.{cellular ? ' This is a cellular morphology: cells have no secondary arms, so SDAS is indicative only.' : ''}</p></div>
-                <div className="h-[300px] w-full sm:h-[350px]">
-                  <ResponsiveContainer width="100%" height="100%"><BarChart data={spacingData} margin={{ top: 24, right: 18, bottom: 8, left: 4 }}>
-                    <CartesianGrid vertical={false} strokeDasharray="2 6" stroke="#263744" />
-                    <XAxis dataKey="name" tick={{ fill: '#aab7c1', fontSize: 12 }} axisLine={{ stroke: '#3a4a57' }} tickLine={false} />
-                    <YAxis unit=" µm" tick={{ fill: '#8595a3', fontSize: 10 }} axisLine={false} tickLine={false} />
-                    <Tooltip formatter={(value: number) => [`${value.toFixed(2)} µm`, 'Estimate']} contentStyle={{ background: '#111b25', border: '1px solid #354653', borderRadius: '10px', color: '#edf4f7', fontSize: 12 }} />
-                    <Bar dataKey="value" name="Spacing" radius={[7, 7, 2, 2]} maxBarSize={96}>
-                      {spacingData.map((entry, index) => <Cell key={entry.name} fill={index === 0 ? '#bba3f4' : '#f0bd73'} />)}
-                      <LabelList dataKey="value" position="top" formatter={(value: number) => `${value.toFixed(2)} µm`} fill="#dbe6ec" fontSize={11} />
-                    </Bar>
-                  </BarChart></ResponsiveContainer>
-                </div>
-                <p className="mt-2 border-t border-white/[.06] pt-3 text-[11px] leading-5 text-slate-500">Typical LPBF literature ranges (PDAS 1–30 µm; SDAS 0.5–15 µm) are context only and are not acceptance limits for this result.</p>
-              </>}
-
-              {activeTab === 'diagnostics' && <>
-                <div className="mb-3"><h3 className="text-sm font-medium text-slate-200">Model diagnostics</h3><p className="mt-1 text-xs text-slate-500">Field summary, result provenance and scientific caveats.</p></div>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-xl border border-white/[.07] bg-[#0b141d] p-4">
-                    <h4 className="mb-3 text-[10px] font-semibold uppercase tracking-[.16em] text-cyan-100/70">Thermal field</h4>
-                    <dl className="space-y-2">
-                      {[
-                        ['G', `${result.G_K_m.toExponential(3)} K/m`],
-                        ['R', `${result.R_m_s.toExponential(3)} m/s`],
-                        ['Cooling (median of G·R over front samples)', `${result.coolingRate_K_s.toExponential(3)} K/s`],
-                        ['G/R', result.g_over_r_ratio != null ? `${result.g_over_r_ratio.toExponential(2)} K·s/m²` : '—'],
-                        ['Normalised enthalpy', result.normalizedEnthalpy != null ? String(result.normalizedEnthalpy) : '—'],
-                        ['Regime', result.regime ?? '—'],
-                        ['Absorptivity (effective / conduction)', result.absorptivity ? `${result.absorptivity.effective ?? '—'} / ${result.absorptivity.conduction ?? '—'}` : '—'],
-                      ].map(([label, value]) => <div key={label} className="flex justify-between gap-3 border-b border-white/[.05] pb-2 text-xs"><dt className="text-slate-500">{label}</dt><dd className="text-right font-mono text-slate-200">{value}</dd></div>)}
-                    </dl>
-                  </div>
-                  <div className="rounded-xl border border-white/[.07] bg-[#0b141d] p-4">
-                    <h4 className="mb-3 text-[10px] font-semibold uppercase tracking-[.16em] text-cyan-100/70">Microstructure & provenance</h4>
-                    <dl className="space-y-2">
-                      {[
-                        ['PDAS · λ₁ band', pdasBandText(result)], ['SDAS · λ₂', typeof result.SDAS_um === 'number' ? `${result.SDAS_um.toFixed(2)} µm` : `n/a (${result.sdasUnavailableReason ?? 'no sourced SDAS prefactor'})`],
-                        ['Morphology', result.morphology], ['Status', result.status],
-                        ['Heat source', result.heatSourceModel ?? '—'], ['Gradient source', result.gradientSource ?? '—'],
-                        ['Liquidus field map used', result.usedFieldMap == null ? '—' : String(result.usedFieldMap)],
-                        ['Material', result.materialName ?? '—'], ['Calculation source', result.source],
-                      ].map(([label, value]) => <div key={label} className="flex justify-between gap-3 border-b border-white/[.05] pb-2 text-xs"><dt className="text-slate-500">{label}</dt><dd className="text-right font-mono text-slate-200">{value}</dd></div>)}
-                    </dl>
-                  </div>
-                </div>
-                <div className="mt-3 rounded-xl border border-amber-100/10 bg-amber-100/[.035] p-4">
-                  <h4 className="mb-1 text-xs font-semibold text-amber-100/80">Interpret with care</h4>
-                  {result.scope && <p className="mb-2 text-xs leading-5 text-slate-300">{result.scope}</p>}
-                  <p className="text-xs leading-5 text-slate-400">{result.disclaimer}</p>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[10px] text-slate-500"><span>Hunt–Lu 1996 PDAS</span><span>Kirkwood 1985 SDAS</span><span>Hunt 1984 morphology{typeof result.doi === 'string' ? ` · DOI ${result.doi}` : ''}</span></div>
-              </>}
-            </div>
-          </section>
-          <p className="px-1 pb-2 text-[10px] leading-5 text-slate-600">Results are model-derived screening estimates. Use the status, diagnostic notes and calculation source when interpreting comparisons; this view is not in-situ tracking and does not replace experimental validation.</p>
-        </>
-      )}
+      {result && !isLoading && <section aria-label="Analysis summary" data-solidification-status={result.status} className={panelClass}>
+        <SolidificationQuantities container={result} />
+      </section>}
       <GrSolidificationMapCard />
     </div>
   );

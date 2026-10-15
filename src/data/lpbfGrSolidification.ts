@@ -1,3 +1,6 @@
+import { QUANTITY_ENVELOPE } from "../generated/quantityEnvelope";
+import { checkedQuantityContainer } from "./quantityEnvelope";
+import { checkedFront } from "../utils/solidificationDisplay";
 /**
  * Pure helpers for the LPBF G/R solidification map card (python/lpbf_gr_solidification.py is the result authority).
  *
@@ -14,14 +17,14 @@ import type {
 
 export { moveCell } from "./lpbfProcessWindow";
 
-export const GR_CELL_STATUSES: readonly GrCellStatus[] = ["available", "screening-fallback", "degenerate-floor", "unavailable", "error"];
+export const GR_CELL_STATUSES: readonly GrCellStatus[] = QUANTITY_ENVELOPE.statuses;
 export const GR_MIN_AXIS = 2;
 export const GR_MAX_AXIS = 15;
 export const GR_MAX_CELLS = 225;
-export const GR_SCHEMA = "lpbf-gr-solidification-1";
+export const GR_SCHEMA = "lpbf-gr-solidification-2";
 export const GR_HATCH_PATTERN_ID = "gr-keyhole-hatch";
 
-export type GrMetric = "goverr" | "cooling" | "laves" | "band";
+export type GrMetric = "goverr" | "cooling" | "laves";
 
 export interface GrMetricSpec {
   readonly id: GrMetric;
@@ -35,17 +38,16 @@ export const METRICS: readonly GrMetricSpec[] = [
   { id: "goverr", label: "G/R at the median rear-arc point", unit: "log10 (K s/m^2)", categorical: false, log10: true },
   { id: "cooling", label: "Cooling rate G*R (median of the front samples)", unit: "log10 (K/s)", categorical: false, log10: true },
   { id: "laves", label: "Laves bound, trapping-adjusted (sampled arc)", unit: "fraction of liquid", categorical: false, log10: false },
-  { id: "band", label: "Hunt G/R band at the median point", unit: "band", categorical: true, log10: false },
 ];
 
 /** Statuses whose derived numbers are a computed result. Others are drawn as outlined empty cells. */
 export function isComputedStatus(status: GrCellStatus): boolean {
-  return status === "available" || status === "screening-fallback";
+  return status === "computed" || status === "partial";
 }
 
 /** True when the cell lies outside the conduction regime of the G/R field (engine regimeNote, e.g. keyhole). */
 export function isOutsideRegime(cell: GrCellBody): boolean {
-  return typeof cell.regimeNote === "string" && cell.regimeNote.length > 0;
+  return typeof cell.regime === "string" && cell.regime.toLowerCase().includes("keyhole");
 }
 
 /** Numeric metric value of a cell (already log10 where the metric says so), or null when there is none. Never 0 for a missing value. */
@@ -53,26 +55,18 @@ export function metricValue(cell: GrCellBody, metric: GrMetric): number | null {
   if (!isComputedStatus(cell.status)) return null;
   switch (metric) {
     case "goverr": {
-      const v = cell.front.median?.GoverR_K_s_m2;
+      const v = cell.front.quantities.gOverR.value;
       return typeof v === "number" && Number.isFinite(v) && v > 0 ? Math.log10(v) : null;
     }
     case "cooling": {
-      const v = cell.front.median?.coolingRate_K_s;
+      const v = cell.front.quantities.coolingRate.value;
       return typeof v === "number" && Number.isFinite(v) && v > 0 ? Math.log10(v) : null;
     }
     case "laves": {
-      const f = cell.laves.status === "available" ? cell.laves.sampledArcUpperBound?.f : undefined;
+      const f = cell.laves.quantities.fraction.value;
       return typeof f === "number" && Number.isFinite(f) ? f : null;
     }
-    case "band":
-      return null;
   }
-}
-
-/** Categorical Hunt band label of the median point, or null. */
-export function bandValue(cell: GrCellBody): string | null {
-  if (!isComputedStatus(cell.status)) return null;
-  return cell.morphology.bands.median ?? null;
 }
 
 // ---------------------------------------------------------------------------------------------------------
@@ -112,19 +106,6 @@ const luminance = (hex: string): number => {
 };
 const readableText = (fill: string): string => (luminance(fill) > 0.45 ? "#0f172a" : "#f8fafc");
 
-export const BAND_COLORS: Readonly<Record<string, string>> = {
-  "Planar (Hunt G/R screening)": "#56B4E9",
-  "Cellular (Hunt G/R screening)": "#009E73",
-  "Columnar dendritic (Hunt G/R screening)": "#E69F00",
-  "Mixed / equiaxed tendency (Hunt G/R screening)": "#CC79A7",
-};
-export const BAND_LETTERS: Readonly<Record<string, string>> = {
-  "Planar (Hunt G/R screening)": "P",
-  "Cellular (Hunt G/R screening)": "C",
-  "Columnar dendritic (Hunt G/R screening)": "D",
-  "Mixed / equiaxed tendency (Hunt G/R screening)": "E",
-};
-
 export interface ScaleRange { min: number; max: number }
 
 /** Min and max of a numeric metric over a response's cells (null when no cell has a value). */
@@ -148,36 +129,13 @@ export function scaleStyle(value: number | null, range: ScaleRange | null): GrCe
   return { fill, stroke: "#0f172a", textColor: readableText(fill), outlined: false, noValue: false };
 }
 
-export function bandStyle(band: string | null): GrCellStyle {
-  if (band === null) return NO_VALUE_STYLE;
-  const fill = BAND_COLORS[band];
-  if (!fill) return NO_VALUE_STYLE;
-  return { fill, stroke: "#0f172a", textColor: readableText(fill), outlined: false, noValue: false };
-}
-
 export function cellStyle(cell: GrCellBody, metric: GrMetric, range: ScaleRange | null): GrCellStyle {
-  return metric === "band" ? bandStyle(bandValue(cell)) : scaleStyle(metricValue(cell, metric), range);
+  return scaleStyle(metricValue(cell, metric), range);
 }
-
-/** Short in-cell text: the status letter for cells without a value, the band letter for the categorical metric. */
 export function cellGlyph(cell: GrCellBody, metric: GrMetric): string {
-  if (cell.status === "error") return "!";
-  if (cell.status === "unavailable") return "-";
-  if (cell.status === "degenerate-floor") return "F";
-  if (metric === "band") {
-    const band = bandValue(cell);
-    return band ? (BAND_LETTERS[band] ?? "") : "";
-  }
-  return metricValue(cell, metric) === null ? "-" : "";
+  return cell.status === "failed" ? "!" : metricValue(cell, metric) === null ? "-" : "";
 }
-
-export const STATUS_LABELS: Readonly<Record<GrCellStatus, string>> = {
-  available: "Computed",
-  "screening-fallback": "Fallback heuristic (median only)",
-  "degenerate-floor": "Solver floor, not a computed result",
-  unavailable: "Unavailable",
-  error: "Solver error",
-};
+export const STATUS_LABELS: Readonly<Record<GrCellStatus, string>> = QUANTITY_ENVELOPE.statusLabels;
 
 export function formatSci(value: number | null | undefined, digits = 3): string {
   return typeof value === "number" && Number.isFinite(value) ? value.toExponential(digits) : "not available";
@@ -190,7 +148,7 @@ export function formatMetric(value: number | null, metric: GrMetric): string {
 
 export function cellAriaLabel(cell: GrCellBody & { power_W: number; speed_mm_s: number }, metric: GrMetric): string {
   const base = `Power ${cell.power_W} W, speed ${cell.speed_mm_s} mm/s: ${STATUS_LABELS[cell.status]}`;
-  const value = metric === "band" ? bandValue(cell) : metricValue(cell, metric);
+  const value = metricValue(cell, metric);
   const shown = value === null ? "no value" : typeof value === "string" ? value : formatMetric(value, metric);
   const outside = isOutsideRegime(cell) ? ", outside the conduction regime (keyhole)" : "";
   return `${base}, ${metric}: ${shown}${outside}`;
@@ -202,55 +160,28 @@ export function cellAriaLabel(cell: GrCellBody & { power_W: number; speed_mm_s: 
 const fail = (reason: string): never => { throw new Error(`lpbf G/R solidification response rejected: ${reason}`); };
 const isObject = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === "object" && !Array.isArray(v);
 const isFiniteNumber = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
-const isNumberOrNull = (v: unknown) => v === null || isFiniteNumber(v);
-const isStringOrNull = (v: unknown) => v === null || typeof v === "string";
-
-function checkLocation(where: string, loc: unknown): void {
-  if (loc === null) return;
-  if (!isObject(loc)) return fail(`${where} is not an object or null`);
-  for (const key of ["G_K_m", "R_m_s", "GoverR_K_s_m2", "GtimesR_K_s"]) {
-    if (!isNumberOrNull(loc[key])) return fail(`${where}.${key} is not a number or null`);
-  }
-  if (!isStringOrNull(loc.huntBand)) return fail(`${where}.huntBand invalid`);
-}
-
 function checkBody(where: string, body: unknown): void {
   if (!isObject(body)) return fail(`${where} is not an object`);
-  if (typeof body.status !== "string" || !(GR_CELL_STATUSES as readonly string[]).includes(body.status)) {
-    return fail(`${where} has unknown status ${JSON.stringify(body.status)}`);
-  }
-  if (!isStringOrNull(body.reason) || !isStringOrNull(body.regimeNote) || !isStringOrNull(body.regime)) return fail(`${where} text fields invalid`);
-  if (body.status !== "available" && (typeof body.reason !== "string" || !body.reason)) {
-    return fail(`${where} has status ${String(body.status)} without a reason`);
-  }
-  const front = body.front;
-  if (!isObject(front)) return fail(`${where}.front missing`);
-  for (const loc of ["median", "bottom", "tail"]) checkLocation(`${where}.front.${loc}`, front[loc]);
-  if (typeof front.coolingBasis !== "string") return fail(`${where}.front.coolingBasis missing`);
-  const cet = body.cet;
-  if (!isObject(cet) || (cet.status !== "available" && cet.status !== "unavailable")) {
-    return fail(`${where}.cet.status must be "available" or "unavailable"`);
-  }
-  if (cet.status === "unavailable" && (typeof cet.reason !== "string" || !cet.reason)) return fail(`${where}.cet is unavailable without a reason`);
-  if (!isObject(cet.sets)) return fail(`${where}.cet.sets missing`);
-  if (cet.status === "unavailable" && Object.keys(cet.sets).length > 0) return fail(`${where}.cet is unavailable but lists sets`);
-  for (const [id, set] of Object.entries(cet.sets)) {
-    if (!isObject(set) || typeof set.label !== "string" || typeof set.transferLabel !== "string" || !set.transferLabel || !isObject(set.locations)) {
-      return fail(`${where}.cet.sets.${id} invalid`);
+  if (!(GR_CELL_STATUSES as readonly unknown[]).includes(body.status)) return fail(`${where} has unknown status`);
+  for (const retired of ["morphology", "rosenthalCenterline", "reason"]) if (Object.hasOwn(body, retired)) return fail(`${where}.${retired} retired`);
+  checkedFront(body.front);
+  const cet = checkedQuantityContainer(body.cet);
+  const laves = checkedQuantityContainer(body.laves);
+  if (Object.keys(cet.quantities).length !== 1 || cet.quantities.class?.quantityDefinition !== "cet-class") return fail(`${where}.cet quantities invalid`);
+  if (Object.keys(laves.quantities).length !== 1 || laves.quantities.fraction?.quantityDefinition !== "laves-trapped-scheil-fraction") return fail(`${where}.laves quantities invalid`);
+}
+function checkSourceChecks(raw: unknown): void {
+  if (!isObject(raw)) return fail("missing sourceChecks");
+  for (const [key, values] of Object.entries({ equationRead: ["read", "not-read"], algebraReproduced: ["reproduced", "not-reproduced", "not-attempted"], printedLimitComparison: ["agrees", "disagrees", "not-available", "not-attempted"] })) {
+    const item = raw[key];
+    if (!isObject(item) || !values.includes(String(item.status))) return fail(`sourceChecks.${key} invalid`);
+    if (key === "equationRead" && item.locator !== null && typeof item.locator !== "string") return fail("equationRead locator invalid");
+    if (key === "algebraReproduced" && item.test !== null && typeof item.test !== "string") return fail("algebraReproduced test invalid");
+    if (key === "printedLimitComparison") {
+      for (const name of ["printed", "computed"]) if (item[name] !== null && !(Array.isArray(item[name]) && (item[name] as unknown[]).every(isFiniteNumber))) return fail(`printedLimitComparison.${name} invalid`);
+      if (item.tolerance !== null && !isFiniteNumber(item.tolerance)) return fail("printedLimitComparison tolerance invalid");
     }
   }
-  const laves = body.laves;
-  if (!isObject(laves) || (laves.status !== "available" && laves.status !== "unavailable")) return fail(`${where}.laves.status invalid`);
-  if (laves.status === "available") {
-    const ub = laves.sampledArcUpperBound;
-    if (!isObject(ub) || !isFiniteNumber(ub.f) || !isFiniteNumber(laves.equilibriumKBound)) return fail(`${where}.laves bound missing`);
-  } else if (typeof laves.reason !== "string" || !laves.reason) {
-    return fail(`${where}.laves is unavailable without a reason`);
-  }
-  const morphology = body.morphology;
-  if (!isObject(morphology) || typeof morphology.label !== "string" || !isObject(morphology.bands)) return fail(`${where}.morphology invalid`);
-  const centreline = body.rosenthalCenterline;
-  if (!isObject(centreline) || (centreline.status !== "available" && centreline.status !== "unavailable")) return fail(`${where}.rosenthalCenterline invalid`);
 }
 
 export function checkedGrSolidification(raw: unknown): GrSolidificationResponse {
@@ -263,7 +194,7 @@ export function checkedGrSolidification(raw: unknown): GrSolidificationResponse 
   if (typeof evidence.statement !== "string" || !evidence.statement) return fail("evidence.statement missing");
   if (raw.schema !== GR_SCHEMA) return fail(`schema must be ${GR_SCHEMA}`);
   if (raw.mode !== "point" && raw.mode !== "map") return fail("mode invalid");
-  if (raw.alloyId !== "in718" && raw.alloyId !== "in625") return fail("alloyId invalid");
+  if (!(QUANTITY_ENVELOPE.canonicalAlloyIds as readonly unknown[]).includes(raw.alloyId)) return fail("alloyId invalid");
   const request = raw.request;
   if (!isObject(request)) return fail("missing request echo");
   for (const key of ["beamDiameter_um", "layer_um", "hatch_um", "preheatTemp_C"]) {
@@ -275,20 +206,14 @@ export function checkedGrSolidification(raw: unknown): GrSolidificationResponse 
   }
   if (!Array.isArray(raw.limits) || !raw.limits.every(x => typeof x === "string")) return fail("limits missing");
   const cet = raw.cet;
-  if (!isObject(cet) || typeof cet.equation !== "string" || typeof cet.equationVerified !== "boolean") return fail("cet criterion view missing");
-  const constants = cet.constantsStatus;
-  if (!isObject(constants) || (constants.status !== "available" && constants.status !== "unavailable")) return fail("cet.constantsStatus invalid");
-  if (!Array.isArray(constants.sets)) return fail("cet.constantsStatus.sets missing");
-  if (constants.status === "unavailable" && constants.sets.length > 0) return fail("cet.constantsStatus is unavailable but lists sets");
-  for (const set of constants.sets as unknown[]) {
-    if (!isObject(set) || typeof set.id !== "string" || typeof set.transferLabel !== "string" || !set.transferLabel || typeof set.citation !== "string" || typeof set.phiSource !== "string" || !set.phiSource
-      || typeof set.equationVerified !== "boolean" || !isObject(set.constants)) {
-      return fail("cet.constantsStatus.sets entry invalid");
-    }
+  if (!isObject(cet) || typeof cet.equation !== "string" || Object.hasOwn(cet, "equationVerified")) return fail("cet criterion view missing");
+  checkSourceChecks(cet.sourceChecks);
+  if (!isObject(cet.constantsStatus) || !Array.isArray(cet.constantsStatus.sets)) return fail("cet constants missing");
+  for (const set of cet.constantsStatus.sets) {
+    if (!isObject(set) || Object.hasOwn(set, "equationVerified")) return fail("cet source invalid");
+    checkSourceChecks(set.sourceChecks);
   }
-  const laves = raw.laves;
-  if (!isObject(laves) || !isFiniteNumber(laves.equilibriumKBound) || !Array.isArray(laves.V_D_m_s)) return fail("laves summary missing");
-  if (!isFiniteNumber(raw.computeMs)) return fail("computeMs missing");
+  if (raw.computeMs !== undefined && !isFiniteNumber(raw.computeMs)) return fail("computeMs missing");
 
   let bodies: unknown[];
   if (raw.mode === "point") {

@@ -22,17 +22,14 @@ const text = (markup: string) =>
     .replace(/&gt;/g, ">")
     .replace(/&lt;/g, "<")
     .replace(/\s+/g, " ");
-const LABEL_PREFIX = "Literature estimate (screening)";
+const LABEL_PREFIX = "Literature estimate";
 
 test("available (IN718): label chip as text, k with citation, Nb band, risk class, ratio, copied G/R, validity, upper bound", () => {
   const block = BLOCKS.available_in718_150_1200;
-  assert.equal(block.status, "available");
+  assert.equal(block.status, "computed");
   const markup = html("available_in718_150_1200");
   const t = text(markup);
-  assert.match(markup, /data-seg-status="available"/);
-  assert.match(markup, /data-seg-label/);
-  assert.ok(t.includes(block.evidenceLabel), t);
-  assert.ok(block.evidenceLabel.startsWith(LABEL_PREFIX));
+  assert.match(markup, /data-seg-status="computed"/);
   assert.ok(t.includes("k Nb = 0.45"), t);
   assert.ok(t.includes("DuPont, C.V. Robino, A.R. Marder") && t.includes("Table 2"), t);
   // Nb band rows min / nominal / max with Python's fractions (%, one decimal).
@@ -45,11 +42,8 @@ test("available (IN718): label chip as text, k with citation, Nb band, risk clas
   assert.ok(t.includes(`Laves risk class: ${block.riskClass}`), t);
   assert.ok(t.includes("core k·C 0 = 0.45"), t);
   assert.ok(t.includes("capped at the γ/Laves composition"), t);
-  // Process coupling: G, R and morphology copied from the build job's microstructure block.
-  assert.match(markup, /data-seg-coupling="available"/);
-  assert.ok(t.includes(block.processCoupling.G_K_m.toExponential(2)), t);
-  assert.ok(t.includes(block.processCoupling.R_m_s.toFixed(4)), t);
-  assert.ok(t.includes(block.processCoupling.morphology), t);
+  assert.match(markup, /data-solidification-envelope/);
+  assert.match(t, /no admitted source/);
   // Validity warning and the upper-bound wording.
   assert.match(markup, /data-seg-validity/);
   assert.ok(t.includes("Outside the source regime"), t);
@@ -67,24 +61,20 @@ test("available (IN718): label chip as text, k with citation, Nb band, risk clas
   for (const word of ["Validated", "Calibrated", "Measured"]) assert.ok(!t.includes(word), word);
 });
 
-test("degenerate-floor microstructure: composition result still shown, process coupling reason only", () => {
+test("unavailable front keeps composition results and displays per-quantity reasons", () => {
   const block = BLOCKS.in718_degenerate_floor_synthetic;
-  assert.equal(block.processCoupling.status, "unavailable");
   const markup = html("in718_degenerate_floor_synthetic");
-  const t = text(markup);
-  assert.match(markup, /data-seg-coupling="unavailable"/);
-  assert.ok(t.includes(`Process coupling unavailable — ${block.processCoupling.reason}`), t);
-  assert.ok(!t.includes("K/m"), t);
+  assert.match(markup, /data-solidification-envelope/);
+  assert.match(markup, /data-seg-band-row/);
+  assert.equal(block.processCoupling.quantities.normalSpeed.value, null);
 });
 
 test("available (IN625, Cieslak 1988 k + DuPont 1996 C_e): binary band, no risk class, no carbon columns, phase identity and validity shown", () => {
   const block = BLOCKS.in625_available;
-  assert.equal(block.status, "available");
+  assert.equal(block.status, "computed");
   const markup = html("in625_available");
   const t = text(markup);
-  assert.match(markup, /data-seg-status="available"/);
-  assert.ok(block.evidenceLabel.startsWith(LABEL_PREFIX));
-  assert.ok(t.includes(block.evidenceLabel), t);
+  assert.match(markup, /data-seg-status="computed"/);
   assert.ok(t.includes("k Nb = 0.51"), t);
   assert.ok(t.includes("M.J. Cieslak") && t.includes("Table VIII"), t);
   // k sensitivity (C88 Table VII and the D96 overlay value) and the C88 computed-vs-measured comparison are shown.
@@ -97,7 +87,7 @@ test("available (IN625, Cieslak 1988 k + DuPont 1996 C_e): binary band, no risk 
   for (const p of block.band) {
     assert.match(markup, new RegExp(`data-seg-band-row="${p.label}"`));
     assert.ok(t.includes(`${(p.binaryUpperBound.fGammaLavesConstituent * 100).toFixed(1)} %`), `${p.label} ${t}`);
-    assert.equal(p.pseudoTernaryAtCmax.status, "not-modelled");
+    assert.equal(p.pseudoTernaryAtCmax.status, "unavailable");
     assert.ok(t.includes(`— ${p.pseudoTernaryAtCmax.reason}`), t);
   }
   // No Laves risk class: the rule explaining why is shown instead, never an empty class.
@@ -115,36 +105,13 @@ test("available (IN625, Cieslak 1988 k + DuPont 1996 C_e): binary band, no risk 
   for (const word of ["Validated", "Calibrated"]) assert.ok(!t.includes(word), word);
 });
 
-test("rapid solidification k(V) (IN718): shown beside the unchanged upper bound with V_D range, label and notes", () => {
+test("SOL-A default front withholds rapid-solidification values while keeping equilibrium upper bounds", () => {
   const block = BLOCKS.available_in718_150_1200;
-  const rs = block.rapidSolidification;
-  assert.equal(rs.status, "available");
-  assert.equal(rs.replacesUpperBound, false);
   const markup = html("available_in718_150_1200");
-  const t = text(markup);
-  assert.match(markup, /data-seg-rapid="available"/);
-  assert.ok(rs.evidenceLabel.startsWith(LABEL_PREFIX));
-  assert.ok(t.includes(rs.evidenceLabel), t);
-  assert.ok(t.includes("V D = 0.23–0.31 m/s"), t);
-  assert.ok(t.includes(`R = ${rs.R_m_s.toFixed(4)} m/s`), t);
-  assert.ok(t.includes(`k(R) = ${rs.kEff.min.toFixed(3)} to ${rs.kEff.max.toFixed(3)}`), t);
-  for (const row of rs.byVD) {
-    for (const p of row.band) {
-      const cell = `${(p.binary.fGammaLavesConstituent * 100).toFixed(1)} % / ${(p.pseudoTernaryAtCmax.fGammaLavesConstituent * 100).toFixed(1)} %`;
-      assert.ok(t.includes(cell), `${row.V_D_m_s} ${p.label} ${cell}`);
-    }
-    assert.ok(t.includes(`${row.segregation.coreRatioToNominal.toFixed(3)} (V_D ${row.V_D_m_s.toFixed(2)} m/s)`), t);
-  }
-  // the equilibrium-k upper bound rows are still rendered with their own numbers
-  for (const p of block.band) assert.ok(t.includes(`${(p.binaryUpperBound.fGammaLavesConstituent * 100).toFixed(1)} %`), t);
-  assert.match(markup, /data-seg-rapid-notes/);
-  assert.ok(t.includes(rs.V_D_m_s.nature) && rs.V_D_m_s.nature.includes("no experimental V_D"), t);
-  assert.ok(t.includes(rs.extrapolationNote) && rs.extrapolationNote.startsWith("Extrapolation"), t);
-  assert.ok(t.includes(rs.kTransferNote), t);
-  // IN718: no LPBF measurement among the sources read; said so, no comparison numbers.
-  assert.match(markup, /data-seg-lpbf="unavailable"/);
-  assert.ok(t.includes(`LPBF observations: none — ${block.lpbfObservations.reason}`), t);
-  assert.doesNotMatch(markup, /data-seg-lpbf-comparison/);
+  assert.equal(block.rapidSolidification.status, "unavailable");
+  assert.match(markup, /data-seg-rapid="unavailable"/);
+  assert.doesNotMatch(markup, /data-seg-rapid-band|data-seg-rapid-core/);
+  for (const p of block.band) assert.ok(text(markup).includes(`${(p.binaryUpperBound.fGammaLavesConstituent * 100).toFixed(1)} %`));
 });
 
 test("rapid solidification without a usable R: reason only, no k(V) numbers", () => {
@@ -157,40 +124,22 @@ test("rapid solidification without a usable R: reason only, no k(V) numbers", ()
   assert.doesNotMatch(markup, /data-seg-rapid-band|data-seg-rapid-core/);
 });
 
-test("IN625: k(V) estimate and as-built LPBF observations with the non-discriminating comparison", () => {
+test("IN625 observations stay visible while unavailable R withholds the k(V) comparison", () => {
   const block = BLOCKS.in625_available;
-  const rs = block.rapidSolidification;
-  const obs = block.lpbfObservations;
-  assert.equal(rs.status, "available");
-  assert.equal(obs.status, "available");
   const markup = html("in625_available");
   const t = text(markup);
-  for (const row of rs.byVD) {
-    for (const p of row.band) {
-      assert.equal(p.pseudoTernaryAtCmax, undefined);
-      assert.ok(t.includes(`${(p.binary.fGammaLavesConstituent * 100).toFixed(1)} %`), t);
-    }
-  }
-  assert.match(markup, /data-seg-lpbf="available"/);
-  for (const ob of obs.observations) {
-    assert.ok(t.includes(ob.locator), ob.locator);
-  }
-  assert.ok(t.includes("Nb 2.81 to 5.84 wt%"), t);
-  const c = obs.comparison;
-  assert.match(markup, /data-seg-lpbf-comparison/);
-  assert.ok(t.includes(`equilibrium k ${c.equilibriumK.coreRatioToNominal.toFixed(3)}`), t);
-  assert.ok(t.includes(`EDS lowest ${c.measured.lowestRatioToNominal.toFixed(3)}`), t);
-  assert.ok(t.includes("measured fraction: none reported"), t);
-  assert.ok(t.includes(c.note) && c.note.startsWith("Non-discriminating"), t);
-  for (const word of ["Validated", "Calibrated"]) assert.ok(!t.includes(word), word);
+  assert.equal(block.rapidSolidification.status, "unavailable");
+  assert.match(markup, /data-seg-lpbf="computed"/);
+  for (const ob of block.lpbfObservations.observations) assert.ok(t.includes(ob.locator), ob.locator);
+  assert.match(markup, /data-seg-rapid="unavailable"/);
 });
 
 test("not-applicable (316L): reason only, no numbers", () => {
   const block = BLOCKS.ss316l_not_applicable;
-  assert.equal(block.status, "not-applicable");
+  assert.equal(block.status, "not-requested");
   const markup = html("ss316l_not_applicable");
   const t = text(markup);
-  assert.match(markup, /data-seg-status="not-applicable"/);
+  assert.match(markup, /data-seg-status="not-requested"/);
   assert.ok(t.includes(`Not applicable — ${block.reason}`), t);
   assert.doesNotMatch(markup, /data-seg-band|data-seg-label|data-seg-coupling/);
   assert.ok(!/\d/.test(t.replace(/316L/g, "")), t);
@@ -211,7 +160,7 @@ test("rendered inside the microstructure panel via the optional prop, absent wit
   const withSeg = renderToStaticMarkup(
     <BuildJobMicrostructurePanel micro={micro} segregation={BLOCKS.available_in718_150_1200} />,
   );
-  assert.match(withSeg, /data-micro-status="available"[\s\S]*data-seg-status="available"/);
+  assert.match(withSeg, /data-solidification-envelope[\s\S]*data-seg-status="computed"/);
   assert.match(withSeg, /<section[^>]*aria-labelledby="[^"]+"/);
   const without = renderToStaticMarkup(<BuildJobMicrostructurePanel micro={micro} />);
   assert.doesNotMatch(without, /data-seg-status/);
@@ -219,6 +168,6 @@ test("rendered inside the microstructure panel via the optional prop, absent wit
   const noMicro = renderToStaticMarkup(
     <BuildJobMicrostructurePanel micro={undefined} segregation={BLOCKS.available_in718_150_1200} />,
   );
-  assert.match(noMicro, /data-seg-status="available"/);
+  assert.match(noMicro, /data-seg-status="computed"/);
   assert.equal(renderToStaticMarkup(<BuildJobMicrostructurePanel micro={undefined} />), "");
 });

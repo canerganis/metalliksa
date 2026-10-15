@@ -1,3 +1,4 @@
+import type { QuantityContainer } from "../data/quantityEnvelope";
 /**
  * MetalliX Python HPC Subsystem & Proxy Client Service
  * Dispatches heavy, CPU-intensive calculations (CALPHAD Gibbs minimization, elastic-constant homogenisation, PHACOMP,
@@ -266,79 +267,19 @@ export interface PythonBayesianIterationDiagnostics {
 }
 
 // Phase 8: Solidification Microstructure Lab result type.
-// Screening-field path (python/lpbf_solidification_microstructure.py compute_screening_field_microstructure):
-// the numbers are thermal.solidificationKinetics from lpbf_thermal_solver (equal to the Build Job projection only
-// for heatSource=rosenthal with the Build Job's inputs).
-// status "available" = liquidus field-map G/R; "screening-fallback" = tail-length heuristic (reason says so);
-// "degenerate-floor" = field map used but R/cooling are the solver's clamp floors (R <= 1e-4 m/s or cooling <=
-// 1 K/s): the numbers are copied but are NOT a computed result and must not be shown as one;
-// "unavailable" = no numbers (missing/unknown/impossible input), reason says why. Callers must check status first.
-export interface SolidificationMicrostructureAvailable {
-  status: 'available' | 'screening-fallback';
-  reason?: string | null;
+// SOL-A: Python owns each quantity's availability, reason codes and per-value provenance.
+// The worker projects the thermal front container without a second numeric/scalar representation.
+export interface SolidificationMicrostructureAvailable extends QuantityContainer {
+  schema: "lpbf-solidification-microstructure-2";
+  status: "computed" | "partial" | "unavailable";
   source: string;
-  modelId?: string | null;
-  gradientSource?: string | null;
-  usedFieldMap?: boolean | null;
+  modelId?: string;
   heatSourceModel?: string | null;
   materialName?: string | null;
   regime?: string | null;
-  regimeNote?: string | null;
   normalizedEnthalpy?: number | null;
-  absorptivity?: { effective: number | null; conduction: number | null };
-  materialEvidence?: Record<string, unknown>;
-  inputs?: Record<string, number>;
-  morphologyBands_G_over_R?: { planar: number; cellular: number; columnar: number };
-  scope?: string;
-  G_K_m: number;
-  R_m_s: number;
-  coolingRate_K_s: number;
-  g_over_r_ratio?: number | null;
-  /** null since P7a; the sourced Ni-Nb band (IN625/IN718) is pdasBand_um. */
-  PDAS_um: number | null;
-  pdasBand_um?: { hunt: number; kurzFisher: number } | null;
-  pdasBasis?: string | null;
-  pdasOutOfRange?: boolean | null;
-  pdasUnavailableReason?: string | null;
-  /** null since P7a (no sourced SDAS prefactor). */
-  SDAS_um: number | null;
-  sdasUnavailableReason?: string | null;
-  morphology: string;
-  doi?: string | Record<string, string> | null;
-  disclaimer: string;
-  // Legacy CFD path only (a cfdResult was supplied); absent on the screening-field path.
-  maxG_K_m?: number;
-  maxR_m_s?: number;
-  morphologyFractions?: { columnar: number; equiaxed: number; mixed: number };
-  frontCellCount?: number;
 }
-
-export interface SolidificationMicrostructureUnavailable {
-  status: 'unavailable';
-  reason: string;
-  source: string;
-  heatSourceModel?: string | null;
-  scope?: string;
-  disclaimer?: string;
-  doi?: string | Record<string, string> | null;
-  G_K_m: null;
-  R_m_s: null;
-  coolingRate_K_s: null;
-  PDAS_um: null;
-  SDAS_um: null;
-  morphology: null;
-}
-
-export type SolidificationMicrostructureDegenerate =
-  Omit<SolidificationMicrostructureAvailable, 'status' | 'reason'> & {
-    status: 'degenerate-floor';
-    reason: string;
-  };
-
-export type SolidificationMicrostructureResult =
-  | SolidificationMicrostructureAvailable
-  | SolidificationMicrostructureDegenerate
-  | SolidificationMicrostructureUnavailable;
+export type SolidificationMicrostructureResult = SolidificationMicrostructureAvailable;
 
 function abortError(message: string): Error {
   const err = new Error(message);
@@ -1388,50 +1329,9 @@ export interface PythonLPBFResult {
     distortionIndexBasis?: string;
     stressUnavailableReason?: string | null;
   };
-  /** P6 containment (2026-10-11): G, R, cooling rate, PDAS, SDAS and morphology come from the rear liquidus of the
-   *  loss-free conduction field ("conduction-field-interface") and are null with unavailableReason when the served
-   *  depth comes from the Fabbro keyhole leg or fewer than 3 interface samples exist. No tail-length fallback, no
-   *  floors, no incline multiplier (solidificationCosTheta is no longer served). */
-  solidificationKinetics: {
-    modelId?: string;
-    gradientSource?: string | null;
-    usedFieldMap?: boolean;
-    interface?: string | null;
-    unavailableReason?: string | null;
-    thermalGradient_G_K_m: number | null;
-    thermalGradient_G_K_um: number | null;
-    thermalGradientTail_G_K_m?: number | null;
-    solidificationRate_R_m_s: number | null;
-    solidificationRate_R_mm_s: number | null;
-    /** Older payloads only (removed by P6). */
-    solidificationCosTheta?: number;
-    coolingRate_K_s: number | null;
-    coolingRate_log10: number | null;
-    g_over_r_ratio: number | null;
-    microstructureMorphology: string | null;
-    /** null since P7a (no sourced scalar); the sourced Ni-Nb band is pdasBand_um. */
-    primaryDendriteArmSpacing_PDAS_um: number | null;
-    /** P7a: Ghosh 2017 Hunt (Eq. 7) to Kurz-Fisher (Eq. 8) band for IN625/IN718 inside the validity range, else null. */
-    pdasBand_um?: { hunt: number; kurzFisher: number } | null;
-    pdasBasis?: string | null;
-    pdasOutOfRange?: boolean | null;
-    pdasUnavailableReason?: string | null;
-    /** null since P7a (no sourced SDAS prefactor). */
-    secondaryDendriteArmSpacing_SDAS_um: number | null;
-    sdasUnavailableReason?: string | null;
-    phaseTransformation?: {
-      alloyClass?: string;
-      expected?: string;
-      criterion?: string;
-      source?: string | null;
-      doi?: string | null;
-    } | null;
-    frontPointCount?: number;
-    tail?: { x_um: number; z_um: number; G_K_m: number; R_m_s: number };
-    bottom?: { x_um: number; z_um: number; G_K_m: number; R_m_s: number };
-    doi?: string;
-    disclaimer?: string;
-  };
+  /** SOL-A1 front container. Default quantities are unavailable until liquidus admission;
+   * geometry, regime and defect diagnostics retain their separate authority. */
+  solidificationKinetics: QuantityContainer & { modelId: string; alloyId: string | null };
   geometricContours: {
     topDownXY: { x_um: number; y_um: number }[];
     longitudinalXZ: { x_um: number; z_depth_um: number; isKeyhole: boolean }[];

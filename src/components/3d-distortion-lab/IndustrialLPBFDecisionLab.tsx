@@ -1,3 +1,4 @@
+import { quantityText } from "../../utils/solidificationDisplay";
 import React, { useMemo } from "react";
 import {
   Activity,
@@ -630,7 +631,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
           <Tiny label="I0 MW/cm²" value={String(thermal.processParameters.peakIntensity_MW_cm2 ?? "-")} />
           <Tiny label="LED J/mm" value={(thermal.processParameters.linearEnergyDensity_J_m / 1000).toFixed(3)} />
           <Tiny label="VED J/mm³" value={String(thermal.processParameters.volumetricEnergyDensity_J_mm3)} />
-          <Tiny label="ε K/s" value={typeof thermal.solidificationKinetics.coolingRate_K_s === "number" ? thermal.solidificationKinetics.coolingRate_K_s.toExponential(1) : "n/a"} />
+          <Tiny label="ε K/s" value={quantityText(thermal.solidificationKinetics.quantities.coolingRate)} />
         </div>
       )}
       {thermal && <MeltPoolExtentNotice geometry={thermal.meltPoolGeometry} />}
