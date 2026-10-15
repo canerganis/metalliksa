@@ -582,9 +582,8 @@ def belton_slope(mode, ppm, temperature):
     k, dh, gamma = (.00318, -166200., 1.30e-5) if mode == 'fe-s-belton' else (.0138, -146300., 2.03e-5)
     b = k * (ppm/10000.) * math.exp(-dh/(GAS_CONSTANT*temperature))
     return -.00043 - GAS_CONSTANT*gamma*math.log1p(b) - gamma*(dh/temperature)*b/(1+b)
-NON_SURFACE_VALIDATION = "Not experimentally validated; research diagnostic/model only."
-SURFACE_VALIDATION = ("Falsified flat non-receding HKL closure against an open IN625 mass-loss test; "
-                      "numeric closure artefacts only, no physical prediction or blind-validation pass.")
+NON_SURFACE_VALIDATION = codes.STATUS_TEXTS["not-experimentally-validated"]
+SURFACE_VALIDATION = codes.STATUS_TEXTS["falsified-surface-closure"]
 
 def gaussian_gain(v, d, k, alpha, x=0, tolerance=2e-10, z=0):
     """K/W; P6 Eq2, tan substitution, Gaussian radius d/2."""
@@ -1585,16 +1584,18 @@ class Engine:
         hard=[c for c in record.get('failures',{}).values() if codes.code_class(c) in ('C1','C2','C3','C4','C5','C6','C8')]
         if hard:
             winner=codes.winning_code(hard)
+            sentence_id="refusal."+winner
             sentence=codes.refusal_text(winner,_reason(winner,[],record))
-        elif module=='surfaceBalance':sentence=codes.WORDING['surface']
-        elif module=='alSi10MgVapourMgAware' or 'VAPOUR_PRESSURE_EXTRAPOLATED' in record.get('warnings',[]):sentence=codes.WORDING['o8']
+        elif module=='surfaceBalance':sentence_id="surface";sentence=codes.WORDING['surface']
+        elif module=='alSi10MgVapourMgAware' or 'VAPOUR_PRESSURE_EXTRAPOLATED' in record.get('warnings',[]):sentence_id="o8";sentence=codes.WORDING['o8']
         elif module in ('keyholeCavity','meltDepthLink') and ratio is not None and ratio<=1:
+            sentence_id='belowOnset'
             sentence=codes.WORDING['belowOnset']+(' Extrapolated: '+', '.join(scope)+'.' if status=='extrapolated' else '')
-        elif module in ('keyholeCavity','meltDepthLink') and aspect is not None and ratio is not None and ratio>1 and aspect<.5:sentence=codes.WORDING['lowAspect'].format(R=f'{aspect:.6g}')
-        elif module in ('keyholeCavity','meltDepthLink') and pe is not None and pe<2:sentence=codes.WORDING['lowPe'].format(Pe=f'{pe:.6g}')
-        elif module=='marangoni':sentence='This surface-flow diagnostic uses a transferred or user-supplied coefficient; the velocity is a scale and no melt-depth correction is available.'
-        elif status!='inRange':sentence=codes.WORDING['sourceTransfer'].format(reasons=', '.join(scope) or 'source range not established')
-        else:sentence=f'This diagnostic is inside its declared input range (Pe={pe}); no sourced onset reference or blind validation is available.'
+        elif module in ('keyholeCavity','meltDepthLink') and aspect is not None and ratio is not None and ratio>1 and aspect<.5:sentence_id="lowAspect";sentence=codes.WORDING['lowAspect'].format(R=f'{aspect:.6g}')
+        elif module in ('keyholeCavity','meltDepthLink') and pe is not None and pe<2:sentence_id="lowPe";sentence=codes.WORDING['lowPe'].format(Pe=f'{pe:.6g}')
+        elif module=='marangoni':sentence_id='marangoni';sentence='This surface-flow diagnostic uses a transferred or user-supplied coefficient; the velocity is a scale and no melt-depth correction is available.'
+        elif status!='inRange':sentence_id="sourceTransfer";sentence=codes.WORDING['sourceTransfer'].format(reasons=', '.join(scope) or 'source range not established')
+        else:sentence_id='inRange';sentence=f'This diagnostic is inside its declared input range (Pe={pe}); no sourced onset reference or blind validation is available.'
         assumptions=[]
         if module in ('keyholeCavity','meltDepthLink','surfaceBalance'):assumptions.append(codes.WORDING['onsetMismatch'])
         if module in ('keyholeCavity','meltDepthLink'):
@@ -1621,7 +1622,7 @@ class Engine:
                 sourceRange_K=_field(module,'sourceRange_K',bounds,record,'SOURCE_RANGE_NOT_ESTABLISHED' if bounds is None else None,role='physicalInput'),status=rngstatus))
         grouped={}
         for path,code in record.get('failures',{}).items():grouped.setdefault(code,[]).append(module+'.'+path)
-        result=dict(status=status,validRange=valid,assumptions=[_field(module,'assumption',s,role='convention') for s in assumptions],
+        result=dict(status=status,sentenceId=sentence_id,validRange=valid,assumptions=[_field(module,'assumption',s,role='convention') for s in assumptions],
                     sentence=_field(module,'sentence',sentence,role='convention'),reasons=[_reason(c,paths,record) for c,paths in grouped.items()],
                     knownContradictions=[])
         if module=='surfaceBalance':result['knownContradictions'].append(dict(id='HKL-vs-Deisenroth',statement=_field(module,'statement','The flat closure overpredicts open IN625 mass loss by 36 to 64 times; transfer to other alloys is closure-level.',role='convention'),source=_field(module,'source',SPEC+' Amendment 2 B2; P6 Amendment 1 item 1; Deisenroth 2020 section 3.2 Fig.5',role='convention')))

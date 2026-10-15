@@ -625,6 +625,7 @@ class RequestKey(ResearchTestCase):  # R-TR-9
 
 class ResponseSize(ResearchTestCase):  # R-TR-10
     def test_an_oversize_block_gives_research_response_too_large(self):
+        self.assertEqual(models.MAX_RESPONSE_BYTES, 16 * 1024 * 1024)
         log = []
         parsed, code, text = h.call(h.make_dependencies(h.FakeEngine(oversize=True), log=log),
                                     h.request("band", budget=None))
@@ -664,8 +665,9 @@ class Describe(ResearchTestCase):  # R-TR-12
         parsed, code, _ = h.call(deps, h.request("describe", options=options))
         self.assertEqual(code, 0, parsed)
         self.assertEqual(engine.evaluations, [])
-        self.assertEqual(sorted(parsed), ["clientRequestId", "controls", "identity", "labels", "moduleAvailability",
-                                          "presets", "problems", "requestKey", "schemaVersion", "stage", "success"])
+        self.assertEqual(sorted(parsed), ["clientRequestId", "controls", "identity", "labels", "labelsSha256",
+                                          "moduleAvailability", "presets", "problems", "requestKey", "schemaVersion",
+                                          "sentences", "sentencesSha256", "stage", "statusTexts", "statusTextsSha256", "success"])
         controls = {c["key"]: c for c in parsed["controls"]}
         self.assertEqual(controls["length_m"]["value"], 8e-05)  # followed default, evaluated in Python
         self.assertEqual(controls["length_m"]["provenance"]["kind"], "followsInput")

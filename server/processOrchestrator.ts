@@ -613,6 +613,12 @@ export class PersistentPythonIPCSupervisor {
   ): Promise<PythonExecResult> {
     assertDispatchableScript(scriptRelativePath);
     const t0 = Date.now();
+    // Revision 5: a null-budget research band must never occupy the persistent lane.
+    if (scriptRelativePath === "python/lpbf_research_models.py" && inputJson?.timeBudgetMs === null) {
+      const result = await this.executeViaAdHocSpawn(scriptRelativePath, inputJson, args, 120000);
+      this.recordSuccess(Date.now() - t0);
+      return result;
+    }
     const failures: string[] = [];
 
     const attempt = async (run: () => Promise<PythonExecResult>): Promise<PythonExecResult | null> => {

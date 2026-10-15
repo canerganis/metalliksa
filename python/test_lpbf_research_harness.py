@@ -406,7 +406,7 @@ class FakeEngine:
                     container["band"]["onsetSupport"] = {"supported": len(descriptors), "total": len(descriptors),
                                                          "unresolved": 0, "caveat": "Synthetic caveat."}
         if self.oversize and module_id == "keyholeCavity":
-            container["padding"] = "x" * (5 * 1024 * 1024)
+            container["padding"] = "x" * (17 * 1024 * 1024)
         return container
 
     def refused_container(self, module_id, context, code, problems):
@@ -475,7 +475,12 @@ def fixture_request() -> dict:
 def fixture_response() -> dict:
     """R-TR-11: fake engine, stubbed identity and properties, fixed arm and label tables, injected cacheInstanceId,
     cold cache; computeMs removed."""
-    deps = make_dependencies(FakeEngine(), cache=research_cache.ResearchLRU())
+    # R-TR-11 freezes the original fake-engine label table. Relay-only fields have
+    # their own fixture; complete v2 responses now return the entire injected table.
+    fixture_labels = {path: text for path, text in FIXED_LABELS.items()
+                      if any(path == f"{module}.{name}" or path.startswith(f"{module}.{name}.")
+                             for module, names in FAKE_FIELDS.items() for name in names)}
+    deps = make_dependencies(FakeEngine(), cache=research_cache.ResearchLRU(), labels=fixture_labels)
     parsed, code, _text = call(deps, fixture_request())
     if code != 0:
         raise RuntimeError(f"fixture request failed with exit {code}: {parsed}")
@@ -492,7 +497,7 @@ def relay_request(stage: str = "band", *, budget: Any = None, ordinal: int = 0, 
     body["sender"] = sender
     body["supersedeKey"] = supersede_key or (f"p8-research:blind:{preview[:16]}" if sender == "blind-freeze"
                                              else "p8-research:batch:run0001a")
-    body["relay"] = {"kind": "blind-freeze-v1", "previewSha256": preview, "conditionOrdinal": ordinal}
+    body["relay"] = {"kind": "blind-freeze-v2", "previewSha256": preview, "conditionOrdinal": ordinal}
     return body
 
 

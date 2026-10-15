@@ -5,6 +5,7 @@ import path from "node:path";
 import express from "express";
 import type { AddressInfo } from "node:net";
 import type { Server } from "node:http";
+import { PersistentPythonIPCSupervisor } from "../server/processOrchestrator.ts";
 import {
   physicsDeps, physicsRouter, RESEARCH_ADHOC_TIMEOUT_MARKER, RESEARCH_REPLY_TIMEOUT_MARKER,
   RESEARCH_REQUEST_MAX_BYTES, RESEARCH_ROUTE_TIMEOUT_MS,
@@ -96,6 +97,34 @@ test("the route dispatches the research script with the 30 s route timeout and t
     assert.equal(RESEARCH_ROUTE_TIMEOUT_MS, 30000);
     assert.deepEqual(calls[0].payload, REQUEST);
   });
+});
+
+test("only an explicit null budget gets the 120 s research timeout", async () => {
+  for (const budget of [null, 1500, undefined]) {
+    await withRunner(reply('{}', 0), async (h, calls) => {
+      const payload = { ...REQUEST, timeBudgetMs: budget };
+      await post(h, ROUTE, payload);
+      assert.equal(calls[0].timeoutMs, budget === null ? 120000 : 30000);
+    });
+  }
+});
+
+test("null-budget research bypasses both persistent channels, budgeted bands use IPC", async () => {
+  const sup = Object.create(PersistentPythonIPCSupervisor.prototype) as any;
+  const calls: string[] = [];
+  sup.recordSuccess = () => {};
+  sup.unixTarget = () => '/test.sock';
+  sup.httpTarget = () => { throw new Error('HTTP must not run'); };
+  sup.executeViaUnixSocket = async () => { calls.push('ipc'); return reply('{}', 0); };
+  sup.executeViaAdHocSpawn = async (_script: string, _body: unknown, _args: string[], timeout: number) => {
+    assert.equal(timeout, 120000);
+    calls.push('adhoc');
+    return reply('{}', 0, 'ad_hoc_fallback');
+  };
+  await sup.execute(SCRIPT, { ...REQUEST, stage: 'band', timeBudgetMs: null }, [], 30000);
+  await sup.execute(SCRIPT, { ...REQUEST, stage: 'band', timeBudgetMs: 1500 }, [], 30000);
+  await sup.execute('python/lpbf_thermal_solver.py', { timeBudgetMs: null }, [], 25000);
+  assert.deepEqual(calls, ['adhoc', 'ipc', 'ipc']);
 });
 
 test("an oversize body is refused with 413 before any dispatch", async () => {

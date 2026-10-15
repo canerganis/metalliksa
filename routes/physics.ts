@@ -134,6 +134,8 @@ function replyTimeoutChannel(message: string): string | null {
  */
 async function handleResearchDispatch(payload: any, res: Response, timeoutMs: number) {
   try {
+    // Revision 5: only an explicit null budget admits the long ad-hoc fallback.
+    if (payload?.timeBudgetMs === null) timeoutMs = 120000;
     const pyRes = await physicsDeps.runPythonScript("python/lpbf_research_models.py", payload, [], timeoutMs);
     const channel = pyRes.channel ?? null;
     if (!pyRes.stdout && pyRes.stderr) {

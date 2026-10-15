@@ -2,8 +2,8 @@
 14.7), with the fake evaluator and the stubbed identity, property set, arm table and labels of R-TR-11.
 
 R-REL-1 sender and relay request checks. R-REL-2 digests on complete responses only; relay only on complete band
-responses of relay requests. R-REL-3 subsetJson is pure ASCII canonical JSON with the closed key set BLIND_RELAY_V1.
-R-REL-4 determinism and binding. R-REL-5 the 12,000-character relay cap. R-REL-6 transport survival of the string.
+responses of relay requests. R-REL-3 subsetJson is pure ASCII canonical JSON with the closed key set BLIND_RELAY_V2.
+R-REL-4 determinism and binding. R-REL-5 the 16,000-character relay cap. R-REL-6 transport survival of the string.
 Plus the committed relay fixture tests/fixtures/lpbf-research-relay-v1.json.
 """
 
@@ -22,8 +22,8 @@ import lpbf_research_codes as codes  # noqa: E402
 import test_lpbf_research_harness as h  # noqa: E402
 from test_lpbf_research_harness import ResearchTestCase  # noqa: E402
 
-# The committed relay path list hash (R-REL-3). Changing BLIND_RELAY_V1 changes it; the hub checks it as "known".
-EXPECTED_RELAY_PATHS_SHA256 = "2c1493d690f779660c4401dd5b85adbbdb092ce4b8754b62fa5c9c8a08619f69"
+# The committed relay path list hash (R-REL-3). Changing BLIND_RELAY_V2 changes it; the hub checks it as "known".
+EXPECTED_RELAY_PATHS_SHA256 = "c224f0163889e41411a141c91dab626cebf3a777d3cef463d01772cc5728d7fa"
 
 
 def _sha(text: str) -> str:
@@ -100,7 +100,7 @@ class RequestChecks(ResearchTestCase):  # R-REL-1
 
     def test_the_relay_member_is_closed(self):
         cases = [
-            ({"kind": "blind-freeze-v2"}, "/relay/kind", "wrong-type", None),
+            ({"kind": "blind-freeze-v1"}, "/relay/kind", "wrong-type", None),
             ({"previewSha256": "A" * 64}, "/relay/previewSha256", "wrong-type", None),
             ({"conditionOrdinal": -1}, "/relay/conditionOrdinal", "below-min", 0),
             ({"conditionOrdinal": 1024}, "/relay/conditionOrdinal", "above-max", 1023),
@@ -121,7 +121,7 @@ class RequestChecks(ResearchTestCase):  # R-REL-1
 
     def test_relay_sender_options_and_required_rules(self):
         panel = h.request("nominal")
-        panel["relay"] = {"kind": "blind-freeze-v1", "previewSha256": h.PREVIEW_SHA256, "conditionOrdinal": 0}
+        panel["relay"] = {"kind": "blind-freeze-v2", "previewSha256": h.PREVIEW_SHA256, "conditionOrdinal": 0}
         self.refuse(panel, "/relay", "relay-sender-mismatch")
         batch = h.relay_request("nominal", sender="batch-client")
         batch["researchOptions"] = {"surfaceBalance": {"emissivity": 0.4}}
@@ -184,9 +184,9 @@ class SubsetShape(ResearchTestCase):  # R-REL-3
         subset = json.loads(text)
         self.assertEqual(codes.canonical_json(subset), text)  # canonical: re-encoding reproduces the bytes
         self.assertEqual(parsed["relay"]["subsetSha256"], hashlib.sha256(text.encode("ascii")).hexdigest())
-        spec = _plain(codes.BLIND_RELAY_V1)
+        spec = _plain(codes.BLIND_RELAY_V2)
         self.assertEqual(_key_set(subset, spec), _spec_shape(spec))
-        self.assertEqual(subset["relaySchemaVersion"], "blind-freeze-v1")
+        self.assertEqual(subset["relaySchemaVersion"], "blind-freeze-v2")
         self.assertEqual(subset["relayPathsSha256"], codes.RELAY_PATHS_SHA256)
         self.assertEqual(subset["digests"], parsed["digests"])
         self.assertEqual(subset["requestKey"], parsed["requestKey"])
@@ -194,9 +194,7 @@ class SubsetShape(ResearchTestCase):  # R-REL-3
         scored = subset["scored"]["meltDepthLink.fields.linkedMeltDepth_um"]
         self.assertNotIn("manifest", scored["band"])
         self.assertEqual(scored["band"]["manifestLength"], 6)
-        self.assertEqual(sorted(subset["labels"]), sorted(
-            f"{path.split('.')[0]}.{path.split('.')[2]}" for section in ("scored", "context")
-            for path in codes.BLIND_RELAY_V1[section]))
+        self.assertNotIn("labels", subset)
         self.assertEqual(subset["notes"]["keyholeCavity.consistencyNote.knownContradictions[].id"],
                          ["fake-contradiction"])
         for volatile in ("computeMs", "cache", "clientRequestId", "stage", "progress", "timeBudgetMs", "supersedeKey"):
@@ -212,10 +210,10 @@ class SubsetShape(ResearchTestCase):  # R-REL-3
     def test_paths_the_block_lacks_are_null_not_dropped(self):
         parsed, _, _ = _call(h.relay_request("band"), engine=h.FakeEngine())  # no relay paths emitted
         subset = json.loads(parsed["relay"]["subsetJson"])
-        spec = _plain(codes.BLIND_RELAY_V1)
+        spec = _plain(codes.BLIND_RELAY_V2)
         self.assertEqual(_key_set(subset, spec), _spec_shape(spec))
         self.assertIsNone(subset["scored"]["meltDepthLink.fields.linkedMeltDepth_um"])
-        self.assertEqual(subset["labels"], {})
+        self.assertNotIn("labels", subset)
 
 
 class Determinism(ResearchTestCase):  # R-REL-4
@@ -264,14 +262,20 @@ class Determinism(ResearchTestCase):  # R-REL-4
 
 
 class RelayCap(ResearchTestCase):  # R-REL-5
-    def test_a_subset_above_12000_characters_is_too_large_with_cause_relay(self):
+    def test_a_subset_above_16000_characters_is_too_large_with_cause_relay(self):
         log = []
-        engine = h.FakeEngine(relay_fields=True, statement_padding=2000)
+        class OversizedIds(h.FakeEngine):
+            def aggregate(self, module_id, *args):
+                result = super().aggregate(module_id, *args)
+                if module_id == "meltDepthLink":
+                    result["fields"]["linkedMeltDepth_um"]["weakestInputs"] = ["x" * 16001]
+                return result
+        engine = OversizedIds(relay_fields=True)
         parsed, code, _ = h.call(h.make_dependencies(engine, log=log), h.relay_request("band"))
         self.assertEqual((code, parsed), (0, {"success": False, "errorKind": "research",
                                               "reasonCode": "RESEARCH_RESPONSE_TOO_LARGE", "cause": "relay"}))
         self.assertTrue(any("relay subsetJson has" in line for line in log))
-        self.assertEqual(codes.RELAY_SUBSET_MAX_CHARS, 12000)
+        self.assertEqual(codes.RELAY_SUBSET_MAX_CHARS, 16000)
         # the same block without a relay request is served: the cap is on the relay string only
         parsed, code, _ = h.call(h.make_dependencies(engine), h.request("band", budget=None))
         self.assertEqual(code, 0)
@@ -280,7 +284,7 @@ class RelayCap(ResearchTestCase):  # R-REL-5
     def test_cost_constants(self):
         self.assertEqual((codes.RELAY_MAX_CONDITIONS, codes.BATCH_DEFAULT_MAX_REQUESTS, codes.BATCH_MAX_REQUESTS),
                          (48, 48, 256))
-        self.assertLessEqual(codes.RELAY_MAX_CONDITIONS * codes.RELAY_SUBSET_MAX_CHARS, 576000)
+        self.assertLessEqual(codes.RELAY_MAX_CONDITIONS * codes.RELAY_SUBSET_MAX_CHARS, 768000)
 
 
 class Transport(ResearchTestCase):  # R-REL-6

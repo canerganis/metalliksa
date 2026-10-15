@@ -165,3 +165,68 @@ not claim to have measured a live server queue.
 
 All numerical checks above are synthetic software evidence. They grant no blind
 validation, experimental accuracy claim, qualification or served promotion.
+
+
+## Revision 5 implementation follow-up (2026-10-15)
+
+Contract Revision 5 (`217ede5a`, section 16), merged from
+`research/p8-research-arm`, supersedes the relay/response/timeout open decisions
+in the historical phase C record above. `blind-freeze-v1` is refused. The closed
+`BLIND_RELAY_V2` projection contains identity, binding, numbers, codes and ids;
+the full model and label digests retain the binding to omitted detail.
+The v2 path-list hash is
+`c224f0163889e41411a141c91dab626cebf3a777d3cef463d01772cc5728d7fa`.
+The existing relay fixture filename is retained and its content was regenerated
+once. The separate transport fixture is unchanged.
+
+Describe returns the closed labels, sentences and statusTexts tables, each with
+its canonical sha256. Complete responses use the same full label table, even
+when fields are absent, so its digest matches describe. Compact sentence texts
+need no omitted numeric parameters; detailed original sentences remain in the
+full block. The context table's band parenthesis applies to cavityDepth_um;
+conditionalMeltDepth_um and conductionDepth_um retain value, reasonCode and
+sourceEvidenceKind. Primary sentence ids are emitted at the existing evaluator
+priority decision; no numerical algorithm changed.
+
+The relay cap is 16,000 characters, inclusive; overflow remains a C2 refusal
+with cause=relay, without truncation. Full responses have a 16 MiB UTF-8 cap.
+An explicitly null budget gets 120 s in handleResearchDispatch and is dispatched
+directly to a fresh ad-hoc process, never the persistent research lane.
+Budgeted requests retain the 30 s route timeout; 1500 ms chunks are the normal
+band path. This change implements the phase D dispatch portion only.
+
+D-12 was repeated using the pinned Windows Python and the real evaluator.
+`test_lpbf_research_d12.py` asserts strictly progressing 1500 ms chunks, complete
+responses below 16 MiB, relays below 16,000 characters, real numeric counts and
+extrema, expected manifest lengths, and matching describe identity/label digest.
+The 80-arm rows use the same explicitly synthetic, source-distinct capacity
+probe as the historical measurement tool; they are not new physical scenarios.
+
+| Alloy / manifest | Relay characters | Complete response UTF-8 bytes |
+|---|---:|---:|
+| Ti-6Al-4V / declared defaults | 4,665 | 3,328,109 |
+| AlSi10Mg / declared defaults | 4,763 | 3,997,475 |
+| Ti-6Al-4V / 80 per banded module | 4,665 | 9,962,081 |
+| AlSi10Mg / 80 per banded module | 4,763 | 10,347,523 |
+
+The exact full-response byte count includes volatile computeMs; small text-length
+variation there does not alter the relay or its digest. Served fingerprint
+`36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348`,
+served implementation files, manifest and goldens remain unchanged. The default
+parity --check suite passes; slow parity cases were not run. Targeted TypeScript
+transport/auth tests pass (27 tests). Independent read-only review found and
+confirmed the correction of the absent-field label-digest mismatch.
+
+W-1 wording remains pending maintainer approval. Phase G live served concurrency,
+IPC queue measurements and ad-hoc capacity timing remain outstanding; these
+size and software checks grant no experimental or blind validation.
+
+
+The final research pin is
+`ae54d74943c25c0e8d977234df633e51a8f26884996f9defffef76fd9ae57219`.
+Full research discovery exercised 112 cases; two test-harness mismatches were
+corrected without editing a golden: the new classes now inherit ResearchTestCase
+(the served-solver refusal guard), and R-TR-11 injects its original 12-label fake
+table separately from the relay-only fields. The subsequent 103-case transport,
+identity, isolation, manifest and code run passes; the eight numeric arm cases
+passed in discovery. The capacity check was repeated with the refusal guard.

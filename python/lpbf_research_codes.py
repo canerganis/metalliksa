@@ -4,7 +4,7 @@ sections 7 to 9).
 The runtime registry holds the closed code list of contract 9.1 with class, scope and the causes each code may carry,
 the precedence rule, the option-problem rules and message templates of 9.3, the request field labels the request
 checks need, and (Revision 3, section 14) the closed sender list with its supersedeKey rules, the relay limits and the
-blind relay projection BLIND_RELAY_V1. The leaf labels (7.1, 13.4), the per-code noun phrases and n/a templates of 9.2
+blind relay projection BLIND_RELAY_V2. The leaf labels (7.1, 13.4), the per-code noun phrases and n/a templates of 9.2
 and the served-difference templates of section 8 are W-1 drafts awaiting maintainer approval.
 
 Research only: no served module may import this file (guard R-ISO-1, python/test_lpbf_research_isolation.py).
@@ -210,9 +210,9 @@ SUPERSEDE_KEY_RULES = MappingProxyType({
     "batch-client": "p8-research:batch:<runId of 8 to 32 characters a-z 0-9>",
 })
 
-RELAY_KIND = "blind-freeze-v1"
+RELAY_KIND = "blind-freeze-v2"
 RELAY_CONDITION_ORDINAL_MAX = 1023      # R-REL-1: integer conditionOrdinal 0 to 1023
-RELAY_SUBSET_MAX_CHARS = 12000          # 14.3 item 5 and 14.4 item 4, enforced by the route per condition
+RELAY_SUBSET_MAX_CHARS = 16000          # Revision 5, 16.1: enforced per condition; never truncate
 # 14.4 item 3: per freeze (blind relay) and per batch-client run. The route sees one condition per request, so these
 # counts are enforced where conditions are counted (the hub freeze and scripts/research-route-batch.ts); they are
 # recorded here as the one Python statement of the caps.
@@ -234,30 +234,32 @@ def supersede_key_matches(sender: str, key: str, preview_sha256: str | None) -> 
     return False
 
 
-# BLIND_RELAY_V1 (14.3 item 4): the closed key set of relay.subsetJson. A None leaf is an opaque value copied from the
-# request, the response or the block; the dotted keys of scored, context, support, notes and statements are paths
-# into researchModels (a path the block does not carry is null). "knownContradictions[].id" keeps only the ids.
+# BLIND_RELAY_V2 (16.1): the closed key set of relay.subsetJson. Dotted paths select
+# compact numbers, codes and ids; field/band members are explicitly filtered by the serializer.
+# A missing source path is null. Prose stays in the full-block digest and describe tables.
 _RELAY_MODULES = ("keyholeCavity", "meltDepthLink")
+# Revision 5, section 16.1: every selected nested key is closed; no prose is relayed.
+RELAY_BAND_KEYS = ("completeness", "min", "nominal", "max", "successfulArms", "totalArms",
+                   "minArmId", "maxArmId", "minArmTies", "maxArmTies", "failedArms",
+                   "manifestSha256", "manifestLength")
 _RELAY_SECTIONS = {
     "scored": ("meltDepthLink.fields.linkedMeltDepth_um",),
     "context": tuple(f"meltDepthLink.fields.{name}" for name in (
-        "conditionalMeltDepth_um", "conductionDepth_um", "controllingLeg", "linkDispatch", "conductionStatus",
-        "floorFieldModelId", "floorExtractorId", "cavityLedgerRatio"))
+        "conditionalMeltDepth_um", "conductionDepth_um", "controllingLeg", "linkDispatch", "conductionStatus"))
     + tuple(f"keyholeCavity.fields.{name}" for name in (
-        "cavityDepth_um", "onsetPower_W", "powerOverOnset", "peclet", "onsetEvent")),
+        "cavityDepth_um", "onsetPower_W", "powerOverOnset", "onsetEvent")),
     "support": ("keyholeCavity.band.onsetSupport", "keyholeCavity.band.statusSupport",
                 "meltDepthLink.band.statusSupport"),
     "notes": tuple(f"{module}.consistencyNote.{name}" for module in _RELAY_MODULES for name in (
-        "status", "worstArmStatus", "sentence", "assumptions", "knownContradictions[].id", "reasons", "onsetMismatch"))
-    + ("meltDepthLink.consistencyNote.fieldShapeStep", "meltDepthLink.consistencyNote.fieldShapeShare"),
+        "status", "worstArmStatus", "sentenceId", "reasons[].code", "knownContradictions[].id",
+        "onsetMismatch.comparison", "fieldShapeShare.nearOnset", "FIELD_SHAPE_STEP_NEAR_ONSET")),
     "statements": tuple(f"{module}.{name}" for module in _RELAY_MODULES for name in (
-        "moduleMaturity", "moduleEvidenceCeiling", "validationStatus", "validationStatusLocator",
-        "experimentalValidation", "uiSentence")),
+        "moduleMaturity", "moduleEvidenceCeiling", "experimentalValidation", "validationStatus")),
 }
 RELAY_PROCESS_KEYS = ("material", "laserPower_W", "scanSpeed_mm_s", "beamDiameter_um", "preheatTemp_C",
                       "laserWavelength", "absorptionModel")
 RELAY_SI_KEYS = ("power_W", "speed_m_s", "beamDiameter_m", "preheat_K")
-BLIND_RELAY_V1: Mapping[str, Any] = MappingProxyType({
+BLIND_RELAY_V2: Mapping[str, Any] = MappingProxyType({
     "relaySchemaVersion": None,
     "relayPathsSha256": None,
     "binding": MappingProxyType({"previewSha256": None, "conditionOrdinal": None}),
@@ -273,12 +275,11 @@ BLIND_RELAY_V1: Mapping[str, Any] = MappingProxyType({
         "propertySetSha256", "propertyContextKind")}),
     "digests": MappingProxyType({"researchModelsSha256": None, "labelsSha256": None}),
     **{section: MappingProxyType({path: None for path in paths}) for section, paths in _RELAY_SECTIONS.items()},
-    "labels": None,   # {"<container>.<field>": label} for the field paths of scored and context the response labels
 })
 
 
-def relay_paths(spec: Mapping[str, Any] = BLIND_RELAY_V1, prefix: tuple = ()) -> list:
-    """The canonical path list of BLIND_RELAY_V1: every key path, as lists of keys, sorted."""
+def relay_paths(spec: Mapping[str, Any] = BLIND_RELAY_V2, prefix: tuple = ()) -> list:
+    """The canonical path list of BLIND_RELAY_V2: every key path, as lists of keys, sorted."""
     out = []
     for key, sub in spec.items():
         path = prefix + (key,)
@@ -608,3 +609,27 @@ VALUE_LABELS = {'scalarRelaxation': {'stable': 'relaxes back (scalar balance)',
 LEAF_LABELS = MappingProxyType({**LEAF_LABELS,
     **{'keyholeCavity.roots.scalarRelaxation.'+key: text for key,text in VALUE_LABELS['scalarRelaxation'].items()},
     'keyholeCavity.selectedBranch.lowest-strictly-stable': VALUE_LABELS['selectedBranch']['lowest-strictly-stable']})
+
+
+# Closed describe text tables. Values are draft research wording, bound by identity and table hashes.
+STATUS_TEXTS = {
+    "not-experimentally-validated": "Not experimentally validated; research diagnostic/model only.",
+    "falsified-surface-closure": "Falsified flat non-receding HKL closure against an open IN625 mass-loss test; "
+        "numeric closure artefacts only, no physical prediction or blind-validation pass.",
+}
+SENTENCES = {key: value for key, value in WORDING.items() if key != "approvalStatus"}
+SENTENCES.update({"module." + key: value for key, value in UI_SENTENCES.items()})
+SENTENCES.update({"refusal." + key: value["text"] for key, value in REASON_CODES.items()})
+SENTENCES.update({
+    "marangoni": "This surface-flow diagnostic uses a transferred or user-supplied coefficient; the velocity is a scale and no melt-depth correction is available.",
+    "inRange": "This diagnostic is inside its declared input range; no sourced onset reference or blind validation is available.",
+    "onsetSupport": "Equal-weight named inception scenarios, not a calibrated probability. Excluded: O2 (geometric-R-about-1) is a geometric threshold and is listed separately.",
+})
+# Compact renderings deliberately need no values that the closed relay omits.
+# The complete response retains the original detailed, parameterized sentences.
+SENTENCES.update({
+    "lowAspect": "Above onset the selected cavity has e/d below 0.5, outside the thermal-cylinder source geometry. This is an extrapolated conditional estimate, and cavity mechanics are omitted.",
+    "lowPe": "Pe is below 2: the high-Pe thermal-cylinder closure is transferred outside its source range, and drilling, recoil-driven flow and melt transport are omitted. A converged series removes neither limitation.",
+    "sourceTransfer": "These inputs or this closure are used beyond their declared source scope. Numerical admission is not a sourced physical range, and no blind validation is available.",
+    "nearOnset": "Near onset the linked depth is dominated by the change of field shape; controlling-leg support does not show that a cavity caused the increase.",
+})

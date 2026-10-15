@@ -11,7 +11,7 @@ the stage protocol (describe, nominal, band), serializes strictly and sets the e
 Revision 3 (contract section 14): the optional ``sender`` (research-panel, blind-freeze, batch-client) and ``relay``
 members with their supersedeKey and relay rules; every complete response carries ``digests`` (sha256 of the canonical
 researchModels and labels), and a complete band response to a relay request carries ``relay.subsetJson``, the ASCII
-canonical JSON of the closed projection BLIND_RELAY_V1, with its sha256 (at most 12,000 characters). Sender and
+canonical JSON of the Revision 5 closed projection BLIND_RELAY_V2, with its sha256 (at most 16,000 characters). Sender and
 binding change neither requestKey nor any cache key.
 
 It holds no module-level state: the IPC worker executes it in a fresh namespace per request, and every per-process
@@ -44,7 +44,7 @@ REQUEST_SCHEMA_VERSION = "p8-research-request-v1"
 RESPONSE_SCHEMA_VERSION = "p8-research-response-v1"
 MAX_REQUEST_BYTES = 65536
 MAX_RAW_REQUEST_BYTES = 1024 * 1024        # refused unparsed above this; the 65536 rule is on the compact encoding
-MAX_RESPONSE_BYTES = 4 * 1024 * 1024
+MAX_RESPONSE_BYTES = 16 * 1024 * 1024
 MAX_ID_CHARS = 128
 TIME_BUDGET_MIN_MS = 250
 TIME_BUDGET_MAX_MS = 8000
@@ -887,15 +887,9 @@ class _Protocol:
 def _labels(block: Mapping | None, table: Mapping[str, str]) -> dict:
     if block is None:
         return {}
-    paths = []
-    for module in CONTAINERS:
-        fields = (block.get(module) or {}).get("fields")
-        if isinstance(fields, Mapping):
-            paths.extend(f"{module}.{name}" for name in fields)
-            for name in fields:
-                prefix = f"{module}.{name}."
-                paths.extend(path for path in table if path.startswith(prefix))
-    return {path: table[path] for path in sorted(paths) if path in table}
+    # Revision 5: the closed describe table and complete-response table have one digest,
+    # even when a module is unavailable or a particular alloy does not emit every field.
+    return dict(sorted(table.items()))
 
 
 def _canonical_property_context(request: Mapping, context) -> dict:
@@ -950,6 +944,11 @@ def _describe(deps: Dependencies, request: Mapping, context, options: dict, iden
         "controls": controls,
         "presets": deps.engine.presets(context),
         "labels": dict(sorted(deps.label_table.items())),
+        "labelsSha256": canonical_sha256_json(dict(sorted(deps.label_table.items()))),
+        "sentences": codes.SENTENCES,
+        "sentencesSha256": canonical_sha256_json(codes.SENTENCES),
+        "statusTexts": codes.STATUS_TEXTS,
+        "statusTextsSha256": canonical_sha256_json(codes.STATUS_TEXTS),
         "problems": problems,
         "moduleAvailability": availability,
         "identity": _response_identity(identity, context),
@@ -980,26 +979,15 @@ def _path_value(block: Mapping, path: str) -> Any:
     return node
 
 
-def _hash_manifests(value: Any) -> Any:
-    """14.3 item 4: a band's manifest is replaced by manifestSha256 (canonical descriptor list) and manifestLength."""
-    if isinstance(value, Mapping):
-        out = {}
-        for key, item in value.items():
-            if key == "manifest" and isinstance(item, list):
-                out["manifestSha256"] = canonical_sha256_json(item)
-                out["manifestLength"] = len(item)
-            else:
-                out[key] = _hash_manifests(item)
-        return out
-    if isinstance(value, list):
-        return [_hash_manifests(item) for item in value]
-    return value
+def _relay_value(value: Any) -> Any:
+    """Unwrap a ResearchField count/number/enum without copying provenance or prose."""
+    return value.get("value") if isinstance(value, Mapping) and "value" in value else value
 
 
 def blind_relay_subset(request: Mapping, context, request_key: str, identity: Mapping, digests: Mapping,
                        block: Mapping, labels: Mapping) -> dict:
-    """The closed projection BLIND_RELAY_V1 of a complete block (14.3 item 4); no volatile member enters it."""
-    spec = codes.BLIND_RELAY_V1
+    """The closed projection BLIND_RELAY_V2 of a complete block (14.3 item 4); no volatile member enters it."""
+    spec = codes.BLIND_RELAY_V2
     relay = request["relay"]
     subset: dict = {
         "relaySchemaVersion": codes.RELAY_KIND,
@@ -1016,23 +1004,50 @@ def blind_relay_subset(request: Mapping, context, request_key: str, identity: Ma
         "identity": {key: identity[key] for key in spec["identity"]},
         "digests": dict(digests),
     }
-    field_paths = []
     for section in ("scored", "context", "support", "notes", "statements"):
         values = {}
         for path in spec[section]:
-            value = _path_value(block, path)
-            # Numeric bands refer to their container's one manifest (A1/5.3).
-            # Materialize that reference only for the relay's hash projection.
-            if section in ("scored", "context") and isinstance(value, Mapping) and isinstance(value.get("band"), Mapping):
-                manifest = _path_value(block, path.split(".")[0] + ".band.manifest")
-                if "manifest" not in value["band"] and isinstance(manifest, list):
-                    value = {**value, "band": {**value["band"], "manifest": manifest}}
-            values[path] = _hash_manifests(value) if section in ("scored", "context") else value
+            if path.endswith("[].code"):
+                rows = _path_value(block, path[:-len("[].code")])
+                value = [row["code"] for row in rows] if isinstance(rows, list) else None
+            elif path.endswith(".FIELD_SHAPE_STEP_NEAR_ONSET"):
+                fields = _path_value(block, path.split(".")[0] + ".fields") or {}
+                value = any("FIELD_SHAPE_STEP_NEAR_ONSET" in field.get("warnings", [])
+                            for field in fields.values())
+            else:
+                value = _path_value(block, path)
             if section in ("scored", "context"):
-                module, _fields, name = path.split(".")
-                field_paths.append(f"{module}.{name}")
+                if isinstance(value, Mapping):
+                    name = path.rsplit(".", 1)[-1]
+                    if name in ("controllingLeg", "linkDispatch", "conductionStatus", "onsetEvent"):
+                        value = _relay_value(value)
+                    else:
+                        keys = (("value", "unit", "reasonCode", "warnings", "sourceEvidenceKind", "weakestInputs")
+                                if section == "scored" else ("value", "reasonCode", "sourceEvidenceKind"))
+                        compact = {key: value.get(key) for key in keys}
+                        if name in ("linkedMeltDepth_um", "cavityDepth_um") and isinstance(value.get("band"), Mapping):
+                            band = value["band"]
+                            manifest = band.get("manifest")
+                            if manifest is None:
+                                manifest = _path_value(block, path.split(".")[0] + ".band.manifest")
+                            compact["band"] = {key: _relay_value(band.get(key)) for key in codes.RELAY_BAND_KEYS
+                                               if key not in ("manifestSha256", "manifestLength", "failedArms")}
+                            compact["band"]["failedArms"] = [
+                                {key: row.get(key) for key in ("armId", "reasonCode")}
+                                for row in band.get("failedArms", [])]
+                            compact["band"].update(manifestSha256=canonical_sha256_json(manifest) if manifest is not None else None,
+                                                    manifestLength=len(manifest) if manifest is not None else None)
+                        value = compact
+            elif section == "support":
+                if path.endswith("onsetSupport") and isinstance(value, Mapping):
+                    value = {key: _relay_value(value.get(key)) for key in ("supported", "total", "unresolved")}
+                elif isinstance(value, list):
+                    value = [{"status": row["status"], "count": _relay_value(row["count"])} for row in value]
+            elif section == "statements" and path.endswith(".validationStatus") and value is not None:
+                value = ("falsified-surface-closure" if value == codes.STATUS_TEXTS["falsified-surface-closure"]
+                         else "not-experimentally-validated")
+            values[path] = value
         subset[section] = values
-    subset["labels"] = {path: labels[path] for path in sorted(field_paths) if path in labels}
     return subset
 
 
