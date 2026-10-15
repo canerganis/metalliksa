@@ -320,6 +320,23 @@ function calphadUnavailableResult(
   };
 }
 
+/** Unavailable result for a request that ended without a Python answer (client deadline, dropped, failed). */
+export function calphadUnreachableResult(
+  alloy: MultiComponentAlloyComposition,
+  tMin: number,
+  tMax: number,
+  tStep: number,
+  reason: string,
+): PythonCalphadSolveResult {
+  return calphadUnavailableResult(alloy, tMin, tMax, tStep, engineUnreachable(reason));
+}
+
+/** Server budget of POST /api/python/calphad-minimize (routes/physics.ts). */
+export const CALPHAD_SERVER_TIMEOUT_MS = 240000;
+/** The client stops waiting this long after sending: the server budget plus reply slack. A request still open
+ * then has no answer coming, and the studio says so instead of waiting forever. */
+export const CALPHAD_CLIENT_TIMEOUT_MS = CALPHAD_SERVER_TIMEOUT_MS + 30000;
+
 /** Alloy id for the literature estimate: only IN718 / IN625 (by the studio's alloy name); anything else is undefined. */
 export function literatureAlloyIdFromName(name: string | undefined): "in718" | "in625" | undefined {
   const n = String(name ?? "");
@@ -519,17 +536,28 @@ class PythonComputationService {
     /** signal: aborts a superseded request; supersedeKey: lets the server drop this client's queued,
      * not yet started request when a newer one arrives (slider drags); scheil: also compute the
      * Scheil-Gulliver path (about 1.5 to 2 minutes, so off unless asked for). */
-    options: { signal?: AbortSignal; supersedeKey?: string; scheil?: boolean } = {}
+    options: { signal?: AbortSignal; supersedeKey?: string; scheil?: boolean; timeoutMs?: number } = {}
   ): Promise<PythonCalphadSolveResult> {
     let pythonUnavailable: CalphadUnavailable | null = null;
     let literatureSolidification: unknown;
     if (usePython) {
       let validation: PythonValidationError | null = null;
+      // The caller's signal aborts a superseded request; the deadline ends a request that gets no answer.
+      const timeoutMs = options.timeoutMs ?? CALPHAD_CLIENT_TIMEOUT_MS;
+      const request = new AbortController();
+      let timedOut = false;
+      const onCallerAbort = () => request.abort();
+      if (options.signal?.aborted) request.abort();
+      else options.signal?.addEventListener("abort", onCallerAbort);
+      const deadline = setTimeout(() => {
+        timedOut = true;
+        request.abort();
+      }, timeoutMs);
       try {
         const res = await fetch("/api/python/calphad-minimize", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          signal: options.signal,
+          signal: request.signal,
           body: JSON.stringify({
             supersedeKey: options.supersedeKey,
             name: alloy.name,
@@ -559,8 +587,11 @@ class PythonComputationService {
             };
           }
           if (data && data.status === "superseded") {
-            // The server dropped it for a newer request of the same client: nothing to show.
-            throw abortError("superseded by a newer CALPHAD request");
+            // The server dropped it for a newer request of the same client. That is an abort only when the
+            // caller did move on; otherwise the caller still waits for this answer and must be told.
+            if (options.signal?.aborted) throw abortError("superseded by a newer CALPHAD request");
+            return calphadUnreachableResult(alloy, tMin, tMax, tStep,
+              "the Python CALPHAD service dropped this request as superseded; change the input or reload to send it again");
           }
           // The Python engine has no fallback model: it says "unavailable" and why.
           pythonUnavailable = parseCalphadUnavailable(data) ?? engineUnreachable("the Python CALPHAD service gave no result");
@@ -572,9 +603,17 @@ class PythonComputationService {
           }
         }
       } catch (err) {
-        if (isAbortError(err)) throw err; // superseded by newer input: the caller ignores it
-        console.warn("Python CALPHAD proxy call failed:", err);
-        pythonUnavailable = engineUnreachable("the Python CALPHAD service could not be reached");
+        if (timedOut && !options.signal?.aborted) {
+          pythonUnavailable = engineUnreachable(
+            `the Python CALPHAD service gave no answer within ${Math.round(timeoutMs / 1000)} s`);
+        } else {
+          if (isAbortError(err)) throw err; // superseded by newer input: the caller ignores it
+          console.warn("Python CALPHAD proxy call failed:", err);
+          pythonUnavailable = engineUnreachable("the Python CALPHAD service could not be reached");
+        }
+      } finally {
+        clearTimeout(deadline);
+        options.signal?.removeEventListener("abort", onCallerAbort);
       }
       // Invalid input (e.g. an unknown element symbol): surface it (HTTP 422 envelope message).
       if (validation) throw validation;
