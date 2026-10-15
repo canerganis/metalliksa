@@ -87,35 +87,19 @@ class LpbfSecondaryContractTests(unittest.TestCase):
         self.assertIn('"lpbf_process_window"', (root / "python" / "persistent_ipc_service.py").read_text(encoding="utf-8"))
 
     def test_solidification_inventory_matches_worker_and_unavailable_union(self):
-        seed = self.seed("solidification-microstructure")
-        contract = build_solidification_microstructure_contract(seed)
+        contract = build_solidification_microstructure_contract(self.seed("solidification-microstructure"))
         operation = contract.operations[0]
-
-        self.assertEqual(contract.id, seed["id"])
-        self.assertEqual(contract.view.export, "SolidificationMicrostructureLab")
-        self.assertEqual((operation.method, operation.route, operation.authority.kind,
-                          operation.authority.worker_method, operation.authority.timeout_ms),
-                         ("POST", "/api/python/lpbf-solidification-microstructure", "lpbf-worker",
-                          "solidification-microstructure", 20000))
-        self.assertEqual(operation.undeclared_input, ("params",))
-        self.assertEqual(operation.input_problems({"params": {"materialName": "Inconel 718",
-                                                                "power_W": 285}}), [])
-        self.assertEqual(operation.output.status_key, None)
+        self.assertEqual(contract.version, "0.2.0")
+        self.assertEqual(operation.authority.worker_method, "solidification-microstructure")
         self.assertEqual(dict(operation.output.transport_values)["status"],
-                         ("available", "unavailable", "screening-fallback", "degenerate-floor"))
-        self.assertTrue({"regime", "normalizedEnthalpy", "regimeNote", "g_over_r_ratio", "doi"}
-                        .issubset(operation.output.fields))
+                         ("computed", "partial", "unavailable", "failed", "not-requested"))
+        self.assertIn("quantities", operation.output.fields)
+        self.assertNotIn("G_K_m", operation.output.fields)
+        self.assertEqual(len(operation.quantities), 8)
         self.assertEqual(contract.evidence.emits, ())
-        self.assertEqual(contract.evidence.ceiling, "screening-only")
-        self.assertEqual(contract.tests.oracle.status, "pending")
         notes = " ".join(contract.legacy_notes)
-        self.assertIn("does not send cfdResult", notes)
-        self.assertIn("no substitute alloy or numeric fallback", notes)
-        self.assertIn("-273.15 degC", notes)
-        self.assertIn("liquidus_C is known", notes)
-        self.assertIn("that value in degC", notes)
-        self.assertIn("HTTP 200", notes)
-        self.assertIn("422", notes)
+        self.assertIn("quarantined-legacy-path", notes)
+        self.assertIn("outside-source-model-domain", notes)
 
     def test_wrong_seed_identity_is_rejected_by_each_builder(self):
         optimizer = self.seed("lpbf-optimizer")

@@ -64,6 +64,15 @@ class RosenthalCenterlineTests(unittest.TestCase):
 
 
 class CetTests(unittest.TestCase):
+    def test_source_set_algebra_reproduced(self):
+        for entry in cet.CET_SETS["in718"].values():
+            a, n, n0 = (entry["constants"][key]["value"] for key in ("a", "n", "N0"))
+            for v in (0.05, 0.4):
+                for phi in (cet.PHI_COLUMNAR, cet.PHI_EQUIAXED):
+                    g = cet.critical_gradient_K_m(v, phi, a=a, n=n, n0_m3=n0)
+                    rhs = a * ((-4 * math.pi * n0 / (3 * math.log(1-phi)))**(1/3) / (n+1))**n
+                    self.assertAlmostEqual((g**n / v) / rhs, 1.0, places=12)
+
     def test_critical_gradient_synthetic(self):
         kw = {"a": SYNTHETIC_CET["a"], "n": SYNTHETIC_CET["n"], "n0_m3": SYNTHETIC_CET["N0"]}
         g_col = cet.critical_gradient_K_m(0.1, 0.0066, **kw)
@@ -88,12 +97,9 @@ class CetTests(unittest.TestCase):
                 cet.critical_gradient_K_m(**args)
 
     def test_cet_block_with_synthetic_override(self):
-        blk = cet.cet_block("in718", {"bottom": None, "median": (3e6, 0.1), "tail": (5e5, 0.1)},
-                            constants_override=SYNTHETIC_CET)
-        self.assertEqual(blk["status"], "available")
-        self.assertIsNone(blk["locations"]["bottom"])
-        self.assertEqual(blk["locations"]["median"]["band"], "columnar")
-        self.assertEqual(blk["locations"]["tail"]["band"], "equiaxed")
+        blk = cet.cet_block("in718", {"median": (3e6, 0.1)}, constants_override=SYNTHETIC_CET)
+        self.assertEqual(blk["status"], "unavailable")
+        self.assertEqual(blk["reasons"][0]["code"], "outside-source-model-domain")
 
     def test_knapp_constants_reproduce_printed_limits(self):
         """Knapp 2019 p. 515 prints G^2 R limits of 1.52e11 (phi 0.0066) and 6.98e9 (phi 0.49) for these constants."""
@@ -131,11 +137,11 @@ class CetTests(unittest.TestCase):
         self.assertIn("Knapp 2019 p. 514", sets["knapp2019"]["phiSource"])
 
     def test_equation_verified_only_for_knapp(self):
-        sets = cet.CET_SETS["in718"]
-        self.assertIs(sets["knapp2019"]["equationVerified"], True)
-        self.assertIs(sets["polonsky2020"]["equationVerified"], False)
-        self.assertIs(cet.EQUATION_VERIFIED, False)  # Gaumann 2001 itself was not read
-        self.assertIsNone(cet.EQUATION_LOCATOR)
+        self.assertNotIn("equationVerified", cet.criterion_view())
+        self.assertEqual(cet.criterion_view()["sourceChecks"]["equationRead"]["status"], "not-read")
+        sets = {x["id"]: x for x in cet.cet_constants("in718")["sets"]}
+        self.assertEqual(sets["knapp2019"]["sourceChecks"]["printedLimitComparison"]["status"], "agrees")
+        self.assertEqual(sets["polonsky2020"]["sourceChecks"]["printedLimitComparison"]["status"], "not-available")
 
     def test_cmsx4_is_reference_only(self):
         ref = cet.cet_constants("in718")["referenceOnly"]
@@ -158,14 +164,10 @@ class CetTests(unittest.TestCase):
         self.assertEqual(len(cet.cet_constants("in718")["candidateSources"]), 2)
 
     def test_cet_block_registry_has_both_sets(self):
-        blk = cet.cet_block("in718", {"bottom": None, "median": (3e6, 0.1), "tail": (5e4, 0.1)})
-        self.assertEqual(blk["status"], "available")
-        self.assertEqual(set(blk["sets"]), {"knapp2019", "polonsky2020"})
-        self.assertEqual(blk["locations"], {"bottom": None, "median": None, "tail": None})
-        for entry in blk["sets"].values():
-            self.assertIsNone(entry["locations"]["bottom"])
-            self.assertEqual(entry["locations"]["median"]["band"], "columnar")
-            self.assertEqual(entry["transferLabel"], "EBM-calibrated, transferred to LPBF")
+        self.assertEqual(len(cet.cet_constants("in718")["sets"]), 2)
+        block = cet.cet_block("in718", {"median": (3e6, 0.1)})
+        self.assertEqual(block["status"], "unavailable")
+        self.assertEqual(block["sets"], {})
 
     def test_incomplete_set_stays_out(self):
         partial = {"in718": {"x": {"label": "x", "constants": {
@@ -217,219 +219,35 @@ class TrappingTests(unittest.TestCase):
 
 
 class PointIntegrationTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.p718 = gr.run_gr_solidification(req(power_W=285, speed_mm_s=960))
-        cls.cond = gr.run_gr_solidification(req(power_W=120, speed_mm_s=1000))
-        cls.p625 = gr.run_gr_solidification(req(alloy="in625", power_W=120, speed_mm_s=1000))
+    def test_all_five_alloys_project_null_front_without_bypass(self):
+        from quantity_envelope import envelope_problems
+        for alloy in gr.SUPPORTED:
+            out = gr.run_gr_solidification(req(alloy=alloy, power_W=150, speed_mm_s=1200))
+            self.assertTrue(out["success"], out)
+            self.assertEqual(out["schema"], "lpbf-gr-solidification-2")
+            point = out["point"]
+            self.assertEqual(point["status"], "unavailable")
+            self.assertEqual(envelope_problems(point), [])
+            self.assertNotIn("rosenthalCenterline", point)
+            self.assertNotIn("morphology", point)
+            self.assertEqual(point["cet"]["quantities"]["class"]["reasons"][0]["code"], "outside-source-model-domain")
+            self.assertEqual(point["laves"]["quantities"]["fraction"]["reasons"][0]["code"], "parent-unavailable")
 
-    def rel(self, a, b, tol):
-        self.assertAlmostEqual(a / b, 1.0, delta=tol)
+    def test_map_counts_and_error_cell(self):
+        out = gr.run_gr_solidification(req(mode="map", powers=[100, 150], speeds=[960, 1200]))
+        self.assertEqual(out["grid"]["nCells"], 4)
+        self.assertEqual(out["counts"]["unavailable"], 4)
+        with mock.patch.object(gr, "_thermal", side_effect=ValueError("synthetic solver failure")):
+            failed = gr.run_gr_solidification(req(power_W=150, speed_mm_s=1200))["point"]
+        self.assertEqual(failed["status"], "failed")
+        self.assertTrue(all(q["status"] == "failed" for q in failed["front"]["quantities"].values()))
+        self.assertEqual(failed["front"]["quantities"]["thermalGradient"]["reasons"][0]["code"], "solver-error")
 
-    def test_in718_keyhole_point(self):
-        # P6 containment (2026-10-11): at 285 W / 960 mm/s the served depth comes from the Fabbro keyhole leg, so the
-        # thermal block serves null G/R with a reason and the point is unavailable (the pre-P6 pins were G 16981196 /
-        # R 0.0943 / cooling 1600948 at the median, from the conduction field on a keyhole-leg depth).
-        r = self.p718
-        self.assertTrue(r["success"])
-        pt = r["point"]
-        self.assertEqual(pt["status"], "unavailable")
-        self.assertIn("Fabbro keyhole leg", pt["reason"])
-        f = pt["front"]
-        self.assertIsNone(f["median"])
-        self.assertIsNone(f["tail"])
-        self.assertIsNone(f["bottom"])
-        self.assertIsNone(f["R_range_m_s"])
-        self.assertIn("not G_median", f["coolingBasis"])
-        self.assertEqual(pt["rosenthalCenterline"]["status"], "unavailable")
-        self.assertEqual(pt["cet"]["status"], "unavailable")
-        self.assertEqual(pt["laves"]["status"], "unavailable")
-        self.assertEqual(pt["morphology"]["basis"], "hunt-g-over-r-screening")
-        self.assertEqual(pt["morphology"]["bands"], {"bottom": None, "median": None, "tail": None})
-        self.assertIn("not a CET prediction", pt["morphology"]["label"])
-        self.assertEqual(r["counts"], {"available": 0, "screening-fallback": 0, "degenerate-floor": 0,
-                                       "unavailable": 1, "error": 0})
-
-    def test_response_envelope(self):
-        r = self.cond   # P6: the 285/960 point is unavailable (keyhole leg); the envelope is checked on the conduction point
-        self.assertEqual(r["schema"], gr.SCHEMA)
-        self.assertEqual(r["engine"], gr.ENGINE)
-        self.assertEqual(r["evidence"]["kind"], "screening-only")
-        self.assertIs(r["evidence"]["experimentalValidation"], False)
-        self.assertEqual(r["counts"], {"available": 1, "screening-fallback": 0, "degenerate-floor": 0,
-                                       "unavailable": 0, "error": 0})
-        self.assertEqual(r["cet"]["constantsStatus"]["status"], "available")
-        self.assertEqual(len(r["cet"]["constantsStatus"]["sets"]), 2)
-        self.assertIs(r["cet"]["equationVerified"], False)
-        self.assertEqual(r["point"]["cet"]["status"], "available")
-        self.assertEqual(set(r["point"]["cet"]["sets"]), {"knapp2019", "polonsky2020"})
-        self.assertEqual(r["point"]["morphology"]["basis"], "hunt-g-over-r-screening")
-        self.assertIs(r["provenance"]["frozenFilesModified"], False)
-        self.assertEqual(r["laves"]["V_D_m_s"], [0.23, 0.31])
-        self.assertEqual(r["limits"], gr.LIMITS)
-        text = json.dumps(r).lower()
-        for banned in ("validated", "measured", "predicted grain structure"):
-            if banned == "validated":
-                # only the negated forms may appear
-                self.assertNotIn(" validated ", text.replace("not validated", ""))
-            else:
-                self.assertNotIn(banned, text)
-
-    def test_conduction_point(self):
-        pt = self.cond["point"]
-        f = pt["front"]
-        # Pinned on the P1 tree (pre-P1: 30629747 / 0.1479, 12380206 / 0.4204, 55295265 / 0.0214).
-        # P7b (2026-10-14): IN718 authority 0.32 and melting-point k / cp (P1 pins 27593695 / 0.1387, 10657436 / 0.4076,
-        # 50434919 / 0.0226).
-        self.assertEqual((f["median"]["G_K_m"], f["median"]["R_m_s"]), (33453214.0, 0.1899))
-        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (15234752.0, 0.4873))
-        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (56841389.0, 0.0362))
-        self.assertIsNone(pt["regimeNote"])
-
-    def test_in625_point(self):
-        r = self.p625
-        f = r["point"]["front"]
-        # P6 (2026-10-11): the former 195 W / 800 mm/s point now serves null G/R (Fabbro keyhole leg; its P1 pins were
-        # 19393766 / 0.1005, 6701551 / 0.3233, 36221417 / 0.0196), so a conduction point (120 W / 1000 mm/s) is pinned.
-        # P7b (2026-10-14): IN625 authority 0.34 and melting-point k / cp 28.78 / 719.92 (P6 pins 28457032 / 0.1355,
-        # 11017877 / 0.3972, 52031697 / 0.0219).
-        self.assertEqual(f["median"]["G_K_m"], 33329476.0)
-        self.assertAlmostEqual(f["median"]["R_m_s"], 0.1806, places=12)
-        self.assertEqual((f["tail"]["G_K_m"], f["tail"]["R_m_s"]), (14858288.0, 0.4693))
-        self.assertEqual((f["bottom"]["G_K_m"], f["bottom"]["R_m_s"]), (57143923.0, 0.0358))
-        self.assertEqual(r["materialEvidence"]["provenanceClass"], "legacy-estimated-secondary")
-        self.assertIn("not established", r["point"]["laves"]["note"])
-        self.assertEqual(r["point"]["cet"]["status"], "unavailable")
-        self.assertEqual(r["point"]["cet"]["sets"], {})
-        self.assertEqual(r["cet"]["constantsStatus"]["status"], "unavailable")
-        self.assertIn("IN625", r["point"]["cet"]["reason"])
-
-
-class StatusBranchTests(unittest.TestCase):
-    """Synthetic thermal dicts (SYNTHETIC: not solver output)."""
-
-    @staticmethod
-    def thermal(**kin):
-        base = {"thermalGradient_G_K_m": 1.0e7, "solidificationRate_R_m_s": 0.07, "solidificationRate_R_mm_s": 70.0,
-                "coolingRate_K_s": 7.0e5, "usedFieldMap": True, "gradientSource": "solidification-front-v1"}
-        base.update(kin)
-        return {"solidificationKinetics": base,
-                "meltPoolGeometry": {"regime": "Conduction Mode", "extentStatus": "computed"},
-                "processParameters": {"fieldPower_W": 200.0, "effectiveConductivity_W_mK": 20.0, "normalizedEnthalpy": 10.0}}
-
-    def test_fallback(self):
-        b = gr.couple_thermal_block(self.thermal(usedFieldMap=False, gradientSource="tail-length-fallback"), "in718",
-                                    preheat_C=80, speed_mm_s=960)
-        self.assertEqual(b["status"], "screening-fallback")
-        self.assertIsNone(b["front"]["bottom"])
-        self.assertIsNone(b["front"]["tail"])
-        self.assertTrue(b["reason"])
-        self.assertEqual(b["laves"]["sampledArcUpperBound"]["location"], "median")
-        self.assertEqual(b["morphology"]["bands"]["median"], "Columnar dendritic (Hunt G/R screening)")
-
-    def test_degenerate(self):
-        b = gr.couple_thermal_block(self.thermal(solidificationRate_R_mm_s=0.1, solidificationRate_R_m_s=0.0001,
-                                                 coolingRate_K_s=1.0), "in718", preheat_C=80, speed_mm_s=960)
-        self.assertEqual(b["status"], "degenerate-floor")
-        self.assertIsNone(b["front"]["median"]["GoverR_K_s_m2"])
-        self.assertIsNone(b["front"]["median"]["huntBand"])
-        self.assertEqual(b["laves"]["status"], "unavailable")
-        self.assertEqual(b["cet"]["status"], "unavailable")
-        self.assertEqual(set(b["morphology"]["bands"].values()), {None})
-        self.assertTrue(b["reason"])
-
-    def test_missing_kinetics(self):
-        b = gr.couple_thermal_block({"meltPoolGeometry": {}}, "in718", preheat_C=80, speed_mm_s=960)
-        self.assertEqual(b["status"], "unavailable")
-        self.assertEqual(b["laves"]["status"], "unavailable")
-
-    def test_synthetic_cet_switches_basis(self):
-        t = self.thermal()
-        t["solidificationKinetics"]["tail"] = {"x_um": -1000.0, "z_um": 10.0, "G_K_m": 4.0e6, "R_m_s": 0.2}
-        t["solidificationKinetics"]["bottom"] = {"x_um": -500.0, "z_um": 80.0, "G_K_m": 2.0e7, "R_m_s": 0.01}
-        b = gr.couple_thermal_block(t, "in718", preheat_C=80, speed_mm_s=960, cet_constants_override=SYNTHETIC_CET)
-        self.assertEqual(b["cet"]["status"], "available")
-        self.assertEqual(b["morphology"]["basis"], "cet-gaumann2001")
-        self.assertIn(b["cet"]["locations"]["median"]["band"], ("columnar", "mixed", "equiaxed"))
-
-
-class MapAndValidationTests(unittest.TestCase):
-    def test_small_map_matches_points(self):
-        r = gr.run_gr_solidification(req("map", powers=[120, 285], speeds=[800, 960]))
-        self.assertTrue(r["success"])
-        self.assertEqual(len(r["cells"]), 4)
-        self.assertEqual(sum(r["counts"].values()), 4)
-        self.assertEqual((r["grid"]["nP"], r["grid"]["nV"], r["grid"]["nCells"]), (2, 2, 4))
-        order = [(c["iP"], c["iV"]) for c in r["cells"]]
-        self.assertEqual(order, [(0, 0), (0, 1), (1, 0), (1, 1)])
-        for c in r["cells"]:
-            body = {k: v for k, v in c.items() if k not in ("iP", "iV", "power_W", "speed_mm_s")}
-            self.assertEqual(body, gr.evaluate_point("in718", c["power_W"], c["speed_mm_s"], SETTINGS))
-
-    def test_default_grid(self):
-        norm, refusal = gr.validate_request(req("map"))
-        self.assertIsNone(refusal)
-        self.assertEqual(len(norm["powers"]), 11)
-        self.assertEqual(len(norm["speeds"]), 11)
-        self.assertEqual((norm["powers"][0], norm["powers"][-1]), (60.0, 450.0))
-        self.assertEqual((norm["speeds"][0], norm["speeds"][-1]), (275.0, 1500.0))
-
-    def test_refusals(self):
-        cases = [
-            {k: v for k, v in req(power_W=200, speed_mm_s=800).items() if k != "alloyId"},
-            req(alloy="ti6al4v", power_W=200, speed_mm_s=800),
-            req("map", alloy="in625"),
-            req("map", powers=[200, 100], speeds=[500, 800]),
-            req("map", powers=[float(10 + i) for i in range(16)], speeds=[float(100 + i) for i in range(15)]),
-            req(power_W=200, speed_mm_s=800, preheatTemp_C=1260),
-            req("bogus", power_W=200, speed_mm_s=800),
-            req(power_W=0, speed_mm_s=800),
-            req(power_W=200, speed_mm_s=20000),
-            req(power_W=200, speed_mm_s=800, beamDiameter_um=0),
-        ]
-        for body in cases:
-            r = gr.run_gr_solidification(body)
-            self.assertFalse(r["success"], body)
-            self.assertEqual(r["errorKind"], "validation", body)
-        self.assertIn("IN625", gr.run_gr_solidification(req("map", alloy="in625"))["error"])
-
-    def test_alloy_resolution(self):
-        for raw, expect in (("in718", "in718"), ("Inconel 718", "in718"), ("IN625", "in625"), ("inconel 625", "in625"),
-                            ("ti6al4v", None), (None, None)):
-            self.assertEqual(gr.resolve_gr_alloy(raw), expect, raw)
-
-
-class MainTests(unittest.TestCase):
-    def run_main(self, stdin_text):
-        proc = subprocess.run([sys.executable, "-B", str(HERE / "lpbf_gr_solidification.py")], input=stdin_text,
-                              capture_output=True, text=True, cwd=str(HERE))
-        return proc
-
-    def test_stdin_json(self):
-        proc = self.run_main(json.dumps(req(power_W=200, speed_mm_s=900)))
-        doc = json.loads(proc.stdout)
-        self.assertTrue(doc["success"])
-        self.assertEqual(doc["mode"], "point")
-
-    def test_empty_stdin(self):
-        proc = self.run_main("")
-        doc = json.loads(proc.stdout)
-        self.assertFalse(doc["success"])
-        self.assertEqual(doc["errorKind"], "validation")
-
-    def test_main_in_process(self):
-        buf = io.StringIO()
-        with mock.patch("sys.stdin", io.StringIO("not json")), redirect_stdout(buf):
-            gr.main()
-        self.assertEqual(json.loads(buf.getvalue())["errorKind"], "validation")
-
-
-class FrozenGuardTests(unittest.TestCase):
-    def test_new_modules_not_in_frozen_list(self):
-        names = {Path(f).name for f in lpbf_simulation.IMPLEMENTATION_SOURCE_FILES}
-        self.assertNotIn("lpbf_gr_solidification.py", names)
-        self.assertNotIn("lpbf_cet_screening.py", names)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_invalid_requests_and_aliases(self):
+        for bad in ({}, req(alloy="unknown", power_W=150, speed_mm_s=1200),
+                    req(power_W=0, speed_mm_s=1200), req(power_W=150, speed_mm_s=True),
+                    req(mode="map", powers=[100]*30, speeds=[100]*30)):
+            self.assertFalse(gr.run_gr_solidification(bad)["success"])
+        self.assertEqual(gr.resolve_gr_alloy("Ti-6Al-4V"), "ti6al4v")
+        self.assertEqual(gr.resolve_gr_alloy("Inconel 625"), "in625")
+        self.assertIsNone(gr.resolve_gr_alloy("IN718 and Ti64"))

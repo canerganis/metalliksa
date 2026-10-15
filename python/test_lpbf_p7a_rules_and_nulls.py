@@ -371,49 +371,44 @@ class Ladder(unittest.TestCase):
             self.assertEqual(sorted((set(plain["blockingGates"]) | set(plain["riskGates"])) - {"lof_tang", "keyhole"}), [], kw)
 
     def test_pdas_band(self):
-        x = (1e6 ** -0.5) * (0.5 ** -0.25)
-        band = sf.pdas_band_um(1e6, 0.5, "in718")
-        self.assertIsNotNone(band["pdasBand_um"])
+        # SOL-A1 (2026-10-15): the equation-derived coefficients (SPEC A3.A2) and the fixed-G line admission (SPEC
+        # 5.2, A3.A4) replace the caption values and the x/cooling box; canonical alloy IDs only; reason codes, no
+        # sentence. The full pair and predicate set is in test_cet_and_pdas_admission.
+        x = (1e7 ** -0.5) * (0.05 ** -0.25)
+        band = sf.pdas_band_um(1e7, 0.05, "in718")
         self.assertEqual(sorted(band["pdasBand_um"]), ["hunt", "kurzFisher"])
-        self.assertAlmostEqual(band["pdasBand_um"]["hunt"], 9.56e-4 * x * 1e6, delta=1e-9 * 1.137)
-        self.assertAlmostEqual(band["pdasBand_um"]["kurzFisher"], 2.6e-3 * x * 1e6, delta=1e-9 * 3.092)
-        self.assertAlmostEqual(band["pdasBand_um"]["hunt"], 1.137, places=3)
-        self.assertAlmostEqual(band["pdasBand_um"]["kurzFisher"], 3.092, places=3)
+        self.assertAlmostEqual(band["pdasBand_um"]["hunt"], 1.1773863284676703e-3 * x * 1e6, delta=1e-12)
+        self.assertAlmostEqual(band["pdasBand_um"]["kurzFisher"], 2.5821435943712695e-3 * x * 1e6, delta=1e-12)
         self.assertFalse(band["pdasOutOfRange"])
-        self.assertIn("Ghosh", band["pdasBasis"])
-        self.assertNotIn("2.1e-3", band["pdasBasis"])
-        self.assertIsNotNone(sf.pdas_band_um(1e6, 0.5, "Inconel 625")["pdasBand_um"])
-        # x below 4e-4 (G 1e7, R 0.5: 3.76e-4), above 1.2e-3 (G 1e5, R 0.5: 3.76e-3) and cooling outside 5e4 to 3e6.
-        for G, R, cool in ((1e7, 0.5, None), (1e5, 0.5, None), (1e6, 0.5, 1e4), (1e6, 0.5, 5e6)):
+        self.assertEqual([s["id"] for s in band["sources"]], ["ghosh2017"])
+        self.assertNotIn("pdasBasis", band)
+        self.assertIsNotNone(sf.pdas_band_um(1e7, 0.05, "in625")["pdasBand_um"])
+        # The former admitted anchor G 1e6, R 0.5 is off the source line; x and cooling outside their ranges on it.
+        for G, R, cool in ((1e6, 0.5, None), (1e7, 0.5, None), (1e7, 0.002, None), (1e7, 0.05, 1e4), (1e7, 0.05, 5e6)):
             out = sf.pdas_band_um(G, R, "in718", cool)
             self.assertIsNone(out["pdasBand_um"], (G, R, cool))
             self.assertTrue(out["pdasOutOfRange"], (G, R, cool))
-            self.assertIn("validity range", out["pdasUnavailableReason"])
-        for alloy in ("316L Stainless Steel", "Ti-6Al-4V", "AlSi10Mg", "ss316l"):
-            out = sf.pdas_band_um(1e6, 0.5, alloy)
+            self.assertEqual([r["code"] for r in out["reasons"]], ["outside-source-model-domain"])
+        for alloy in ("ss316l", "ti6al4v", "alsi10mg"):
+            out = sf.pdas_band_um(1e7, 0.05, alloy)
             self.assertIsNone(out["pdasBand_um"], alloy)
             self.assertIsNone(out["pdasOutOfRange"], alloy)
-            self.assertIn("no sourced PDAS parameters", out["pdasUnavailableReason"])
-        # evaluate_solidification: no scalar, SDAS null for every alloy, the former keywords still accepted.
+            self.assertEqual([r["code"] for r in out["reasons"]], ["missing-source-bound-model"])
+        for alias in ("316L Stainless Steel", "Inconel 625"):
+            self.assertEqual([r["code"] for r in sf.pdas_band_um(1e7, 0.05, alias)["reasons"]], ["unknown-alloy-alias"])
+        # evaluate_solidification: no scalar, every front quantity null (SOL-A1), no legacy keywords.
         from eagar_tsai_solver import EagarTsaiField
         field = EagarTsaiField(80.0, 76.0, 25.0, 5.5e-6, 40e-6).bind_speed(0.8)
         for mat in ("Inconel 718", "316L Stainless Steel", "Ti-6Al-4V"):
-            kin = sf.evaluate_solidification(field.temperature_C, T_liq=1336.0, T_sol=1260.0, t_surface=2400.0, v_scan=0.8,
-                                             x_rear=-150e-6, x_front=50e-6, search_depth=80e-6, r_beam=40e-6, cos_theta=1.0,
-                                             pdas_A1=1.0, sdas_B1=50.0, material_name=mat)
-            self.assertIsNone(kin["primaryDendriteArmSpacing_PDAS_um"], mat)
-            self.assertIsNone(kin["secondaryDendriteArmSpacing_SDAS_um"], mat)
-            self.assertIn("no sourced SDAS prefactor", kin["sdasUnavailableReason"])
-            self.assertIn("pdasBand_um", kin)
+            kin = sf.evaluate_solidification(field.temperature_C, T_liq=1336.0, v_scan=0.8, x_rear=-150e-6,
+                                             search_depth=80e-6, r_beam=40e-6, material_name=mat)
+            self.assertIsNone(kin["quantities"]["pdas"]["value"], mat)
+            self.assertIsNone(kin["quantities"]["sdas"]["value"], mat)
+            self.assertIn("missing-source-bound-model", [r["code"] for r in kin["quantities"]["sdas"]["reasons"]])
         for mat in ("Inconel 718", "316L Stainless Steel", "AlSi10Mg", "Inconel 625"):
             th = solver.calculate_meltpool_physics(mat, 150.0, 1200.0, 80.0, 80.0, 40.0, 100.0, "IR_1064nm")
-            kin = th["solidificationKinetics"]
-            self.assertIsNone(kin["primaryDendriteArmSpacing_PDAS_um"], mat)
-            self.assertIsNone(kin["secondaryDendriteArmSpacing_SDAS_um"], mat)
-            if mat in ("Inconel 718", "Inconel 625") and kin["thermalGradient_G_K_m"] is not None:
-                self.assertIsNotNone(kin["pdasOutOfRange"], mat)
-            else:
-                self.assertIsNone(kin["pdasBand_um"], mat)
+            for name, q in th["solidificationKinetics"]["quantities"].items():
+                self.assertIsNone(q["value"], (mat, name))
 
     def test_citations(self):
         hits = []
@@ -469,7 +464,7 @@ class Ladder(unittest.TestCase):
     def test_assumptions_and_revision(self):
         from lpbf_job_cache import BUILD_JOB_SOLVER_REVISION
         # P7b (2026-10-14): v25.
-        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p7b-sourced-constants-v25")
+        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-sola1-v26")
         job = bj.solve_lpbf_build_job({"alloyId": "in718", "laserPower_W": 285, "scanSpeed_mm_s": 960,
                                        "hatchSpacing_um": 110, "layerThickness_um": 40, "bypassCache": True})
         text = " ".join(job["assumptions"])
@@ -480,8 +475,8 @@ class Ladder(unittest.TestCase):
         self.assertEqual(job["verdict"]["verdictBasis"], "sourced-criteria-only")
         self.assertIn("suggestedPatchAdvisories", job["verdict"])
         micro = job["microstructure"]
-        self.assertIn("pdasBand_um", micro)
-        self.assertIsNone(micro.get("SDAS_um"))
+        self.assertIn("pdas", micro["quantities"])
+        self.assertIsNone(micro["quantities"]["sdas"]["value"])
 
 
 if __name__ == "__main__":

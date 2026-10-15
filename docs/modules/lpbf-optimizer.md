@@ -70,12 +70,12 @@ Background work: none; resources: fetch.
 ## Source references
 
 - `src/components/LpbfBayesianOptimizerLab.tsx::LpbfBayesianOptimizerLab`
-- `src/services/pythonComputationService.ts:395-407#lpbf-bayesian-optimize`
+- `src/services/pythonComputationService.ts::PythonComputationService.runLpbfBayesianOptimization`
 - `routes/physics.ts:73-74#120000`
 - `python/lpbf_bayesian_optimizer.py::run_bayesian_optimization`
 - `python/lpbf_bayesian_optimizer.py:307-334#nIterations`
 - `src/components/LpbfProcessWindowMap.tsx::LpbfProcessWindowMap`
-- `src/services/pythonComputationService.ts:861-865#lpbf-process-window`
+- `src/services/pythonComputationService.ts::PythonComputationService.runLpbfProcessWindow`
 - `routes/physics.ts:87-87#60000`
 - `python/lpbf_process_window.py::run_process_window`
 - `python/lpbf_process_window.py:37-37#MAX_CELLS = 225`

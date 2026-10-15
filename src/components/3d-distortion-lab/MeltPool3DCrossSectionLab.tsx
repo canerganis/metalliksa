@@ -57,7 +57,7 @@ import { STRESS_PROXY_LABEL, STRESS_PROXY_UNIT_NOTE } from "../../utils/residual
 import { resolveDepthBiasWarning } from "../../utils/depthBiasWarning";
 import { PublishedTrackBands } from "../PublishedTrackBands";
 import { DISTORTION_HEURISTIC_NOTE } from "../../utils/distortionHeuristic";
-import { pdasBandText } from "../../utils/pdasBandText";
+import { SolidificationQuantities } from "../SolidificationQuantities";
 
 export interface MeltPool3DCrossSectionProps {
   initialPower_W?: number;
@@ -1229,68 +1229,11 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
                 <h4 className="text-xs font-bold text-white">Solidification Kinetics &amp; Microstructure</h4>
               </div>
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                {pyResult?.solidificationKinetics.modelId || "solidification-front-v1"}
+                {pyResult?.solidificationKinetics.modelId}
               </span>
             </div>
 
-            {pyResult && (
-              <div className="space-y-1.5 text-[11px] text-slate-300">
-                <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">Interface (rear liquidus, conduction field):</span>
-                  <span className="font-bold text-white">
-                    {pyResult.solidificationKinetics.usedFieldMap ? "sampled" : "not served"}
-                    {pyResult.solidificationKinetics.frontPointCount
-                      ? ` · ${pyResult.solidificationKinetics.frontPointCount} stations`
-                      : ""}
-                  </span>
-                </div>
-                {pyResult.solidificationKinetics.unavailableReason && (
-                  <p className="text-[10px] text-amber-300 leading-snug" data-testid="solidification-unavailable-reason">
-                    G, R, cooling rate, PDAS, SDAS and morphology not served: {pyResult.solidificationKinetics.unavailableReason}
-                  </p>
-                )}
-                <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">Thermal Gradient (G, median):</span>
-                  <span className="font-bold text-white">{typeof pyResult.solidificationKinetics.thermalGradient_G_K_um === "number" ? `${pyResult.solidificationKinetics.thermalGradient_G_K_um} K/μm` : "n/a"}</span>
-                </div>
-                <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">Solidification Rate (R = v·n_x):</span>
-                  <span className="font-bold text-emerald-400">{typeof pyResult.solidificationKinetics.solidificationRate_R_mm_s === "number" ? `${pyResult.solidificationKinetics.solidificationRate_R_mm_s} mm/s` : "n/a"}</span>
-                </div>
-                <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">Cooling Rate (dT/dt = G·R):</span>
-                  <span className="font-bold text-cyan-400">{typeof pyResult.solidificationKinetics.coolingRate_K_s === "number" ? `${pyResult.solidificationKinetics.coolingRate_K_s.toExponential(2)} K/s` : "n/a"}</span>
-                </div>
-                <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">G/R (Hunt class):</span>
-                  <span className="font-bold text-sky-300">{typeof pyResult.solidificationKinetics.g_over_r_ratio === "number" ? `${pyResult.solidificationKinetics.g_over_r_ratio.toExponential(2)} K·s/m²` : "n/a"}</span>
-                </div>
-                <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">PDAS band (Ghosh 2017, Ni-Nb):</span>
-                  <span className="font-bold text-purple-300 text-right max-w-[58%]">{pdasBandText(pyResult.solidificationKinetics)}</span>
-                </div>
-                <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">SDAS:</span>
-                  <span className="font-bold text-fuchsia-300 text-right max-w-[58%]">{typeof pyResult.solidificationKinetics.secondaryDendriteArmSpacing_SDAS_um === "number" ? `${pyResult.solidificationKinetics.secondaryDendriteArmSpacing_SDAS_um} μm` : `n/a (${pyResult.solidificationKinetics.sdasUnavailableReason ?? "no sourced SDAS prefactor"})`}</span>
-                </div>
-                <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-400">Predicted Microstructure:</span>
-                  <span className="font-bold text-emerald-300">{pyResult.solidificationKinetics.microstructureMorphology ?? "n/a"}</span>
-                </div>
-                {pyResult.solidificationKinetics.phaseTransformation?.expected && (
-                  <div className="flex justify-between py-0.5 border-b border-slate-800/60">
-                    <span className="text-slate-400">Phase note:</span>
-                    <span className="font-bold text-amber-200 text-right max-w-[58%]">
-                      {pyResult.solidificationKinetics.phaseTransformation.expected.replace(/_/g, " ")}
-                    </span>
-                  </div>
-                )}
-                <p className="text-[10px] text-slate-500 leading-snug pt-1">
-                  {pyResult.solidificationKinetics.disclaimer
-                    || "Hunt-class G/R from the conduction isotherm. Not a Build Job input."}
-                </p>
-              </div>
-            )}
+            {pyResult && <SolidificationQuantities container={pyResult.solidificationKinetics} />}
           </div>
 
           {/* Multi-Defect Overlap Diagnostics */}

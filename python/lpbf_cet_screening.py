@@ -23,7 +23,7 @@ is "columnar", G <= G_crit(V, 0.49) is "equiaxed", anything between is "mixed". 
 Sources
   GA01  M. Gäumann, C. Bezençon, P. Canalis, W. Kurz, Acta Mater. 49 (2001) 1051-1062,
         DOI 10.1016/S1359-6454(00)00367-0. The DOI was confirmed against a Crossref-cited record. The paper was NOT
-        read for this design: EQUATION_VERIFIED is False and the equation number (locator) is unset until the
+        read for this design: sourceChecks.equationRead is not-read and the locator is unset until the
         maintainer reads the PDF. The Knapp form is verified separately, per set (see CET_SETS).
   KN19  A. Knapp et al., Additive Manufacturing 25 (2019) 511-521, DOI 10.1016/j.addma.2018.12.001. Eq. 12 and the
         Hunt phi limits are on p. 514, the constants and the printed G^2R limits on p. 515.
@@ -62,8 +62,12 @@ SOURCES: Dict[str, Dict[str, str]] = {
 }
 
 EQUATION = "G^n/V = a*[(1/(n+1))*(-4*pi*N0/(3*ln(1-phi)))^(1/3)]^n"
-EQUATION_VERIFIED = False  # GA01 PDF not read. Per-set flag: CET_SETS["in718"]["knapp2019"]["equationVerified"]
-EQUATION_LOCATOR: Optional[str] = None  # equation number in GA01, to be filled by the maintainer after reading the PDF
+SOURCE_CHECKS = {
+    "equationRead": {"status": "not-read", "locator": None},
+    "algebraReproduced": {"status": "not-attempted", "test": None},
+    "printedLimitComparison": {"status": "not-attempted", "printed": None, "computed": None, "tolerance": None},
+}
+
 
 def _c(value: Optional[float], unit: str, source: Optional[str], locator: Optional[str], *, verified: bool) -> Dict[str, Any]:
     return {"value": value, "unit": unit, "source": source, "locator": locator, "verified": verified}
@@ -91,7 +95,7 @@ CET_SETS: Dict[str, Dict[str, Dict[str, Any]]] = {
             "source": "KN19",
             "citation": SOURCES["KN19"]["citation"],
             "doi": SOURCES["KN19"]["doi"],
-            "equationVerified": True,
+
             "equationLocator": "Knapp 2019 p. 514, Eq. 12",
             "verifiedBy": "Printed G^2R limits reproduced: 1.52e11 at phi 0.0066 and 6.98e9 at phi 0.49 (p. 515).",
             "phiColumnar": 0.0066,
@@ -111,7 +115,7 @@ CET_SETS: Dict[str, Dict[str, Dict[str, Any]]] = {
             "source": "PO20",
             "citation": SOURCES["PO20"]["citation"],
             "osti": SOURCES["PO20"]["osti"],
-            "equationVerified": False,
+
             "equationLocator": "Polonsky 2020 Sec 3.3, Eq. 4 (Gaumann form) and Eq. 5",
             "verifiedBy": None,
             "phiColumnar": 0.0066,
@@ -130,6 +134,19 @@ CET_SETS: Dict[str, Dict[str, Dict[str, Any]]] = {
     },
     "in625": {},
 }
+
+for _set_id, _entry in CET_SETS["in718"].items():
+    _knapp = _set_id == "knapp2019"
+    _entry["sourceChecks"] = {
+        "equationRead": {"status": "read", "locator": _entry["equationLocator"]},
+        "algebraReproduced": {"status": "reproduced", "test": "test_lpbf_gr_solidification.CetTests.test_source_set_algebra_reproduced"},
+        "printedLimitComparison": {
+            "status": "agrees" if _knapp else "not-available",
+            "printed": [1.52e11, 6.98e9] if _knapp else None,
+            "computed": [152010043633.87595, 6977525390.911521] if _knapp else None,
+            "tolerance": 0.01 if _knapp else None,
+        },
+    }
 
 # Reference only: CMSX-4 constants quoted by Polonsky Sec 3.3 / Table 2 from Gaumann. Never used for IN718 or IN625.
 CMSX4_REFERENCE: Dict[str, Any] = {
@@ -161,10 +178,13 @@ UNKNOWN_ALLOY_REASON = "No CET constants registry entry for this alloy."
 
 def _set_complete(entry: Mapping[str, Any]) -> bool:
     consts = entry.get("constants") or {}
-    return all(
+    return entry.get("sourceChecks", {}).get("equationRead", {}).get("status") == "read" and all(
         consts.get(k) is not None
         and consts[k].get("verified") is True
-        and consts[k].get("value") is not None
+        and isinstance(consts[k].get("value"), (int, float))
+        and not isinstance(consts[k]["value"], bool)
+        and math.isfinite(consts[k]["value"])
+        and consts[k]["value"] > 0
         and consts[k].get("source")
         and consts[k].get("locator")
         for k in ("a", "n", "N0")
@@ -219,6 +239,8 @@ def critical_gradient_K_m(v_m_s: float, phi: float, *, a: float, n: float, n0_m3
 
 def cet_band(g_K_m: float, v_m_s: float, constants: Mapping[str, float]) -> Dict[str, Any]:
     """{"band": "columnar"|"mixed"|"equiaxed", "G_columnar_K_m", "G_equiaxed_K_m"}; constants keys a, n, N0."""
+    if isinstance(g_K_m, bool) or not isinstance(g_K_m, (int, float)) or not math.isfinite(g_K_m) or g_K_m <= 0:
+        raise ValueError("G must be finite and positive")
     kw = {"a": constants["a"], "n": constants["n"], "n0_m3": constants["N0"]}
     g_col = critical_gradient_K_m(v_m_s, PHI_COLUMNAR, **kw)
     g_eq = critical_gradient_K_m(v_m_s, PHI_EQUIAXED, **kw)
@@ -253,25 +275,17 @@ def cet_block(alloy_id: str, points: Mapping[str, Optional[Tuple[float, float]]]
     points maps a location name to (G_K_m, R_m_s) or None. With the registry, the result carries one entry per sourced
     set under "sets" (each with its own locations) and the top-level "locations" stay None. constants_override
     (keys a, n, N0) is for tests only and fills the top-level "locations" with no "sets"."""
-    if constants_override is not None:
-        return {"status": "available", "reason": None, "locations": _locations(points, constants_override), "sets": {}}
-    status = cet_constants(alloy_id)
-    if status["status"] != "available":
-        return {"status": "unavailable", "reason": status["reason"], "locations": {k: None for k in points}, "sets": {}}
-    sets: Dict[str, Any] = {}
-    for entry in status["sets"]:
-        consts = {k: entry["constants"][k]["value"] for k in ("a", "n", "N0")}
-        sets[entry["id"]] = {"label": entry["label"], "transferLabel": entry["transferLabel"],
-                             "locations": _locations(points, consts)}
-    return {"status": "available", "reason": None, "locations": {k: None for k in points}, "sets": sets}
+    from quantity_envelope import reason, reason_text
+    return {"status": "unavailable", "reason": reason_text("outside-source-model-domain"),
+            "reasons": [reason("outside-source-model-domain")],
+            "locations": {k: None for k in points}, "sets": {}}
 
 
 def criterion_view() -> Dict[str, Any]:
     return {
         "modelId": MODEL_ID,
         "equation": EQUATION,
-        "equationVerified": EQUATION_VERIFIED,
-        "equationLocator": EQUATION_LOCATOR,
+        "sourceChecks": SOURCE_CHECKS,
         "phiColumnar": PHI_COLUMNAR,
         "phiEquiaxed": PHI_EQUIAXED,
         "sources": {k: dict(v) for k, v in SOURCES.items()},

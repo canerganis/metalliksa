@@ -1,3 +1,8 @@
+import { checkedQuantityContainer } from "../../data/quantityEnvelope";
+import type { QuantitySourceEvidenceKind } from "../../generated/quantityEnvelope";
+import { SolidificationQuantities } from "../SolidificationQuantities";
+import type { QuantityContainer } from "../../data/quantityEnvelope";
+import { QUANTITY_ENVELOPE } from "../../generated/quantityEnvelope";
 import React from "react";
 import { FlaskConical } from "lucide-react";
 
@@ -80,6 +85,9 @@ export interface BuildJobSegregationLike {
   status?: string;
   reason?: string | null;
   alloyId?: string | null;
+  schema?: string;
+  quantityEnvelopeSchema?: string;
+  sourceEvidenceKind?: QuantitySourceEvidenceKind | null;
   evidenceLabel?: string | null;
   k_Nb?: { value?: number | null; citation?: string | null; locator?: string | null } | null;
   band?: SegBandPoint[] | null;
@@ -101,15 +109,7 @@ export interface BuildJobSegregationLike {
   } | null;
   riskClass?: string | null;
   riskClassRule?: string | null;
-  processCoupling?: {
-    status?: string | null;
-    reason?: string | null;
-    G_K_m?: number | null;
-    R_m_s?: number | null;
-    morphology?: string | null;
-    PDAS_um?: number | null;
-    note?: string | null;
-  } | null;
+  processCoupling?: QuantityContainer | null;
   upperBoundNote?: string | null;
   sourceAgreementNote?: string | null;
   quantity?: string | null;
@@ -128,7 +128,7 @@ export interface BuildJobSegregationLike {
   lpbfObservations?: LpbfObservationsLike | null;
 }
 
-const KNOWN_STATUS = ["available", "unavailable", "not-applicable"];
+const KNOWN_STATUS: readonly string[] = QUANTITY_ENVELOPE.statuses;
 
 const fin = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 const pct = (v: unknown) => (fin(v) ? `${(v * 100).toFixed(1)} %` : "—");
@@ -144,7 +144,10 @@ export const BuildJobSegregationPanel: React.FC<{ segregation: unknown }> = ({ s
   const raw = asBlock(segregation);
   if (!raw) return null;
   // A block without a known status is never shown as available.
-  const known = typeof raw.status === "string" && KNOWN_STATUS.includes(raw.status);
+  let known = typeof raw.status === "string" && KNOWN_STATUS.includes(raw.status) && raw.schema === "lpbf-solidification-segregation-2";
+  if (known) {
+    try { checkedQuantityContainer(raw); } catch { known = false; }
+  }
   const s: BuildJobSegregationLike = known ? raw : { status: "unavailable", reason: "segregation block without a known status" };
   return (
     <section className="space-y-2 border-t border-[#162032] pt-3 mt-2" aria-labelledby={headingId} data-seg-status={s.status}>
@@ -152,12 +155,12 @@ export const BuildJobSegregationPanel: React.FC<{ segregation: unknown }> = ({ s
         <FlaskConical className="w-4 h-4 text-teal-400" aria-hidden="true" />
         <h4 id={headingId} className="text-xs font-bold text-white">Nb Segregation &amp; Laves (Scheil screening)</h4>
       </div>
-      {s.status === "not-applicable" ? (
+      {s.status === "not-requested" ? (
         <p className="text-[11px] text-slate-400" data-seg-note="not-applicable">Not applicable — {s.reason}</p>
-      ) : s.status !== "available" ? (
+      ) : s.status !== "computed" ? (
         <p className="text-[11px] text-slate-400" data-seg-note="unavailable">Unavailable — {s.reason}</p>
       ) : (
-        <AvailableBody s={s} />
+        <><SolidificationQuantities container={raw} frontOnly={false} /><AvailableBody s={s} /></>
       )}
     </section>
   );
@@ -166,7 +169,6 @@ export const BuildJobSegregationPanel: React.FC<{ segregation: unknown }> = ({ s
 const AvailableBody: React.FC<{ s: BuildJobSegregationLike }> = ({ s }) => {
   const band = Array.isArray(s.band) ? s.band : [];
   const pc = s.processCoupling ?? null;
-  const pcShown = pc && (pc.status === "available" || pc.status === "screening-fallback");
   const fe = s.feBaseSensitivity?.point ?? null;
   const v = s.validity ?? null;
   return (
@@ -262,17 +264,7 @@ const AvailableBody: React.FC<{ s: BuildJobSegregationLike }> = ({ s }) => {
           {s.sourceComparison?.c88Locator ? <span className="text-slate-500"> — {s.sourceComparison.c88Locator}</span> : null}
         </p>
       )}
-      <div className="text-[10px] text-slate-400" data-seg-coupling={pc?.status ?? "unavailable"}>
-        {pcShown ? (
-          <>
-            Process coupling (copied from the microstructure block): G = {fin(pc.G_K_m) ? pc.G_K_m.toExponential(2) : "—"} K/m, R ={" "}
-            {num(pc.R_m_s, 4)} m/s, {pc.morphology ?? "—"}, PDAS {num(pc.PDAS_um, 2)} µm.
-            {pc.status === "screening-fallback" && pc.reason ? ` Screening only — ${pc.reason}` : ""} {pc.note}
-          </>
-        ) : (
-          <>Process coupling unavailable — {pc?.reason ?? "no microstructure block"}</>
-        )}
-      </div>
+      {pc && <div data-seg-coupling><SolidificationQuantities container={pc} /></div>}
       {v && (
         <div className="rounded border border-amber-500/40 p-2 text-[10px] text-amber-200 space-y-1" role="note" data-seg-validity>
           {v.outsideSourceRegime && <p>Outside the source regime — {v.outsideSourceRegimeReason}</p>}
@@ -305,7 +297,7 @@ const span = (lo: unknown, hi: unknown, f: (v: unknown) => string) =>
   fin(lo) && fin(hi) && lo !== hi ? `${f(lo)} to ${f(hi)}` : f(lo);
 
 const RapidSolidificationBody: React.FC<{ r: RapidSolidificationLike }> = ({ r }) => {
-  const ok = r.status === "available" || r.status === "screening-fallback";
+  const ok = r.status === "computed" || r.status === "partial";
   const rows = Array.isArray(r.byVD) ? r.byVD : [];
   const labels = (rows[0]?.band ?? []).map((p) => p.label);
   const withCmax = Boolean(rows[0]?.band?.[0]?.pseudoTernaryAtCmax);
@@ -376,7 +368,7 @@ const RapidSolidificationBody: React.FC<{ r: RapidSolidificationLike }> = ({ r }
 };
 
 const LpbfObservationsBody: React.FC<{ o: LpbfObservationsLike }> = ({ o }) => {
-  if (o.status !== "available") {
+  if (o.status !== "computed") {
     return (
       <p className="text-[10px] text-slate-400" data-seg-lpbf="unavailable">
         LPBF observations: none — {o.reason}
@@ -385,7 +377,7 @@ const LpbfObservationsBody: React.FC<{ o: LpbfObservationsLike }> = ({ o }) => {
   }
   const c = o.comparison ?? null;
   return (
-    <div className="space-y-1 border-t border-[#162032] pt-2 text-[10px] text-slate-300" data-seg-lpbf="available">
+    <div className="space-y-1 border-t border-[#162032] pt-2 text-[10px] text-slate-300" data-seg-lpbf="computed">
       <p className="text-[11px] font-semibold text-slate-200">As-built LPBF observations ({o.evidenceKind})</p>
       <ul className="list-disc pl-4 space-y-0.5">
         {(o.observations ?? []).map((ob, i) => (

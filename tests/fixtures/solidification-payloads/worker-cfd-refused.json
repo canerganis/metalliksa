@@ -1,0 +1,316 @@
+{
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "normalizedEnthalpy": null,
+  "quantities": {
+    "coolingRate": {
+      "assumptions": [],
+      "dependsOn": [],
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      },
+      "labelSources": [],
+      "leafRole": "derived",
+      "numericalStatus": {
+        "residuals": {},
+        "settings": {},
+        "state": "not-assessed"
+      },
+      "physicalValidation": {
+        "experimentalValidation": false,
+        "productionReady": false,
+        "status": "unvalidated"
+      },
+      "quantityDefinition": "liquidus-front-cooling-rate",
+      "reasons": [
+        {
+          "code": "quarantined-legacy-path",
+          "params": {},
+          "parent": null
+        }
+      ],
+      "sourceEvidenceKind": null,
+      "sources": [],
+      "status": "unavailable",
+      "uncertainty": null,
+      "unit": "K/s",
+      "validity": null,
+      "value": null,
+      "weakestInputs": []
+    },
+    "gOverR": {
+      "assumptions": [],
+      "dependsOn": [],
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      },
+      "labelSources": [],
+      "leafRole": "derived",
+      "numericalStatus": {
+        "residuals": {},
+        "settings": {},
+        "state": "not-assessed"
+      },
+      "physicalValidation": {
+        "experimentalValidation": false,
+        "productionReady": false,
+        "status": "unvalidated"
+      },
+      "quantityDefinition": "liquidus-front-g-over-r",
+      "reasons": [
+        {
+          "code": "quarantined-legacy-path",
+          "params": {},
+          "parent": null
+        }
+      ],
+      "sourceEvidenceKind": null,
+      "sources": [],
+      "status": "unavailable",
+      "uncertainty": null,
+      "unit": "K*s/m^2",
+      "validity": null,
+      "value": null,
+      "weakestInputs": []
+    },
+    "morphology": {
+      "assumptions": [],
+      "dependsOn": [],
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      },
+      "labelSources": [],
+      "leafRole": "derived",
+      "numericalStatus": {
+        "residuals": {},
+        "settings": {},
+        "state": "not-assessed"
+      },
+      "physicalValidation": {
+        "experimentalValidation": false,
+        "productionReady": false,
+        "status": "unvalidated"
+      },
+      "quantityDefinition": "front-morphology",
+      "reasons": [
+        {
+          "code": "quarantined-legacy-path",
+          "params": {},
+          "parent": null
+        }
+      ],
+      "sourceEvidenceKind": null,
+      "sources": [],
+      "status": "unavailable",
+      "uncertainty": null,
+      "unit": "1",
+      "validity": null,
+      "value": null,
+      "weakestInputs": []
+    },
+    "normalSpeed": {
+      "assumptions": [],
+      "dependsOn": [],
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      },
+      "labelSources": [],
+      "leafRole": "derived",
+      "numericalStatus": {
+        "residuals": {},
+        "settings": {},
+        "state": "not-assessed"
+      },
+      "physicalValidation": {
+        "experimentalValidation": false,
+        "productionReady": false,
+        "status": "unvalidated"
+      },
+      "quantityDefinition": "liquidus-front-normal-speed",
+      "reasons": [
+        {
+          "code": "quarantined-legacy-path",
+          "params": {},
+          "parent": null
+        }
+      ],
+      "sourceEvidenceKind": null,
+      "sources": [],
+      "status": "unavailable",
+      "uncertainty": null,
+      "unit": "m/s",
+      "validity": null,
+      "value": null,
+      "weakestInputs": []
+    },
+    "pdas": {
+      "assumptions": [],
+      "dependsOn": [],
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      },
+      "labelSources": [],
+      "leafRole": "derived",
+      "numericalStatus": {
+        "residuals": {},
+        "settings": {},
+        "state": "not-assessed"
+      },
+      "physicalValidation": {
+        "experimentalValidation": false,
+        "productionReady": false,
+        "status": "unvalidated"
+      },
+      "quantityDefinition": "pdas-model-alternatives",
+      "reasons": [
+        {
+          "code": "quarantined-legacy-path",
+          "params": {},
+          "parent": null
+        }
+      ],
+      "sourceEvidenceKind": null,
+      "sources": [],
+      "status": "unavailable",
+      "uncertainty": null,
+      "unit": "m",
+      "validity": null,
+      "value": null,
+      "weakestInputs": []
+    },
+    "sdas": {
+      "assumptions": [],
+      "dependsOn": [],
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      },
+      "labelSources": [],
+      "leafRole": "derived",
+      "numericalStatus": {
+        "residuals": {},
+        "settings": {},
+        "state": "not-assessed"
+      },
+      "physicalValidation": {
+        "experimentalValidation": false,
+        "productionReady": false,
+        "status": "unvalidated"
+      },
+      "quantityDefinition": "sdas",
+      "reasons": [
+        {
+          "code": "quarantined-legacy-path",
+          "params": {},
+          "parent": null
+        }
+      ],
+      "sourceEvidenceKind": null,
+      "sources": [],
+      "status": "unavailable",
+      "uncertainty": null,
+      "unit": "m",
+      "validity": null,
+      "value": null,
+      "weakestInputs": []
+    },
+    "solidStateTransformation": {
+      "assumptions": [],
+      "dependsOn": [],
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      },
+      "labelSources": [],
+      "leafRole": "derived",
+      "numericalStatus": {
+        "residuals": {},
+        "settings": {},
+        "state": "not-assessed"
+      },
+      "physicalValidation": {
+        "experimentalValidation": false,
+        "productionReady": false,
+        "status": "unvalidated"
+      },
+      "quantityDefinition": "solid-state-transformation",
+      "reasons": [
+        {
+          "code": "quarantined-legacy-path",
+          "params": {},
+          "parent": null
+        }
+      ],
+      "sourceEvidenceKind": null,
+      "sources": [],
+      "status": "unavailable",
+      "uncertainty": null,
+      "unit": "1",
+      "validity": null,
+      "value": null,
+      "weakestInputs": []
+    },
+    "thermalGradient": {
+      "assumptions": [],
+      "dependsOn": [],
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      },
+      "labelSources": [],
+      "leafRole": "derived",
+      "numericalStatus": {
+        "residuals": {},
+        "settings": {},
+        "state": "not-assessed"
+      },
+      "physicalValidation": {
+        "experimentalValidation": false,
+        "productionReady": false,
+        "status": "unvalidated"
+      },
+      "quantityDefinition": "liquidus-front-thermal-gradient",
+      "reasons": [
+        {
+          "code": "quarantined-legacy-path",
+          "params": {},
+          "parent": null
+        }
+      ],
+      "sourceEvidenceKind": null,
+      "sources": [],
+      "status": "unavailable",
+      "uncertainty": null,
+      "unit": "K/m",
+      "validity": null,
+      "value": null,
+      "weakestInputs": []
+    }
+  },
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+  "regime": null,
+  "schema": "lpbf-solidification-microstructure-2",
+  "source": "none",
+  "status": "unavailable"
+}

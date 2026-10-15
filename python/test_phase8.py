@@ -22,48 +22,15 @@ from pathlib import Path
 
 # ---- import Phase 8 module --------------------------------------------------
 from lpbf_solidification_microstructure import (
-    hunt_morphology,
-    morphology_fractions,
     compute_solidification_microstructure,
 )
 
 
 class Phase8Correlations(unittest.TestCase):
-    # Tests 1 and 2 (Hunt-Lu PDAS 80 and Kirkwood SDAS 64.5 ranges) removed in P7a (2026-10-11): the prefactors were
-    # unsourced and are deleted; the CFD path serves PDAS_um and SDAS_um as None (test_phase8_microstructure_contract).
-
-    # Test 3 -- Hunt morphology criterion
-    def test_morphology_columnar(self):
-        """G/R > 1e8 -> columnar."""
-        G, R = 1.0e9, 0.05   # G/R = 2e10 >> 1e8
-        morph = hunt_morphology(G, R)
-        self.assertEqual(morph, "columnar", f"Expected columnar, got {morph}")
-
-    def test_morphology_equiaxed(self):
-        """G/R < 1e6 -> equiaxed."""
-        G, R = 1.0e4, 0.5    # G/R = 2e4 << 1e6
-        morph = hunt_morphology(G, R)
-        self.assertEqual(morph, "equiaxed", f"Expected equiaxed, got {morph}")
-
-    def test_morphology_mixed(self):
-        """G/R between 1e6 and 1e8 -> mixed."""
-        G, R = 1.0e6, 0.02   # G/R = 5e7 (in between)
-        morph = hunt_morphology(G, R)
-        self.assertEqual(morph, "mixed", f"Expected mixed, got {morph}")
-
-    # Test 4 -- Morphology fractions sum to 1.0
-    def test_morphology_fractions_sum_to_unity(self):
-        for G_Km, R_ms in [
-            (1e9, 0.01),   # pure columnar
-            (1e4, 1.0),    # pure equiaxed
-            (5e6, 0.1),    # mixed zone
-        ]:
-            with self.subTest(G_Km=G_Km, R_ms=R_ms):
-                fracs = morphology_fractions(G_Km, R_ms)
-                total = fracs["columnar"] + fracs["equiaxed"] + fracs["mixed"]
-                self.assertLess(
-                    abs(total - 1.0), 0.01,
-                    f"Morphology fractions sum {total:.4f} != 1.0 for G={G_Km:.1e}, R={R_ms}")
+    def test_legacy_classifier_retired(self):
+        import lpbf_solidification_microstructure as module
+        self.assertFalse(hasattr(module, "hunt_morphology"))
+        self.assertFalse(hasattr(module, "morphology_fractions"))
 
 
 # Tests 5 and 6 (compute_solidification_microstructure without CFD data -> "unavailable"; OpenFOAM CFD path)

@@ -2,510 +2,169 @@
  "ss316l_no_model": {
   "success": false,
   "status": "unavailable",
-  "reason": "no kinetics model for 316L Stainless Steel",
+  "reason": "No eligible temperature history is available for this quantity.",
   "alloyId": "ss316l",
   "alloy": null,
-  "buildCoolingRate_C_s": 1205584.0,
-  "reportedCoolingRate_K_s": 1205584.0,
-  "coolingRateSource": "thermal.solidificationKinetics.coolingRate_K_s",
+  "buildCoolingRate_C_s": null,
+  "reportedCoolingRate_K_s": null,
+  "coolingRateSource": null,
   "cctContinuousCoolingMap": null,
   "calphadVsKineticsGap": null,
   "buildCoolingRateCctRow": null,
-  "buildRateMartensite": null
+  "buildRateMartensite": null,
+  "reasons": [
+   {
+    "code": "missing-thermal-history",
+    "params": {},
+    "parent": null
+   }
+  ]
  },
  "alsi10mg_no_model": {
   "success": false,
   "status": "unavailable",
-  "reason": "no kinetics model for AlSi10Mg",
+  "reason": "No eligible temperature history is available for this quantity.",
   "alloyId": "alsi10mg",
   "alloy": null,
-  "buildCoolingRate_C_s": 2603566.0,
-  "reportedCoolingRate_K_s": 2603566.0,
-  "coolingRateSource": "thermal.solidificationKinetics.coolingRate_K_s",
+  "buildCoolingRate_C_s": null,
+  "reportedCoolingRate_K_s": null,
+  "coolingRateSource": null,
   "cctContinuousCoolingMap": null,
   "calphadVsKineticsGap": null,
   "buildCoolingRateCctRow": null,
-  "buildRateMartensite": null
+  "buildRateMartensite": null,
+  "reasons": [
+   {
+    "code": "missing-thermal-history",
+    "params": {},
+    "parent": null
+   }
+  ]
  },
  "in718_above_map": {
   "success": false,
   "status": "unavailable",
-  "reason": "kinetics model is steel-only: Inconel 718 is not a steel",
+  "reason": "No eligible temperature history is available for this quantity.",
   "alloyId": "in718",
   "alloy": null,
-  "buildCoolingRate_C_s": 877254.0,
-  "reportedCoolingRate_K_s": 877254.0,
-  "coolingRateSource": "thermal.solidificationKinetics.coolingRate_K_s",
+  "buildCoolingRate_C_s": null,
+  "reportedCoolingRate_K_s": null,
+  "coolingRateSource": null,
   "cctContinuousCoolingMap": null,
   "calphadVsKineticsGap": null,
   "buildCoolingRateCctRow": null,
-  "buildRateMartensite": null
+  "buildRateMartensite": null,
+  "reasons": [
+   {
+    "code": "missing-thermal-history",
+    "params": {},
+    "parent": null
+   }
+  ]
  },
  "ti6al4v_above_map": {
   "success": false,
   "status": "unavailable",
-  "reason": "kinetics model is steel-only: Ti-6Al-4V is not a steel",
+  "reason": "No eligible temperature history is available for this quantity.",
   "alloyId": "ti6al4v",
   "alloy": null,
-  "buildCoolingRate_C_s": 1089047.0,
-  "reportedCoolingRate_K_s": 1089047.0,
-  "coolingRateSource": "thermal.solidificationKinetics.coolingRate_K_s",
+  "buildCoolingRate_C_s": null,
+  "reportedCoolingRate_K_s": null,
+  "coolingRateSource": null,
   "cctContinuousCoolingMap": null,
   "calphadVsKineticsGap": null,
   "buildCoolingRateCctRow": null,
-  "buildRateMartensite": null
+  "buildRateMartensite": null,
+  "reasons": [
+   {
+    "code": "missing-thermal-history",
+    "params": {},
+    "parent": null
+   }
+  ]
  },
  "in718_degenerate_floor": {
   "success": false,
   "status": "unavailable",
-  "reason": "cooling rate is the 1 K/s floor of a degenerate solidification front, not a computed build rate",
+  "reason": "No eligible temperature history is available for this quantity.",
   "alloyId": "in718",
   "alloy": null,
   "buildCoolingRate_C_s": null,
-  "reportedCoolingRate_K_s": 1.0,
-  "coolingRateSource": "thermal.solidificationKinetics.coolingRate_K_s",
+  "reportedCoolingRate_K_s": null,
+  "coolingRateSource": null,
   "cctContinuousCoolingMap": null,
   "calphadVsKineticsGap": null,
   "buildCoolingRateCctRow": null,
-  "buildRateMartensite": null
+  "buildRateMartensite": null,
+  "reasons": [
+   {
+    "code": "missing-thermal-history",
+    "params": {},
+    "parent": null
+   }
+  ]
  },
  "ti6al4v_in_map_30": {
   "success": false,
   "status": "unavailable",
-  "reason": "kinetics model is steel-only: Ti-6Al-4V is not a steel",
+  "reason": "No eligible temperature history is available for this quantity.",
   "alloyId": "ti6al4v",
   "alloy": null,
-  "buildCoolingRate_C_s": 30.0,
-  "reportedCoolingRate_K_s": 30.0,
-  "coolingRateSource": "thermal.solidificationKinetics.coolingRate_K_s",
+  "buildCoolingRate_C_s": null,
+  "reportedCoolingRate_K_s": null,
+  "coolingRateSource": null,
   "cctContinuousCoolingMap": null,
   "calphadVsKineticsGap": null,
   "buildCoolingRateCctRow": null,
-  "buildRateMartensite": null
+  "buildRateMartensite": null,
+  "reasons": [
+   {
+    "code": "missing-thermal-history",
+    "params": {},
+    "parent": null
+   }
+  ]
  },
  "in718_in_map_30": {
   "success": false,
   "status": "unavailable",
-  "reason": "kinetics model is steel-only: Inconel 718 is not a steel",
+  "reason": "No eligible temperature history is available for this quantity.",
   "alloyId": "in718",
   "alloy": null,
-  "buildCoolingRate_C_s": 30.0,
-  "reportedCoolingRate_K_s": 30.0,
-  "coolingRateSource": "thermal.solidificationKinetics.coolingRate_K_s",
+  "buildCoolingRate_C_s": null,
+  "reportedCoolingRate_K_s": null,
+  "coolingRateSource": null,
   "cctContinuousCoolingMap": null,
   "calphadVsKineticsGap": null,
   "buildCoolingRateCctRow": null,
-  "buildRateMartensite": null
+  "buildRateMartensite": null,
+  "reasons": [
+   {
+    "code": "missing-thermal-history",
+    "params": {},
+    "parent": null
+   }
+  ]
  },
  "aisi4140_in_map_30_hypothetical": {
-  "success": true,
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
-  "alloy": "AISI 4140",
-  "alloyMetadata": {
-   "type": "Low-Alloy Steel",
-   "composition_wt": {
-    "Fe": 96.8,
-    "C": 0.4,
-    "Mn": 0.85,
-    "Cr": 1.0,
-    "Mo": 0.2,
-    "Si": 0.25
-   },
-   "Ae3_C": 780.0,
-   "Ae1_C": 725.0,
-   "Ms_C": 330.0,
-   "Mf_C": 180.0,
-   "Q_diff_kJ_mol": 240.0,
-   "grain_size_d_um_default": 25.0,
-   "aust_temp_C_default": 860.0,
-   "phases": [
-    "Ferrite",
-    "Pearlite",
-    "Bainite",
-    "Martensite"
-   ],
-   "critical_cooling_rate_C_s": 45.0,
-   "description": "Medium-carbon Cr-Mo through-hardening alloy steel for shafts and landing gears."
-  },
-  "inputParameters": {
-   "selectedCoolingRate_C_s": 30.0,
-   "austSolutionTemp_C": 860.0,
-   "priorGrainSize_um": 25.0,
-   "agingTemp_C": 720.0,
-   "agingTime_h": 8.0
-  },
-  "criticalTransformationTemperatures": {
-   "Ae3_BetaTransus_GammaSolvus_C": 780.3,
-   "Ae1_C": 739.9,
-   "Ms_C": 328.5,
-   "Mf_C": null,
-   "CriticalCoolingRate_CCR_C_s": 19.81,
-   "Ae1_C_status": "computed-grange-1961-screening",
-   "Ms_C_status": "computed-andrews-kung-rayment-1982-screening",
-   "Mf_C_status": "unavailable-not-modelled",
-   "CriticalCoolingRate_CCR_status": "li1998-additivity-screening",
-   "Ae3_C_status": "computed-grange-1961-screening",
-   "Bs_C": 541.8,
-   "Bs_C_status": "computed-li-1998-screening"
-  },
-  "cctContinuousCoolingMap": [
-   {
-    "coolingRate_C_s": 0.05,
-    "transformedStartTemp_C": 721.3,
-    "transformedStartTime_s": 2775.0,
-    "primaryMicrostructure": "Ferrite",
-    "phaseFractions": {
-     "Martensite_pct": null,
-     "Bainite_pct": null,
-     "Pearlite_Ferrite_pct": null,
-     "RetainedAustenite_pct": null
-    },
-    "predictedHardness_HRC": null,
-    "predictedHardness_HV": null,
-    "predictedHardness_HV_status": "unavailable-no-predicted-hrc",
-    "transformedStart_status": "li1998-additivity-first-diffusional-start",
-    "phaseFractions_status": "unavailable-fractions-not-computed",
-    "predictedHardness_HRC_status": "unavailable-fractions-not-computed",
-    "unavailableReason": null,
-    "phaseStartTemps_C": {
-     "Ferrite": 721.3,
-     "Pearlite": 691.9,
-     "Bainite": 531.6
-    }
-   },
-   {
-    "coolingRate_C_s": 0.2,
-    "transformedStartTemp_C": 689.3,
-    "transformedStartTime_s": 853.7,
-    "primaryMicrostructure": "Ferrite",
-    "phaseFractions": {
-     "Martensite_pct": null,
-     "Bainite_pct": null,
-     "Pearlite_Ferrite_pct": null,
-     "RetainedAustenite_pct": null
-    },
-    "predictedHardness_HRC": null,
-    "predictedHardness_HV": null,
-    "predictedHardness_HV_status": "unavailable-no-predicted-hrc",
-    "transformedStart_status": "li1998-additivity-first-diffusional-start",
-    "phaseFractions_status": "unavailable-fractions-not-computed",
-    "predictedHardness_HRC_status": "unavailable-fractions-not-computed",
-    "unavailableReason": null,
-    "phaseStartTemps_C": {
-     "Ferrite": 689.3,
-     "Pearlite": 667.0,
-     "Bainite": 525.1
-    }
-   },
-   {
-    "coolingRate_C_s": 1.0,
-    "transformedStartTemp_C": 611.1,
-    "transformedStartTime_s": 248.9,
-    "primaryMicrostructure": "Pearlite",
-    "phaseFractions": {
-     "Martensite_pct": null,
-     "Bainite_pct": null,
-     "Pearlite_Ferrite_pct": null,
-     "RetainedAustenite_pct": null
-    },
-    "predictedHardness_HRC": null,
-    "predictedHardness_HV": null,
-    "predictedHardness_HV_status": "unavailable-no-predicted-hrc",
-    "transformedStart_status": "li1998-additivity-first-diffusional-start",
-    "phaseFractions_status": "unavailable-fractions-not-computed",
-    "predictedHardness_HRC_status": "unavailable-fractions-not-computed",
-    "unavailableReason": null,
-    "phaseStartTemps_C": {
-     "Ferrite": 609.9,
-     "Pearlite": 611.1,
-     "Bainite": 510.9
-    }
-   },
-   {
-    "coolingRate_C_s": 5.0,
-    "transformedStartTemp_C": 479.1,
-    "transformedStartTime_s": 76.18,
-    "primaryMicrostructure": "Bainite",
-    "phaseFractions": {
-     "Martensite_pct": null,
-     "Bainite_pct": null,
-     "Pearlite_Ferrite_pct": null,
-     "RetainedAustenite_pct": null
-    },
-    "predictedHardness_HRC": null,
-    "predictedHardness_HV": null,
-    "predictedHardness_HV_status": "unavailable-no-predicted-hrc",
-    "transformedStart_status": "li1998-additivity-first-diffusional-start",
-    "phaseFractions_status": "unavailable-fractions-not-computed",
-    "predictedHardness_HRC_status": "unavailable-fractions-not-computed",
-    "unavailableReason": null,
-    "phaseStartTemps_C": {
-     "Ferrite": null,
-     "Pearlite": null,
-     "Bainite": 479.1
-    }
-   },
-   {
-    "coolingRate_C_s": 10.0,
-    "transformedStartTemp_C": 448.6,
-    "transformedStartTime_s": 41.14,
-    "primaryMicrostructure": "Bainite",
-    "phaseFractions": {
-     "Martensite_pct": null,
-     "Bainite_pct": null,
-     "Pearlite_Ferrite_pct": null,
-     "RetainedAustenite_pct": null
-    },
-    "predictedHardness_HRC": null,
-    "predictedHardness_HV": null,
-    "predictedHardness_HV_status": "unavailable-no-predicted-hrc",
-    "transformedStart_status": "li1998-additivity-first-diffusional-start",
-    "phaseFractions_status": "unavailable-fractions-not-computed",
-    "predictedHardness_HRC_status": "unavailable-fractions-not-computed",
-    "unavailableReason": null,
-    "phaseStartTemps_C": {
-     "Ferrite": null,
-     "Pearlite": null,
-     "Bainite": 448.6
-    }
-   },
-   {
-    "coolingRate_C_s": 25.0,
-    "transformedStartTemp_C": 328.5,
-    "transformedStartTime_s": 21.26,
-    "primaryMicrostructure": "Martensite (Athermal)",
-    "phaseFractions": {
-     "Martensite_pct": null,
-     "Bainite_pct": null,
-     "Pearlite_Ferrite_pct": null,
-     "RetainedAustenite_pct": null
-    },
-    "predictedHardness_HRC": null,
-    "predictedHardness_HV": null,
-    "predictedHardness_HV_status": "unavailable-no-predicted-hrc",
-    "transformedStart_status": "athermal-martensite-no-diffusional-start-above-ms",
-    "phaseFractions_status": "unavailable-fractions-not-computed",
-    "predictedHardness_HRC_status": "unavailable-fractions-not-computed",
-    "unavailableReason": null,
-    "phaseStartTemps_C": {
-     "Ferrite": null,
-     "Pearlite": null,
-     "Bainite": null
-    }
-   },
-   {
-    "coolingRate_C_s": 50.0,
-    "transformedStartTemp_C": 328.5,
-    "transformedStartTime_s": 10.63,
-    "primaryMicrostructure": "Martensite (Athermal)",
-    "phaseFractions": {
-     "Martensite_pct": null,
-     "Bainite_pct": null,
-     "Pearlite_Ferrite_pct": null,
-     "RetainedAustenite_pct": null
-    },
-    "predictedHardness_HRC": null,
-    "predictedHardness_HV": null,
-    "predictedHardness_HV_status": "unavailable-no-predicted-hrc",
-    "transformedStart_status": "athermal-martensite-no-diffusional-start-above-ms",
-    "phaseFractions_status": "unavailable-fractions-not-computed",
-    "predictedHardness_HRC_status": "unavailable-fractions-not-computed",
-    "unavailableReason": null,
-    "phaseStartTemps_C": {
-     "Ferrite": null,
-     "Pearlite": null,
-     "Bainite": null
-    }
-   },
-   {
-    "coolingRate_C_s": 100.0,
-    "transformedStartTemp_C": 328.5,
-    "transformedStartTime_s": 5.315,
-    "primaryMicrostructure": "Martensite (Athermal)",
-    "phaseFractions": {
-     "Martensite_pct": null,
-     "Bainite_pct": null,
-     "Pearlite_Ferrite_pct": null,
-     "RetainedAustenite_pct": null
-    },
-    "predictedHardness_HRC": null,
-    "predictedHardness_HV": null,
-    "predictedHardness_HV_status": "unavailable-no-predicted-hrc",
-    "transformedStart_status": "athermal-martensite-no-diffusional-start-above-ms",
-    "phaseFractions_status": "unavailable-fractions-not-computed",
-    "predictedHardness_HRC_status": "unavailable-fractions-not-computed",
-    "unavailableReason": null,
-    "phaseStartTemps_C": {
-     "Ferrite": null,
-     "Pearlite": null,
-     "Bainite": null
-    }
-   },
-   {
-    "coolingRate_C_s": 500.0,
-    "transformedStartTemp_C": 328.5,
-    "transformedStartTime_s": 1.063,
-    "primaryMicrostructure": "Martensite (Athermal)",
-    "phaseFractions": {
-     "Martensite_pct": null,
-     "Bainite_pct": null,
-     "Pearlite_Ferrite_pct": null,
-     "RetainedAustenite_pct": null
-    },
-    "predictedHardness_HRC": null,
-    "predictedHardness_HV": null,
-    "predictedHardness_HV_status": "unavailable-no-predicted-hrc",
-    "transformedStart_status": "athermal-martensite-no-diffusional-start-above-ms",
-    "phaseFractions_status": "unavailable-fractions-not-computed",
-    "predictedHardness_HRC_status": "unavailable-fractions-not-computed",
-    "unavailableReason": null,
-    "phaseStartTemps_C": {
-     "Ferrite": null,
-     "Pearlite": null,
-     "Bainite": null
-    }
-   },
-   {
-    "coolingRate_C_s": 2000.0,
-    "transformedStartTemp_C": 328.5,
-    "transformedStartTime_s": 0.2658,
-    "primaryMicrostructure": "Martensite (Athermal)",
-    "phaseFractions": {
-     "Martensite_pct": null,
-     "Bainite_pct": null,
-     "Pearlite_Ferrite_pct": null,
-     "RetainedAustenite_pct": null
-    },
-    "predictedHardness_HRC": null,
-    "predictedHardness_HV": null,
-    "predictedHardness_HV_status": "unavailable-no-predicted-hrc",
-    "transformedStart_status": "athermal-martensite-no-diffusional-start-above-ms",
-    "phaseFractions_status": "unavailable-fractions-not-computed",
-    "predictedHardness_HRC_status": "unavailable-fractions-not-computed",
-    "unavailableReason": null,
-    "phaseStartTemps_C": {
-     "Ferrite": null,
-     "Pearlite": null,
-     "Bainite": null
-    }
-   }
-  ],
-  "calphadVsKineticsGap": {
-   "equilibriumPrediction": {
-    "stablePhasesAtRT": "Ferrite + Cementite / Equilibrium intermetallics",
-    "martensiteFraction": "0.0% (Thermodynamically Forbidden in Equilibrium)",
-    "soluteSupersaturation": "Near Zero (<0.01 wt% C in ferrite)",
-    "status": "static-text-not-a-calphad-calculation",
-    "reason": "fixed steel text; no equilibrium (CALPHAD) calculation is performed here"
-   },
-   "kineticRealityAtSelectedCooling": {
-    "coolingRate_C_s": 30.0,
-    "criticalCoolingRate_C_s": 19.81,
-    "isSuppressedEquilibrium": true,
-    "predictedMartensite_pct": 96.5,
-    "diffusionSuppressionIndex": null,
-    "verdict": "No diffusional start above Ms (Li 1998 additivity): martensite from Ms",
-    "status": "li1998-additivity-screening",
-    "reason": "Li (1998) start-time model with the additivity rule; phase fractions are not computed. The martensite % is given only when no diffusional start is reached above Ms (Koistinen-Marburger, alpha = 0.011/K as in Li 1996 Eq. 3.76, at 25 C)"
-   }
-  },
-  "kineticsModel": {
-   "status": "available",
-   "reason": null,
-   "scope": "low-alloy steels inside the composition range stated for the Li (1998) model",
-   "registryAlloyId": "aisi4140",
-   "illustrativeOnly": true,
-   "note": "Li et al. (1998) isothermal start/finish law with Grange Ae3/Ae1, Li Bs and Kung-Rayment Ms; CCT starts from the additivity rule applied to each phase's 1 % start curve independently (no phase interaction, no carbon partitioning). Unvalidated screening model: phase fractions and hardness are not computed.",
-   "placeholderParameters": [],
-   "lswPrecipitateCoarsening": {
-    "status": "unavailable-not-modelled",
-    "note": null,
-    "reason": null,
-    "reasonCodes": [
-     "missing-source-bound-model",
-     "missing-source-constant"
-    ]
-   },
-   "modelVersion": "li1998-additivity-v1",
-   "sourceLabel": "Li, Niebuhr, Meekisho & Atteridge, Metall. Mater. Trans. B 29 (1998) 661-672: equations as printed in M. Li, PhD thesis, Oregon Graduate Institute (1996), Eqs. 3.67 and 3.70-3.77, and in Collins et al., Metals 13 (2023) 1168, Eqs. 1-14; Ae3/Ae1: Grange (1961) as printed in Collins et al. Eqs. 8 and 11; Ms: Andrews linear equation modified by Kung & Rayment (1982), Li (1996) Eq. 3.77; CCT: additivity rule (Scheil 1935).",
-   "validationStatus": "unvalidated",
-   "evidenceLevel": "screening",
-   "validityDomain": {
-    "status": "inside-partially-checked",
-    "source": "M. Li (1996) thesis p. 86: the author 'has not thoroughly tested the application range' and believes the model valid 'at least within the same range of Creusot-Loire model': 0.1<C<0.5, Si<1.0, Mn<2, Ni<4, Cr<3, Mo<1, V<0.2, Cu<0.5, Mo+Ni+Cr+Mo<5 (as printed), 0.01<Al<0.05 (wt%).",
-    "violations": [],
-    "unchecked": [
-     "Al not specified in the registry composition: the 0.01 < Al < 0.05 wt% bound is not checked"
-    ],
-    "grainSize": {
-     "astmG": 7.705,
-     "inputBounds_um": [
-      1.0,
-      1000.0
-     ],
-     "comparedRange_G": [
-      5.6,
-      11.0
-     ],
-     "insideComparedRange": true,
-     "note": "input bounds are a sanity limit of this implementation; the compared range is the span of published examples reproduced in test_kinetics_li1998 (Collins 2023, Li 1996), not a validity statement of the source"
-    }
-   },
-   "li1998": {
-    "astmGrainSize_G": 7.705,
-    "grainSizeDefinition": "priorGrainSize_um is taken as the mean planar grain diameter d; G = -3.2877 - 6.6439 log10(sqrt(pi/4) d / mm) (ASTM E112, Collins et al. Eqs. 3-4)",
-    "activationEnergy_J_mol": 115060.0,
-    "compositionFactors": {
-     "Ferrite": 5577.52,
-     "Pearlite": 958.183,
-     "Bainite": 0.011522
-    },
-    "reactionIntegral_S": {
-     "X_0p01": 0.10434,
-     "X_0p5": 1.02588,
-     "X_0p99": 1.94742
-    },
-    "startCriterion": "1 % reaction (X = 0.01) per phase; each phase's start curve is integrated independently from the austenitizing temperature (no phase interaction)",
-    "criticalCoolingRateDefinition": "slowest linear cooling rate from the austenitizing temperature at which no ferrite, pearlite or bainite 1 % start is reached above Ms",
-    "fractionsComputed": false,
-    "fractionsReason": "phase fractions and hardness are not computed: the Li (1998) model needs the equilibrium ferrite and pearlite amounts from a thermodynamic Fe-C-M model that is not implemented",
-    "reactionFractionBasis": {
-     "Ferrite": "volume fraction of the original austenite; the reaction ends at the equilibrium ferrite amount (thermodynamic model, not implemented), so t50_s and tFinish_s are not reported (null)",
-     "Pearlite": "phantom (normalized) reaction fraction that goes to completion (Li 1996 p. 84)",
-     "Bainite": "volume fraction of the austenite (Li 1996 p. 84); the model lets bainite consume all remaining austenite (Li 1996 p. 86), incomplete-reaction effects are not modelled"
-    }
-   }
-  },
-  "tttIncubationFloor": {
-   "status": "no-floor-li-1998-law",
-   "floorValue_s": null,
-   "pointCount": 118,
-   "floorHitCount": 0,
-   "note": "The Li (1998) start-time law diverges at its start temperature (Ae3, Ae1, Bs); no time floor is applied. Points with a start time of 1e6 s or more are not listed."
-  },
-  "status": "available",
+  "success": false,
+  "status": "unavailable",
+  "reason": "No eligible temperature history is available for this quantity.",
   "alloyId": "aisi4140",
-  "buildCoolingRate_C_s": 30.0,
-  "reportedCoolingRate_K_s": 30.0,
-  "coolingRateSource": "thermal.solidificationKinetics.coolingRate_K_s",
-  "buildCoolingRateCctRow": {
-   "selection": "nearest-log10-cooling-rate-within-map-range",
-   "buildCoolingRate_C_s": 30.0,
-   "mapRange_C_s": [
-    0.05,
-    2000.0
-   ],
-   "rowIndex": 5,
-   "rowCoolingRate_C_s": 25.0,
-   "status": "selected",
-   "reason": null
-  },
-  "buildRateMartensite": {
-   "status": "available",
-   "reason": null,
-   "predictedMartensite_pct": 96.5,
-   "verdict": "No diffusional start above Ms (Li 1998 additivity): martensite from Ms",
-   "coolingRate_C_s": 30.0
-  }
+  "alloy": null,
+  "buildCoolingRate_C_s": null,
+  "reportedCoolingRate_K_s": null,
+  "coolingRateSource": null,
+  "cctContinuousCoolingMap": null,
+  "calphadVsKineticsGap": null,
+  "buildCoolingRateCctRow": null,
+  "buildRateMartensite": null,
+  "reasons": [
+   {
+    "code": "missing-thermal-history",
+    "params": {},
+    "parent": null
+   }
+  ]
  }
 }

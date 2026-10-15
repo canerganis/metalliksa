@@ -1,3 +1,5 @@
+import { SolidificationQuantities } from "./SolidificationQuantities";
+import { quantityText } from "../utils/solidificationDisplay";
 import React, { useEffect, useRef, useState } from "react";
 import { AlertTriangle, Grid3x3, Info, RefreshCw } from "lucide-react";
 import {
@@ -10,8 +12,6 @@ import {
 } from "../services/lpbfGrSolidificationService";
 import { LITERATURE_PV_WINDOWS } from "../utils/lpbfFourAlloySchema";
 import {
-  BAND_COLORS,
-  BAND_LETTERS,
   GR_HATCH_PATTERN_ID,
   GR_MAX_CELLS,
   METRICS,
@@ -40,8 +40,11 @@ const MAX_SPEED_MM_S = 10000;
 const panelClass = "rounded-2xl border border-white/10 bg-[#111b25] shadow-[0_18px_50px_rgba(0,0,0,.18)]";
 const inputClass = "w-full rounded-lg border border-white/10 bg-[#0b141d] px-2.5 py-2 font-mono text-sm text-slate-100 outline-none transition focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-300/10";
 
-export const GR_BANNER_TEXT =
-  "Screening only. Conduction-field G/R from the frozen Rosenthal model; Hunt bands are uncalibrated; CET boundaries exist for IN718 only (EBM-calibrated, transferred to LPBF) and no CET constants are sourced for IN625; not a grain-structure prediction.";
+// Wording table: pending maintainer approval.
+export const GR_WORDING = { banner: "Screening only. Default front quantities require an admitted liquidus source.", noBox: "No default map range is configured for this alloy; enter a range.", sourceChecks: "Source checks", equation: "Equation read", algebra: "Algebra reproduced", printed: "Printed-limit comparison",
+  checks: { read: "Read", "not-read": "Not read", reproduced: "Reproduced", "not-reproduced": "Not reproduced", "not-attempted": "Not attempted", agrees: "Agrees", disagrees: "Disagrees", "not-available": "Not available" },
+} as const;
+export const GR_BANNER_TEXT = GR_WORDING.banner;
 
 interface FormState {
   alloyId: GrAlloyId;
@@ -72,21 +75,6 @@ const fmtNum = (v: number | null | undefined, digits = 3): string => formatSci(v
 export const GrLegend: React.FC<{ result: GrSolidificationResponse; metric: GrMetric }> = ({ result, metric }) => {
   const spec = METRICS.find(m => m.id === metric)!;
   const cells = result.cells ?? [];
-  if (metric === "band") {
-    return (
-      <div data-testid="gr-legend" className="space-y-1 text-xs text-slate-300">
-        <ul className="grid grid-cols-1 gap-1 sm:grid-cols-2">
-          {Object.entries(BAND_COLORS).map(([band, color]) => (
-            <li key={band} className="flex items-center gap-2">
-              <span className="inline-flex h-4 w-5 items-center justify-center rounded-sm text-[10px] font-bold text-slate-900" style={{ background: color }} aria-hidden="true">{BAND_LETTERS[band]}</span>
-              {band}
-            </li>
-          ))}
-        </ul>
-        <p className="text-slate-400">Uncalibrated Hunt G/R thresholds, not a CET prediction.</p>
-      </div>
-    );
-  }
   const range = metricRange(cells, metric);
   const gradient = `linear-gradient(to right, ${SEQUENTIAL_STOPS.join(", ")})`;
   return (
@@ -214,90 +202,14 @@ export const GrHeatmap: React.FC<{
 // ---------------------------------------------------------------------------------------------------------
 // Detail panel
 // ---------------------------------------------------------------------------------------------------------
-const LocationRow: React.FC<{ name: string; loc: GrCellBody["front"]["median"]; band: string | null }> = ({ name, loc, band }) => (
-  <tr className="border-t border-white/[.06]">
-    <th scope="row" className="py-1 pr-2 text-left font-medium text-slate-300">{name}</th>
-    <td className="py-1 pr-2 font-mono">{loc ? fmtNum(loc.G_K_m) : "n/a"}</td>
-    <td className="py-1 pr-2 font-mono">{loc ? fmtNum(loc.R_m_s) : "n/a"}</td>
-    <td className="py-1 pr-2 font-mono">{loc ? fmtNum(loc.GoverR_K_s_m2) : "n/a"}</td>
-    <td className="py-1 pr-2 font-mono">{loc ? fmtNum(loc.GtimesR_K_s) : "n/a"}</td>
-    <td className="py-1">{band ?? "n/a"}</td>
-  </tr>
-);
-
-export const GrCellDetail: React.FC<{ body: (GrCellBody & { power_W: number; speed_mm_s: number }) | null; result: GrSolidificationResponse }> = ({ body, result }) => {
-  if (!body) {
-    return <p data-testid="gr-detail-empty" className="text-sm text-slate-400">Select a cell (click it, or Tab to the grid and use the arrow keys) to see G, R, the bands and the Laves bound.</p>;
-  }
-  const cl = body.rosenthalCenterline;
-  const laves = body.laves;
-  const ub = laves.sampledArcUpperBound;
-  return (
-    <div data-testid="gr-detail" aria-live="polite" className="space-y-3 text-sm text-slate-300">
-      <h3 className="font-semibold text-slate-100">{STATUS_LABELS[body.status]}: {body.power_W} W, {body.speed_mm_s} mm/s</h3>
-      {body.reason && <p role={body.status === "error" ? "alert" : "note"} data-testid="gr-detail-reason" className="rounded border border-amber-500/40 bg-amber-500/10 p-2 text-xs text-amber-100">{body.reason}</p>}
-      {body.regimeNote && <p data-testid="gr-detail-regime" className="rounded border border-amber-500/40 bg-amber-500/10 p-2 text-xs text-amber-100">{body.regime}. {body.regimeNote}</p>}
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[34rem] text-xs" data-testid="gr-detail-table">
-          <caption className="pb-1 text-left text-slate-400">Rear liquidus arc, copied from the frozen solver (G in K/m, R in m/s, G/R in K s/m^2, G*R in K/s)</caption>
-          <thead><tr className="text-left text-slate-500"><th scope="col" className="pr-2">Point</th><th scope="col" className="pr-2">G</th><th scope="col" className="pr-2">R</th><th scope="col" className="pr-2">G/R</th><th scope="col" className="pr-2">G*R</th><th scope="col">Hunt G/R screening band</th></tr></thead>
-          <tbody>
-            <LocationRow name="Bottom" loc={body.front.bottom} band={body.morphology.bands.bottom} />
-            <LocationRow name="Median" loc={body.front.median} band={body.morphology.bands.median} />
-            <LocationRow name="Tail" loc={body.front.tail} band={body.morphology.bands.tail} />
-          </tbody>
-        </table>
-        <p className="mt-1 text-xs text-slate-500">{body.front.coolingBasis}. {body.morphology.label}.</p>
-      </div>
-      <div data-testid="gr-detail-rosenthal" className="text-xs">
-        <p className="font-semibold text-slate-400">Rosenthal trailing-centreline reference</p>
-        {cl.status === "available" ? (
-          <>
-            <p className="font-mono">x_tail {cl.xTail_um?.toFixed(1)} um, G {fmtNum(cl.G_K_m)} K/m, R {fmtNum(cl.R_m_s)} m/s, G/R {fmtNum(cl.GoverR_K_s_m2)}, G*R {fmtNum(cl.GtimesR_K_s)}</p>
-            <p className="text-slate-500">{cl.label}</p>
-          </>
-        ) : <p>Unavailable: {cl.reason}</p>}
-      </div>
-      <div data-testid="gr-detail-cet" className="text-xs">
-        <p className="font-semibold text-slate-400">CET: {body.cet.status}</p>
-        {body.cet.status === "unavailable" ? <p>{body.cet.reason}</p> : (
-          Object.keys(body.cet.sets).length === 0 ? (
-            <ul className="list-disc pl-5">{(["bottom", "median", "tail"] as const).map(k => <li key={k}>{k}: {body.cet.locations[k]?.band ?? "n/a"}</li>)}</ul>
-          ) : (
-            <div className="space-y-2">
-              {Object.entries(body.cet.sets).map(([id, set]) => (
-                <div key={id} data-testid={`gr-cet-set-${id}`}>
-                  <p className="text-slate-300">{set.label}</p>
-                  <p className="text-slate-500">{set.transferLabel}</p>
-                  <ul className="list-disc pl-5">
-                    {(["bottom", "median", "tail"] as const).map(k => {
-                      const loc = set.locations[k];
-                      return (
-                        <li key={k}>
-                          {k}: {loc?.band ?? "n/a"}
-                          {loc ? <span className="font-mono"> (columnar above G {fmtNum(loc.G_columnar_K_m)} K/m, equiaxed below G {fmtNum(loc.G_equiaxed_K_m)} K/m)</span> : null}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          )
-        )}
-      </div>
-      <div data-testid="gr-detail-laves" className="text-xs">
-        <p className="font-semibold text-slate-400">Laves (binary C = 0 upper bound, fraction of the liquid)</p>
-        <p className="font-mono">Equilibrium-k bound (whole boundary): {result.laves.equilibriumKBound.toFixed(4)}</p>
-        {laves.status === "available" && ub ? (
-          <>
-            <p className="font-mono">Trapping-adjusted, sampled arc only: {ub.f.toFixed(4)} (at {ub.location}, R {fmtNum(ub.R_m_s)} m/s, V_D {ub.V_D_m_s} m/s, k {ub.kEff.toFixed(4)})</p>
-            {laves.note && <p className="mt-1 text-slate-500">{laves.note}</p>}
-          </>
-        ) : <p>Trapping-adjusted bound unavailable: {laves.reason}</p>}
-      </div>
-    </div>
-  );
+export const GrCellDetail: React.FC<{ body: (GrCellBody & { power_W: number; speed_mm_s: number }) | null; result: GrSolidificationResponse }> = ({ body }) => {
+  if (!body) return null;
+  return <div data-testid="gr-detail" aria-live="polite" className="space-y-3 text-xs text-slate-300">
+    <h3>{STATUS_LABELS[body.status]}: {body.power_W} W, {body.speed_mm_s} mm/s</h3>
+    <SolidificationQuantities container={body.front} />
+    <div data-testid="gr-detail-cet">CET: {quantityText(body.cet.quantities.class)}</div>
+    <div data-testid="gr-detail-laves">Laves: {quantityText(body.laves.quantities.fraction)}</div>
+  </div>;
 };
 
 // ---------------------------------------------------------------------------------------------------------
@@ -384,6 +296,7 @@ export const GrSolidificationMapCard: React.FC<Props> = ({ initialResult = null 
           <select className={inputClass} value={form.alloyId} onChange={e => setForm(defaultForm(e.target.value as GrAlloyId))}>
             <option value="in718">IN718</option>
             <option value="in625">IN625</option>
+            <option value="ti6al4v">Ti-6Al-4V</option><option value="alsi10mg">AlSi10Mg</option><option value="ss316l">316L</option>
           </select>
         </label>
         {field("Beam diameter", "beam", "um")}
@@ -399,7 +312,7 @@ export const GrSolidificationMapCard: React.FC<Props> = ({ initialResult = null 
         {field("Speed max", "vMax", "mm/s")}
         {field("Speed n", "vN")}
       </div>
-      {!hasBox && <p data-testid="gr-no-box" className="flex items-start gap-1.5 text-xs text-slate-400"><Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />No literature P-v box for IN625 in the repository; enter a range.</p>}
+      {!hasBox && <p data-testid="gr-no-box" className="flex items-start gap-1.5 text-xs text-slate-400"><Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />{GR_WORDING.noBox}</p>}
       {hasBox && <p className="text-xs text-slate-500">Default range: 0.5 x to 1.5 x the IN718 literature P-v box.</p>}
       <div className="flex flex-wrap items-center gap-3">
         <button
@@ -439,32 +352,15 @@ export const GrSolidificationMapCard: React.FC<Props> = ({ initialResult = null 
             </div>
             <GrCellDetail body={selectedCell} result={result} />
           </div>
-          <div className="border-t border-white/[.07] pt-3 text-xs text-slate-400" data-testid="gr-cet-status">
-            <p className="font-semibold">Columnar-to-equiaxed transition</p>
-            <p>{result.cet.constantsStatus.status === "unavailable" ? `CET: unavailable. ${result.cet.constantsStatus.reason ?? ""}` : "CET: sourced constant sets are available for this alloy."}</p>
-            {result.cet.constantsStatus.sets.length > 0 ? (
-              <ul className="mt-1 space-y-2" data-testid="gr-cet-sets">
-                {result.cet.constantsStatus.sets.map(set => (
-                  <li key={set.id} data-testid={`gr-cet-source-${set.id}`}>
-                    <p className="text-slate-300">{set.label}. {set.transferLabel}.</p>
-                    <p className="font-mono">
-                      n {set.constants.n.value}, a {fmtNum(set.constants.a.value)} {set.constants.a.unit}, N0 {fmtNum(set.constants.N0.value)} {set.constants.N0.unit}
-                    </p>
-                    <p>{set.citation}{set.doi ? `, DOI ${set.doi}` : ""}{set.osti ? `, OSTI ${set.osti}` : ""}.</p>
-                    <p>Constants: {set.constants.n.locator}.</p>
-                    <p>Equation form {set.equationLocator ?? "locator not set"}. Checked against printed limits: {set.equationVerified ? "yes" : "no"}.</p>
-                    <p data-testid={`gr-cet-phi-source-${set.id}`}>Critical phi source: {set.phiSource}.</p>
-                    <p>{set.note}</p>
-                    <p className="text-amber-200/80">{set.caveat}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-            {result.cet.constantsStatus.referenceOnly ? (
-              <p className="mt-1" data-testid="gr-cet-reference">{result.cet.constantsStatus.referenceOnly.label}: n {result.cet.constantsStatus.referenceOnly.constants.n.value}, a {fmtNum(result.cet.constantsStatus.referenceOnly.constants.a.value)}, N0 {fmtNum(result.cet.constantsStatus.referenceOnly.constants.N0.value)} ({result.cet.constantsStatus.referenceOnly.locator}).</p>
-            ) : null}
-            <p className="mt-1">Morphology labels on this map are the Hunt G/R screening band (uncalibrated), not a CET prediction. CET boundaries are shown in the cell detail beside it.</p>
-            <p className="mt-1">Equation {result.cet.equation}. Gäumann 2001 PDF read: {result.cet.equationVerified ? "yes" : "no"}.</p>
+          <div data-testid="gr-cet-status" className="text-xs text-slate-400">
+            <p>{GR_WORDING.sourceChecks}</p>
+            <p>{GR_WORDING.equation}: {GR_WORDING.checks[result.cet.sourceChecks.equationRead.status]}</p>
+            <p>{GR_WORDING.algebra}: {GR_WORDING.checks[result.cet.sourceChecks.algebraReproduced.status]}</p>
+            <p>{GR_WORDING.printed}: {GR_WORDING.checks[result.cet.sourceChecks.printedLimitComparison.status]}</p>
+            {result.cet.constantsStatus.sets.map(set => <div key={set.id}>
+              <p>{set.label} · {set.citation}</p>
+              <p>{GR_WORDING.checks[set.sourceChecks.equationRead.status]} · {GR_WORDING.checks[set.sourceChecks.algebraReproduced.status]} · {GR_WORDING.checks[set.sourceChecks.printedLimitComparison.status]}</p>
+            </div>)}
           </div>
           <details className="text-xs text-slate-400">
             <summary className="cursor-pointer font-semibold text-slate-300">Limits</summary>

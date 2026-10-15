@@ -21,7 +21,7 @@ import { useLpbfBuildMeshStore } from "./useLpbfBuildMeshStore";
 
 // Keep aligned with python/lpbf_job_cache.py; changing this invalidates held
 // same-input results when the client and build-job solver are upgraded.
-export const BUILD_JOB_SOLVER_REVISION = "lpbf-build-job-p7b-sourced-constants-v25";
+export const BUILD_JOB_SOLVER_REVISION = "lpbf-build-job-sola1-v26";
 
 export interface LpbfMurakamiSessionInput {
   defectSqrtAreasPaste: string;

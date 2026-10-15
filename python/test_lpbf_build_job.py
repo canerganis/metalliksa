@@ -94,18 +94,17 @@ def microstructure_fixture_blocks():
         "available_in718_150_1200": available["microstructure"],
         "unavailable_keyhole_leg_in718_285_960": keyhole_leg["microstructure"],
         "unavailable_few_samples_in718_10_3000": few_samples["microstructure"],
-        "degenerate_floor_synthetic": project_build_job_microstructure(_floored_thermal(degenerate["thermal"])),
+        # Historical fixture key retained; SOL-A1 has no floor branch and carries the ordinary null envelope.
+        "degenerate_floor_synthetic": project_build_job_microstructure(degenerate["thermal"]),
         "unavailable_no_kinetics": project_build_job_microstructure({}),
     }
 
 
 def _floored_thermal(thermal):
-    """SYNTHETIC: a real thermal result with R and the cooling rate set to the front-mapper clamp floors."""
+    """Synthetic archived flat keys must not override the current envelope."""
     import copy
-
     floored = copy.deepcopy(thermal)
-    floored["solidificationKinetics"].update(
-        usedFieldMap=True, solidificationRate_R_mm_s=0.1, solidificationRate_R_m_s=1.0e-4, coolingRate_K_s=1.0)
+    floored["solidificationKinetics"].update(solidificationRate_R_m_s=1e-4, coolingRate_K_s=1.0)
     return floored
 
 
@@ -125,261 +124,37 @@ def check_kinetics_fixture():
 
 
 def check_build_job_kinetics(ti):
-    import math
-
-    from kinetics_ttt_cct_solver import solve_phase_transformation_kinetics
-    from lpbf_build_job_solver import (
-        BUILD_JOB_KINETICS_ALLOY,
-        DEGENERATE_FRONT_REASON,
-        build_cooling_rate_cct_row,
-        build_job_kinetics,
-        build_rate_martensite,
-    )
-
-    assert BUILD_JOB_KINETICS_ALLOY == {"in718": "Inconel 718", "ti6al4v": "Ti-6Al-4V"}
-    kin = ti["kinetics"]
-    rate = ti["thermal"]["solidificationKinetics"]["coolingRate_K_s"]
-    if rate is None:
-        # P6 (2026-10-11): the demo Ti-6Al-4V 200 W / 900 mm/s job serves null G/R (its depth comes from the Fabbro
-        # keyhole leg), so its kinetics block is unavailable with that reason; the rate-based checks below run on a
-        # conduction Ti-6Al-4V job.
-        assert kin["status"] == "unavailable" and "Fabbro keyhole leg" in kin["reason"], kin
-        assert kin["reportedCoolingRate_K_s"] is None and kin["buildCoolingRate_C_s"] is None
-        ti = run_job({"alloyId": "ti6al4v", "laserPower_W": 150, "scanSpeed_mm_s": 1200, "beamDiameter_um": 80,
-                      "preheatTemp_C": 150, "layerThickness_um": 30, "hatchSpacing_um": 100, "bypassCache": True})
-        kin = ti["kinetics"]
-        rate = ti["thermal"]["solidificationKinetics"]["coolingRate_K_s"]
-    assert rate > 2000.0, rate
-    # Kinetics model is steel-only (kinetics_ttt_cct_solver kineticsModel): Ti-6Al-4V is not a steel, so
-    # the whole block is unavailable with the solver's reason and no steel-template value.
-    reference = solve_phase_transformation_kinetics(alloy_name="Ti-6Al-4V", cooling_rate_c_s=float(rate))
-    assert reference["kineticsModel"]["status"] == "unavailable"
-    assert kin["status"] == "unavailable" and kin["success"] is False
-    assert kin["reason"] == "kinetics model is steel-only: Ti-6Al-4V is not a steel", kin["reason"]
-    assert kin["alloy"] is None and kin["alloyId"] == "ti6al4v"
-    assert kin["buildCoolingRate_C_s"] == float(rate) == kin["reportedCoolingRate_K_s"]
-    assert kin["coolingRateSource"] == "thermal.solidificationKinetics.coolingRate_K_s"
-    assert kin["cctContinuousCoolingMap"] is None and kin["calphadVsKineticsGap"] is None
-    assert kin["buildCoolingRateCctRow"] is None and kin["buildRateMartensite"] is None
-    assert "Pearlite" not in json.dumps(kin) and "Martensite_pct" not in json.dumps(kin)
-
-    # The CCT row selection and martensite helpers stay tested on a real CCT map (AISI 4140; the steel
-    # template is the only one the solver reports).
-    steel = solve_phase_transformation_kinetics(alloy_name="AISI 4140", cooling_rate_c_s=30.0)
-    sel = build_cooling_rate_cct_row(steel["cctContinuousCoolingMap"], rate)
-    assert sel["status"] == "unavailable" and sel["rowIndex"] is None and sel["rowCoolingRate_C_s"] is None
-    assert sel["mapRange_C_s"] == [0.05, 2000.0]
-    assert sel["reason"] == (f"build cooling rate {int(rate)} °C/s is above the CCT map maximum 2000 °C/s; "
-                             "no row is extrapolated"), sel["reason"]
-    mart = build_rate_martensite("aisi4140", "AISI 4140", steel["calphadVsKineticsGap"], sel)
-    assert mart["status"] == "unavailable" and mart["predictedMartensite_pct"] is None and mart["verdict"] is None
-    assert mart["reason"].startswith(sel["reason"] + "; the steel-type martensite fraction and verdict")
-
-    cct = steel["cctContinuousCoolingMap"]
-    inside = build_cooling_rate_cct_row(cct, 30.0)  # log10 nearest: 25 (|0.079|) beats 50 (|0.222|)
-    assert inside["status"] == "selected" and inside["rowCoolingRate_C_s"] == 25.0
-    assert cct[inside["rowIndex"]]["coolingRate_C_s"] == 25.0 and inside["reason"] is None
-    assert build_cooling_rate_cct_row(cct, 0.3)["rowCoolingRate_C_s"] == 0.2
-    assert build_cooling_rate_cct_row(cct, 72.0)["rowCoolingRate_C_s"] == 100.0  # log scale; linear-nearest is 50
-    assert build_cooling_rate_cct_row(cct, 2000.0)["rowCoolingRate_C_s"] == 2000.0
-    assert build_cooling_rate_cct_row(cct, 0.05)["rowCoolingRate_C_s"] == 0.05
-    # Exact log-midpoint tie: the first row in map order (the slower rate) wins.
-    tie_map = [{"coolingRate_C_s": 1.0}, {"coolingRate_C_s": 100.0}]
-    assert build_cooling_rate_cct_row(tie_map, 10.0)["rowCoolingRate_C_s"] == 1.0
-    # The range reason states the exact comparison, never a rounded one.
-    just_above = build_cooling_rate_cct_row(cct, 2000.0000001)
-    assert just_above["status"] == "unavailable"
-    assert just_above["reason"] == ("build cooling rate 2000.0000001 °C/s is above the CCT map maximum "
-                                    "2000 °C/s; no row is extrapolated"), just_above["reason"]
-    below = build_cooling_rate_cct_row(cct, 0.01)
-    assert below["status"] == "unavailable" and "below the CCT map minimum 0.05 °C/s" in below["reason"]
-    for bad in (None, float("nan"), float("inf"), float("-inf"), -1.0, 0.0, True, False, "30"):
-        out = build_cooling_rate_cct_row(cct, bad)
-        assert out["status"] == "unavailable" and out["rowIndex"] is None, (bad, out)
-    for bad_map in (None, [], [None, "x", {"coolingRate_C_s": float("nan")}, {"coolingRate_C_s": True}]):
-        assert build_cooling_rate_cct_row(bad_map, 30.0)["status"] == "unavailable", bad_map
-    assert build_cooling_rate_cct_row([None, {"coolingRate_C_s": 25.0}], 25.0)["rowIndex"] == 1
-
-    # No finite cooling rate: unavailable, never the former 1e5 K/s default.
-    for thermal in ({}, {"solidificationKinetics": {}},
-                    {"solidificationKinetics": {"coolingRate_K_s": float("nan")}},
-                    {"solidificationKinetics": {"coolingRate_K_s": float("inf")}},
-                    {"solidificationKinetics": {"coolingRate_K_s": True}},
-                    {"solidificationKinetics": {"coolingRate_K_s": "1e5"}}):
-        missing = build_job_kinetics("in718", thermal)
-        assert missing["status"] == "unavailable" and missing["calphadVsKineticsGap"] is None
-        assert missing["reason"] == "the build thermal result reports no finite cooling rate", missing
-        assert missing["buildCoolingRate_C_s"] is None and missing["reportedCoolingRate_K_s"] is None
-    # At or below the 1 K/s floor of a degenerate solidification front (solidification_front.py):
-    # not a build rate, whatever produced it.
-    for floor_rate in (1.0, 1, 0.5, 0.0, -3.0):
-        floor = build_job_kinetics("ti6al4v", {"solidificationKinetics": {"coolingRate_K_s": floor_rate}})
-        assert floor["status"] == "unavailable" and floor["reason"] == DEGENERATE_FRONT_REASON, floor
-        assert floor["buildCoolingRate_C_s"] is None and floor["reportedCoolingRate_K_s"] == float(floor_rate)
-        assert floor["cctContinuousCoolingMap"] is None and floor["buildRateMartensite"] is None
-    above_floor = build_job_kinetics("ti6al4v", {"solidificationKinetics": {"coolingRate_K_s": 1.0000001}})
-    assert above_floor["reason"] != DEGENERATE_FRONT_REASON and above_floor["buildCoolingRate_C_s"] == 1.0000001
-
-    # In-map rate (synthetic; real builds report ~1e5-1e6 K/s): still unavailable, the model is steel-only.
-    for alloy_id, name in (("in718", "Inconel 718"), ("ti6al4v", "Ti-6Al-4V")):
-        good = build_job_kinetics(alloy_id, {"solidificationKinetics": {"coolingRate_K_s": 30.0}})
-        assert good["status"] == "unavailable", good
-        assert good["reason"] == f"kinetics model is steel-only: {name} is not a steel", good["reason"]
-        assert good["buildCoolingRate_C_s"] == 30.0 and good["buildCoolingRateCctRow"] is None
-    # With a steel the fraction and verdict are reported for a selected row (hypothetical mapping, as in the fixture).
-    from unittest import mock
-    with mock.patch.dict(BUILD_JOB_KINETICS_ALLOY, {"aisi4140": "AISI 4140"}):
-        steel_job = build_job_kinetics("aisi4140", {"solidificationKinetics": {"coolingRate_K_s": 30.0}})
-    assert steel_job["status"] == "available" and steel_job["buildCoolingRateCctRow"]["rowCoolingRate_C_s"] == 25.0
-    m = steel_job["buildRateMartensite"]
-    reality = steel_job["calphadVsKineticsGap"]["kineticRealityAtSelectedCooling"]
-    assert m["status"] == "available" and m["reason"] is None
-    assert m["predictedMartensite_pct"] == reality["predictedMartensite_pct"] and m["verdict"] == reality["verdict"]
-    assert math.isclose(reality["coolingRate_C_s"], 30.0)
-    nonfinite_gap = {"kineticRealityAtSelectedCooling": {"predictedMartensite_pct": None, "verdict": "x"}}
-    assert build_rate_martensite("ti6al4v", "Ti-6Al-4V", nonfinite_gap, {"status": "selected"})["status"] == "unavailable"
-    # The registry placeholder Ms of IN718 is still withheld by the helper (defence in depth).
-    placeholder = build_rate_martensite("in718", "Inconel 718", steel["calphadVsKineticsGap"], {"status": "selected"})
-    assert placeholder["status"] == "unavailable" and "non-physical placeholder" in placeholder["reason"]
-
-    # B1 regression: IN718 150 W / 1500 mm/s reported the 1 K/s floor until the Wave B bump (LA-2 resolves the
-    # pool and KS-1 samples only the solidifying front: about 5.5e6 K/s now). The degenerate-floor path keeps
-    # its synthetic coverage above (floor_rate loop).
-    fast = run_job({"alloyId": "in718", "laserPower_W": 150, "scanSpeed_mm_s": 1500, "beamDiameter_um": 80,
-                    "layerThickness_um": 30, "hatchSpacing_um": 100, "bypassCache": True})
-    assert fast["thermal"]["solidificationKinetics"]["coolingRate_K_s"] > 2000.0
-    assert fast["kinetics"]["status"] == "unavailable" and fast["kinetics"]["reason"] != DEGENERATE_FRONT_REASON
-    assert fast["kinetics"]["buildCoolingRateCctRow"] is None
-    # A non-degenerate IN718 build: unavailable because the kinetics model is steel-only. P7b (2026-10-14): at an 80 um
-    # beam this point (dH/hs 24.55) sits on the Fabbro keyhole leg where P6 serves no G, R or cooling rate, so the
-    # case uses a 100 um beam (dH/hs 17.57, conduction field resolved, cooling about 3.2e6 K/s).
-    slow = run_job({"alloyId": "in718", "laserPower_W": 220, "scanSpeed_mm_s": 900, "beamDiameter_um": 100,
-                    "layerThickness_um": 30, "hatchSpacing_um": 100, "bypassCache": True})
-    assert slow["thermal"]["solidificationKinetics"]["coolingRate_K_s"] > 2000.0
-    assert slow["kinetics"]["status"] == "unavailable"
-    assert slow["kinetics"]["reason"] == "kinetics model is steel-only: Inconel 718 is not a steel"
-    assert slow["kinetics"]["buildCoolingRateCctRow"] is None and slow["kinetics"]["buildRateMartensite"] is None
-
-    for alloy_id, name, power, speed in (("ss316l", "316L Stainless Steel", 200, 800),
-                                         ("alsi10mg", "AlSi10Mg", 330, 1100)):
-        job = run_job({"alloyId": alloy_id, "laserPower_W": power, "scanSpeed_mm_s": speed,
-                       "beamDiameter_um": 80, "layerThickness_um": 30, "hatchSpacing_um": 100,
-                       "bypassCache": True})
-        assert job["success"]
-        k = job["kinetics"]
-        reported = float(job["thermal"]["solidificationKinetics"]["coolingRate_K_s"])
-        assert k == {
-            "success": False,
-            "status": "unavailable",
-            "reason": f"no kinetics model for {name}",
-            "alloyId": alloy_id,
-            "alloy": None,
-            "buildCoolingRate_C_s": None if reported <= 1.0 else reported,
-            "reportedCoolingRate_K_s": reported,
-            "coolingRateSource": "thermal.solidificationKinetics.coolingRate_K_s",
-            "cctContinuousCoolingMap": None,
-            "calphadVsKineticsGap": None,
-            "buildCoolingRateCctRow": None,
-            "buildRateMartensite": None,
-        }, k
-        assert "AISI 4140" not in json.dumps(k) and "7075" not in json.dumps(k)
+    from lpbf_build_job_solver import build_job_kinetics
+    for aid in ("ti6al4v", "in718", "ss316l", "alsi10mg"):
+        for thermal in ({}, ti["thermal"], {"solidificationKinetics": {"coolingRate_K_s": 1e6}}):
+            kin = build_job_kinetics(aid, thermal)
+            assert kin["status"] == "unavailable"
+            assert kin["reasons"][0]["code"] == "missing-thermal-history"
+            assert kin["buildCoolingRate_C_s"] is None and kin["reportedCoolingRate_K_s"] is None
+            assert kin["cctContinuousCoolingMap"] is None
+    check_kinetics_fixture()
 
 
 def check_build_job_microstructure(job):
-    """Build-job microstructure is a projection of thermal.solidificationKinetics (no second G/R)."""
-    # P6 (2026-10-11): at 285 W / 960 mm/s the served depth comes from the Fabbro keyhole leg, so the thermal block
-    # serves null G/R with a reason and the projection is unavailable with that reason (never a fallback number).
+    from quantity_envelope import envelope_problems
     micro = job["microstructure"]
     kin = job["thermal"]["solidificationKinetics"]
-    assert job["thermal"]["meltPoolGeometry"]["keyholeVaporCavityDepth_um"] > 0.0
-    assert kin["thermalGradient_G_K_m"] is None and kin["gradientSource"] is None, kin
-    assert "Fabbro keyhole leg" in kin["unavailableReason"]
-    assert micro["status"] == "unavailable", micro["status"]
-    assert "Fabbro keyhole leg" in micro["reason"], micro["reason"]
-    assert micro["G_K_m"] is None and micro["PDAS_um"] is None and micro["morphology"] is None
-    assert job["kinetics"]["status"] == "unavailable" and "Fabbro keyhole leg" in job["kinetics"]["reason"]
-    # The conduction point 150 W / 1200 mm/s serves the conduction-field interface.
-    job = run_job({"alloyId": "in718", "laserPower_W": 150, "scanSpeed_mm_s": 1200, "beamDiameter_um": 80,
-                   "layerThickness_um": 40, "hatchSpacing_um": 110, "bypassCache": True})
-    micro = job["microstructure"]
-    kin = job["thermal"]["solidificationKinetics"]
-    assert job["thermal"]["meltPoolGeometry"]["keyholeVaporCavityDepth_um"] == 0.0
-    assert kin["usedFieldMap"] is True and kin["gradientSource"] == "conduction-field-interface", kin
-    assert micro["status"] == "available", micro["status"]
-    assert micro["usedFieldMap"] is True
-    assert micro["gradientSource"] == kin["gradientSource"]
-    assert "reason" not in micro
-    assert micro["source"] == "thermal.solidificationKinetics"
-    assert micro["G_K_m"] == kin["thermalGradient_G_K_m"]
-    # R is the more precise R_mm_s / 1e3 when present (R_m_s is rounded to 3 decimals).
-    assert micro["R_m_s"] == kin["solidificationRate_R_mm_s"] / 1.0e3
-    # P7b (2026-10-14): R_mm_s is exactly 194.5 here, a rounding half (0.1945 vs 0.194), so the bound carries an ulp.
-    assert abs(micro["R_m_s"] - kin["solidificationRate_R_m_s"]) <= 5.0e-4 + 1.0e-12
-    # The regime is carried so the panel can say when the G/R field is outside its regime (conduction here).
-    assert micro["regime"] == job["thermal"]["meltPoolGeometry"]["regime"]
-    assert micro["regime"].startswith("Conduction"), micro["regime"]
-    assert micro["normalizedEnthalpy"] == job["thermal"]["processParameters"]["normalizedEnthalpy"]
-    assert micro["regimeNote"] is None
-    assert micro["coolingRate_K_s"] == kin["coolingRate_K_s"]
-    assert micro["PDAS_um"] == kin["primaryDendriteArmSpacing_PDAS_um"]
-    assert micro["SDAS_um"] == kin["secondaryDendriteArmSpacing_SDAS_um"]
-    assert micro["morphology"] == kin["microstructureMorphology"]
-    assert micro["modelId"] == kin["modelId"]
-    assert micro["gradientSource"] == kin["gradientSource"]
-    assert micro["usedFieldMap"] == kin["usedFieldMap"]
-    assert micro["g_over_r_ratio"] == kin["g_over_r_ratio"]
-    assert micro["doi"] == kin["doi"]
-    assert micro["disclaimer"].startswith(kin["disclaimer"])
-    assert "no second estimate" in micro["disclaimer"]
-    # The removed Rosenthal default-constant block (G floor 1e4 K/m) must not reappear.
-    assert micro["G_K_m"] > 1.0e5, micro["G_K_m"]
-
-    from lpbf_solidification_microstructure import project_build_job_microstructure
-
-    for bad in ({}, {"solidificationKinetics": None}, {"solidificationKinetics": {}},
-                {"solidificationKinetics": {**kin, "thermalGradient_G_K_m": float("nan")}},
-                {"solidificationKinetics": {**kin, "solidificationRate_R_m_s": None}},
-                # only the cooling rate is bad, with valid G/R: still unavailable
-                {"solidificationKinetics": {**kin, "coolingRate_K_s": float("inf")}},
-                {"solidificationKinetics": {**kin, "coolingRate_K_s": None}},
-                # bool is not a number (True == 1 must not pass as G or R)
-                {"solidificationKinetics": {**kin, "thermalGradient_G_K_m": True}},
-                {"solidificationKinetics": {**kin, "solidificationRate_R_m_s": True}}):
-        unavailable = project_build_job_microstructure(bad)
-        assert unavailable["status"] == "unavailable"
-        assert unavailable["reason"] == "thermal.solidificationKinetics missing or non-finite"
-        for key in ("G_K_m", "R_m_s", "coolingRate_K_s", "PDAS_um", "SDAS_um", "morphology"):
-            assert unavailable[key] is None, key
-
-    # usedFieldMap not True (even with a non-fallback gradientSource label) is a screening fallback.
-    synthetic = project_build_job_microstructure(
-        {"solidificationKinetics": {**kin, "usedFieldMap": False}, "meltPoolGeometry": {"regime": "Conduction Mode (Stable)"}}
-    )
-    assert synthetic["status"] == "screening-fallback" and synthetic["regimeNote"] is None
-    # Legacy payload path only (P6 removed the tail-length heuristic from the solver; the projection keeps the label).
-    assert synthetic["reason"].startswith("thermal.solidificationKinetics used the tail-length heuristic")
+    assert micro["schema"] == "lpbf-solidification-microstructure-2"
+    assert micro["status"] == "unavailable"
+    assert micro["quantities"] == kin["quantities"]
+    assert micro["inputProvenance"] == kin["inputProvenance"]
+    assert envelope_problems(micro) == []
+    assert "G_K_m" not in micro and "doi" not in micro
+    assert job["kinetics"]["reasons"][0]["code"] == "missing-thermal-history"
 
 
 def check_build_job_microstructure_fallback():
-    """Low power / high speed cases: the conduction field has fewer than 3 interface samples. Until P6 (2026-10-11)
-    they served the tail-length heuristic as 'screening-fallback'; P6 serves null with the thermal block's reason."""
-    cases = (
-        {"alloyId": "in718", "laserPower_W": 10, "scanSpeed_mm_s": 3000},
-        {"alloyId": "ti6al4v", "laserPower_W": 10, "scanSpeed_mm_s": 2500},
-    )
-    for case in cases:
-        job = run_job({**case, "beamDiameter_um": 80, "layerThickness_um": 40,
-                       "hatchSpacing_um": 110, "bypassCache": True})
-        kin = job["thermal"]["solidificationKinetics"]
-        micro = job["microstructure"]
-        assert kin["usedFieldMap"] is False and kin["gradientSource"] is None, (case, kin)
-        assert "fewer than 3" in kin["unavailableReason"], (case, kin)
-        assert micro["status"] == "unavailable", (case, micro["status"])
-        assert "fewer than 3" in micro["reason"], micro["reason"]
-        assert micro["G_K_m"] is None and micro["coolingRate_K_s"] is None and micro["PDAS_um"] is None
-        assert job["kinetics"]["status"] == "unavailable" and "fewer than 3" in job["kinetics"]["reason"]
-        print("  unsampled interface", case["alloyId"], case["laserPower_W"], "W /", case["scanSpeed_mm_s"], "mm/s:",
-              micro["status"])
+    from lpbf_solidification_microstructure import project_build_job_microstructure
+    # Retired flat payloads cannot reintroduce a numeric fallback.
+    for old in ({"thermalGradient_G_K_m": 1e6, "solidificationRate_R_m_s": 0.1, "coolingRate_K_s": 1e5}, {}):
+        micro = project_build_job_microstructure({"solidificationKinetics": old})
+        assert micro["status"] == "unavailable"
+        assert all(q["value"] is None for q in micro["quantities"].values())
 
 
 DEGENERATE_FLOOR_REASON = (
@@ -389,38 +164,12 @@ DEGENERATE_FLOOR_REASON = (
 
 
 def check_build_job_microstructure_degenerate_floor():
-    """Degenerate-floor labelling. Real case at Tier 2: IN718 100 W / 960 mm/s; after Wave B KS-1 (only
-    solidifying n_x > 0 samples) it is available, and the floor state is exercised synthetically."""
+    from lpbf_solidification_microstructure import project_build_job_microstructure
     job = run_job({"alloyId": "in718", "laserPower_W": 100, "scanSpeed_mm_s": 960, "beamDiameter_um": 80,
                    "layerThickness_um": 40, "hatchSpacing_um": 110, "bypassCache": True})
-    assert job["microstructure"]["status"] == "available", job["microstructure"]["status"]
-    from lpbf_solidification_microstructure import project_build_job_microstructure
-
-    floored = _floored_thermal(job["thermal"])
-    kin = floored["solidificationKinetics"]
-    micro = project_build_job_microstructure(floored)
-    assert micro["status"] == "degenerate-floor", micro["status"]
-    assert micro["reason"] == DEGENERATE_FLOOR_REASON
-    assert micro["usedFieldMap"] is True
-    # Numbers are still copied, never recomputed.
-    assert micro["R_m_s"] == kin["solidificationRate_R_mm_s"] / 1.0e3 <= 1.0e-4 * (1.0 + 1.0e-9)
-    assert micro["coolingRate_K_s"] == kin["coolingRate_K_s"] == 1.0
-    assert micro["G_K_m"] == kin["thermalGradient_G_K_m"]
-    assert micro["PDAS_um"] == kin["primaryDendriteArmSpacing_PDAS_um"]
-    assert micro["SDAS_um"] == kin["secondaryDendriteArmSpacing_SDAS_um"]
-    assert micro["morphology"] == kin["microstructureMorphology"]
-    assert "not a computed result" in micro["disclaimer"]
-
-    # Synthetic: field map used, R above the floor but cooling on its floor, and vice versa.
-    from lpbf_solidification_microstructure import project_build_job_microstructure
-
-    good = {"solidificationKinetics": {**kin, "solidificationRate_R_mm_s": 30.3, "solidificationRate_R_m_s": 0.0303,
-                                       "coolingRate_K_s": 5.5e5}}
-    assert project_build_job_microstructure(good)["status"] == "available"
-    for patch in ({"coolingRate_K_s": 1.0}, {"solidificationRate_R_mm_s": 0.1, "solidificationRate_R_m_s": 0.0}):
-        degenerate = project_build_job_microstructure({"solidificationKinetics": {**good["solidificationKinetics"], **patch}})
-        assert degenerate["status"] == "degenerate-floor", patch
-        assert degenerate["reason"] == DEGENERATE_FLOOR_REASON
+    projected = project_build_job_microstructure(_floored_thermal(job["thermal"]))
+    assert projected["quantities"] == job["microstructure"]["quantities"]
+    assert projected["status"] == "unavailable"
 
 
 SEGREGATION_FIXTURE = os.path.join(HERE, "..", "tests", "fixtures", "build-job-segregation-blocks.json")
@@ -450,9 +199,9 @@ def segregation_fixture_blocks():
     return {
         "available_in718_150_1200": available["segregation"],
         "in718_unavailable_keyhole_leg_285_960": keyhole_leg["segregation"],
-        # SYNTHETIC microstructure state (clamp floors), real composition-only result.
+        # Historical fixture key retained; ordinary SOL-A1 null front, real composition-only result.
         "in718_degenerate_floor_synthetic": build_job_segregation(
-            "in718", project_build_job_microstructure(_floored_thermal(floor_src["thermal"]))),
+            "in718", project_build_job_microstructure(floor_src["thermal"])),
         # in625 is not a build-job alloy (resolve_alloy_id refuses it); the block is called directly for the UI test.
         "in625_available": build_job_segregation("in625", available["microstructure"]),
         "ss316l_not_applicable": steel["segregation"],
@@ -477,37 +226,24 @@ def _without_volatile(job):
 
 
 def check_build_job_segregation():
-    """v14 adds the segregation block and changes nothing else in the result."""
     from unittest.mock import patch
-
     import lpbf_build_job_solver as build_job_solver
-    from lpbf_solidification_segregation import EVIDENCE_LABEL, NOT_APPLICABLE_REASON
-
     payload = {"alloyId": "in718", "laserPower_W": 150, "scanSpeed_mm_s": 1200, **_SEGREGATION_COMMON}
     job = run_job(payload)
-    assert set(job) == V13_RESULT_KEYS | {"segregation"}, sorted(set(job) ^ (V13_RESULT_KEYS | {"segregation"}))
     seg = job["segregation"]
-    assert seg["status"] in ("available", "unavailable"), seg["status"]
-    assert seg["status"] == "available"
-    assert seg["alloyId"] == "in718"
-    assert seg["evidenceLabel"] == EVIDENCE_LABEL
-    pc = seg["processCoupling"]
-    assert pc["status"] == job["microstructure"]["status"] == "available"
-    for key in ("G_K_m", "R_m_s", "coolingRate_K_s", "morphology", "PDAS_um"):
-        assert pc[key] == job["microstructure"][key], key
-    assert seg["validity"]["outsideSourceRegime"] is True
-    # Every other key equals a run whose segregation hook is replaced: the block is purely additive.
+    assert seg["schema"] == "lpbf-solidification-segregation-2"
+    assert seg["status"] == "computed"
+    assert seg["quantities"]["nominalBinary"]["sourceEvidenceKind"] == "Unresolved"
+    assert seg["processCoupling"]["quantities"] == job["microstructure"]["quantities"]
+    assert seg["processCoupling"]["usedInCalculation"] is False
+    assert seg["rapidSolidification"]["status"] == "unavailable"
+    # The composition-only addition cannot change other job decisions.
     with patch.object(build_job_solver, "build_job_segregation", lambda alloy_id, micro: None):
         stub = run_job(payload)
-    assert stub["segregation"] is None
     assert _without_volatile(job) == _without_volatile(stub)
-
-    steel = run_job({"alloyId": "ss316l", "laserPower_W": 200, "scanSpeed_mm_s": 800, **_SEGREGATION_COMMON})
-    assert steel["segregation"]["status"] == "not-applicable"
-    assert steel["segregation"]["reason"] == NOT_APPLICABLE_REASON
-    for alloy_id, power, speed in (("ti6al4v", 200, 900), ("alsi10mg", 330, 1100)):
-        other = run_job({"alloyId": alloy_id, "laserPower_W": power, "scanSpeed_mm_s": speed, **_SEGREGATION_COMMON})
-        assert other["segregation"]["status"] == "not-applicable", alloy_id
+    for aid in ("ss316l", "ti6al4v", "alsi10mg"):
+        from lpbf_solidification_segregation import build_job_segregation
+        assert build_job_segregation(aid, job["microstructure"])["status"] == "not-requested"
     check_segregation_fixture()
 
 
@@ -686,7 +422,7 @@ def main():
         "lpbf-build-job-p6-containment-v23",
         "lpbf-build-job-p7a-rules-and-nulls-v24",
     ), BUILD_JOB_SOLVER_REVISION
-    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-p7b-sourced-constants-v25"  # P7b (2026-10-14)
+    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-sola1-v26"  # P7b (2026-10-14)
     assert ti["processSeed"] == 42
     assert ti["scanStrategy"]["id"] == "stripe"
     assert ti["uq"] is None  # lazy default
@@ -1027,9 +763,9 @@ def main():
             "bypassCache": True,
         }
     )
-    r0 = flat["thermal"]["solidificationKinetics"]["solidificationRate_R_m_s"]
-    r60 = inclined["thermal"]["solidificationKinetics"]["solidificationRate_R_m_s"]
-    assert r0 is not None and r60 == r0, (r0, r60)
+    r0 = flat["thermal"]["solidificationKinetics"]["quantities"]["normalSpeed"]["value"]
+    r60 = inclined["thermal"]["solidificationKinetics"]["quantities"]["normalSpeed"]["value"]
+    assert r0 is None and r60 is None, (r0, r60)
     assert "solidificationCosTheta" not in inclined["thermal"]["solidificationKinetics"]
     assert inclined["thermal"]["processParameters"]["inclineAngle_deg"] == 60.0
     assert any("no incline multiplier" in a for a in inclined["assumptions"]), inclined["assumptions"]

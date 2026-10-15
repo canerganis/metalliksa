@@ -1,26 +1,8 @@
 #!/usr/bin/env python3
-"""
-LPBF melt-pool G/R coupled to solidification: Hunt G/R bands, a CET band slot and a trapping-adjusted Laves bound
-(screening only, not validation).
+"""SOL-A1 G/R request transport: direct thermal front envelopes, with no liquidus admission bypass.
 
-Nothing here re-solves the melt pool. The frozen Rosenthal screening solver (`lpbf_thermal_solver.
-calculate_meltpool_physics`, heat source default) supplies G and R along the rear liquidus arc through the frozen
-`solidification_front` mapper. This module copies those numbers, couples them to the existing Aziz k(V) and binary
-Scheil functions of `lpbf_solidification_segregation`, and exposes a CET criterion with two sourced IN718 constant
-sets (EBM-calibrated, transferred to LPBF) and no sourced constants for IN625 (see `lpbf_cet_screening`).
-
-Equations
-  E1  Front G and R are copied, not recomputed: G = |grad T| at liquidus samples, R = v n_x cos(theta) for n_x > 0,
-      Tdot = G R (Hunt 1984, DOI 10.1016/0025-5416(84)90201-5). `median.coolingRate_K_s` is the solver's median of the
-      per-sample G R, not G_med R_med (coolingBasis).
-  E2  Analytic Rosenthal trailing-centreline reference (Rosenthal 1946, as cited in
-      lpbf_thermal_solver.rosenthal_temperature_C). On the trailing surface axis (x < 0, y = z = 0) r + x = 0, so
-      T - T0 = P / (2 pi k |x|), x_tail = P / (2 pi k dT) and G = P / (2 pi k x_tail^2) = 2 pi k dT^2 / P, independent
-      of alpha and v. n_x = 1, so R = v cos(theta) and Tdot = G R.
-  E3  CET criterion, Gäumann form of Hunt 1984 (lpbf_cet_screening; Gäumann et al., Acta Mater. 49 (2001) 1051,
-      DOI 10.1016/S1359-6454(00)00367-0; equation not verified against the PDF).
-  E4  Aziz trapping k(V) = (k_e + V/V_D) / (1 + V/V_D) (Ghosh et al. 2017, Eq. 12) and binary Scheil
-      f_e = (C_e/C_0)^(1/(k-1)) (Dupont 1996 Eq. 5 / Dupont 1998), both reused from the segregation module.
+The analytic centreline and binary trapping helpers are standalone offline test utilities; the served route
+projects only the source-bounded thermal container. Default LPBF CET remains outside its source model domain.
 """
 from __future__ import annotations
 
@@ -34,46 +16,19 @@ from typing import Any, Dict, List, Mapping, Optional, Tuple
 import lpbf_cet_screening as cet_mod
 from lpbf_job_cache import BUILD_JOB_SOLVER_REVISION
 
-SCHEMA = "lpbf-gr-solidification-1"
+SCHEMA = "lpbf-gr-solidification-2"
 ENGINE = "lpbf_gr_solidification"
-SUPPORTED: Dict[str, str] = {"in718": "in718", "in625": "Inconel 625"}
-MATERIAL_NAMES: Dict[str, str] = {"in718": "Inconel 718", "in625": "Inconel 625"}
-STATUSES = ("available", "screening-fallback", "degenerate-floor", "unavailable", "error")
+SUPPORTED: Dict[str, str] = {"in718": "in718", "in625": "Inconel 625", "ti6al4v": "ti6al4v", "alsi10mg": "alsi10mg", "ss316l": "ss316l"}
+MATERIAL_NAMES: Dict[str, str] = {"in718": "Inconel 718", "in625": "Inconel 625", "ti6al4v": "Ti-6Al-4V", "alsi10mg": "AlSi10Mg", "ss316l": "316L Stainless Steel"}
+STATUSES = ("computed", "partial", "unavailable", "failed", "not-requested")
 LOCATIONS = ("bottom", "median", "tail")
 MIN_AXIS_DEFAULT_N = 11
 
-EVIDENCE_STATEMENT = (
-    "Screening only. G and R are copied from the frozen Rosenthal conduction-field melt-pool model; Hunt G/R bands are "
-    "uncalibrated, CET constants exist for IN718 only (EBM-calibrated, transferred to LPBF) and none are sourced for "
-    "IN625, and the Laves numbers are a binary upper bound "
-    "from weld-calibrated formulas. This is not an experimental validation and not a grain-structure prediction."
-)
-LIMITS: List[str] = [
-    "The conduction field has no Marangoni flow.",
-    "Keyhole cells are outside the regime of the conduction model; the default IN718 window is mostly keyhole in this model.",
-    "Only three rear-arc points (bottom, median, tail) are reported; the sampler skips the ends of the arc.",
-    "R tends to 0 at the pool bottom, so the trapping bound holds only for the sampled arc; over the whole boundary the "
-    "bound is the equilibrium-k value.",
-    "Values are copied after the solver's rounding.",
-    "The Rosenthal reference sits at a different location (surface centreline) from the solver's tail sample (at depth "
-    "on the rear arc).",
-    "Remelting by later tracks and layers and epitaxial columnar growth are not modelled; in LPBF they usually dominate "
-    "over CET.",
-    "Nucleation undercooling is neglected in the Gäumann form; N0 depends on the process.",
-    "The IN718 CET constants are EBM-calibrated and transferred to LPBF without an LPBF fit; no CET constants are "
-    "sourced for IN625.",
-    "IN625 thermal properties are a legacy estimate (unvalidated).",
-    "The Laves numbers extrapolate weld-calibrated formulas.",
-    "No experimental comparison.",
-]
-COUPLING_NOTE = "Copied by lpbf_gr_solidification from the thermal block; no second G/R estimate is made."
-COOLING_BASIS = "median of the solver's per-sample G*R (coolingRate_K_s), not G_median * R_median"
-ROSENTHAL_LABEL = (
-    "Pure point-source surface-centreline reference at the trailing liquidus; a different location from the solver's "
-    "tail sample (which sits at depth on the rear arc); not regularised"
-)
-HUNT_LABEL = "Hunt G/R screening band (uncalibrated), not a CET prediction"
-CET_LABEL = "CET band (Gäumann 2001 form of Hunt 1984), screening only"
+# Wording table: pending maintainer approval (SOL-A, MD2).
+WORDING = {"evidence": "Screening only", "experimentalLimit": "No experimental comparison."}
+EVIDENCE_STATEMENT = WORDING["evidence"]
+LIMITS: List[str] = [WORDING["experimentalLimit"]]
+
 LAVES_BASIS = (
     "Binary C = 0 gamma/Laves eutectic-type constituent, fraction of the liquid, nominal Nb; Aziz-trapped k(R) at the "
     "sampled rear-arc R and V_D 0.23-0.31 m/s"
@@ -112,18 +67,8 @@ def _is_num(x: Any) -> bool:
 
 
 def resolve_gr_alloy(raw: Any) -> Optional[str]:
-    from four_alloy_materials import resolve_alloy_id
-    if raw is None:
-        return None
-    resolved = resolve_alloy_id(raw)
-    if resolved == "in718":
-        return "in718"
-    if resolved is not None:
-        return None
-    key = "".join(str(raw).strip().lower().replace("_", "").replace("-", "").split())
-    if key in ("in625", "inconel625"):
-        return "in625"
-    return None
+    from solidification_front import canonical_alloy_id
+    return canonical_alloy_id(raw)
 
 
 def _liquidus_C(alloy_id: str) -> float:
@@ -208,115 +153,37 @@ def laves_trapping(alloy_id: str, r_points: Mapping[str, Optional[float]]) -> Di
     }
 
 
+def _dependent_block(definition: str, name: str, code: str) -> Dict[str, Any]:
+    from quantity_envelope import container, reason, unavailable
+    return {"status": "unavailable", **container({name: unavailable(definition, [reason(code)])})}
+
+
 def _unavailable_body(status: str, reason: str) -> Dict[str, Any]:
-    return {
-        "status": status,
-        "reason": reason,
-        "regime": None,
-        "regimeNote": None,
-        "normalizedEnthalpy": None,
-        "extentStatus": None,
-        "front": {"median": None, "bottom": None, "tail": None, "R_range_m_s": None, "frontPointCount": None,
-                  "gradientSource": None, "usedFieldMap": None, "coolingBasis": COOLING_BASIS},
-        "rosenthalCenterline": {"status": "unavailable", "reason": reason},
-        "morphology": {"basis": "hunt-g-over-r-screening", "bands": {"bottom": None, "median": None, "tail": None},
-                       "label": HUNT_LABEL},
-        "cet": {"status": "unavailable", "reason": reason, "locations": {k: None for k in LOCATIONS}, "sets": {}},
-        "laves": {"status": "unavailable", "reason": reason},
-    }
-
-
-def _loc_entry(g: Any, r: Any, *, derive: bool, cooling: Any = None, x_um: Any = None, z_um: Any = None) -> Dict[str, Any]:
-    from solidification_front import hunt_morphology
-    entry: Dict[str, Any] = {"G_K_m": g, "R_m_s": r, "GoverR_K_s_m2": None, "GtimesR_K_s": None, "huntBand": None}
-    if x_um is not None:
-        entry["x_um"] = x_um
-        entry["z_um"] = z_um
-    if cooling is not None:
-        entry["coolingRate_K_s"] = cooling
-    if derive and _is_num(g) and _is_num(r):
-        g_over_r = g / max(1.0e-6, r)
-        entry["GoverR_K_s_m2"] = g_over_r
-        entry["GtimesR_K_s"] = cooling if cooling is not None else g * r
-        entry["huntBand"] = hunt_morphology(max(1.0, g_over_r))
-    return entry
+    from lpbf_solidification_microstructure import project_build_job_microstructure
+    from quantity_envelope import reason as coded_reason
+    front = project_build_job_microstructure({})
+    if status == "failed":
+        for q in front["quantities"].values():
+            q.update(status="failed", reasons=[coded_reason("solver-error")])
+        front["status"] = status
+    return {"status": status, "regime": None, "normalizedEnthalpy": None, "extentStatus": None,
+            "front": front,
+            "cet": _dependent_block("cet-class", "class", "outside-source-model-domain"),
+            "laves": _dependent_block("laves-trapped-scheil-fraction", "fraction", "parent-unavailable")}
 
 
 def couple_thermal_block(thermal: Mapping[str, Any], alloy_id: str, *, preheat_C: float, speed_mm_s: float,
                          cet_constants_override: Optional[Mapping[str, float]] = None) -> Dict[str, Any]:
-    """Pure: thermal dict -> cell body (no iP/iV)."""
+    """Project the admitted front; never bypass its liquidus admission through an analytic reference."""
     from lpbf_solidification_microstructure import project_build_job_microstructure
-    proj = project_build_job_microstructure(dict(thermal), note=COUPLING_NOTE)
-    status = proj["status"]
-    if status == "unavailable":
-        return _unavailable_body("unavailable", proj.get("reason") or "thermal.solidificationKinetics unavailable")
-    kin = thermal.get("solidificationKinetics") or {}
-    derive = status in ("available", "screening-fallback")
-    median = _loc_entry(proj["G_K_m"], proj["R_m_s"], derive=derive, cooling=proj["coolingRate_K_s"])
-    bottom: Optional[Dict[str, Any]] = None
-    tail: Optional[Dict[str, Any]] = None
-    if status in ("available", "degenerate-floor"):
-        for name in ("bottom", "tail"):
-            raw = kin.get(name)
-            if isinstance(raw, dict) and _is_num(raw.get("G_K_m")) and _is_num(raw.get("R_m_s")):
-                e = _loc_entry(raw["G_K_m"], raw["R_m_s"], derive=derive, x_um=raw.get("x_um"), z_um=raw.get("z_um"))
-                if name == "bottom":
-                    bottom = e
-                else:
-                    tail = e
-    locs = {"bottom": bottom, "median": median, "tail": tail}
-    r_vals = [e["R_m_s"] for e in locs.values() if e is not None and _is_num(e["R_m_s"])]
-    r_range = [min(r_vals), max(r_vals)] if (derive and r_vals) else None
-    params = thermal.get("processParameters") if isinstance(thermal.get("processParameters"), dict) else {}
-    geometry = thermal.get("meltPoolGeometry") if isinstance(thermal.get("meltPoolGeometry"), dict) else {}
-
-    p_field = params.get("fieldPower_W")
-    k_eff = params.get("effectiveConductivity_W_mK")
-    if _is_num(p_field) and _is_num(k_eff):
-        try:
-            cl = rosenthal_centerline_tail(p_field, k_eff, _liquidus_C(alloy_id), preheat_C, speed_mm_s / 1.0e3)
-            cl.update(status="available", reason=None, label=ROSENTHAL_LABEL, inputs={
-                "fieldPower_W": p_field, "effectiveConductivity_W_mK": k_eff, "liquidus_C": _liquidus_C(alloy_id),
-                "preheat_C": preheat_C, "theta_deg": 0.0})
-        except ValueError as e:
-            cl = {"status": "unavailable", "reason": str(e)}
-    else:
-        cl = {"status": "unavailable", "reason": "processParameters.fieldPower_W or effectiveConductivity_W_mK missing"}
-
-    if derive:
-        cet = cet_mod.cet_block(
-            alloy_id, {k: ((e["G_K_m"], e["R_m_s"]) if e is not None else None) for k, e in locs.items()},
-            constants_override=cet_constants_override)
-        laves = laves_trapping(alloy_id, {k: (e["R_m_s"] if e is not None else None) for k, e in locs.items()})
-    else:
-        reason = proj.get("reason") or "degenerate solver floor"
-        cet = {"status": "unavailable", "reason": reason, "locations": {k: None for k in LOCATIONS}, "sets": {}}
-        laves = {"status": "unavailable", "reason": reason}
-    # The registry CET sets are EBM-calibrated and transferred, so they are shown beside the Hunt band and never
-    # replace it. Only the test-only constants override switches the morphology basis.
-    basis = ("cet-gaumann2001" if (cet["status"] == "available" and cet_constants_override is not None)
-             else "hunt-g-over-r-screening")
-    morphology = {
-        "basis": basis,
-        "bands": {k: (e["huntBand"] if e is not None else None) for k, e in locs.items()},
-        "label": HUNT_LABEL if basis == "hunt-g-over-r-screening" else CET_LABEL,
-    }
-    body = {
-        "status": status,
-        "reason": proj.get("reason"),
-        "regime": proj.get("regime"),
-        "regimeNote": proj.get("regimeNote"),
-        "normalizedEnthalpy": proj.get("normalizedEnthalpy"),
-        "extentStatus": geometry.get("extentStatus"),
-        "front": {"median": median, "bottom": bottom, "tail": tail, "R_range_m_s": r_range,
-                  "frontPointCount": kin.get("frontPointCount"), "gradientSource": proj.get("gradientSource"),
-                  "usedFieldMap": proj.get("usedFieldMap"), "coolingBasis": COOLING_BASIS},
-        "rosenthalCenterline": cl,
-        "morphology": morphology,
-        "cet": cet,
-        "laves": laves,
-    }
-    return body
+    front = project_build_job_microstructure(dict(thermal))
+    geometry = thermal.get("meltPoolGeometry") or {}
+    process = thermal.get("processParameters") or {}
+    return {"status": front["status"], "regime": geometry.get("regime"),
+            "normalizedEnthalpy": process.get("normalizedEnthalpy"), "extentStatus": geometry.get("extentStatus"),
+            "front": front,
+            "cet": _dependent_block("cet-class", "class", "outside-source-model-domain"),
+            "laves": _dependent_block("laves-trapped-scheil-fraction", "fraction", "parent-unavailable")}
 
 
 def _thermal(alloy_id: str, power_W: float, speed_mm_s: float, s: Mapping[str, Any]) -> Dict[str, Any]:
@@ -332,7 +199,7 @@ def _eval(alloy_id: str, power_W: float, speed_mm_s: float, s: Mapping[str, Any]
         body = couple_thermal_block(thermal, alloy_id, preheat_C=float(s["preheatTemp_C"]), speed_mm_s=float(speed_mm_s))
         return body, thermal.get("materialEvidence")
     except Exception as e:  # a failed cell is an error, never coloured as a result
-        return _unavailable_body("error", f"{type(e).__name__}: {e}"), None
+        return _unavailable_body("failed", f"{type(e).__name__}: {e}"), None
 
 
 def evaluate_point(alloy_id: str, power_W: float, speed_mm_s: float, settings: Mapping[str, Any]) -> Dict[str, Any]:
@@ -351,7 +218,7 @@ def validate_request(data: Any) -> Tuple[Optional[Dict[str, Any]], Optional[Dict
         return None, _refuse("mode must be 'point' or 'map'.")
     alloy = resolve_gr_alloy(data.get("alloyId"))
     if alloy is None:
-        return None, _refuse("G/R solidification coupling is defined for IN718 and IN625 only; no fallback alloy.")
+        return None, _refuse("Unknown alloy ID; no fallback alloy.")
     try:
         beam = _num(data.get("beamDiameter_um"), "beamDiameter_um")
         layer = _num(data.get("layer_um"), "layer_um")
@@ -410,7 +277,7 @@ def _counts(bodies: List[Dict[str, Any]]) -> Dict[str, int]:
 
 
 def run_gr_solidification(data: Any) -> Dict[str, Any]:
-    from lpbf_solidification_segregation import RAPID_MODEL_ID, V_D_VALUES, binary_laves_inputs, scheil_eutectic_fraction
+    from lpbf_solidification_segregation import RAPID_MODEL_ID
     from solidification_front import MODEL_ID as SOLIDIFICATION_MODEL_ID
     t0 = time.time()
     norm, refusal = validate_request(data)
@@ -450,13 +317,7 @@ def run_gr_solidification(data: Any) -> Dict[str, Any]:
     cet_view = cet_mod.criterion_view()
     cet_view["constantsStatus"] = cet_mod.cet_constants(alloy)
     response["cet"] = cet_view
-    inp = binary_laves_inputs(alloy)
-    response["laves"] = {
-        "modelId": RAPID_MODEL_ID, "k_e": inp["k_e"], "C_e_wt": inp["C_e_wt"], "Nb_nominal_wt": inp["Nb_nominal_wt"],
-        "V_D_m_s": sorted(float(v["value"]) for v in V_D_VALUES),
-        "equilibriumKBound": round(scheil_eutectic_fraction(inp["Nb_nominal_wt"], inp["C_e_wt"], inp["k_e"]), 4),
-        "basis": LAVES_BASIS,
-    }
+    response["laves"] = {"modelId": RAPID_MODEL_ID}
     response["materialEvidence"] = evidence
     response["evidence"] = {"kind": "screening-only", "experimentalValidation": False, "statement": EVIDENCE_STATEMENT}
     response["limits"] = list(LIMITS)

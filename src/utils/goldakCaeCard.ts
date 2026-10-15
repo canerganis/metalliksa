@@ -1,3 +1,5 @@
+import type { QuantityContainer } from "../data/quantityEnvelope";
+import { checkedFront, quantityText } from "./solidificationDisplay";
 // Goldak double-ellipsoid CAE parameter card for a user DFLUX subroutine (not an Abaqus/Ansys input deck), shared by the
 // LPBF melt pool views.
 //
@@ -47,13 +49,8 @@ export interface GoldakCaeCardInput {
     };
   };
   /** P6 containment (2026-10-11): null with unavailableReason where the conduction-field interface is not served. */
-  solidificationKinetics: {
-    thermalGradient_G_K_m: number | null;
-    solidificationRate_R_m_s: number | null;
-    coolingRate_K_s: number | null;
-    primaryDendriteArmSpacing_PDAS_um: number | null;
-    unavailableReason?: string | null;
-  };
+  solidificationKinetics: QuantityContainer;
+
 }
 
 /** "<value> <unit>" for a served number, else "unavailable" with the solver's reason when it carries one. */
@@ -63,17 +60,7 @@ export const kineticsLine = (label: string, value: number | null | undefined, un
     : `** ${label}: unavailable${reason ? ` (${reason})` : ""}`;
 
 /** P7a: the PDAS scalar is null; the sourced Ni-Nb band (Ghosh 2017) is written when served, else the reason. */
-export const pdasBandLine = (kin: { primaryDendriteArmSpacing_PDAS_um?: number | null; pdasBand_um?: { hunt: number; kurzFisher: number } | null; pdasUnavailableReason?: string | null; unavailableReason?: string | null }): string => {
-  const band = kin.pdasBand_um;
-  if (band && Number.isFinite(band.hunt) && Number.isFinite(band.kurzFisher)) {
-    return `** Primary Spacing (PDAS band, Ni-Nb model alloy, Ghosh 2017): ${Math.min(band.hunt, band.kurzFisher).toFixed(3)} to ${Math.max(band.hunt, band.kurzFisher).toFixed(3)} um`;
-  }
-  if (typeof kin.primaryDendriteArmSpacing_PDAS_um === "number" && Number.isFinite(kin.primaryDendriteArmSpacing_PDAS_um)) {
-    return `** Primary Spacing (PDAS, legacy payload): ${kin.primaryDendriteArmSpacing_PDAS_um} um`;
-  }
-  const reason = kin.pdasUnavailableReason ?? kin.unavailableReason;
-  return `** Primary Spacing (PDAS): unavailable${reason ? ` (${reason})` : ""}`;
-};
+export const pdasBandLine = (kin: QuantityContainer): string => `** Primary Spacing (PDAS): ${quantityText(checkedFront(kin).quantities.pdas)}`;
 
 export interface GoldakCaeCard {
   filename: string;
@@ -180,9 +167,9 @@ export function buildGoldakCaeCard(
     ` ${axis_m(goldak.semiAxis_af_front_um)}, ${axis_m(goldak.semiAxis_ar_rear_um)}, ${axis_m(goldak.semiAxis_b_halfwidth_um)}, ${axis_m(goldak.semiAxis_c_depth_um)}, ${Q_W}, ${params.effectiveAbsorptivity}`,
     `** f_f, f_r (continuity rule f_f = 2*a_f/(a_f+a_r), f_r = 2 - f_f): ${f_f.toFixed(4)}, ${f_r.toFixed(4)}`,
     "** Solidification Kinetics (rear liquidus of the loss-free conduction field; null with a reason where that interface is not served, P6 2026-10-11):",
-    kineticsLine("G_avg", kin.thermalGradient_G_K_m, "K/m", kin.unavailableReason),
-    kineticsLine("R_solid", kin.solidificationRate_R_m_s, "m/s", kin.unavailableReason),
-    kineticsLine("Cooling Rate", kin.coolingRate_K_s, "K/s", kin.unavailableReason),
+    `** G_avg: ${quantityText(checkedFront(kin).quantities.thermalGradient)}`,
+    `** R_solid: ${quantityText(checkedFront(kin).quantities.normalSpeed)}`,
+    `** Cooling Rate: ${quantityText(checkedFront(kin).quantities.coolingRate)}`,
     pdasBandLine(kin),
     RULE,
   );

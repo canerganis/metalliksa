@@ -89,6 +89,16 @@ jobs:
           test_lpbf_worker_validation_error
           test_lpbf_material_authority_json
           test_module_contract test_module_warm_parity test_allowlist_ceilings
+          test_quantity_envelope test_module_contract_quantities
+          test_quantity_envelope_payloads test_solidification_payload_fixtures
+          test_lpbf_parity_golden.ParityHarnessTests.test_error_rule_shape_observe_value_a_value_that_becomes_an_error_never_passes
+          test_lpbf_parity_golden.ParityHarnessTests.test_error_rule_shape_g11_a_new_error_key_with_vanished_success_keys_needs_exact_keys
+          test_lpbf_parity_golden.ParityHarnessTests.test_error_rule_shape_g16_new_and_changed_errors_need_exact_keys
+          test_lpbf_parity_golden.ParityHarnessTests.test_removal_and_a_changed_recorded_error_pass_only_by_their_exact_key
+          test_lpbf_parity_golden.ParityHarnessTests.test_each_item_error_transitions_are_checked_behind_the_digest
+          test_lpbf_parity_golden.ParityHarnessTests.test_plain_string_refusal_changes_need_exact_keys_and_no_error_never_passes
+          test_lpbf_parity_golden.ParityHarnessTests.test_new_error_and_recovered_error_are_symmetric_exact_key_changes
+          test_lpbf_parity_golden.ParityHarnessTests.test_each_errors_beyond_the_report_size_limit_are_retained
           test_module_contract_structured_transport
           test_module_contract_selected_units
           test_module_contract_dataset_view
@@ -104,6 +114,8 @@ jobs:
           test_kinetics_fx test_kinetics_li1998 test_calphad_honesty test_calphad_model_cache test_calphad_carbon_reference test_calphad_mc_ti test_tdb_repair
           test_lpbf_validity_envelope test_phase8_microstructure_contract
           test_lpbf_solidification_microstructure_rpc
+          test_solidification_front test_cet_and_pdas_admission
+          test_lpbf_build_job test_lpbf_solidification test_phase7_microstructure_validation
           test_lpbf_process_map test_lpbf_powder_layer_analysis test_lpbf_additional_datasets
           test_goldak_power_normalization test_lpbf_boiling_cap
           test_lpbf_graded_mesh_stretching test_lpbf_graded_mesh_and_evaporation

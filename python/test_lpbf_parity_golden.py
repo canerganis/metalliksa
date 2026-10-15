@@ -57,8 +57,13 @@ PRE_BUMP_REVISION = "520903802a5cb89e368af60f68e53f232c99046d"
 # all goldens: 546 allowlisted observations moved (the absorptivity authority, the index convention and the conduction
 # kernel: G11 and G18 geometry, the IN718 / Ti64 / 316L / AlSi10Mg transient frames and digests, G9 material tables,
 # identity digests of the reference replays), G12, G13 and the NPZ case bit equal; the rest recording metadata.
-GOLDEN_FINGERPRINT = "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348"
-GOLDEN_REVISION = "ae637a73c465c4588dc2c6dd45e055c271362b52"
+# SOL-A1 blanket-null front bump (2026-10-15, 36cd9d4a -> 1f8ad2b2, re-pin commit 84e76219 of
+# feat/solidification-sola1) re-recorded all goldens once at 3d694540: the 15 allowlisted observations moved (G11
+# meltpool.0/1/2 digests, G18 meltpool.in625, G12 the four retired helper observations removed, solidification.evaluate
+# and the three new 6.3 observations); geometry, peak temperature and reference numerics bit equal; the rest recording
+# metadata.
+GOLDEN_FINGERPRINT = "1f8ad2b28ef951c4b062ee8f25ce4e463a519e6eb12ccd75098424cf556ff916"
+GOLDEN_REVISION = "84e76219cbe772f92c5a04207ef167e578772bf8"
 SLOW = os.environ.get("LPBF_PARITY_SLOW") == "1"
 # Off the reference machine every case test is skipped (the goldens are bit-exact for one
 # environment). METALLIKSA_REQUIRE_PARITY=1 turns such a "NOT VERIFIED" skip into a failure,

@@ -12,7 +12,7 @@ from unittest import mock
 import numpy as np
 
 import solidification_front as sf
-from lpbf_solidification_microstructure import _MICROSTRUCTURE_DOI
+import lpbf_solidification_microstructure as microstructure
 
 
 def rosenthal(q=100.0, v=1.0, k=20.0, alpha=5e-6, T0=25.0):
@@ -76,12 +76,10 @@ class FrontSamplingKS1(unittest.TestCase):
 
 class CitationsKS8(unittest.TestCase):
     def test_dois_are_the_crossref_resolving_ones(self):
-        self.assertEqual(sf.HUNT_DOI, "10.1016/0025-5416(84)90201-5")
-        self.assertEqual(_MICROSTRUCTURE_DOI, {
-            "pdas": "10.1007/BF02648950",
-            "sdas": "10.1016/0025-5416(85)90319-2",
-            "morphology": "10.1016/0025-5416(84)90201-5",
-        })
+        # SOL-A1 (2026-10-15, SPEC A3.A3): no Hunt DOI on a null front block; the front module carries none.
+        self.assertFalse(hasattr(sf, "HUNT_DOI"))
+        self.assertFalse(hasattr(microstructure, "_MICROSTRUCTURE_DOI"))
+
 
 
 class GaussianSamplerKS6(unittest.TestCase):
