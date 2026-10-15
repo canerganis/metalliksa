@@ -1,0 +1,3962 @@
+{
+  "schemaVersion": 1,
+  "sourceHashes": {
+    "python/four_alloy_materials.py": "b5aedb24b5261c7ef8dfd7bcb80c723ca1eb32c9be4e94a6519f06db951c90a9",
+    "python/lpbf_thermal_solver.py": "cf6f1fef61398ba3c852f98baca7d70fa3f29819cbdda8be4462a737592cb4ea",
+    "python/lpbf_material_registry.py": "6fb3200863155e51d8d46cce8bcb750491bc1c1272cb10cb899392f690775c42",
+    "python/quantity_envelope.py": "2c016918b991c9013f2edc4eae10bee2afddf89d45e7a22f730f9baa662c654a",
+    "data/benchmark/spent-ledger-v1.json": "844870bd55f89354e934dc5a6eaad66fe849f131115c9e29e7e8bab9731a3827",
+    "data/benchmark/nist-amb2022-03-optical/table4-aggregate-v2.json": "d1b36dfa2e01a3537093c481e249ce52df6b8879c1c67480ddb9aa10799133da",
+    "data/benchmark/ku-leuven-316l-ti64-2021/conditions.csv": "e031aead71bf64c70a35ae05d64c0c576d33c2ae757a1e5bda68b5da532ac831",
+    "data/benchmark/totis-ti64-2021/tracks.csv": "3b5794f3a25a5f67fa0d8d1ab006834205ef820b046c24deb15836025825d623"
+  },
+  "samples": {
+    "nist-amb2022-03-optical/0": {
+      "inputs": {
+        "material_name": "Inconel 718",
+        "laser_power_W": 285,
+        "scan_speed_mm_s": 960,
+        "beam_diameter_um": 67,
+        "preheat_temp_C": 23.5,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 104.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "nist-amb2022-03-optical/1.1": {
+      "inputs": {
+        "material_name": "Inconel 718",
+        "laser_power_W": 285,
+        "scan_speed_mm_s": 960,
+        "beam_diameter_um": 49,
+        "preheat_temp_C": 23.5,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 137.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "nist-amb2022-03-optical/1.2": {
+      "inputs": {
+        "material_name": "Inconel 718",
+        "laser_power_W": 285,
+        "scan_speed_mm_s": 960,
+        "beam_diameter_um": 82,
+        "preheat_temp_C": 23.5,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 77.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "nist-amb2022-03-optical/2.1": {
+      "inputs": {
+        "material_name": "Inconel 718",
+        "laser_power_W": 285,
+        "scan_speed_mm_s": 1200,
+        "beam_diameter_um": 67,
+        "preheat_temp_C": 23.5,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 85.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "nist-amb2022-03-optical/2.2": {
+      "inputs": {
+        "material_name": "Inconel 718",
+        "laser_power_W": 285,
+        "scan_speed_mm_s": 800,
+        "beam_diameter_um": 67,
+        "preheat_temp_C": 23.5,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 122.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "nist-amb2022-03-optical/3.1": {
+      "inputs": {
+        "material_name": "Inconel 718",
+        "laser_power_W": 325,
+        "scan_speed_mm_s": 960,
+        "beam_diameter_um": 67,
+        "preheat_temp_C": 23.5,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 119.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "nist-amb2022-03-optical/3.2": {
+      "inputs": {
+        "material_name": "Inconel 718",
+        "laser_power_W": 245,
+        "scan_speed_mm_s": 960,
+        "beam_diameter_um": 67,
+        "preheat_temp_C": 23.5,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 89.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-01": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 400.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 88.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-02": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 77.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-03": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 600.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 68.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-04": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 700.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 61.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-05": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 800.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 53.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-06": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 900.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 42.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-07": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 35.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-08": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 1100.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 29.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-09": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 400.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 177.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-10": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 154.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-11": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 600.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 137.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-12": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 700.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 122.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-13": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 800.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 111.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-14": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 900.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 101.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-15": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 93.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-16": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 1100.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 87.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-17": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 400.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 266.6,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-18": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 232.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-19": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 600.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 205.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-20": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 700.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 184.3,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-21": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 800.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 167.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-22": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 900.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 152.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-23": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 140.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-24": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 1100.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 130.6,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-25": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 400.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 355.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-26": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 309.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-27": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 600.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 274.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-28": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 700.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 245.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-29": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 800.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 222.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-30": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 900.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 203.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-31": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 187.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-32": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 1100.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 174.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-33": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 500.0,
+        "scan_speed_mm_s": 400.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 444.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-34": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 500.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 386.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-35": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 500.0,
+        "scan_speed_mm_s": 600.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 342.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-36": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 500.0,
+        "scan_speed_mm_s": 700.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 307.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-37": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 500.0,
+        "scan_speed_mm_s": 800.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 278.6,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-38": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 500.0,
+        "scan_speed_mm_s": 900.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 254.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-39": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 500.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 234.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-40": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 500.0,
+        "scan_speed_mm_s": 1100.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 217.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-43": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 600.0,
+        "scan_speed_mm_s": 600.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 411.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-44": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 600.0,
+        "scan_speed_mm_s": 700.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 368.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-45": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 600.0,
+        "scan_speed_mm_s": 800.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 334.3,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-316l-2021/ku-leuven-316l-2021-46": {
+      "inputs": {
+        "material_name": "316L Stainless Steel",
+        "laser_power_W": 600.0,
+        "scan_speed_mm_s": 900.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 305.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-01": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 800.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 94.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-02": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 78.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-03": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 1200.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 67.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-04": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 1400.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 58.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-05": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 1600.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 51.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-06": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 1800.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 40.6,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-07": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 2000.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 32.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-08": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 800.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 188.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-09": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 156.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-10": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 1200.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 134.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-11": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 1400.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 117.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-12": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 1600.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 104.3,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-13": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 1800.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 93.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "ku-leuven-ti64-2021/ku-leuven-ti64-2021-14": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 2000.0,
+        "beam_diameter_um": 37.5,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 40,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 85.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-050W-0250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 50.0,
+        "scan_speed_mm_s": 250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 55.6,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-050W-0500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 50.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 33.3,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-050W-0750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 50.0,
+        "scan_speed_mm_s": 750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 27.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-050W-1000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 50.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 24.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-050W-1250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 50.0,
+        "scan_speed_mm_s": 1250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 22.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-050W-1500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 50.0,
+        "scan_speed_mm_s": 1500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 20.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-050W-1750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 50.0,
+        "scan_speed_mm_s": 1750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 18.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-050W-2000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 50.0,
+        "scan_speed_mm_s": 2000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 17.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-050W-2250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 50.0,
+        "scan_speed_mm_s": 2250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 16.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-050W-2500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 50.0,
+        "scan_speed_mm_s": 2500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 15.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-100W-0250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 177.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-100W-0500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 108.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-100W-0750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 68.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-100W-1000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 38.3,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-100W-1250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 1250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 33.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-100W-1500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 1500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 30.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-100W-1750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 1750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 28.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-100W-2000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 2000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 26.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-100W-2250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 2250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 24.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-100W-2500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 100.0,
+        "scan_speed_mm_s": 2500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 23.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-150W-0250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 150.0,
+        "scan_speed_mm_s": 250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 266.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-150W-0500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 150.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 163.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-150W-0750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 150.0,
+        "scan_speed_mm_s": 750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 117.6,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-150W-1000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 150.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 91.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-150W-1250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 150.0,
+        "scan_speed_mm_s": 1250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 75.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-150W-1500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 150.0,
+        "scan_speed_mm_s": 1500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 63.3,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-150W-1750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 150.0,
+        "scan_speed_mm_s": 1750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 46.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-150W-2000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 150.0,
+        "scan_speed_mm_s": 2000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 35.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-150W-2250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 150.0,
+        "scan_speed_mm_s": 2250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 31.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-150W-2500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 150.0,
+        "scan_speed_mm_s": 2500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 29.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-200W-0250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 355.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-200W-0500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 217.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-200W-0750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 156.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-200W-1000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 122.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-200W-1250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 1250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 100.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-200W-1500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 1500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 85.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-200W-1750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 1750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 74.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-200W-2000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 2000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 65.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-200W-2250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 2250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 58.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-200W-2500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 200.0,
+        "scan_speed_mm_s": 2500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 53.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-250W-0250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 250.0,
+        "scan_speed_mm_s": 250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 444.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-250W-0500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 250.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 272.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-250W-0750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 250.0,
+        "scan_speed_mm_s": 750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 196.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-250W-1000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 250.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 153.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-250W-1250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 250.0,
+        "scan_speed_mm_s": 1250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 125.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-250W-1500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 250.0,
+        "scan_speed_mm_s": 1500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 106.6,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-250W-1750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 250.0,
+        "scan_speed_mm_s": 1750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 92.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-250W-2000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 250.0,
+        "scan_speed_mm_s": 2000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 81.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-250W-2250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 250.0,
+        "scan_speed_mm_s": 2250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 73.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-250W-2500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 250.0,
+        "scan_speed_mm_s": 2500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 66.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-300W-0250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 533.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-300W-0500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 326.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-300W-0750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 235.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-300W-1000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 183.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-300W-1250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 1250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 150.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-300W-1500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 1500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 127.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-300W-1750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 1750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 111.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-300W-2000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 2000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 98.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-300W-2250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 2250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 87.8,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-300W-2500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 300.0,
+        "scan_speed_mm_s": 2500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 79.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-350W-0250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 350.0,
+        "scan_speed_mm_s": 250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 622.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-350W-0500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 350.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 380.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-350W-0750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 350.0,
+        "scan_speed_mm_s": 750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 274.3,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-350W-1000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 350.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 214.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-350W-1250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 350.0,
+        "scan_speed_mm_s": 1250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 175.9,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-350W-1500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 350.0,
+        "scan_speed_mm_s": 1500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 149.2,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-350W-1750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 350.0,
+        "scan_speed_mm_s": 1750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 129.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-350W-2000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 350.0,
+        "scan_speed_mm_s": 2000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 114.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-350W-2250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 350.0,
+        "scan_speed_mm_s": 2250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 102.4,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-350W-2500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 350.0,
+        "scan_speed_mm_s": 2500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 92.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-400W-0250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 711.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-400W-0500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 435.3,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-400W-0750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 313.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-400W-1000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 1000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 245.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-400W-1250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 1250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 201.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-400W-1500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 1500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 170.5,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-400W-1750mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 1750.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 148.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-400W-2000mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 2000.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 130.7,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-400W-2250mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 2250.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 117.1,
+      "extentStatus": "computed",
+      "extentNote": null
+    },
+    "totis-ti64-2021/totis-400W-2500mms": {
+      "inputs": {
+        "material_name": "Ti-6Al-4V",
+        "laser_power_W": 400.0,
+        "scan_speed_mm_s": 2500.0,
+        "beam_diameter_um": 50.0,
+        "preheat_temp_C": 20.0,
+        "layer_thickness_um": 25.0,
+        "hatch_spacing_um": 100,
+        "heat_source": "rosenthal",
+        "absorption_model": "flat-plate",
+        "include_process_map": false
+      },
+      "modelId": "rosenthal-screening-v1",
+      "depth_um": 106.0,
+      "extentStatus": "computed",
+      "extentNote": null
+    }
+  },
+  "alloys": [
+    {
+      "id": "ti6al4v",
+      "name": "Ti-6Al-4V",
+      "registry": {
+        "name": "Ti-6Al-4V",
+        "quality": "estimated",
+        "available": true,
+        "thermalOnlyAvailable": false,
+        "note": "Legacy solid/liquid endpoints; estimated interpolation, constant viscosity; emissivity 0.35 is an assumed screening constant."
+      },
+      "constants": [
+        {
+          "quantity": "liquidus_C",
+          "value": 1660.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "solidus_C",
+          "value": 1604.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "boiling_C",
+          "value": 3287.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "M_molar_kg_mol",
+          "value": 0.0459,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "density_kg_m3",
+          "value": 4430.0,
+          "source": "pre-existing served value (no locator of its own)",
+          "locator": "four_alloy_materials._THERMAL",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "assumed-screening-constant",
+          "scope": "regime index, Fabbro leg, registry solid table",
+          "note": "room temperature convention constant, not the conduction kernel: it feeds the regime index, the Fabbro leg (k_s, alpha_solid) and the registry solid table; the conduction field uses the PROPERTY_LEDGER Kirchhoff mean (kernel_properties); OPEN O5"
+        },
+        {
+          "quantity": "density_liquid_kg_m3",
+          "value": 4087.0,
+          "source": "Mohr et al. 2020, Adv. Eng. Mater. 22, 2000169",
+          "locator": "Eq. 21 p.5 (EML on the ISS), 1933 K",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-primary",
+          "scope": "registry liquid table, Marangoni screening",
+          "note": "Mohr 2020 Eq. 21 p.5 (EML on the ISS, 0.2 percent), 4087 at 1933 K, slope minus 0.204 kg/(m3 K); cross-check Li, Johnson, Rhim 2006, 4123 at 1943 K, slope minus 0.254; disputed Mills 3920"
+        },
+        {
+          "quantity": "thermal_conductivity_W_mK",
+          "value": 6.7,
+          "source": "pre-existing served value (no locator of its own)",
+          "locator": "four_alloy_materials._THERMAL",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "assumed-screening-constant",
+          "scope": "regime index, Fabbro leg, registry solid table",
+          "note": "room temperature convention constant, not the conduction kernel: it feeds the regime index, the Fabbro leg (k_s, alpha_solid) and the registry solid table; the conduction field uses the PROPERTY_LEDGER Kirchhoff mean (kernel_properties)"
+        },
+        {
+          "quantity": "thermal_conductivity_liquid_W_mK",
+          "value": 29.8,
+          "source": "Mohr et al. 2020, Adv. Eng. Mater. 22, 2000169",
+          "locator": "p.7, Wiedemann-Franz on EML resistivity, 1933 K",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-primary",
+          "scope": "registry and transient liquid table and display; the conduction kernel does not read it",
+          "note": "Mohr 2020, Adv. Eng. Mater. 22, 2000169, p.7 (Wiedemann-Franz on EML resistivity) at 1933 K; Boivineau Eq. 20 28.7 at 1933 K (cross-check); Mills 33.4 via Gan SI (disputed sensitivity)"
+        },
+        {
+          "quantity": "specific_heat_J_kgK",
+          "value": 526.0,
+          "source": "pre-existing served value (no locator of its own)",
+          "locator": "four_alloy_materials._THERMAL",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "assumed-screening-constant",
+          "scope": "regime index, Fabbro leg, registry solid table",
+          "note": "room temperature convention constant, not the conduction kernel: it feeds the regime index, the Fabbro leg (k_s, alpha_solid) and the registry solid table; the conduction field uses the PROPERTY_LEDGER Kirchhoff mean (kernel_properties)"
+        },
+        {
+          "quantity": "specific_heat_liquid_J_kgK",
+          "value": 930.0,
+          "source": "Mohr et al. 2020, Adv. Eng. Mater. 22, 2000169",
+          "locator": "Sec. 5 p.8, Fig. 4a, 0.93 +/- 0.02 J/(g K)",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-primary",
+          "scope": "registry and transient liquid table and display; the conduction kernel does not read it",
+          "note": "Mohr 2020 Sec. 5 p.8, Fig. 4a, 0.93 +/- 0.02 J/(g K), 1760 to 1890 K; Kaschnitz 2002, 931, quoted by Boivineau p.524; disputed: Mills 831, Boivineau Eq. 17 1126 (ledger sensitivities)"
+        },
+        {
+          "quantity": "latent_heat_fusion_J_kg",
+          "value": 290000.0,
+          "source": "Boivineau et al. 2006",
+          "locator": "p.520 (Sec. 5.2, Fig. 8), 290 +/- 5 kJ/kg",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-primary",
+          "scope": "Stefan number (descriptive) and the registry",
+          "note": "Boivineau 2006 p.520 (Sec. 5.2, Fig. 8), 290 +/- 5 kJ/kg; Gan SI 286"
+        },
+        {
+          "quantity": "latent_heat_vap_J_kg",
+          "value": 8900000.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "absorptivity_IR",
+          "value": 0.32,
+          "source": "Simonds et al. 2021 (simonds2021.pdf); NIST mds2-2525 (repo summary); Ye et al. 2019 (ye2019.pdf)",
+          "locator": "Simonds 2021 Sec. 3.2, PDF p.4, Fig. 3a: an average of 33 percent absorption in the first 2.4 ms, then 66 percent once the vapour cavity forms; NIST mds2-2525 pre keyhole mean 32.5 percent; Ye 2019 Table 1 Am 0.26",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "measured-conduction-bare-plate",
+          "scope": "1070 nm, conduction mode, flat pool; bare plate; not a powder layer value",
+          "note": "polished bare plate, stationary 90 W, 5 ms, argon (Simonds 2021 and NIST mds2-2525, one campaign); scanning as machined Ra 0.52 um (Ye 2019); two independent measurements"
+        },
+        {
+          "quantity": "absorptivity_index_IR",
+          "value": 0.35,
+          "source": "pre-P7 served value of this alloy (the convention the cuts 15, 20 and 13.6 were derived with)",
+          "locator": "lpbf_thermal_solver.REGIME_THRESHOLD_BASIS; tools/lpbf_keyhole_benchmark.king_conversion (22.2)",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "regime-index-convention",
+          "scope": "dH/hs regime index only (pre-P7 served value)",
+          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 were derived with it); not a measurement"
+        },
+        {
+          "quantity": "absorptivity_Green",
+          "value": 0.52,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "surface_tension_N_m",
+          "value": 1.55,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "d_gamma_dT_N_mK",
+          "value": -0.00028,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "viscosity_Pa_s",
+          "value": 0.0042,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_expansion_1_K",
+          "value": 8.6e-06,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "youngs_modulus_GPa",
+          "value": 114.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "poissons_ratio",
+          "value": 0.34,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "pdas_A1",
+          "value": 65.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "Retained legacy parameter; unused by the served solver.",
+          "note": ""
+        },
+        {
+          "quantity": "sdas_B1",
+          "value": 35.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "Retained legacy parameter; unused by the served solver.",
+          "note": ""
+        },
+        {
+          "quantity": "emissivity",
+          "value": 0.35,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "assumed-screening-constant",
+          "scope": "",
+          "note": "Applied to every legacy alloy and to IN625. Ni superalloys: 0.1-0.2 polished, 0.8-0.9 oxidised (Mills et al. 2006, section 12.1); powder-bed effective values are higher than polished bulk Cu/Al. Radiative loss is negligible against laser input in these solvers."
+        }
+      ]
+    },
+    {
+      "id": "alsi10mg",
+      "name": "AlSi10Mg",
+      "registry": {
+        "name": "AlSi10Mg",
+        "quality": "estimated",
+        "available": true,
+        "thermalOnlyAvailable": false,
+        "note": "Legacy solid/liquid endpoints; estimated interpolation, constant viscosity; emissivity 0.35 is an assumed screening constant."
+      },
+      "constants": [
+        {
+          "quantity": "liquidus_C",
+          "value": 595.0,
+          "source": "Unresolved",
+          "locator": "datasheet class value; Brandt and Neuer Table II AlSi-10 liquidus 872.15 K heating",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "unsourced-estimate",
+          "scope": "liquidus of every path",
+          "note": "no DSC on AlSi10Mg; bracket +/- 5 K (disclosure)"
+        },
+        {
+          "quantity": "solidus_C",
+          "value": 557.0,
+          "source": "Unresolved",
+          "locator": "datasheet class value; Brandt and Neuer Table II AlSi-10 solidus 840.15 K heating",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "unsourced-estimate",
+          "scope": "solidus of every path",
+          "note": "no DSC on AlSi10Mg; bracket +/- 10 K (disclosure)"
+        },
+        {
+          "quantity": "boiling_C",
+          "value": 2470.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "M_molar_kg_mol",
+          "value": 0.027,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "density_kg_m3",
+          "value": 2680.0,
+          "source": "Unresolved",
+          "locator": "four_alloy_materials._THERMAL",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "unsourced-estimate",
+          "scope": "regime index, Fabbro leg, registry solid table",
+          "note": "2680, room temperature convention constant, unsourced; the conduction kernel uses 2696"
+        },
+        {
+          "quantity": "density_liquid_kg_m3",
+          "value": 2393.8,
+          "source": "Assael et al. 2012, J. Phys. Chem. Ref. Data 41, 033103",
+          "locator": "Table 2 (Al-12 mass percent Si, 858 to 1700 K), 2603 - 0.241 T at 868.15 K",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-primary",
+          "scope": "registry liquid table, Marangoni screening",
+          "note": "Assael et al. 2012, J. Phys. Chem. Ref. Data 41, 033103, Table 2 (Al-12 mass percent Si, 858 to 1700 K), 2603 - 0.241 T; named arm Fukuyama 2023 ADC12 2492 - 0.2652 (T - 865)"
+        },
+        {
+          "quantity": "kernel_density_kg_m3",
+          "value": 2696.0,
+          "source": "Akwaboa et al. 2023, Materials 16, 4920",
+          "locator": "Table 3 (PDF p.5), sample 100-0.2, helium pycnometer, 2.696 +/- 0.005 g/cm3",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-primary",
+          "scope": "every kernel read of rho (alpha, denom_thermal, the companion, Goldak, the grid, the slices); not the index or the Fabbro leg",
+          "note": "Akwaboa 2023 Table 3, sample 100-0.2, helium pycnometer, 2.696 +/- 0.005 g/cm3 (nine samples 2.620 to 2.715); kernel only; the served density_kg_m3 2680 is a room temperature convention constant, unsourced"
+        },
+        {
+          "quantity": "thermal_conductivity_W_mK",
+          "value": 130.0,
+          "source": "Unresolved",
+          "locator": "four_alloy_materials._THERMAL",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "unsourced-estimate",
+          "scope": "regime index, Fabbro leg, registry solid table",
+          "note": "room temperature convention constant, not the conduction kernel: it feeds the regime index, the Fabbro leg (k_s, alpha_solid) and the registry solid table; the conduction field uses the PROPERTY_LEDGER Kirchhoff mean (kernel_properties); unsourced"
+        },
+        {
+          "quantity": "thermal_conductivity_liquid_W_mK",
+          "value": 64.0,
+          "source": "Sun, Muta, Kurosaki, Ohishi 2019, Int. J. Thermophys. 40, 31",
+          "locator": "Fig. 7 (Al-Si 10 mass percent, 750 to 850 C), extrapolated 155 K down to 868 K",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-primary",
+          "scope": "registry and transient liquid table and display; the conduction kernel does not read it",
+          "note": "Sun, Muta, Kurosaki, Ohishi 2019, Int. J. Thermophys. 40, 31, Fig. 7 (Al-Si 10 mass percent, 750 to 850 C), extrapolated 155 K down to 868 K; cross-check Brandt and Neuer 2007 Table II (Wiedemann-Franz 63.0 to 73.4)"
+        },
+        {
+          "quantity": "specific_heat_J_kgK",
+          "value": 910.0,
+          "source": "Unresolved",
+          "locator": "four_alloy_materials._THERMAL",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "unsourced-estimate",
+          "scope": "regime index, Fabbro leg, registry solid table",
+          "note": "room temperature convention constant, not the conduction kernel: it feeds the regime index, the Fabbro leg (k_s, alpha_solid) and the registry solid table; the conduction field uses the PROPERTY_LEDGER Kirchhoff mean (kernel_properties); unsourced"
+        },
+        {
+          "quantity": "specific_heat_liquid_J_kgK",
+          "value": 1180.0,
+          "source": "Unresolved",
+          "locator": "pure Al and Al6061 proxy (1170, Amendment 7 item 6.3; 0.8 percent apart)",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "unsourced-estimate",
+          "scope": "registry liquid table; no kernel read",
+          "note": "proxy, disclosure only"
+        },
+        {
+          "quantity": "latent_heat_fusion_J_kg",
+          "value": 397000.0,
+          "source": "Unresolved",
+          "locator": "pure Al proxy; Ghomashchi 2023 Al12Si DSC 554 J/g, rule of mixtures 560",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "unsourced-estimate",
+          "scope": "Stefan number (descriptive) and the registry",
+          "note": "proxy 500 kJ/kg, range 420 to 560 (disclosure)"
+        },
+        {
+          "quantity": "latent_heat_vap_J_kg",
+          "value": 10500000.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "absorptivity_IR",
+          "value": 0.3,
+          "source": "Leis, Weber, Graf 2020, Procedia CIRP 94, 173 to 176 (leis2020.pdf)",
+          "locator": "Sec. 3, Figs. 4 to 6 (pp.175 to 176): area II minimum 30 percent (35 and 100 um beams) and 28 percent (200 um); 30 to 40 percent below 1800 W/mm at 35 um; sensitivities 0.14 (Trapp 2017 Fig. 7, Al 1100 ground, a relative alloy) and 0.40 live in PROPERTY_LEDGER",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "measured-conduction-as-built-surface",
+          "scope": "1075 nm, conduction mode, flat pool; as-built rough AM surface in N2, not a polished or ground plate; not a powder layer value",
+          "note": "additively manufactured AlSi10Mg blocks without powder (Sa 22.3 um), N2, beams 35, 100 and 200 um at 1/e2, 0.7 to 1.3 m/s, calorimetry (EN ISO 11551); as-built rough AM surface, not a polished or ground plate (disclosure D9)"
+        },
+        {
+          "quantity": "absorptivity_index_IR",
+          "value": 0.18,
+          "source": "pre-P7 served value of this alloy (the convention the cuts 15, 20 and 13.6 were derived with)",
+          "locator": "lpbf_thermal_solver.REGIME_THRESHOLD_BASIS; tools/lpbf_keyhole_benchmark.king_conversion (22.2)",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "regime-index-convention",
+          "scope": "dH/hs regime index only (pre-P7 served value)",
+          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 were derived with it); not a measurement"
+        },
+        {
+          "quantity": "absorptivity_Green",
+          "value": 0.38,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "surface_tension_N_m",
+          "value": 0.85,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "d_gamma_dT_N_mK",
+          "value": -0.000103,
+          "source": "Seimiya, Yoneyama, Ozawa 2026, Table 1 (PDF p.16; Research Square rs-10699497, published Int. J. Thermophys., doi 10.1007/s10765-026-03847-y)",
+          "locator": "Table 1 (PDF p.16): minus 0.103 +/- 0.004 mN/(m K), 1476 to 1981 K",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-primary",
+          "scope": "binary Al-10 at. percent Si, EML, oxide-free droplets only (no Mg, no oxide film): a proxy for the AlSi10Mg melt; read by the transient and OpenFOAM marangoniNumber and the capability display",
+          "note": "P7b (2026-10-14) replaced the former unsourced -3.5e-4 (the Mukherjee 2018 model input); the transient marangoniNumber falls by x0.294. Fukuyama ADC12 -0.0786e-3, Gheribi pure Al -0.244e-3 and oxygen saturated -0.180e-3 are ledger sensitivities. Marangoni modelling stays out of scope."
+        },
+        {
+          "quantity": "viscosity_Pa_s",
+          "value": 0.0013,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_expansion_1_K",
+          "value": 2.05e-05,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "youngs_modulus_GPa",
+          "value": 70.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "poissons_ratio",
+          "value": 0.33,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "pdas_A1",
+          "value": 45.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "Retained legacy parameter; unused by the served solver.",
+          "note": ""
+        },
+        {
+          "quantity": "sdas_B1",
+          "value": 22.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "Retained legacy parameter; unused by the served solver.",
+          "note": ""
+        },
+        {
+          "quantity": "emissivity",
+          "value": 0.35,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "assumed-screening-constant",
+          "scope": "",
+          "note": "Applied to every legacy alloy and to IN625. Ni superalloys: 0.1-0.2 polished, 0.8-0.9 oxidised (Mills et al. 2006, section 12.1); powder-bed effective values are higher than polished bulk Cu/Al. Radiative loss is negligible against laser input in these solvers."
+        }
+      ]
+    },
+    {
+      "id": "in625",
+      "name": "Inconel 625",
+      "registry": {
+        "name": "Inconel 625",
+        "quality": "missing",
+        "available": false,
+        "thermalOnlyAvailable": true,
+        "note": "Bounded fusion-enthalpy literature-model screening only; full transient solver unavailable."
+      },
+      "constants": [
+        {
+          "quantity": "liquidus_C",
+          "value": 1350.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "solidus_C",
+          "value": 1290.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "boiling_C",
+          "value": 2880.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "M_molar_kg_mol",
+          "value": 0.0585,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "density_kg_m3",
+          "value": 8440.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "density_liquid_kg_m3",
+          "value": 7600.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_conductivity_W_mK",
+          "value": 9.8,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_conductivity_liquid_W_mK",
+          "value": 30.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "specific_heat_J_kgK",
+          "value": 410.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "specific_heat_liquid_J_kgK",
+          "value": 750.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "latent_heat_fusion_J_kg",
+          "value": 290000.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "latent_heat_vap_J_kg",
+          "value": 6300000.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "absorptivity_IR",
+          "value": 0.34,
+          "source": "Deisenroth et al. 2020 (deisenroth2020_in625_energy_balance.pdf); Ye et al. 2019 (ye2019.pdf)",
+          "locator": "Deisenroth 2020 Sec. 3.4, Fig. 7, PDF p.10: about 0.34 at 50 W, only 0.40 at 80 W, jump to about 0.60 at 100 W; low end Ye 2019 Table 1 Am 0.28 (Ni entry A0 0.27); Knapp 2022 Table 5 (0.277 to 0.307, calibrated) is a consistency check only",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "measured-conduction-bare-plate",
+          "scope": "1070 nm, conduction mode, flat pool; bare plate; not a powder layer value",
+          "note": "ground (400 grit SiC) bare plate, 65 um beam, 500 mm/s, calorimetry plus integrating hemisphere; the lower end of the Deisenroth conduction range (0.40 at 80 W is near the transition jump)"
+        },
+        {
+          "quantity": "absorptivity_index_IR",
+          "value": 0.38,
+          "source": "pre-P7 served value of this alloy (the convention the cuts 15, 20 and 13.6 were derived with)",
+          "locator": "lpbf_thermal_solver.REGIME_THRESHOLD_BASIS; tools/lpbf_keyhole_benchmark.king_conversion (22.2)",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "regime-index-convention",
+          "scope": "dH/hs regime index only (pre-P7 served value)",
+          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 were derived with it); not a measurement"
+        },
+        {
+          "quantity": "absorptivity_Green",
+          "value": 0.58,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_conductivity_melt_W_mK",
+          "value": 28.78,
+          "source": "Weaver et al. 2022 (nihms-1855299.pdf) Table 2; Ye 2019 Table 1",
+          "locator": "Weaver 2022 Table 2 (PDF p.33), listed beside T_m 1563.15 K, which equals the repo SOLIDUS (1290 C), not the liquidus 1350 C; corroboration Ye 2019 Table 1 cp 0.72 at T_m (extrapolated), diffusivity 0.048 cm2/s",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-secondary",
+          "scope": "conduction field k and cp at the melting point (room temperature density kept); the index and the Fabbro leg keep the solid values",
+          "note": "the evaluation temperature is the repo solidus; no solid-side sensitivity computed"
+        },
+        {
+          "quantity": "specific_heat_melt_J_kgK",
+          "value": 719.92,
+          "source": "Weaver et al. 2022 (nihms-1855299.pdf) Table 2; Ye 2019 Table 1",
+          "locator": "Weaver 2022 Table 2 (PDF p.33), listed beside T_m 1563.15 K, which equals the repo SOLIDUS (1290 C), not the liquidus 1350 C; corroboration Ye 2019 Table 1 cp 0.72 at T_m (extrapolated), diffusivity 0.048 cm2/s",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-secondary",
+          "scope": "conduction field k and cp at the melting point (room temperature density kept); the index and the Fabbro leg keep the solid values",
+          "note": "the evaluation temperature is the repo solidus; no solid-side sensitivity computed"
+        },
+        {
+          "quantity": "surface_tension_N_m",
+          "value": 1.76,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "d_gamma_dT_N_mK",
+          "value": -0.00045,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "viscosity_Pa_s",
+          "value": 0.0055,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_expansion_1_K",
+          "value": 1.28e-05,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "youngs_modulus_GPa",
+          "value": 205.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "poissons_ratio",
+          "value": 0.31,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "pdas_A1",
+          "value": 80.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "Retained legacy parameter; unused by the served solver.",
+          "note": ""
+        },
+        {
+          "quantity": "sdas_B1",
+          "value": 42.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "Retained legacy parameter; unused by the served solver.",
+          "note": ""
+        },
+        {
+          "quantity": "emissivity",
+          "value": 0.35,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "assumed-screening-constant",
+          "scope": "",
+          "note": "Applied to every legacy alloy and to IN625. Ni superalloys: 0.1-0.2 polished, 0.8-0.9 oxidised (Mills et al. 2006, section 12.1); powder-bed effective values are higher than polished bulk Cu/Al. Radiative loss is negligible against laser input in these solvers."
+        }
+      ]
+    },
+    {
+      "id": "in718",
+      "name": "Inconel 718",
+      "registry": {
+        "name": "Inconel 718",
+        "quality": "estimated",
+        "available": true,
+        "thermalOnlyAvailable": false,
+        "note": "Legacy solid/liquid endpoints; estimated interpolation, constant viscosity; emissivity 0.35 is an assumed screening constant."
+      },
+      "constants": [
+        {
+          "quantity": "liquidus_C",
+          "value": 1336.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "solidus_C",
+          "value": 1260.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "boiling_C",
+          "value": 2850.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "M_molar_kg_mol",
+          "value": 0.0587,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "density_kg_m3",
+          "value": 8190.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "density_liquid_kg_m3",
+          "value": 7450.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_conductivity_W_mK",
+          "value": 11.4,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_conductivity_liquid_W_mK",
+          "value": 29.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "specific_heat_J_kgK",
+          "value": 435.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "specific_heat_liquid_J_kgK",
+          "value": 730.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "latent_heat_fusion_J_kg",
+          "value": 270000.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "latent_heat_vap_J_kg",
+          "value": 6400000.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "absorptivity_IR",
+          "value": 0.32,
+          "source": "Deisenroth et al. 2026 (deisenroth2026_in718_laser_reflections.pdf)",
+          "locator": "liquid IN718 nominal energy coupling 0.32; about 0.32 along the track length at 85 W (Fig. 11); solid ground surface 0.38 (Introduction); low end 0.28 = Ye 2019 Table 1 IN625 Am by analogy",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "measured-conduction-bare-plate",
+          "scope": "1070 nm, conduction mode, flat pool; bare plate; not a powder layer value",
+          "note": "120 grit SiC ground bare plate, 72 um beam, 960 mm/s, argon; a laser coupling (one minus reflected), not a calorimetric absorptance; excludes plume and evaporation losses"
+        },
+        {
+          "quantity": "absorptivity_index_IR",
+          "value": 0.38,
+          "source": "pre-P7 served value of this alloy (the convention the cuts 15, 20 and 13.6 were derived with)",
+          "locator": "lpbf_thermal_solver.REGIME_THRESHOLD_BASIS; tools/lpbf_keyhole_benchmark.king_conversion (22.2)",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "regime-index-convention",
+          "scope": "dH/hs regime index only (pre-P7 served value)",
+          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 were derived with it); not a measurement"
+        },
+        {
+          "quantity": "absorptivity_Green",
+          "value": 0.58,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_conductivity_melt_W_mK",
+          "value": 29.6,
+          "source": "Mills 2002 b (Recommended values of thermophysical properties for selected commercial alloys), IN718 Table 1 liquid row",
+          "locator": "liquid row at 1336 C (the repo liquidus): k 29.6 W/mK, cp 0.720 J/g/K, a 5.6e-6 m2/s (the tabulated a uses the melt density 7400 kg/m3)",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-secondary",
+          "scope": "conduction field k and cp at the melting point (room temperature density kept); the index and the Fabbro leg keep the solid values",
+          "note": "solid side at the 1170 C row (k 29.3, cp 650) as a sensitivity; Mills k 10 percent, cp 5 percent"
+        },
+        {
+          "quantity": "specific_heat_melt_J_kgK",
+          "value": 720.0,
+          "source": "Mills 2002 b (Recommended values of thermophysical properties for selected commercial alloys), IN718 Table 1 liquid row",
+          "locator": "liquid row at 1336 C (the repo liquidus): k 29.6 W/mK, cp 0.720 J/g/K, a 5.6e-6 m2/s (the tabulated a uses the melt density 7400 kg/m3)",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-secondary",
+          "scope": "conduction field k and cp at the melting point (room temperature density kept); the index and the Fabbro leg keep the solid values",
+          "note": "solid side at the 1170 C row (k 29.3, cp 650) as a sensitivity; Mills k 10 percent, cp 5 percent"
+        },
+        {
+          "quantity": "surface_tension_N_m",
+          "value": 1.78,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "d_gamma_dT_N_mK",
+          "value": -0.0004,
+          "source": "Mills, Youssef, Li & Su, ISIJ Int. 46(5) (2006) 623-632, doi:10.2355/isijinternational.46.623, section 11.3, Eq. (24): -0.4 mN/(m K), identical to pure Ni, for every Ni superalloy",
+          "locator": "Mills, Youssef, Li & Su, ISIJ Int. 46(5) (2006) 623-632, doi:10.2355/isijinternational.46.623, section 11.3, Eq. (24): -0.4 mN/(m K), identical to pure Ni, for every Ni superalloy",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-primary",
+          "scope": "zero-O, zero-S alloy (upper bound for commercial melts)",
+          "note": "Marangoni numbers built from this value are zero-O/S upper bounds, about 3.6x the value implied by the measured commercial coefficient."
+        },
+        {
+          "quantity": "viscosity_Pa_s",
+          "value": 0.0055,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_expansion_1_K",
+          "value": 1.3e-05,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "youngs_modulus_GPa",
+          "value": 205.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "poissons_ratio",
+          "value": 0.29,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "pdas_A1",
+          "value": 80.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "Retained legacy parameter; unused by the served solver.",
+          "note": ""
+        },
+        {
+          "quantity": "sdas_B1",
+          "value": 42.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "Retained legacy parameter; unused by the served solver.",
+          "note": ""
+        },
+        {
+          "quantity": "emissivity",
+          "value": 0.35,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "assumed-screening-constant",
+          "scope": "",
+          "note": "Applied to every legacy alloy and to IN625. Ni superalloys: 0.1-0.2 polished, 0.8-0.9 oxidised (Mills et al. 2006, section 12.1); powder-bed effective values are higher than polished bulk Cu/Al. Radiative loss is negligible against laser input in these solvers."
+        }
+      ]
+    },
+    {
+      "id": "ss316l",
+      "name": "316L Stainless Steel",
+      "registry": {
+        "name": "316L Stainless Steel",
+        "quality": "estimated",
+        "available": true,
+        "thermalOnlyAvailable": false,
+        "note": "Legacy solid/liquid endpoints; estimated interpolation, constant viscosity; emissivity 0.35 is an assumed screening constant."
+      },
+      "constants": [
+        {
+          "quantity": "liquidus_C",
+          "value": 1400.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "solidus_C",
+          "value": 1375.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "boiling_C",
+          "value": 2814.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "M_molar_kg_mol",
+          "value": 0.0554,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "density_kg_m3",
+          "value": 7990.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "density_liquid_kg_m3",
+          "value": 6980.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_conductivity_W_mK",
+          "value": 16.3,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_conductivity_liquid_W_mK",
+          "value": 31.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "specific_heat_J_kgK",
+          "value": 500.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "specific_heat_liquid_J_kgK",
+          "value": 780.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "latent_heat_fusion_J_kg",
+          "value": 270000.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "latent_heat_vap_J_kg",
+          "value": 6250000.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "absorptivity_IR",
+          "value": 0.3,
+          "source": "Trapp et al. 2017 (trapp2017.pdf); Ye et al. 2019 (ye2019.pdf); Matthews et al. 2018 (matthews2018.pdf, qualitative cross check)",
+          "locator": "Trapp 2017 Sec. 3.1, Fig. 3a: 0.29 to 0.31 (regime I); Ye 2019 Table 1 Am 0.28; Matthews 2018 Fig. 4 (bare and powder coated discs at 1500 mm/s; the powder coated curve differs at low power, so bare plate values do not describe a powder layer)",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "measured-conduction-bare-plate",
+          "scope": "1070 nm, conduction mode, flat pool; bare plate; not a powder layer value",
+          "note": "polished bare discs (Trapp 2017), as machined Ra 0.17 um (Ye 2019); calorimetric, scanning"
+        },
+        {
+          "quantity": "absorptivity_index_IR",
+          "value": 0.42,
+          "source": "pre-P7 served value of this alloy (the convention the cuts 15, 20 and 13.6 were derived with)",
+          "locator": "lpbf_thermal_solver.REGIME_THRESHOLD_BASIS; tools/lpbf_keyhole_benchmark.king_conversion (22.2)",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "regime-index-convention",
+          "scope": "dH/hs regime index only (pre-P7 served value)",
+          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 were derived with it); not a measurement"
+        },
+        {
+          "quantity": "absorptivity_Green",
+          "value": 0.62,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_conductivity_melt_W_mK",
+          "value": 28.5,
+          "source": "Mills 2002 a, 316 Table 1 liquid row; Ye 2019 Table 1",
+          "locator": "Mills liquid row at 1450 C (Mills' liquidus peak; the repo liquidus is 1400 C): liquid k is Wiedemann-Franz based, liquid cp is noisy (METALS 0.74, MTDATA 0.79 quoted in Sec. 4); Ye 2019 Table 1 cp 0.83 J/g/K, diffusivity 0.050 cm2/s",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-secondary",
+          "scope": "conduction field k and cp at the melting point (room temperature density kept); the index and the Fabbro leg keep the solid values",
+          "note": "solid side 31.1 / 720 (1300 C row) as a sensitivity; Mills 316 k 10 percent, cp 5 percent"
+        },
+        {
+          "quantity": "specific_heat_melt_J_kgK",
+          "value": 830.0,
+          "source": "Mills 2002 a, 316 Table 1 liquid row; Ye 2019 Table 1",
+          "locator": "Mills liquid row at 1450 C (Mills' liquidus peak; the repo liquidus is 1400 C): liquid k is Wiedemann-Franz based, liquid cp is noisy (METALS 0.74, MTDATA 0.79 quoted in Sec. 4); Ye 2019 Table 1 cp 0.83 J/g/K, diffusivity 0.050 cm2/s",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "cited-secondary",
+          "scope": "conduction field k and cp at the melting point (room temperature density kept); the index and the Fabbro leg keep the solid values",
+          "note": "solid side 31.1 / 720 (1300 C row) as a sensitivity; Mills 316 k 10 percent, cp 5 percent"
+        },
+        {
+          "quantity": "surface_tension_N_m",
+          "value": 1.7,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "d_gamma_dT_N_mK",
+          "value": -0.00045,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "viscosity_Pa_s",
+          "value": 0.006,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "thermal_expansion_1_K",
+          "value": 1.6e-05,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "youngs_modulus_GPa",
+          "value": 193.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "poissons_ratio",
+          "value": 0.3,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "",
+          "note": ""
+        },
+        {
+          "quantity": "pdas_A1",
+          "value": 95.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "Retained legacy parameter; unused by the served solver.",
+          "note": ""
+        },
+        {
+          "quantity": "sdas_B1",
+          "value": 48.0,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "Unresolved",
+          "scope": "Retained legacy parameter; unused by the served solver.",
+          "note": ""
+        },
+        {
+          "quantity": "emissivity",
+          "value": 0.35,
+          "source": "Unresolved",
+          "locator": "Unresolved",
+          "sourceEvidenceKind": "Unresolved",
+          "basis": "assumed-screening-constant",
+          "scope": "",
+          "note": "Applied to every legacy alloy and to IN625. Ni superalloys: 0.1-0.2 polished, 0.8-0.9 oxidised (Mills et al. 2006, section 12.1); powder-bed effective values are higher than polished bulk Cu/Al. Radiative loss is negligible against laser input in these solvers."
+        }
+      ]
+    }
+  ]
+}
