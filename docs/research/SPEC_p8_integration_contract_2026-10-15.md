@@ -4,7 +4,7 @@ Date: 2026-10-15. Owner: system architect (Opus). Scope: the engineering items 2
 Base: branch `research/p8-research-arm`. Its code is identical to main `835466fa` (the branch adds documents only), so every `file:line` below is a line of `835466fa`.
 Companion: `docs/research/SPEC_p8_research_arm_2026-10-14.md` (base and Amendments 1 to 3; physics owner Astra; Amendment 3 is `78607f3e`). Amendment 2 landed on this branch as `1c76a2fd` while this contract was written; the contract is aligned with it. Amendment 2 (header and B9) assigns to this contract the transport, gating, caching, provenance vocabulary, field names, reason-code serialization and availability enums, and lists eight physics requirements the final schema must carry (0.2). This file does not edit the physics spec. Where this contract still needs a physics decision it says so in section 12; the re-gate reconciles both files.
 
-Status: re-gated 2026-10-15, APPROVE_WITH_CHANGES (`../Metalliksa-1/.orchestra/reports/p8_regate_verdict_2026-10-15.md`). Revision 1 (section 13) applies the architect's share of R1 to R15 and records the maintainer's label decisions. Nothing is implemented; no code, pin, golden, allowlist or test changes in these commits.
+Status: re-gated 2026-10-15, APPROVE_WITH_CHANGES (`../Metalliksa-1/.orchestra/reports/p8_regate_verdict_2026-10-15.md`). Revision 1 (section 13) applies the architect's share of R1 to R15 and records the maintainer's label decisions. Revision 2 fixes the residuals of the lead check at `e6934ffd` (Phase A GO) in place, marked "Rev. 2". Nothing is implemented; no code, pin, golden, allowlist or test changes in these commits.
 
 W-1: every English user-facing string in this contract (panel text, labels, help, sentences, captions, n/a texts, option messages, difference statements) is a draft awaiting maintainer approval W-1, except text quoted verbatim from the P8 spec. Tests pin the approved wording, not these drafts.
 
@@ -99,7 +99,7 @@ The research route offers no channel to served code. No served route, solver cal
 | `python/lpbf_research_models.py` | new dispatch script | no | no |
 | `python/lpbf_research_context.py`, `lpbf_research_cache.py`, `lpbf_research_codes.py`, `lpbf_research_manifest.py`, `lpbf_research_arm.py` | new modules | no | no |
 | `python/lpbf_research_identity.expected` | new research pin | no | no |
-| `python/persistent_ipc_service.py` | allowlist entry, isolated lane, prestart filter, metadata guard | no | no |
+| `python/persistent_ipc_service.py` | allowlist entry, isolated lane, prestart filter, metadata guard; for isolated lanes only, the timeout envelope and `recycleWorker` (Rev. 2) | no | no |
 | `server/processOrchestrator.ts` | `DISPATCHABLE_SCRIPTS` entry | no | no |
 | `routes/physics.ts` | route appended after line 106 | no | no |
 | `python/module_registry.py`, `src/generated/moduleRegistry.json`, `src/generated/moduleRegistry.ts` | one operation, regenerated output | no | no |
@@ -129,7 +129,16 @@ physicsRouter.post("/api/python/lpbf-research-models", (req: Request, res: Respo
 });
 ```
 
-`handleResearchDispatch` (Rev. 1, R14) is a research-only wrapper beside `handlePythonDispatch` (`routes/physics.ts:11-34`), which it leaves unchanged. It calls `physicsDeps.runPythonScript` itself and maps exit code 124 (lane timeout, `persistent_ipc_service.py:837-840`) and the ad-hoc timeout rejection (`server/processOrchestrator.ts:562-565`) to HTTP 504 with `{success: false, errorKind: "research", reasonCode: "RESEARCH_TIMEOUT"}`, so the timeout reaches the client as a code, not as stderr text. It adds `channel` from `PythonExecResult` (`processOrchestrator.ts:211-218`) to the body, so the client knows when the ad-hoc path served the request. Every other outcome is mapped exactly as `handlePythonDispatch` maps it.
+`handleResearchDispatch` (Rev. 1, R14; Rev. 2) is a research-only wrapper beside `handlePythonDispatch` (`routes/physics.ts:11-34`), which it leaves unchanged. It calls `physicsDeps.runPythonScript` itself and answers every timeout with HTTP 504 and `{success: false, errorKind: "research", reasonCode: "RESEARCH_TIMEOUT", timeoutKind}`, so the timeout reaches the client as a code, not as stderr text:
+
+| timeoutKind | Source | How the wrapper recognises it | Effect on the research worker and cache |
+|---|---|---|---|
+| `queue` | lane queue timeout (`persistent_ipc_service.py:833-836`): never started | exit code 124 with the isolated-lane stdout envelope of 3.3 item 5 (`"timeoutKind": "queue"`) | nothing ran; the worker is not replaced; the cache is kept |
+| `run` | lane run timeout (`persistent_ipc_service.py:837-840`) | exit code 124 with the envelope `"timeoutKind": "run"` | the worker was killed and replaced; its cache is empty |
+| `reply` | no IPC reply within `timeoutMs` plus grace (UNIX socket `server/processOrchestrator.ts:431-432`, HTTP `:530`), rethrown as "Python IPC request may already have run, so it was not retried" (`:627`) | a thrown error whose message contains "got no reply within" | unknown: the request may still finish in the worker and cache its arms |
+| `adhoc` | ad-hoc spawn killed (`server/processOrchestrator.ts:562-565`) | a thrown error whose message starts with "Ad-hoc Python execution timed out after" | no persistent worker exists; nothing was cached |
+
+The two thrown-message markers are matched as literals; the route test asserts that both literals still occur in `server/processOrchestrator.ts`, so a rename there fails the test instead of turning a timeout into a generic 500. The wrapper adds `channel` from `PythonExecResult` (`processOrchestrator.ts:211-218`) to every body, so the client knows when the ad-hoc path served the request. Every other outcome is mapped exactly as `handlePythonDispatch` maps it.
 
 Registry: `python/module_registry.py` adds, in the `"3d-distortion-lab"` operation list (`:162-181`), `_op("lpbf-research-models", "POST", "/api/python/lpbf-research-models", _py("lpbf_research_models", _RESEARCH_TIMEOUT_MS, warm=False))` with `_RESEARCH_TIMEOUT_MS = 30000` beside `_PHYSICS_TIMEOUT_MS` (`:123`), and the generated files are regenerated. The route is bound, so `routes/AUTHORITY_ALLOWLIST.json` does not grow (`tests/route-authority.test.ts`). `lpbf_research_models` joins `DISPATCHABLE_SCRIPTS` (`server/processOrchestrator.ts:186-196`) and `ALLOWED_SCRIPT_NAMES` (`python/persistent_ipc_service.py:107-117`); `tests/persistent-ipc-auth.test.ts` and `python/test_persistent_ipc_security.py` keep both equal to the route literals. It is not a warm module (`WARM_MODULE_NAMES`, `:95-101`), so `python/module_warm_parity.ceiling.json` is unaffected.
 
@@ -154,6 +163,7 @@ Edits to `python/persistent_ipc_service.py`:
 2. `AFFINITY_SCRIPT_NAMES` (`:126-127`) becomes the existing expression `| ISOLATED_SCRIPT_NAMES`. `_affinity_name` (`:764-766`) then routes research to its own `_AffinityLane` (`:552-681`): one worker process, one job at a time, a queued request superseded by a newer request with the same `supersedeKey` (`:626-638`), one deadline for queue plus run, and a run timeout that kills and replaces only that worker (`:663-669`, `recycle` at `:594`).
 3. `start_affinity_pools` (`:784-790`) iterates `AFFINITY_SCRIPT_NAMES.difference(ISOLATED_SCRIPT_NAMES)`, so the research lane is never prestarted.
 4. The metadata exemption (`:876-877`) applies only when `affinity not in ISOLATED_SCRIPT_NAMES`, so a research payload carrying an `action` key can never reach the shared pool or its in-process fallback (`:934-990`). Served thermal requests have `affinity is None` and never evaluate this guard.
+5. (Rev. 2) For `ISOLATED_SCRIPT_NAMES` only, the queue-timeout and run-timeout replies of `_execute_affinity` (`:833-840`) keep exit code 124 and add a stdout envelope `{"success": false, "errorKind": "research", "reasonCode": "RESEARCH_TIMEOUT", "timeoutKind": "queue" or "run"}`; calphad replies are unchanged. The same function honours `recycleWorker` (13.7 item 2).
 
 The served thermal solver keeps the shared pool (`execute_script`, `:844-915`). Research never takes the in-process fallback, because the affinity branch returns first (`:878-880`).
 
@@ -203,7 +213,7 @@ Not in the request: hatch, layer, incline, seed, the served sulfur slider, the s
   "schemaVersion": "p8-research-response-v1",
   "clientRequestId": "melt-pool:17",
   "requestKey": "<sha256 hex, 3.6>",
-  "stage": "nominal",                          // or "band"
+  "stage": "nominal",                          // "describe" | "nominal" | "band"; a describe response has the 13.9 shape
   "progress": { "armsTotal": 41, "armsDone": 12, "complete": false },
   "researchModels": { },                       // the closed block; null only for an incomplete band stage
   "labels": { "<field path>": "<English label>" },
@@ -238,7 +248,7 @@ Outcomes and HTTP status:
 | Request refused | `{"success": false, "errorKind": <the literal mapped to 422 at server/pythonDispatchStatus.ts:15>, "reasonCode": "RESEARCH_REQUEST_INVALID" or "PROPERTY_SNAPSHOT_MISMATCH" or "RESEARCH_CODE_STALE", "problems": [OptionProblem]}` | 2 | 422 |
 | Request-scope research failure (a bug outside any module, or an oversize response) | `{"success": false, "errorKind": "research", "reasonCode": "RESEARCH_EVALUATION_FAILED" or "RESEARCH_SERIALIZATION_FAILED" or "RESEARCH_RESPONSE_TOO_LARGE"}`; traceback on stderr only | 0 | 200 (`pythonDispatchStatus`, `server/pythonDispatchStatus.ts:11-16`) |
 | Crash before any stdout | empty; stderr | nonzero | 500 (`routes/physics.ts:18-24`) |
-| Lane or ad-hoc timeout | empty; stderr "Execution timed out ..." (`persistent_ipc_service.py:833-840`) | 124 | 504 with `RESEARCH_TIMEOUT` from `handleResearchDispatch` (Rev. 1, R14) |
+| Timeout (`queue`, `run`, `reply` or `adhoc`) | lane: the 3.3 item 5 envelope with stderr "Execution timed out ..." (`persistent_ipc_service.py:833-840`); reply and ad-hoc: a thrown error | 124 or none | 504 with `RESEARCH_TIMEOUT` and `timeoutKind` from `handleResearchDispatch` (3.1) |
 | Superseded while queued | `{"success": false, "status": "superseded", ...}` (`persistent_ipc_service.py:826-832`) | 0 | 200; the client ignores it |
 
 ### 3.6 Cache
@@ -435,7 +445,7 @@ User endpoints are ordered by admitted input key, low before high, after the dec
 | leafRole | Meaning | sourceEvidenceKind | Provenance label shown |
 |---|---|---|---|
 | `requestInput` | echo of a process request value (P, v, d, T0, alloy, wavelength) | "User input" on the echo itself, as the Amendment 3 records carry it; excluded from the derived-output rule (13.12) | "request input" |
-| `physicalInput` | physical or coefficient input echo; its kind (6.3) says where it comes from | from its record: "Literature estimate" for a located source (sourceDefault, sourceModelAssumption, sourcedAlternative, alloyTransfer, modelConvention), "Unresolved" for declaredAssumption and legacyEstimate, "User input" for userInput, the governing rule for followsInput | the kind label of 6.3 |
+| `physicalInput` | physical or coefficient input echo; its kind (6.3) says where it comes from | from its record: "Literature estimate" for a located source (sourceDefault, sourceModelAssumption, sourcedAlternative, alloyTransfer, modelConvention), "Unresolved" for declaredAssumption and legacyEstimate, "User input" for userInput, the governing rule for followsInput, and for `derived` the record's own label, which it computes from its `dependsOn` records (for example `vapour_o8` Tv, Lv and M: `derived`, `dependsOn` the O8 composition, hybrid route, Mg Tb convention and local-slope enthalpy records, Literature estimate with status extrapolated) (Rev. 2) | the kind label of 13.5 |
 | `softwareLimit` | computational policy bound (Pe 0.01 to 10, R_bound 10, scan sizes, tolerances, the arm cap) | null | "software limit (not a physical cutoff)" |
 | `convention` | enum, identifier, solver setting or index convention (`decision`, `classificationChanged`, `selectedBranch`, `observable`, `onsetEvent`, `floorFieldModelId`, `floorExtractorId`, `conductionStatus`, `linkDispatch`, `slopeBaseline`, `evaporationConvention`, `pressureRoute`, `calculationStatus`, `evaluationLocation`, `quadratureOrder`, `xSamples`, `iterations`) | null | "convention" |
 | `indexConvention` | `alSi10MgIndexDisclosure.indexAbsorptance`, the served regime-index convention (`python/four_alloy_materials.py:625-631`, "regime-index-convention", not a measurement) | null | "served index convention (not a physical absorptance)" |
@@ -479,6 +489,7 @@ Rules:
 2. A value that follows another input (length from d, Tref from deltaT, Al viscosity from Tref) has kind `followsInput` while it follows; `defaultKind` gives the kind of the rule itself (for example `declaredAssumption` for L = d). Typing a value switches it to `userInput` with `followState: "user-fixed"` until reset.
 3. Reset button text by `defaultKind`: "Reset to sourced default", "Reset to source model assumption", "Reset to {kind label}" for a transfer or a sourced alternative, "Reset to declared assumption", or "Clear (input required)" when null. A legacy estimate is never a default; it is offered only as an explicit scenario. No control without a sourced default shows "Reset to sourced default".
 4. Every output's input summary lists the kinds of its inputs; any `userInput` shows "user input" beside the output.
+5. (Rev. 2) A `sourceLocator` may cite the PROPERTY_LEDGER only through the ledger entry's own source and locator for that exact value (for example the Ti Kirchhoff forms, Gan 2021 SI Table 1). A ledger entry marked OPEN, or one with no locator of its own (for example the AlSi10Mg vapour tuple, `python/four_alloy_materials.py:510-511`), never becomes a `sourceLocator`: such a value is `declaredAssumption` with a `declarationLocator`, or `derived` from located records (O8). This is the only sense of "no generic PROPERTY_LEDGER fallback" in 13.5.
 
 Host ceiling (decided by the maintainer, 2026-10-15, decision 1; Rev. 1, R13): the `3d-distortion-lab` contract keeps its `screening-only` ceiling (`src/generated/moduleRegistry.json`; `PENDING_ORACLE_CEILING` at `python/module_contract.py:58`) and no ceiling is raised. Every research container carries `moduleEvidenceCeiling: "screening-only"`. The per-value `sourceEvidenceKind` is a source label, not a module evidence claim, so it is not compared with the ceiling. Because the legacy contract declares no `emits`, the registry check never runs for this operation; R-CODE therefore asserts directly that every research container's `moduleEvidenceCeiling` is within the host ceiling (`module_contract.within_ceiling`, `:136-141`).
 
@@ -613,7 +624,10 @@ The short n/a cell text is chosen by class and `cause` and filled from the `Rese
 |---|---|
 | C1 request | "Research request refused: {problem messages}. The served result is not affected." |
 | C1 `RESEARCH_CODE_STALE` | "The research code changed on disk; the research worker was restarted to load it. Running research models again." (the panel retries once automatically, 13.7) |
-| C1 `RESEARCH_TIMEOUT` | "The research computation took longer than {timeout} s and was stopped; the research worker was restarted and its cache cleared. The served result is not affected." |
+| C1 `RESEARCH_TIMEOUT`, `run` | "The research computation took longer than {timeout} s and was stopped; the research worker was restarted and its cache cleared. The served result is not affected." |
+| C1 `RESEARCH_TIMEOUT`, `queue` | "The research request waited {timeout} s behind other research work and was not started. Nothing was computed and the research cache is kept. Run research models again." |
+| C1 `RESEARCH_TIMEOUT`, `reply` | "No reply arrived from the research engine within {timeout} s. The computation may still finish in the background and cache its results. Run research models again." |
+| C1 `RESEARCH_TIMEOUT`, `adhoc` | "The research computation took longer than {timeout} s and was stopped. The local engine is running without its persistent worker, so nothing was cached. The served result is not affected." |
 | C2 evaluator | "The research evaluator failed for this model. The served result is not affected; details are in the local server log." |
 | C2 `RESEARCH_RESPONSE_TOO_LARGE` | "The research result exceeded the 4 MiB response limit and was not sent. The served result is not affected." |
 | C3 option | "Research inputs for this model were refused: {problem messages}. Other research models are unaffected." |
@@ -621,6 +635,7 @@ The short n/a cell text is chosen by class and `cause` and filled from the `Rese
 | C5 software-limit or source-range, two-sided | "Not computed: {quantity} = {value} is outside the {limit kind} {limitMin} to {limitMax}. This is a {limit kind}, not a physical cutoff. {change clause}" |
 | C5, one-sided | "Not computed: {quantity} = {value} is below the {limit kind} minimum {limitMin}." or "... above the {limit kind} maximum {limitMax}." followed by "This is a {limit kind}, not a physical cutoff. {change clause}" |
 | C5, enum | "Not computed: {quantity} {value} is not supported by this research model (supported: {allowedValues}). {change clause}" |
+| C5 source-range, permanent (`VAPOUR_PRESSURE_OUTSIDE_SOURCE_RANGE` on `dynamicVapourTemperature_K`) | "Not available: {phrase} lies outside its source range for every admissible input (the Mg vapour pressure exceeds the 600 to 1730 K fit and the 10 atm synthesis ceiling), so it is always withheld. No input in this panel changes this." |
 | change clause | "Change {changeInputs} to evaluate it." when `changeInputs` is not empty; otherwise "No input in this panel changes this limit." |
 | C6 input-missing | "Not computed: {phrase} is required and no sourced default exists for {alloy}. Enter a value to evaluate it." |
 | C6 default-cleared | "Not computed: {phrase} is empty. {reset label} or enter a value." (for example `SURFACE_VAPOUR_INPUT_REQUIRED` on Ti-6Al-4V after a custom preset, where `gan-ti64` is the sourced default) |
@@ -634,7 +649,7 @@ The short n/a cell text is chosen by class and `cause` and filled from the `Rese
 | C9 data-missing | "Not available: {phrase} needs inputs that are not in the library: {missingInputs}." |
 | C10 | the pending and unavailable captions of 4.7; `BAND_MANIFEST_NOT_DECLARED`: "No scenario manifest is declared for this model and alloy; only the nominal value is shown." |
 
-A leaf that is null for every admissible input (for example `dynamicVapourTemperature_K` with `VAPOUR_PRESSURE_OUTSIDE_SOURCE_RANGE`) is rendered with the C9 form of its cause and an empty change clause, never with "Change ... to evaluate it" (Rev. 1, R8 item 2). Each unavailablePhysics leaf carries the validation status of its own cause (Amendment 3 C4), not a generic data-unavailable status (R8 item 3).
+A leaf that is null for every admissible input is rendered with a permanent template and never with "Change ... to evaluate it" (Rev. 1, R8 item 2): `dynamicVapourTemperature_K` uses the "C5 source-range, permanent" row above (Rev. 2); any other such leaf uses the C9 form of its cause. Each unavailablePhysics leaf carries the validation status of its own cause (Amendment 3 C4), not a generic data-unavailable status (R8 item 3).
 
 Each C5 code declares whether its limit is a software limit (Pe 0.01 to 10, aspect bound, numerical floors) or a source range (property scope, vapour source range). This splits the single "hard failure" sentence of A5 (gate 20(c)). The Pe policy stays 0.01 to 10, a computational limit separate from any physical range (Amendment 2 B6).
 
@@ -706,7 +721,7 @@ This is not a served bump.
 | Id | Check |
 |---|---|
 | P-1 | (Rev. 1, R12) The fingerprint and its pin equal their values at the merge base with main (`git show <merge-base>:python/lpbf_implementation_fingerprint.expected`); T-FRZ-1 (`test_lpbf_calibration_frozen.py:69-71`) and `python/test_lpbf_implementation_fingerprint_pin.py` run unchanged. No 835466fa literal is restated, so a served bump that lands first (for example SOL-A1) cannot fail P8. |
-| P-2 | (Rev. 1, R12) Branch-scoped, run once in phase G by `python/tools/p8_isolation_diff_check.py --range <p8-base>..<p8-head>`, never a permanent test: the P8 commits themselves (the explicit range recorded at phase B start, so a SOL-A1 base or later main edits do not count) touch no manifest file and none of the served entry modules `lpbf_build_job_solver.py`, `lpbf_build_job_material_snapshot.py`, `lpbf_build_job_schema.py`, `lpbf_job_cache.py`, `lpbf_worker.py`, `lpbf_process_window.py`, `lpbf_bayesian_optimizer.py`, `lpbf_screening_uq.py`, `lpbf_gr_solidification.py`, `lpbf_solidification_microstructure.py`, `lpbf_calibrated_meltpool.py`, `lpbf_calibration_layer.py`, `lpbf_machine_calibrated_meltpool.py`, `lpbf_machine_calibration.py`, `src/store/useLpbfBuildJobStore.ts`, `src/utils/lpbfBuildJobIdentity.ts`, and leave the thermal-solver route block unchanged (the 150-character rule of `test_lpbf_calibration_frozen.py:113-120`). |
+| P-2 | (Rev. 1, R12) Branch-scoped, run once in phase G by `python/tools/p8_isolation_diff_check.py --range <p8-base>..<p8-head>`, never a permanent test: the P8 commits themselves (`<p8-base>` is the constant `P8_BASE` in that tool, 13.11, so a SOL-A1 base or later main edits do not count) touch no manifest file and none of the served entry modules `lpbf_build_job_solver.py`, `lpbf_build_job_material_snapshot.py`, `lpbf_build_job_schema.py`, `lpbf_job_cache.py`, `lpbf_worker.py`, `lpbf_process_window.py`, `lpbf_bayesian_optimizer.py`, `lpbf_screening_uq.py`, `lpbf_gr_solidification.py`, `lpbf_solidification_microstructure.py`, `lpbf_calibrated_meltpool.py`, `lpbf_calibration_layer.py`, `lpbf_machine_calibrated_meltpool.py`, `lpbf_machine_calibration.py`, `src/store/useLpbfBuildJobStore.ts`, `src/utils/lpbfBuildJobIdentity.ts`, and leave the thermal-solver route block unchanged (the 150-character rule of `test_lpbf_calibration_frozen.py:113-120`). |
 | P-3 | (Rev. 1, R12) T-HTTP-1 digests equal the `HTTP_GOLDEN` values of the merge-base copy of `python/test_lpbf_calibration_frozen.py`, for the 316L input in all three kernels (Windows reference machine). |
 | P-4 | `python python/tools/lpbf_parity_check.py --check` and `--check --slow`: zero drift. |
 | P-5 | In one Python process: canonical served thermal JSON (without `computeTimeMs`) for Ti-6Al-4V, AlSi10Mg, Inconel 718, 316L and Inconel 625, three kernels, P 100, 200 and 400 W, v 800 mm/s, d 80 um, T0 20 C, before and after a complete research band for the same inputs: equal. This proves no shared mutable state leaks even when research runs in the same process (tests, ad-hoc use). |
@@ -724,7 +739,7 @@ Python (new files):
 |---|---|
 | `python/test_lpbf_research_isolation.py` | R-ISO-1 AST import guard over `python/**/*.py`: importers of `lpbf_research_*` are only research modules and `test_lpbf_research_*`; research modules never reference `calculate_meltpool_physics`; no research file is in `IMPLEMENTATION_SOURCE_FILES`; and (Rev. 1, minor note 10) every research test runs with `calculate_meltpool_physics` patched to raise, so a transitive call (for example through `lpbf_calibration_layer._default_solver`) fails. R-ISO-3 lane configuration in a subprocess with `METALLIX_IPC_AFFINITY=0` and unset. The former R-ISO-2 diff guard is the branch-scoped phase G tool of P-2, not a permanent test (Rev. 1, R12). |
 | `python/test_lpbf_research_context.py` | R-CTX-1 the 3.8 tuple literals for Ti-6Al-4V and AlSi10Mg at 20 C. R-CTX-2 equality with served internals: `unittest.mock.patch.object(lpbf_thermal_solver, "resolve_conduction_kernel", wraps=...)` during `calculate_meltpool_physics` for five alloys and three kernels, float.hex of K, cp, rho_k and alpha compared with the research context. R-CTX-3 build-job snapshot equals nominal for the four Build Job alloys; a tampered hash gives `PROPERTY_SNAPSHOT_MISMATCH`; a wrong alloy gives `alloy-material-mismatch`. R-CTX-4 SI conversions by float.hex: 800 mm/s to 0.8, 80 um to 8e-05, 20 C to 293.15. |
-| `python/test_lpbf_research_transport.py` (injected deterministic fake evaluator, no physics) | R-TR-1 request-check table: each rule with code, pointer, rule and limit (for example laserPower_W 0 gives `RESEARCH_REQUEST_INVALID`, `/process/laserPower_W`, `not-positive`); booleans refused as numbers. R-TR-2 emissivity 1.2 makes surfaceBalance unavailable with `{pointer "/researchOptions/surfaceBalance/emissivity", rule "above-max", limit 1}` while the other six containers are byte-identical to a run without it. R-TR-3 stage protocol: pending bands; strictly increasing `armsDone`; the complete block equals a `timeBudgetMs: null` run; `researchModels` null while incomplete. R-TR-4 cache: cold equals warm byte for byte; a surface-only option change leaves cavity, link and Marangoni arm keys unchanged; the 1025th insert evicts the oldest; a band loop at the per-module cap completes with strictly increasing `armsDone` (Rev. 1, R14); size eviction with synthetic large entries; transient failures not cached, deterministic failures cached. R-TR-5 (Rev. 1, R11) NaN and infinity injected by the fake evaluator at the first, a middle and the last manifest position of a field give the same band, the same extremes and the same field-specific failures, and never a NaN extreme; values, bands and notes become null with `NONFINITE_RESULT`; a strict parser reads the output. R-TR-6 nominal values identical across stages. R-TR-7 an exception in one arm gives a failed arm with `RESEARCH_EVALUATION_FAILED`; an exception in one module's assembly leaves the other six containers. R-TR-8 a patched on-disk hash gives `RESEARCH_CODE_STALE`. R-TR-9 key sensitivity: every process field, property context, option, follow flag and identity hash changes `requestKey`. R-TR-10 a synthetic oversize block gives `RESEARCH_RESPONSE_TOO_LARGE`. R-TR-11 (Rev. 1, R12) the CLI output for a fixed request, run with the fake evaluator, a stubbed identity provider (constant research and served hashes), an injected `cacheInstanceId` and a cold cache, equals the committed transport fixture `tests/fixtures/lpbf-research-response-v1.json`; only `computeMs` is excluded. The fixture describes transport shape only and does not change when the real evaluator lands. R-TR-12 (Rev. 1, R10) `describe` returns controls, defaults (including followed defaults evaluated in Python), provenance, labels and option problems without evaluating an arm. R-TR-13 (Rev. 1, R8) `RESEARCH_CODE_STALE` sets `recycleWorker` and the next request runs in a fresh worker; a lane timeout reaches the route as exit 124. |
+| `python/test_lpbf_research_transport.py` (injected deterministic fake evaluator, no physics) | R-TR-1 request-check table: each rule with code, pointer, rule and limit (for example laserPower_W 0 gives `RESEARCH_REQUEST_INVALID`, `/process/laserPower_W`, `not-positive`); booleans refused as numbers. R-TR-2 emissivity 1.2 makes surfaceBalance unavailable with `{pointer "/researchOptions/surfaceBalance/emissivity", rule "above-max", limit 1}` while the other six containers are byte-identical to a run without it. R-TR-3 stage protocol: pending bands; strictly increasing `armsDone`; the complete block equals a `timeBudgetMs: null` run; `researchModels` null while incomplete. R-TR-4 cache: cold equals warm byte for byte; a surface-only option change leaves cavity, link and Marangoni arm keys unchanged; the 1025th insert evicts the oldest; a band loop at the per-module cap completes with strictly increasing `armsDone` (Rev. 1, R14); size eviction with synthetic large entries; transient failures not cached, deterministic failures cached. R-TR-5 (Rev. 1, R11) NaN and infinity injected by the fake evaluator at the first, a middle and the last manifest position of a field give the same band, the same extremes and the same field-specific failures, and never a NaN extreme; values, bands and notes become null with `NONFINITE_RESULT`; a strict parser reads the output. R-TR-6 nominal values identical across stages. R-TR-7 an exception in one arm gives a failed arm with `RESEARCH_EVALUATION_FAILED`; an exception in one module's assembly leaves the other six containers. R-TR-8 a patched on-disk hash gives `RESEARCH_CODE_STALE`. R-TR-9 key sensitivity: every process field, property context, option, follow flag and identity hash changes `requestKey`. R-TR-10 a synthetic oversize block gives `RESEARCH_RESPONSE_TOO_LARGE`. R-TR-11 (Rev. 1, R12; Rev. 2) the CLI output for a fixed request, run with the fake evaluator, a stubbed identity provider (constant research and served hashes), a stubbed property provider (a fixed synthetic property set, so `propertySetSha256` is constant), a fixed injected declared-arm table, a fixed injected label table, an injected `cacheInstanceId` and a cold cache, equals the committed transport fixture `tests/fixtures/lpbf-research-response-v1.json`; only `computeMs` is excluded. The fixture describes transport shape only and does not change when the real evaluator lands. R-TR-12 (Rev. 1, R10) `describe` returns controls, defaults (including followed defaults evaluated in Python), provenance, labels and option problems without evaluating an arm. R-TR-13 (Rev. 1, R8) `RESEARCH_CODE_STALE` sets `recycleWorker` and the next request runs in a fresh worker; a lane timeout reaches the route as exit 124. |
 | `python/test_lpbf_research_status.py` (Rev. 1, R7, R13) | R-STAT: the decided label rule of 13.12 on synthetic provenance tables (Unresolved over User input over Literature estimate; a typed value equal to its sourced default keeps the sourced label; request values excluded; band endpoints labelled by their arm); the inside-range primary sentence is rejected for every extrapolated and outOfRange note; each 13.6 sentence fires on its trigger; status follows the dependency (surface-derived `onsetMismatch` values carry the B2 status inside cavity and link notes); `moduleEvidenceCeiling` is within the host ceiling (`module_contract.within_ceiling`). |
 | `python/test_persistent_ipc_research_lane.py` | R-IPC with the existing thread-pool factory pattern of `_AffinityLane` tests: run timeout recycles only the research lane; a queued research request is superseded; no prestart; the metadata guard. |
 | `python/test_lpbf_research_manifest.py` | R-MAN: per-module deduplication (a power arm aliases the Marangoni nominal), sourceId distinctness, user endpoint ids and order, `minArmTies`, the per-module cap with an injected table, onset support only in keyholeCavity with the cavity denominator. |
@@ -737,9 +752,10 @@ TypeScript (new files):
 
 | File | Tests |
 |---|---|
-| `tests/lpbf-research-transport.test.ts` | the exact request body; abort; stale rejection by generation, `clientRequestId` and `requestKey`; fallback to `timeBudgetMs: null` on a changed `cacheInstanceId` or stalled `armsDone`; superseded envelope ignored; 422 problems surfaced; 500 with exit 124 shown as `RESEARCH_TIMEOUT`; 413 for an oversize body (route test with `physicsDeps`, `routes/physics.ts:9`). |
+| `tests/lpbf-research-transport.test.ts` | the exact request body; abort; stale rejection by generation, `clientRequestId` and `requestKey`; fallback to `timeBudgetMs: null` on a changed `cacheInstanceId` or stalled `armsDone`; superseded envelope ignored; 422 problems surfaced; 504 with `RESEARCH_TIMEOUT` shown with the text of its `timeoutKind` (`queue`, `run`, `reply`, `adhoc`), and the route test asserts the two thrown-message literals of 3.1 still occur in `server/processOrchestrator.ts`; 413 for an oversize body (route test with `physicsDeps`, `routes/physics.ts:9`). |
 | `tests/lpbf-research-model-panel.test.tsx` | header "Research model"; collapsed by default; research values only inside the panel; no request on mount or on input edits (R-UI-9); stale hiding; nominal, pending and complete states; Cancel; the 4.7 captions (R-UI-5); the banned-string scan (R-UI-6); labels from the response map and the served-label list (R-UI-7); difference statements with matching served identity and fallback otherwise; static demo text; keyboard access to every input, help, reset, Run and Cancel; reset button text per `defaultKind`. |
 | `tests/lpbf-build-job-research-isolation.test.ts` | R-UI-10 (4.5). |
+| `tests/lpbf-research-describe.test.tsx` (Rev. 2) | R-UI-12: Run stays disabled until the `describe` answer for the current inputs arrives, and again after every edit until the new answer arrives; a stale `describe` answer for older inputs never enables Run. R-UI-13: options are stored per alloy; a preset or coefficient chosen while one host shows AlSi10Mg never appears in a host showing Ti-6Al-4V, and two hosts showing the same alloy share it. |
 | `tests/lpbf-research-evidence-display.test.tsx` (Rev. 1, R9) | R-UI-11 (13.8): module statements visible collapsed and expanded; the surfaceBalance collapsed note and help show the B2 status; typing a coefficient marks every dependent output "User input: {name}"; reset, or typing the sourced default, restores the sourced label; an unsourced default shows "Unresolved: {names}"; band endpoints show their arm's support; no research text contains "peak" outside D1's served clause and the physical-wall label (R-UI-6 extended, Rev. 1, R5). |
 | `tests/lpbf-research-schema.test.ts` | the TypeScript response guard accepts the R-TR-11 fixture and rejects unknown keys and a wrong `schemaVersion`. |
 
@@ -749,7 +765,7 @@ Existing suites that must pass without edits: `python/test_lpbf_calibration_froz
 
 | Phase | Owner | Work | Acceptance |
 |---|---|---|---|
-| A | lead | Re-gate done 2026-10-15 (APPROVE_WITH_CHANGES); the lead checks R1 to R15 against Amendment 3 and Revision 1. | R1 to R15 checked; maintainer decisions 1 and 2 recorded (13.12); W-1 wording approved or explicitly deferred to phase C. |
+| A | lead | Re-gate done 2026-10-15 (APPROVE_WITH_CHANGES); the lead checks R1 to R15 against Amendment 3 and Revision 1. | Phase A GO at e6934ffd with residuals fixed in Revision 2; maintainer decisions 1 and 2 recorded (13.12); W-1 deferred to phase C. |
 | B | Opus; starts once the lead has checked R11, R12 and R14 | Isolation and transport core, including `describe`, `handleResearchDispatch`, the stale recycle and the LRU bound: `lpbf_research_models.py`, `lpbf_research_context.py`, `lpbf_research_cache.py`, the registry skeleton of `lpbf_research_codes.py`, the research pin, the `persistent_ipc_service.py` lane edits, the fake-evaluator harness. | R-ISO, R-CTX, R-TR, R-IPC and R-ID pass; P-1 to P-4 pass unchanged; the R-TR-11 fixture is committed; the per-request cost of the code-stale check is recorded. |
 | C | Opus, numerics reviewed by Astra | Physics evaluator `lpbf_research_arm.py` and `lpbf_research_manifest.py` per Amendment 2, ported (not imported) from `docs/research/scripts/p8_cavity_kernel.py` and the synthetic script; full codes, labels and difference templates. | `test_lpbf_research_arm.py` replays the Amendment 2 fixture within its stated tolerances, including the 200 W manifest counts of 5.1; R-MAN, R-CODE and R-LINK pass; per-arm timings, manifest sizes and response sizes recorded (P-7, research part); budget and cap confirmed or changed by measurement (D-12). |
 | D | Sonnet | Route, registry operation and regenerated registry, `DISPATCHABLE_SCRIPTS`, `pythonComputationService.solveLpbfResearchModels`, `src/types/lpbfResearchModels.ts` with its guard. | Transport and schema TS tests, persistent-ipc-auth, route-authority, module-registry, `test_persistent_ipc_security.py`, `npm run lint`. |
@@ -767,11 +783,26 @@ Still open:
 
 | Id | Owner | Open point |
 |---|---|---|
-| W-1 | maintainer | Approval of every user-facing English string drafted here (13.4, 13.6, 9.2, section 8, 4.7 and 9.3); tests pin the approved text. |
+| W-1 | maintainer, phase C | Deferred to phase C (lead decision at Phase A GO, e6934ffd): approval of every user-facing English string drafted here (13.4, 13.6, 13.15, 9.2, section 8, 4.7 and 9.3); tests pin the approved text. |
+| X-2 | Astra (spec only) | P8 spec Amendment 2 B3 (line 526) still says the fixture records "O1/O2/O3 source-convention arms"; after Amendment 3 C1, O2 is a geometric diagnostic outside the arm envelope. This contract does not edit the spec. |
 | D-12 | Opus, phase C | Default band budget (1500 ms), route timeout (30000 ms), per-module cap (80) and LRU byte bound (128 MiB), confirmed by measured timings that include the ad-hoc path and the null-budget fallback at the cap. |
 | X-1 | SOL integration owner, lead | The solidification plan side of R3 (bump table, swap rule, MD4, SOL-C channel). This contract's side is the statement in 1.5. |
 | I-1 | lead | Confirm the reading in 13.12 rule 1 that request process values (P, v, d, T0) are the evaluation point and do not make a derived output "User input". The Amendment 3 records already exclude them ("excluded from physical-coefficient evidence rule"). |
 
+
+### 12.1 Spec locations that should point to this contract (for Astra; Rev. 2)
+
+| P8 spec location | Contract section |
+|---|---|
+| Section 2 (`result.researchModels`, field lists, `evidenceKind` literal, schema version) | 3.5, 6.1, 13.3 (`p8-research-v3`) |
+| Section 8 (implementation plan, frozen bump, parity) | 0.1, 10, 11 |
+| A1 (`researchOptions` transport, `ResearchNumericBand`, `ResearchInputProvenance`) | 3.4, 5.3, 5.4, 6.3, 13.5 |
+| A4 (cache overlay, responsive UI) | 3.6, 4.3, 4.4, 13.13 |
+| A5 (sentences and eligibility) | 9.2, 13.6 |
+| B3 (O1/O2/O3 arms, band caption) | 4.7, 5.5 item 1, 13.2 |
+| C2 (field-shape disclosure carrier) | 13.15 |
+| C5 and C7 (evidence labels, provenance vocabulary) | 6.1, 6.3, 13.5, 13.12 |
+| C6 (comparison identity) | 5.5 item 2, 7.2, 13.14 |
 
 ## 13. Revision 1 (re-gate 2026-10-15)
 
@@ -833,8 +864,17 @@ Fixture-to-runtime map (only names that differ; committed as the constant `FIXTU
 | `effectiveNetFactor` | `effectiveNetFactor`, always populated; the input echo `netEvaporationFactor` is null outside the net-factor convention |
 | arm `inputs` keys `P`, `v`, `d`, `T0`, `Tl`, `K`, `cp`, `rho`, `alpha`, `A`, `Tv`, `Lv`, `M`, `kl`, `cpl`, `rhol`, `slope`, `mu`, `deltaT`, `L`, `Lm`, `Tref`, `onsetMethod`, `accommodation`, `effectiveNetFactor`, `recoil`, `emissivity` | `power_W`, `speed_m_s`, `beamDiameter_m`, `preheat_K`, `liquidus_K`, `conductivity_W_mK`, `specificHeat_J_kgK`, `density_kg_m3`, `diffusivity_m2_s`, `wallAbsorptanceProxy`, `vapourTemperature_K`, `vapourLatentHeat_J_kg`, `vapourMolarMass_kg_mol`, `liquidConductivity_W_mK`, `liquidSpecificHeat_J_kgK`, `liquidDensity_kg_m3`, `surfaceTensionSlope_N_mK`, `viscosity_Pa_s`, `deltaTemperature_K`, `length_m`, `latentHeatFusion_J_kg`, `referenceTemperature_K`, `onsetEvent` (values `dwell`, `O1`, `O3`; O2 only in `geometricThresholdDiagnostics`), `evaporationAccommodation`, `effectiveNetFactor`, `recoilFraction`, `emissivity` |
 | `armResults[].provenance`, `inputProvenance`, `valueProvenance`, `consistencyStatus`, `validationStatus`, `experimentalValidation`, `moduleEvidenceCeiling`, `inputScopeReasons` | see 13.5 |
+| `bands[].modules.<module>.fields.<field>` (`min`, `nominal`, `max`, `minArmId`, `maxArmId`, `successfulArms`) | the leaf's `ResearchNumericBand` (A1, 5.4); ties counted at runtime as `minArmTies`, `maxArmTies` (Rev. 2) |
+| `armIds` | `band.manifest`: the ordered `ResearchArmDescriptor` list (5.3), built from `armIds`, each arm's `provenance` (`armProvenance`), its `inputs` compared with the nominal (`changes`) and its `inputProvenance`; aliases from module-local deduplication (Rev. 2) |
+| `categoricalSupport` (`{field: {value: count}}`) | `band.categoricalSupport`: `{field, value, count}[]` with value and count as labelled leaves (A1) (Rev. 2) |
+| `statusSupport` (`{status: count}`) | `band.statusSupport`: `{status, count}[]` (A1) (Rev. 2) |
+| `modeledOnsetSupport` (`above`, `total`, `unresolved`, `caveat`) | `keyholeCavity.band.onsetSupport` (`supported`, `total`, `unresolved`, `caveat`), the source of the support statement (5.5); meltDepthLink references it (Rev. 2) |
+| module-level `successfulArms`, `failedArms` | `band.successfulArmCount`, `band.failedArms` (field-specific failures stay in each leaf band, 13.10) (Rev. 2) |
+| module-level `validationStatus`, `experimentalValidation`, `moduleEvidenceCeiling` | the container's members of the same names (6.1) |
+| `armResults[].values` | the cached arm record's values, renamed by this map |
+| `armResults[].fieldShapeDiagnostics` | the per-arm `FieldShapeShare` (13.15) |
 
-Every other fixture key keeps its name. A fixture key absent from this map and from the closed lists fails R-MAP-1, so a later rename cannot slip through silently.
+Every other fixture key keeps its name. R-MAP-1 covers only keys under `points[].values`, `bands[].modules.*` (including arm `inputs`) and nothing else (Rev. 2); fixture metadata (`evidence`, `sourceBase`, source and script hashes, `bandMethod`, `labels`, `tolerances`, `noMeltLimits`, `independentTransientChecks`, `gaussianFieldCrosschecks`, `syntheticRootTopology`, `statusSemanticsChecks`, `secondaryAlloyManifests`) is not mapped. The top-level records `onsetSurfaceContradictions`, `geometricThresholdDiagnostics` and `fieldShapeStepChecks` are mapped above and in 13.15 and are checked by their own replay assertions in `test_lpbf_research_arm.py`. Inside its scope, a key absent from this map and from the closed lists fails R-MAP-1, so a later rename cannot slip through silently.
 
 ### 13.4 R5: W-1 drafts for sentences, labels and help
 
@@ -875,7 +915,7 @@ The closed `kind` enum is Amendment 3 C7's vocabulary (6.3). Display and evidenc
 
 Mapping of the Amendment 3 fixture records:
 
-1. `armResults[].provenance` (one record per arm) becomes the new descriptor member `armProvenance: ResearchInputProvenance` of 5.3, shown beside every extreme and in the onset-support list.
+1. `armResults[].provenance` (one record per arm) becomes the new descriptor member `armProvenance: ResearchInputProvenance` of 5.3. (Rev. 2) The arm label displayed at an extreme and in the onset-support list comes from the weakest kind among the provenance records of the inputs the arm changes, ranked weakest first: `declaredAssumption` and `legacyEstimate` (and a `followsInput` or `derived` record whose label is Unresolved); then `userInput`; then `alloyTransfer` (and a `derived` record with status extrapolated, such as `vapour_o8`); then `sourcedAlternative` and `modelConvention` (and other `derived` records); then `sourceDefault` and `sourceModelAssumption`. On a tie the first changed input in descriptor order wins; when more inputs changed, the label adds "(+{k} more)". `armProvenance` stays available in the expanded row.
 2. `armResults[].inputProvenance` (one record per input key) becomes `changes[].provenance` for the inputs the arm changes and the container's `inputProvenance` map for the nominal, with keys translated by 13.3.
 3. `armResults[].valueProvenance` (per derived leaf: `sourceEvidenceKind`, `dependsOn`, `weakestInputs`) becomes the derived leaf's `sourceEvidenceKind`, `dependsOn` and `weakestInputs`.
 4. `consistencyStatus`, `validationStatus`, `experimentalValidation` and `moduleEvidenceCeiling` become the per-arm note status, the leaf status (6.1), `experimentalValidation` and the container's `moduleEvidenceCeiling`; `inputScopeReasons` become `SOURCE_SCOPE_TRANSFER` warnings with the reasons listed in the per-arm note.
@@ -925,18 +965,40 @@ The B2 statement, the B6 two-ledger statement, the C2 field-shape disclosure (13
 
 ### 13.9 R10: the `describe` stage
 
-`stage: "describe"` runs in the research lane, evaluates no arm and returns:
+`stage: "describe"` runs in the research lane, evaluates no arm and returns this closed shape (Rev. 2):
 
-```jsonc
-{
-  "success": true, "schemaVersion": "p8-research-response-v1", "stage": "describe", "clientRequestId": "...",
-  "controls": [ { "key": "surfaceTensionSlope_N_mK", "module": "marangoni", "label": "...", "unit": "N/(m K)",
-                  "displayUnits": { "mN/(m K)": 1000 }, "min": -0.003, "max": 0.003, "enabled": true,
-                  "help": "...", "value": -0.00019, "provenance": { }, "rangeAdmitted": true } ],
-  "presets": { "vapourPreset": [ { "id": "gan-ti64", "label": "...", "admitted": true } ] },
-  "labels": { }, "problems": [ ], "moduleAvailability": { "keyholeCavity": { "status": "available", "reasonCode": null } },
-  "identity": { }
-}
+```ts
+type ResearchControl = {
+  key: string;                                  // admitted option key, for example "surfaceTensionSlope_N_mK"
+  module: "marangoni" | "surfaceBalance";
+  label: string; help: string;                  // W-1 drafts, authored in Python
+  unit: string;                                 // SI unit of the value
+  displayUnits: Record<string, number>;         // display unit to SI factor, for example {"mN/(m K)": 1000}
+  valueType: "number" | "enum";
+  enumValues: string[] | null;
+  min: number | null; max: number | null;       // software exploration limits (A2, A3)
+  enabled: boolean;                             // false, for example, for the direct slope in a Belton mode
+  value: number | string | null;                // current value, followed defaults evaluated in Python
+  provenance: ResearchInputProvenance;          // 6.3
+  rangeAdmitted: boolean;                       // whether min/max endpoints may be entered for this key
+  resetLabel: string | null;                    // 6.3 rule 3
+};
+type ResearchDescribeResponse = {
+  success: true;
+  schemaVersion: "p8-research-response-v1";
+  stage: "describe";
+  clientRequestId: string;
+  requestKey: string;                           // the key the next nominal request would carry
+  controls: ResearchControl[];
+  presets: { vapourPreset: { id: string; label: string; admitted: boolean; reasonCode: string | null }[];
+             slopeMode: { id: string; label: string }[] };
+  labels: Record<string, string>;
+  problems: OptionProblem[];                    // 9.3
+  moduleAvailability: Record<string, { status: "available" | "unavailable" | "not-applicable"; reasonCode: string | null }>;
+  identity: { researchImplementationSha256: string; servedImplementationFingerprint: string;
+              researchSchemaVersion: string; propertySetSha256: string; propertyContextKind: string };
+  channel: string;                              // added by handleResearchDispatch (3.1)
+};
 ```
 
 1. Followed defaults (length from d, reference temperature from deltaT, the AlSi10Mg viscosity law at the followed reference temperature) are evaluated in Python and returned as values; the UI evaluates no equation.
@@ -953,9 +1015,9 @@ The B2 statement, the B6 two-ledger statement, the C2 field-shape disclosure (13
 
 ### 13.11 R12: test scoping
 
-1. The isolation diff (P-2) is a branch-scoped phase G tool over the P8 commit range, not a permanent test.
+1. The isolation diff (P-2) is a branch-scoped phase G tool over the P8 commit range, not a permanent test. `<p8-base>` is recorded as the constant `P8_BASE` in `python/tools/p8_isolation_diff_check.py`, written by the first phase B commit (the commit phase B starts from) and repeated in the phase B report; it changes only by an explicit lead decision (Rev. 2).
 2. P-1 and P-3 compare with merge-base values, never with 835466fa literals.
-3. The R-TR-11 transport fixture uses stubbed identity, an injected `cacheInstanceId` and a cold cache; only `computeMs` is volatile, and the fixture does not depend on the physics evaluator.
+3. The R-TR-11 transport fixture uses stubbed identity, a stubbed property set (constant `propertySetSha256`), a fixed declared-arm table, a fixed label table, an injected `cacheInstanceId` and a cold cache; only `computeMs` is volatile. It depends on neither the physics evaluator nor served material data, so an ordinary served material edit cannot move it (Rev. 2).
 4. Permanent research tests depend only on research files, the closed schema and committed fixtures, so ordinary edits to served modules (for example `lpbf_worker.py`, `useLpbfBuildJobStore.ts`, `BUILD_JOB_SOLVER_REVISION` v26 in SOL-A) cannot fail them.
 
 ### 13.12 R13: maintainer decisions (2026-10-15), recorded as decided
@@ -1005,19 +1067,53 @@ Default outcomes on the Amendment 3 fixture (200 W, nominal arm; consistency sta
 Amendment 3 C2 keeps the above-onset point plus line field and requires the Gaussian-to-point step to be disclosed. The carrier is the structural object `meltDepthLink.consistencyNote.fieldShapeStep`, also referenced from the keyholeCavity note:
 
 ```ts
-type FieldShapeStep = {
+// Rev. 2: two carriers, mirroring the two fixture records.
+type FieldShapeStep = {                                   // meltDepthLink.consistencyNote.fieldShapeStep, one per request
   onsetPower_W: ResearchField<number>;
-  gaussianDepthAtOnset_um: ResearchField<number>;          // fixture "Gaussian depth at P*"
-  pointDepthAtOnset_um: ResearchField<number>;             // same-power surface-point baseline (diagnostic only)
+  relativeBracket: number;                                // structural, 1e-9 in the fixture
+  gaussianDepthAtOnset_um: ResearchField<number>;         // Gaussian floor at P*
+  pointDepthAtOnset_um: ResearchField<number>;            // surface-point limit just above P* (diagnostic only)
   pointMinusGaussian_um: ResearchField<number>;
-  linkedDepthJustBelowOnset_um: ResearchField<number>;     // at P*(1-1e-9)
-  linkedDepthJustAboveOnset_um: ResearchField<number>;     // at P*(1+1e-9)
-  fieldShapeShareOfExcess: ResearchField<number>;          // (point-floor)/(conditional-floor) at the request power, when above onset
-  nearOnset: boolean;                                      // the request or arm lies within the window Astra declares
-  locator: string;                                         // P8 spec Amendment 3 C2 and the fixture fieldShapeStepChecks
+  pointToGaussianRatio: ResearchField<number>;
+  pointDepthIndependentCheck_um: ResearchField<number>;   // numerical check
+  pointDepthIndependentDifference_m: ResearchField<number>;  // numerical check
+  linkedDepthJustBelowOnset_um: ResearchField<number>;    // at P*(1-1e-9)
+  linkedDepthJustAboveOnset_um: ResearchField<number>;    // at P*(1+1e-9)
+  onsetSideRecords: { side: "below" | "at" | "above"; powerFactor: number;
+                      values: Record<string, ResearchField<number | string>> }[];   // values use runtime names (13.3)
+  aboveOnsetFieldChanged: boolean;                        // structural
+  cause: string;                                          // structural text
+  locator: string;                                        // P8 spec Amendment 3 C2
+};
+type FieldShapeShare = {                                  // per-arm note of meltDepthLink, and the nominal in the module note
+  applicable: boolean;
+  samePowerPointDepth_um: ResearchField<number>;
+  fieldShapeExcess_um: ResearchField<number>;
+  conditionalExcessOverGaussian_um: ResearchField<number>;
+  fieldShapeShareOfExcess: ResearchField<number>;
+  nearOnset: boolean;                                     // trigger declared by Astra in the spec (share based)
+  caveat: string;                                         // structural text
 };
 ```
 
+Fixture-to-runtime names for these carriers (part of `FIXTURE_TO_RUNTIME`, Rev. 2):
+
+| Fixture | Runtime |
+|---|---|
+| top-level `fieldShapeStepChecks[]` (one per alloy) | `meltDepthLink.consistencyNote.fieldShapeStep` |
+| `atOnsetGaussianDepth_um` | `gaussianDepthAtOnset_um` |
+| `aboveOnsetPointLimitDepth_um` | `pointDepthAtOnset_um` |
+| `fieldShapeStep_um` | `pointMinusGaussian_um` |
+| `independentPointLimitDepth_um`, `pointLimitIndependentDifference_m` | `pointDepthIndependentCheck_um`, `pointDepthIndependentDifference_m` |
+| `records[]` (`side`, `powerFactor`, `inputs`, `values`) | `onsetSideRecords[]`, values renamed by 13.3; `linkedDepthJustBelowOnset_um` and `linkedDepthJustAboveOnset_um` are the `linkedMeltDepth_um` of the below and above records |
+| `onsetPower_W`, `relativeBracket`, `pointToGaussianRatio`, `aboveOnsetFieldChanged`, `cause` | same names |
+| `bands[].modules.meltDepthLink.armResults[].fieldShapeDiagnostics` | the per-arm `FieldShapeShare` |
+| `fieldShapeShare` | `fieldShapeShareOfExcess` |
+| `applicable`, `samePowerPointDepth_um`, `fieldShapeExcess_um`, `conditionalExcessOverGaussian_um`, `caveat` | same names |
+
+Rules:
+
 1. The same-power point baseline is a diagnostic and is never the selected conditional result at or below onset.
-2. When `nearOnset` is true, or the arm crosses onset within its band, the linked and conditional depths and `controllingLeg` carry the warning `FIELD_SHAPE_STEP_NEAR_ONSET`, and the visible note shows (W-1 draft): "Near onset the link field switches from the finite Gaussian to a surface point plus line. The linked depth can jump at P* because of this change of field shape, not because of a cavity; controlling-leg support does not show that a cavity caused the increase."
-3. This disclosure is never dropped when another primary sentence wins (13.6). The window that defines `nearOnset` and the share computation are Astra's physics; the fixture's `fieldShapeStepChecks` pin the values.
+2. The field-shape assumption and its locator appear in every cavity and link note whose conditional model uses the Gaussian-to-point dispatch, whether `nearOnset` is true or false (Rev. 2; Amendment 3 C2). W-1 draft of that assumption: "At or below onset the link uses the finite Gaussian field; above onset it uses a surface point plus line. The two fields differ, so the linked depth can change at P* because of field shape, not because of a cavity (P8 spec Amendment 3 C2)."
+3. When `nearOnset` is true, or the arm crosses onset within its band, the linked and conditional depths and `controllingLeg` also carry the warning `FIELD_SHAPE_STEP_NEAR_ONSET`, and the visible note leads its limitations with (W-1 draft): "Near onset the linked depth is dominated by the change of field shape ({fieldShapeShareOfExcess} of the excess over the Gaussian floor); controlling-leg support does not show that a cavity caused the increase."
+4. Neither text is dropped when another primary sentence wins (13.6). The `nearOnset` trigger (share based) and the share computation are Astra's physics, declared in the P8 spec; the fixture pins the values.
