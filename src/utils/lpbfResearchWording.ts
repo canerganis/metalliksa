@@ -27,11 +27,6 @@ export const APPROVED_WORDING = {
   refusalKeyholeThermalFlow: "Not available: no source-bound closure or data exists for the keyhole thermal flow.",
 } as const;
 
-/** Approved sentence overrides keyed like the describe `sentences` table, so an approved text wins over a draft one. */
-export const APPROVED_SENTENCE_OVERRIDES: Readonly<Record<string, string>> = {
-  "refusal.KEYHOLE_THERMAL_FLOW_CLOSURE_UNAVAILABLE": APPROVED_WORDING.refusalKeyholeThermalFlow,
-};
-
 export const AUTHORED_WORDING = {
   runButton: "Run research models",
   cancelButton: "Cancel",

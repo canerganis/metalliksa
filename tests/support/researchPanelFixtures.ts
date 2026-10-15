@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { pythonComputationService } from "../../src/services/pythonComputationService";
 import {
@@ -31,16 +32,24 @@ export const TI64_INPUT: ResearchHostInput = {
   propertyContext: { kind: "nominal" },
 };
 
+// Render the current Python text tables, while preserving the historical numeric fixtures byte for byte.
+// No evaluator or served module is imported. PYTHON_EXECUTABLE can select the project's scientific runtime.
+const wording = JSON.parse(execFileSync(process.env.PYTHON_EXECUTABLE ?? "python", ["-B", "-c",
+  "import sys,json;sys.path.insert(0,'python');import lpbf_research_codes as c;print(json.dumps({'labels':dict(c.LEAF_LABELS),'sentences':c.SENTENCES}))"],
+  { encoding: "utf8", cwd: new URL("../../", import.meta.url) }).toString()) as { labels: Record<string, string>; sentences: Record<string, string> };
+
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
 export function describeResponse(clientRequestId: string, patch?: Partial<ResearchDescribeResponse>): ResearchDescribeResponse {
-  const response = { ...(clone(RAW.describe) as ResearchDescribeResponse), clientRequestId, ...patch };
+  const raw = clone(RAW.describe) as ResearchDescribeResponse;
+  const response = { ...raw, clientRequestId, labels: { ...raw.labels, ...wording.labels }, sentences: wording.sentences, ...patch };
   if (!isResearchDescribeResponse(response)) throw new Error("describe fixture no longer passes the guard");
   return response;
 }
 
 export function completeResponse(clientRequestId: string): ResearchRunResponse {
-  const response = { ...(clone(RAW.band) as ResearchRunResponse), clientRequestId };
+  const raw = clone(RAW.band) as ResearchRunResponse;
+  const response = { ...raw, clientRequestId, labels: { ...raw.labels, ...wording.labels } };
   if (!isResearchRunResponse(response)) throw new Error("band fixture no longer passes the guard");
   return response;
 }

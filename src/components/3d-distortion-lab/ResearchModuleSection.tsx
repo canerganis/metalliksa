@@ -16,7 +16,7 @@ import {
   renderServedDifference,
   type DifferenceContext,
 } from "../../utils/lpbfResearchPanelModel";
-import { APPROVED_SENTENCE_OVERRIDES, APPROVED_WORDING, AUTHORED_WORDING, fill, supportText } from "../../utils/lpbfResearchWording";
+import { APPROVED_WORDING, AUTHORED_WORDING, fill, supportText } from "../../utils/lpbfResearchWording";
 
 // One research module: always-visible evidence header, a collapsed body that renders only when opened (the block is
 // large, so nothing below the header is built while the section is closed). Research only, never validation: every
@@ -46,7 +46,7 @@ export interface ModuleSectionProps {
 export function refusalText(code: string | null, sentences: Record<string, string>): string | null {
   if (!code) return null;
   const key = `refusal.${code}`;
-  return APPROVED_SENTENCE_OVERRIDES[key] ?? sentences[key] ?? null;
+  return sentences[key] ?? null;
 }
 
 /** Label of a field; a `{name}` slot in a label is filled from the container's field of that name (for example the onset event). */

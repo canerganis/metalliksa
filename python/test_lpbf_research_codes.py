@@ -22,6 +22,23 @@ class CodeContract(ResearchTestCase):
         for module,fields in manifest.FIELD_LIST.items():
             for field in fields:self.assertIn(module+'.'+field,codes.LEAF_LABELS)
 
+    def test_approved_refusal_matches_typescript_and_describe(self):
+        import re
+        from pathlib import Path
+        source = (Path(__file__).resolve().parents[1] / 'src/utils/lpbfResearchWording.ts').read_text()
+        approved = re.search(r'refusalKeyholeThermalFlow: "([^"]+)"', source).group(1)
+        self.assertEqual(codes.SENTENCES['refusal.KEYHOLE_THERMAL_FLOW_CLOSURE_UNAVAILABLE'], approved)
+
+    def test_labels_name_quantities_without_generated_research_prefix_or_peak(self):
+        import re
+        for key, label in codes.LEAF_LABELS.items():
+            self.assertFalse(label.startswith('Research '), key)
+            if key != 'unavailablePhysics.physicalWallPeakTemperature_K':
+                self.assertIsNone(re.search(r'\bpeak\b', label, re.I), key)
+        self.assertEqual(codes.LEAF_LABELS['meltDepthLink.conductionPeakX_m'],
+                         'Position of maximum conduction depth')
+        self.assertEqual(codes.LEAF_LABELS['marangoni.slopeMode'], 'Surface-tension slope mode')
+
     def test_process_inputs_excluded_and_custom_coefficient_dependencies(self):
         engine=arm.Engine();ctx=resolved();opts=options()
         plan=engine.manifest('keyholeCavity',ctx,opts)

@@ -5,8 +5,9 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ResearchModelPanel } from "../src/components/3d-distortion-lab/ResearchModelPanel";
+import { refusalText } from "../src/components/3d-distortion-lab/ResearchModuleSection";
 import { useLpbfResearchModelStore } from "../src/store/useLpbfResearchModelStore";
-import { APPROVED_SENTENCE_OVERRIDES, APPROVED_WORDING, AUTHORED_WORDING, supportText } from "../src/utils/lpbfResearchWording";
+import { APPROVED_WORDING, AUTHORED_WORDING, supportText } from "../src/utils/lpbfResearchWording";
 import {
   inputSignature,
   renderServedDifference,
@@ -184,10 +185,8 @@ test("R-UI-6: rendered research text has no banned wording outside the fixed cap
   for (const allowed of [APPROVED_WORDING.bandCaption, AUTHORED_WORDING.bandDegenerate]) t = t.split(allowed).join(" ");
   const onsetCaveat = completeResponse("x:1").researchModels!.keyholeCavity!.band!.onsetSupport?.caveat;
   if (onsetCaveat) t = t.split(onsetCaveat).join(" ");
-  // Allowed by the contract (13.4): D1's served clause and the physicalWallPeakTemperature_K label. One Python label,
-  // "Research conduction Peak X m" (conductionPeakX_m), breaks the rule and is reported to the lead; it is excluded here
-  // by name so the test still fails on any other "peak".
-  for (const allowedPeak of ["The served peak temperature is withheld", "Physical cavity-wall peak temperature", "Research conduction Peak X m"]) t = t.split(allowedPeak).join(" ");
+  // Contract 13.4 permits only D1's served clause and the physical cavity-wall label.
+  for (const allowedPeak of ["The served peak temperature is withheld", "Physical cavity-wall peak temperature"]) t = t.split(allowedPeak).join(" ");
   for (const banned of [/uncertainty band/i, /confidence/i, /error bar/i, /±/, /probability/i, /validated simulation/i, /\bpeak\b/i]) {
     assert.equal(banned.test(t), false, `banned wording ${banned} in the panel text`);
   }
@@ -206,11 +205,14 @@ test("the approved top 25 strings the panel holds are exactly as approved", () =
   assert.equal(supportText("Unresolved", ["deltaTemperature_K"]), "Unresolved: deltaTemperature_K");
   assert.equal(supportText(null, []), null);
   assert.equal(APPROVED_WORDING.bandCaption, "Min / nominal / max is an envelope of named one-at-a-time scenarios. Interactions are not evaluated. It is not a confidence interval, an error bar, or a physical lower or upper bound.");
-  assert.equal(APPROVED_SENTENCE_OVERRIDES["refusal.KEYHOLE_THERMAL_FLOW_CLOSURE_UNAVAILABLE"], "Not available: no source-bound closure or data exists for the keyhole thermal flow.");
+  assert.equal(APPROVED_WORDING.refusalKeyholeThermalFlow, "Not available: no source-bound closure or data exists for the keyhole thermal flow.");
   // the band caption of the real response is the approved one
   assert.equal(completeResponse("x:1").researchModels!.keyholeCavity!.band!.caption, APPROVED_WORDING.bandCaption);
   const d = describeResponse("x:1");
   assert.equal(d.sentences.bandCaption, APPROVED_WORDING.bandCaption);
+  assert.equal(d.sentences["refusal.KEYHOLE_THERMAL_FLOW_CLOSURE_UNAVAILABLE"], APPROVED_WORDING.refusalKeyholeThermalFlow);
+  assert.equal(refusalText("KEYHOLE_THERMAL_FLOW_CLOSURE_UNAVAILABLE", {}), null, "no client override when the server has no text");
+  assert.equal(refusalText("KEYHOLE_THERMAL_FLOW_CLOSURE_UNAVAILABLE", d.sentences), APPROVED_WORDING.refusalKeyholeThermalFlow);
 });
 
 test("authored strings follow the style rules: no dash punctuation, no hype, no validation claim", () => {
