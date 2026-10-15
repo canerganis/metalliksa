@@ -71,7 +71,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
 # Runtime image (default target). Runs as a non-root user (uid 10001).
-# Code trees (dist, node_modules, python, data, assets, docs/sources/in625) are root-owned
+# Code trees (dist, node_modules, python, data, docs/sources/in625) are root-owned
 # and read-only for that user. It can write only to:
 #  - /data (the volume): every root below is redirected there by environment variables;
 #  - the WORKDIR-relative default data directories, created and chowned below so the server also works
@@ -102,7 +102,6 @@ COPY --from=verify /app/dist ./dist
 COPY package.json ./
 COPY python ./python
 COPY data ./data
-COPY assets ./assets
 # docs/sources/in625 is read at run time (server/lpbfPropertySourceCatalog.ts resolves it
 # against the working directory; lpbfSourceArchiveService archives from it).
 COPY docs/sources/in625 ./docs/sources/in625
