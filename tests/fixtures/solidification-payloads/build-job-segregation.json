@@ -1,0 +1,5134 @@
+{
+  "available_in718_150_1200": {
+    "alloyId": "in718",
+    "band": [
+      {
+        "Nb_wt": 4.75,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0564,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "min",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.089,
+          "fGammaLavesConstituent": 0.0198,
+          "fGammaNbCConstituent": 0.0692,
+          "fLiquidPrimaryEnd": 0.089,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      },
+      {
+        "Nb_wt": 5.125,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0647,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "nominal",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.1003,
+          "fGammaLavesConstituent": 0.0282,
+          "fGammaNbCConstituent": 0.072,
+          "fLiquidPrimaryEnd": 0.1003,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      },
+      {
+        "Nb_wt": 5.5,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0736,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "max",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.112,
+          "fGammaLavesConstituent": 0.0372,
+          "fGammaNbCConstituent": 0.0747,
+          "fLiquidPrimaryEnd": 0.112,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      }
+    ],
+    "bandNote": "gamma/Laves constituent fraction at C = 0 (binary; model upper bound over C only) and at the specification maximum C with the pseudo-ternary model; fractions are of the liquid, which D98 compares with measured volume %",
+    "binaryBoundNote": "Binary gamma-Nb Scheil (C = 0): carbon ties Nb up as NbC, so within this model the binary value is an upper bound over carbon content on the gamma/Laves constituent fraction (a model statement, not a bound on measurement).",
+    "classIINote": "D98 Table 2 class II point (C_Nb, C_C) is not exactly on the regressed gamma/NbC line (a + b * C_Nb gives about 0.044 wt% C at 23.1 wt% Nb, against 0.04 tabulated); the eutectic-type integration stops when C_l,Nb reaches C_Nb,L->(gamma+Laves).",
+    "composition": {
+      "C_wt": {
+        "max": 0.08,
+        "min": null,
+        "note": "maximum only; C = 0 is the binary upper-bound end"
+      },
+      "Nb_wt": {
+        "max": 5.5,
+        "min": 4.75,
+        "nominal": 5.125,
+        "nominalIs": "midpoint of the specification range (not a measured composition)",
+        "note": "Niobium (plus Tantalum)"
+      },
+      "appNominalNote": "The app's alloy_registry in718 composition_wt (Nb 5.1, C 0.04 wt%) has no cited source, so the band uses the SMC-045 specification limits instead. Nb 5.1 lies inside the band (4.75-5.50) and C 0.04 inside the C range covered by the C = 0 and C max columns.",
+      "balanceByDifference_wt": {
+        "max": 24.6,
+        "min": 11.13
+      },
+      "balanceElement": "Fe",
+      "locator": "Table 1 - Limiting Chemical Composition, %",
+      "source": "Special Metals Corporation, INCONEL alloy 718 technical bulletin, Publication Number SMC-045 (2007), Table 1 - Limiting Chemical Composition (conforms to AMS specifications)"
+    },
+    "constantSet": "ni-base",
+    "constants": {
+      "C_C_laves": {
+        "locator": "D98 Table 2 (C_C,L->(gamma+Laves), Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C",
+        "value": 0.04,
+        "verified": true
+      },
+      "C_NbC_C": {
+        "locator": "D98 Table 2 (C_NbC,C); text after Eq. 11",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C",
+        "value": 9.5,
+        "verified": true
+      },
+      "C_NbC_Nb": {
+        "locator": "D98 Table 2 (C_NbC,Nb); text after Eq. 11",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% Nb",
+        "value": 90.5,
+        "verified": true
+      },
+      "C_Nb_laves": {
+        "locator": "D98 Table 2 (C_Nb,L->(gamma+Laves), Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% Nb",
+        "value": 23.1,
+        "verified": true
+      },
+      "a_wtC": {
+        "locator": "D98 Table 2 (a, Ni base alloys); Eq. 2",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C",
+        "value": 1.13,
+        "verified": true
+      },
+      "b_wtC_per_wtNb": {
+        "locator": "D98 Table 2 (b, Ni base alloys); Eq. 2",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C / wt% Nb",
+        "value": -0.047,
+        "verified": true
+      },
+      "k_gamma_C": {
+        "locator": "D98 Table 2 (k_gamma,C, Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "-",
+        "value": 0.21,
+        "verified": true
+      },
+      "k_gamma_Nb": {
+        "locator": "D98 Table 2 (k_gamma,Nb, Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "-",
+        "value": 0.45,
+        "verified": true
+      }
+    },
+    "feBaseSensitivity": {
+      "constantSet": "fe-base",
+      "constants": {
+        "C_C_laves": {
+          "locator": "D98 Table 2 (C_C,L->(gamma+Laves), Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C",
+          "value": 0.04,
+          "verified": true
+        },
+        "C_NbC_C": {
+          "locator": "D98 Table 2 (C_NbC,C); text after Eq. 11",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C",
+          "value": 9.5,
+          "verified": true
+        },
+        "C_NbC_Nb": {
+          "locator": "D98 Table 2 (C_NbC,Nb); text after Eq. 11",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% Nb",
+          "value": 90.5,
+          "verified": true
+        },
+        "C_Nb_laves": {
+          "locator": "D98 Table 2 (C_Nb,L->(gamma+Laves), Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% Nb",
+          "value": 20.4,
+          "verified": true
+        },
+        "a_wtC": {
+          "locator": "D98 Table 2 (a, Fe base alloys); Eq. 2",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C",
+          "value": 1.37,
+          "verified": true
+        },
+        "b_wtC_per_wtNb": {
+          "locator": "D98 Table 2 (b, Fe base alloys); Eq. 2",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C / wt% Nb",
+          "value": -0.065,
+          "verified": true
+        },
+        "k_gamma_C": {
+          "locator": "D98 Table 2 (k_gamma,C, Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "-",
+          "value": 0.21,
+          "verified": true
+        },
+        "k_gamma_Nb": {
+          "locator": "D98 Table 2 (k_gamma,Nb, Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "-",
+          "value": 0.25,
+          "verified": true
+        }
+      },
+      "note": "bracketing sensitivity with the D98 Fe-base constants; not an interpolation",
+      "point": {
+        "Nb_wt": 5.125,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.1585,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "nominal",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.1919,
+          "fGammaLavesConstituent": 0.1245,
+          "fGammaNbCConstituent": 0.0675,
+          "fLiquidPrimaryEnd": 0.1919,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      }
+    },
+    "inputProvenance": {
+      "composition": {
+        "declarationLocator": "python/alloy_registry.py",
+        "defaultKind": null,
+        "defaultValue": null,
+        "dependsOn": [],
+        "followState": null,
+        "followsInput": null,
+        "kind": "declaredAssumption",
+        "label": "declared assumption (no source)",
+        "phase": null,
+        "referenceTemperature_K": null,
+        "scope": "nominal-specification-screen",
+        "source": null,
+        "sourceEvidenceKind": "Unresolved",
+        "sourceId": "alloy-registry:composition",
+        "sourceLocator": null,
+        "sourceRange_K": null,
+        "status": "inRange"
+      },
+      "sourceCoefficients": {
+        "declarationLocator": null,
+        "defaultKind": null,
+        "defaultValue": null,
+        "dependsOn": [],
+        "followState": null,
+        "followsInput": null,
+        "kind": "sourceDefault",
+        "label": "sourced default",
+        "phase": null,
+        "referenceTemperature_K": null,
+        "scope": "source-alloy-process",
+        "source": null,
+        "sourceEvidenceKind": "Literature estimate",
+        "sourceId": "segregation:source-constants",
+        "sourceLocator": "python/lpbf_solidification_segregation.py#CONSTANTS",
+        "sourceRange_K": null,
+        "status": "inRange"
+      }
+    },
+    "k_Nb": {
+      "citation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+      "locator": "D98 Table 2 (k_gamma,Nb, Ni base alloys)",
+      "value": 0.45
+    },
+    "lpbfObservations": {
+      "observations": [],
+      "reason": "no as-built LPBF IN718 segregation measurement among the sources read: Z18, L17 and K17 are LPBF IN625, G17 is a binary Ni-Nb simulation",
+      "status": "unavailable"
+    },
+    "modelId": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+    "moduleEvidenceCeiling": "screening-only",
+    "moduleMaturity": "Research",
+    "notModelled": [
+      "solid-state back-diffusion of Nb",
+      "solute trapping in the equilibrium-k upper bound (screening k(V) is given separately in rapidSolidification)",
+      "dendrite-tip undercooling",
+      "Mo, Ti, Al and Si effects on the Laves reaction",
+      "mechanical consequences of Laves"
+    ],
+    "observations": {},
+    "processCoupling": {
+      "alloyId": "in718",
+      "inputProvenance": {
+        "liquidus_K": {
+          "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+          "defaultKind": null,
+          "defaultValue": 1609.15,
+          "dependsOn": [],
+          "followState": null,
+          "followsInput": null,
+          "kind": "declaredAssumption",
+          "label": "declaredAssumption",
+          "phase": null,
+          "referenceTemperature_K": null,
+          "scope": "no-provenance-entry",
+          "source": null,
+          "sourceEvidenceKind": "Unresolved",
+          "sourceId": "served-liquidus:in718",
+          "sourceLocator": null,
+          "sourceRange_K": null,
+          "status": "inRange"
+        }
+      },
+      "modelId": "solidification-front-v2",
+      "moduleEvidenceCeiling": "screening-only",
+      "moduleMaturity": "Research",
+      "normalizedEnthalpy": 14.5,
+      "quantities": {
+        "coolingRate": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-cooling-rate",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K/s",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "gOverR": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-g-over-r",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K*s/m^2",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "morphology": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "front-morphology",
+          "reasons": [
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "normalSpeed": {
+          "assumptions": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-normal-speed",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m/s",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "pdas": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "pdas-model-alternatives",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "sdas": {
+          "assumptions": [],
+          "dependsOn": [
+            "coolingRate"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "sdas",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "coolingRate",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "solidStateTransformation": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "solid-state-transformation",
+          "reasons": [
+            {
+              "code": "missing-thermal-history",
+              "params": {},
+              "parent": null
+            },
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "thermalGradient": {
+          "assumptions": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-thermal-gradient",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K/m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        }
+      },
+      "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+      "regime": "Conduction Mode (Stable)",
+      "schema": "lpbf-solidification-microstructure-2",
+      "source": "thermal.solidificationKinetics",
+      "status": "unavailable",
+      "usedInCalculation": false
+    },
+    "quantities": {
+      "maxBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0736
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "maxTernary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0372,
+          "gammaNbCConstituent": 0.0747
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "minBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0564
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "minTernary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0198,
+          "gammaNbCConstituent": 0.0692
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "nominalBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0647
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "nominalTernary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0282,
+          "gammaNbCConstituent": 0.072
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      }
+    },
+    "quantity": "fGammaLavesConstituent and fGammaNbCConstituent are fractions of the gamma/Laves and gamma/NbC eutectic-type constituents (remaining liquid that transforms, eutectic gamma included; D97 terminology), not phase fractions of Laves or NbC.",
+    "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+    "rapidSolidification": {
+      "R_m_s": null,
+      "V_D_m_s": {
+        "max": 0.31,
+        "min": 0.23,
+        "nature": "Modelling range, not a measurement. G17 fitted the Aziz function to the partitioning of its own phase-field model, in which the anti-trapping current does not remove trapping at these velocities (Section 3.2.4 and Summary), and states that no experimental V_D for Ni-Nb is available. K17 (lines 385-391) likewise says the diffuse interface artificially magnifies trapping at LPBF speeds. Both fits use k_e = 0.48 (binary Ni-Nb, G17 Table 2).",
+        "unit": "m/s",
+        "values": [
+          {
+            "locator": "G17 Section 3.2.4: Eq. 12 fitted to the 1D planar-front phase-field results (k_v = c0/c_max, Fig. 13); G18 uses the same 0.23 m/s for IN625 (text with Fig. 4)",
+            "source": "G17",
+            "sourceCitation": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369",
+            "unit": "m/s",
+            "value": 0.23,
+            "verified": true
+          },
+          {
+            "locator": "G17 Section 3.2.4 and Fig. 12: Eq. 12 fitted to the 2D steady-state cell-tip values k_v = cs*/c_max",
+            "source": "G17",
+            "sourceCitation": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369",
+            "unit": "m/s",
+            "value": 0.31,
+            "verified": true
+          }
+        ]
+      },
+      "extrapolationNote": "Extrapolation: the eutectic-fraction formulas (D96 Eq. 5; D97/D98 pseudo-ternary) were calibrated on GTA welds and DTA samples with the equilibrium k. Here k_Nb is replaced by k(R) and held constant over the whole solidification at the single build-job R, so the numbers show the direction and rough size of the trapping effect, not a validated LPBF fraction.",
+      "kTransferNote": "V_D was fitted with k_e = 0.48 (G17, G18); this module applies it with its own equilibrium k_Nb (D98 0.45 for IN718, C88 0.51 for IN625). No source gives V_D for these k_e or for multicomponent IN718/IN625.",
+      "model": {
+        "equation": "k(V) = (k_e + V/V_D) / (1 + V/V_D)",
+        "locator": "G17 Eq. 12 (Section 3.2.4), after Aziz 1982 (G17 ref. 66, not read here)",
+        "originalCitation": "M.J. Aziz, 'Model for solute redistribution during rapid solidification', J. Appl. Phys. 53 (1982) 1158",
+        "source": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369"
+      },
+      "modelId": "aziz-continuous-growth-k-of-v-scheil-screening-v1",
+      "moduleEvidenceCeiling": "screening-only",
+      "moduleMaturity": "Research",
+      "notModelled": [
+        "velocity-dependent liquidus slope (G17 Eq. 14) and dendrite-tip undercooling / tip composition (G17 Eqs. 9-10, 15)",
+        "curvature correction of k (G17 Eq. 13)",
+        "trapping of carbon: k_C stays at its equilibrium value (no source V_D for C)",
+        "variation of R along the melt-pool boundary (one mean R from the build job; G17 Section 3.1: 0.01-0.3 m/s, K17 lines 243-246: 0.01-0.17 m/s)",
+        "solid-state back-diffusion of Nb"
+      ],
+      "quantities": {
+        "fraction": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": null,
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "laves-trapped-scheil-fraction",
+          "reasons": [
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        }
+      },
+      "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+      "reason": "A parent value this quantity depends on is unavailable.",
+      "replacesUpperBound": false,
+      "status": "unavailable"
+    },
+    "riskClass": "eutectic Laves expected (Scheil)",
+    "riskClassPositiveByConstruction": true,
+    "riskClassRule": "gamma/Laves constituent > 0 at any band point under the Scheil-type model; no fitted threshold. Binary Scheil without back-diffusion predicts a terminal gamma/Laves eutectic for any Nb > 0, so this class is positive by construction for every Nb-bearing composition and does not discriminate between compositions.",
+    "schema": "lpbf-solidification-segregation-2",
+    "segregation": {
+      "Nb_wt": 5.125,
+      "basis": "binary gamma-Nb Scheil (D97 Eq. 1), C = 0",
+      "coreNb_wt": 2.306,
+      "coreRatioToNominal": 0.45,
+      "interdendritic": [
+        {
+          "atEutecticComposition": false,
+          "fs": 0.9,
+          "liquidNb_wt": 18.184,
+          "ratioToNominal": 3.548
+        },
+        {
+          "atEutecticComposition": true,
+          "fs": 0.95,
+          "liquidNb_wt": 23.1,
+          "ratioToNominal": 4.507
+        }
+      ],
+      "note": "When the remaining liquid at fs is below the eutectic fraction the liquid has reached the gamma/Laves composition and the ratio is capped there (atEutecticComposition = true)."
+    },
+    "source": {
+      "citation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+      "note": "full text (journal article) read for this module; Table 2 gives the solidification constants used here. Its Section 3.2 (negligible Nb diffusion / infinitely fast C diffusion, Eqs. 13-21) is the same model as the equations implemented here (D97 Eqs. 1-8)",
+      "read": true,
+      "url": "https://doi.org/10.1016/S1359-6454(98)00123-2"
+    },
+    "sourceAgreementNote": "Not conservative against measurement, even in the source's own weld regime: D97 Fig. 9b (measured vs calculated gamma/Laves) shows several alloys with measured gamma/Laves above the calculated value, including alloys for which the model predicts no gamma/Laves (measured about 0.5-1.5 vol%, e.g. Ni-base alloy 8 in Fig. 3), and low-C Ni-base alloys where the model is about 2-3x high (alloys 5 and 7: measured about 2-3 vol% in Fig. 3). D97 also reports that Fe and Si raise the gamma/Laves amount; IN718 contains about 18 wt% Fe plus Mo, which the source alloys do not.",
+    "status": "computed",
+    "upperBoundNote": "Upper bound with respect to effects that are not modelled and that all reduce segregation: solid-state back-diffusion of Nb, solute trapping at high solidification rate and dendrite-tip undercooling. It is not a bound with respect to the choice of k_Nb (see validity), and it is not an upper bound on measured Laves content (see sourceAgreementNote).",
+    "validity": {
+      "kTransferNote": "D98 reports k_Nb = 0.45 for its Ni base alloys (Fe about 11 wt%) and 0.25 for its Fe base alloys (Fe about 45 wt%) and attributes the drop to Fe. The source gives no k_Nb(Fe) relation here, so no interpolation is made; the Fe-base result is shown as a bracketing sensitivity.",
+      "outsideSourceComposition": true,
+      "outsideSourceCompositionReasons": [
+        "Fe (balance, 11.13-24.6 wt% by difference) extends outside the source 10.39-11.12 wt%",
+        "Nb specification 4.75-5.5 wt% extends outside the source 1.82-5.17 wt%",
+        "Mo (2.8-3.3 wt% in the specification) is absent from the source alloys",
+        "Ti (0.65-1.15 wt% in the specification) is absent from the source alloys",
+        "Al (0.2-0.8 wt% in the specification) is absent from the source alloys"
+      ],
+      "outsideSourceRegime": true,
+      "outsideSourceRegimeReason": "LPBF is not among the source processes (GTA welds, DTA samples); the k values and the Scheil assumption were not established at LPBF solidification rates",
+      "sourceAbsentElements": [
+        "Mo",
+        "Ti",
+        "Al",
+        "Co"
+      ],
+      "sourceCompositionLocator": "D97 Table 1, alloys 1-8 (Ni base)",
+      "sourceCompositionRange_wt": {
+        "C": [
+          0.01,
+          0.17
+        ],
+        "Cr": [
+          18.54,
+          19.3
+        ],
+        "Fe": [
+          10.39,
+          11.12
+        ],
+        "Nb": [
+          1.82,
+          5.17
+        ],
+        "Ni": [
+          63.93,
+          68.53
+        ],
+        "Si": [
+          0.03,
+          0.52
+        ]
+      },
+      "sourceRegime": "gas tungsten arc (GTA) autogenous welds and DTA samples of investment-cast experimental alloys (D97 Experimental Procedure)"
+    }
+  },
+  "in625_available": {
+    "alloyId": "in625",
+    "band": [
+      {
+        "Nb_wt": 3.15,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0258
+        },
+        "label": "min",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.1,
+          "reason": "not modelled: no carbon constants for alloy 625 in C88 or D96 (binary gamma-Nb Scheil only)",
+          "reasons": [
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "status": "unavailable"
+        }
+      },
+      {
+        "Nb_wt": 3.65,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0349
+        },
+        "label": "nominal",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.1,
+          "reason": "not modelled: no carbon constants for alloy 625 in C88 or D96 (binary gamma-Nb Scheil only)",
+          "reasons": [
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "status": "unavailable"
+        }
+      },
+      {
+        "Nb_wt": 4.15,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0453
+        },
+        "label": "max",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.1,
+          "reason": "not modelled: no carbon constants for alloy 625 in C88 or D96 (binary gamma-Nb Scheil only)",
+          "reasons": [
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "status": "unavailable"
+        }
+      }
+    ],
+    "bandNote": "terminal eutectic-type constituent fraction from D96 Eq. 5 (binary gamma-Nb Scheil, C = 0) over the specification Nb band with k_Nb from C88; fraction of the liquid, which both sources compare with measured volume %. Carbon is not modelled for alloy 625.",
+    "binaryBoundNote": "Binary gamma-Nb Scheil only. Carbon ties Nb up as NbC (C88 alloy 6: NbC only at 0.038 wt% C) and would lower the gamma/Laves estimate; no carbon model is applied because neither source gives carbon constants for alloy 625.",
+    "composition": {
+      "C_wt": {
+        "max": 0.1,
+        "min": null,
+        "note": "maximum only; not used: no carbon model for alloy 625"
+      },
+      "Fe_wt": {
+        "max": 5.0,
+        "min": null
+      },
+      "Nb_wt": {
+        "max": 4.15,
+        "min": 3.15,
+        "nominal": 3.65,
+        "nominalIs": "midpoint of the specification range (not a measured composition)",
+        "note": "Niobium (plus Tantalum); Co maximum applies 'if determined'"
+      },
+      "appNominalNote": null,
+      "balanceElement": null,
+      "limits_wt": {
+        "Al": [
+          null,
+          0.4
+        ],
+        "C": [
+          null,
+          0.1
+        ],
+        "Co": [
+          null,
+          1.0
+        ],
+        "Cr": [
+          20.0,
+          23.0
+        ],
+        "Fe": [
+          null,
+          5.0
+        ],
+        "Mn": [
+          null,
+          0.5
+        ],
+        "Mo": [
+          8.0,
+          10.0
+        ],
+        "Nb": [
+          3.15,
+          4.15
+        ],
+        "Ni": [
+          58.0,
+          null
+        ],
+        "P": [
+          null,
+          0.015
+        ],
+        "S": [
+          null,
+          0.015
+        ],
+        "Si": [
+          null,
+          0.5
+        ],
+        "Ti": [
+          null,
+          0.4
+        ]
+      },
+      "locator": "Table 1 - Limiting Chemical Composition, %",
+      "source": "Special Metals Corporation, INCONEL alloy 625 technical bulletin (copyright 2013, Aug 13), Table 1 - Limiting Chemical Composition"
+    },
+    "constantSet": "in625-c88",
+    "constants": {
+      "C_Nb_laves": {
+        "locator": "Section IV-C, text after Eq. 5 (eutectic composition 18.9 wt% Nb, estimated from the Alloy 718 values of Table V: gamma 9.3 wt% Nb, Laves 22.1 wt% Nb, about 25/75 vol% gamma/Laves)",
+        "source": "D96",
+        "sourceCitation": "J.N. DuPont, 'Solidification of an Alloy 625 Weld Overlay', Metall. Mater. Trans. A 27A (1996) 3612-3620",
+        "unit": "wt% Nb",
+        "value": 18.9,
+        "verified": true
+      },
+      "k_gamma_Nb": {
+        "locator": "Table VIII (k = C_core / C_nom by EPMA; 0.53, 0.51, 0.52, 0.51 for alloys 5-8; the lowest value is used)",
+        "source": "C88",
+        "sourceCitation": "M.J. Cieslak, T.J. Headley, T. Kollie, A.D. Romig Jr., 'A melting and solidification study of alloy 625', Metall. Trans. A 19A (1988) 2319-2331",
+        "unit": "-",
+        "value": 0.51,
+        "verified": true
+      },
+      "k_gamma_Nb_slopes": {
+        "locator": "Table VII (k = m_L / m_S, Alloy 625, Nb); Conclusion 2",
+        "source": "C88",
+        "sourceCitation": "M.J. Cieslak, T.J. Headley, T. Kollie, A.D. Romig Jr., 'A melting and solidification study of alloy 625', Metall. Trans. A 19A (1988) 2319-2331",
+        "unit": "-",
+        "value": 0.54,
+        "verified": true
+      }
+    },
+    "inputProvenance": {
+      "composition": {
+        "declarationLocator": "python/alloy_registry.py",
+        "defaultKind": null,
+        "defaultValue": null,
+        "dependsOn": [],
+        "followState": null,
+        "followsInput": null,
+        "kind": "declaredAssumption",
+        "label": "declared assumption (no source)",
+        "phase": null,
+        "referenceTemperature_K": null,
+        "scope": "nominal-specification-screen",
+        "source": null,
+        "sourceEvidenceKind": "Unresolved",
+        "sourceId": "alloy-registry:composition",
+        "sourceLocator": null,
+        "sourceRange_K": null,
+        "status": "inRange"
+      },
+      "sourceCoefficients": {
+        "declarationLocator": null,
+        "defaultKind": null,
+        "defaultValue": null,
+        "dependsOn": [],
+        "followState": null,
+        "followsInput": null,
+        "kind": "sourceDefault",
+        "label": "sourced default",
+        "phase": null,
+        "referenceTemperature_K": null,
+        "scope": "source-alloy-process",
+        "source": null,
+        "sourceEvidenceKind": "Literature estimate",
+        "sourceId": "segregation:source-constants",
+        "sourceLocator": "python/lpbf_solidification_segregation.py#CONSTANTS",
+        "sourceRange_K": null,
+        "status": "inRange"
+      }
+    },
+    "kSensitivity": {
+      "c88TableVII": {
+        "band": [
+          {
+            "Nb_wt": 3.15,
+            "fGammaLavesConstituent": 0.0203,
+            "label": "min"
+          },
+          {
+            "Nb_wt": 3.65,
+            "fGammaLavesConstituent": 0.028,
+            "label": "nominal"
+          },
+          {
+            "Nb_wt": 4.15,
+            "fGammaLavesConstituent": 0.037,
+            "label": "max"
+          }
+        ],
+        "k": 0.54
+      },
+      "d96Overlay": {
+        "band": [
+          {
+            "Nb_wt": 3.15,
+            "fGammaLavesConstituent": 0.0362,
+            "label": "min"
+          },
+          {
+            "Nb_wt": 3.65,
+            "fGammaLavesConstituent": 0.0476,
+            "label": "nominal"
+          },
+          {
+            "Nb_wt": 4.15,
+            "fGammaLavesConstituent": 0.0604,
+            "label": "max"
+          }
+        ],
+        "k": 0.46
+      },
+      "note": "same C_e, other read k_Nb values: C88 Table VII (liquidus/solidus slopes) and the D96 Fe-diluted overlay (Table IV); a lower k gives a larger fraction"
+    },
+    "k_Nb": {
+      "citation": "M.J. Cieslak, T.J. Headley, T. Kollie, A.D. Romig Jr., 'A melting and solidification study of alloy 625', Metall. Trans. A 19A (1988) 2319-2331",
+      "locator": "Table VIII (k = C_core / C_nom by EPMA; 0.53, 0.51, 0.52, 0.51 for alloys 5-8; the lowest value is used)",
+      "value": 0.51
+    },
+    "lpbfObservations": {
+      "alloy": "IN625",
+      "build": {
+        "hatch_um": 100,
+        "layer_um": 20,
+        "locator": "L17 Section II; Z18 Materials and Methods (Manufacturing of Materials); K17 lines 154-162",
+        "machine": "EOS M270",
+        "power_W": 195,
+        "scanSpeed_mm_s": 800
+      },
+      "comparison": {
+        "NbBasis": "powder Nb of the observed builds (Z18 Table 1)",
+        "Nb_wt": 3.75,
+        "coreBelowLowestMeasured": {
+          "equilibriumK": true,
+          "kOfVMax": true
+        },
+        "discriminating": false,
+        "equilibriumK": {
+          "coreRatioToNominal": 0.51,
+          "fGammaLavesConstituent": 0.0369,
+          "k": 0.51
+        },
+        "kOfV": {
+          "coreRatioToNominal": {
+            "max": 0.718,
+            "min": 0.512
+          },
+          "fGammaLavesConstituent": {
+            "max": 0.0365,
+            "min": 0.0032
+          },
+          "kEff": {
+            "max": 0.7182,
+            "min": 0.5116
+          }
+        },
+        "measured": {
+          "highestRatioToNominal": 1.557,
+          "lowestRatioToNominal": 0.749,
+          "note": "Z18 EDS extremes over the powder Nb; 2 um probe averages (see observations)"
+        },
+        "note": "Non-discriminating. The only quantitative as-built Nb data (Z18 EDS, 2 um probe) average over cells about 1 um wide, so they bound the cell-scale profile only loosely: both the equilibrium k (0.51) and the k(V) range give a core ratio below the lowest measured ratio, as they must if the probe averages, and neither can be confirmed or ruled out by it. No as-built study reports a Laves or NbC fraction: XRD shows FCC only (Z18, L17, K17) without a stated detection limit, and K17 sees unindexed 50-200 nm precipitates at cell boundaries. The computed terminal fractions (a few vol% at equilibrium k, less with k(V)) are therefore not tested by these observations.",
+        "velocityRange_m_s": {
+          "max": 0.17,
+          "min": 0.001,
+          "note": "union of the K17 and Z18 ranges"
+        }
+      },
+      "literatureSimulations": [
+        {
+          "caveat": "K17 lines 385-391: the diffuse interface artificially lowers the simulated segregation at these speeds",
+          "kind": "simulation (binary Ni-4Nb phase-field, not measured)",
+          "locator": "K17 lines 283-291 (Fig. 9)",
+          "result": "at V_s = 25 mm/s: cell centreline 3.0 wt% Nb, intercellular liquid midpoint 9.4 wt%, pinched-off droplets 16 wt%, below the 22.5 wt% eutectic; binary Scheil with k = 0.48 gives 1.9 wt% at the core and 21 wt% at 1 % liquid",
+          "source": "K17"
+        },
+        {
+          "kind": "simulation (Scheil-Gulliver with TCNI8, multicomponent)",
+          "locator": "K17 lines 255-258 (Fig. 7b); quoted again in Z18 Results",
+          "result": "last liquid at 1250 K holds up to about 29 wt% Nb and 20 wt% Mo",
+          "source": "K17"
+        },
+        {
+          "kind": "simulation (binary Ni-4Nb phase-field, IN625 single tracks, no anti-trapping flux)",
+          "locator": "G18 text with Fig. 4",
+          "result": "partition coefficient between 0.58 and 0.72 depending on R",
+          "source": "G18"
+        }
+      ],
+      "observations": [
+        {
+          "Mo_wt": {
+            "max": 10.85,
+            "min": 9.35
+          },
+          "Nb_wt": {
+            "max": 5.84,
+            "min": 2.81
+          },
+          "kind": "measured",
+          "locator": "Z18 Results, 'As-built AM IN625', Figs. 3 and 4",
+          "probe": "2 um step and beam size, 300 s dwell, about 200 um long; Z18 states the values are averages over the probed volume. Cells are about 1 um apart (L17), so the scan smooths the cell-scale profile: its minimum overstates the cell-core Nb and its maximum understates the interdendritic peak.",
+          "quantity": "Nb mass fraction along an as-built EDS line scan",
+          "source": "Z18"
+        },
+        {
+          "kind": "measured",
+          "locator": "Z18 Fig. 2(a) and Table 2",
+          "quantity": "phases in as-built material (synchrotron XRD)",
+          "result": "FCC only, fitted as two FCC lattices (3.6009 and 3.6196 Angstrom, attributed to strain and composition gradients); no secondary phase reported; detection limit not stated",
+          "source": "Z18"
+        },
+        {
+          "kind": "measured",
+          "locator": "L17 Section III-A, Figs. 2 and 3",
+          "quantity": "phases and segregation in as-built material",
+          "result": "laboratory XRD shows only FCC peaks; EDS maps show Nb and Mo enriched between dendrites (qualitative, no numbers); primary spacing about 1 um, secondary about 300 nm",
+          "source": "L17"
+        },
+        {
+          "kind": "measured",
+          "locator": "K17 lines 172-178 (Fig. 3) and 187-188 (Fig. 4)",
+          "quantity": "precipitates in as-built material (STEM, synchrotron XRD)",
+          "result": "50-200 nm precipitates near cell/dendrite boundaries that could not be indexed in the as-built state; XRD of the as-built sample identifies only FCC",
+          "source": "K17"
+        }
+      ],
+      "powderNb_wt": {
+        "locator": "Z18 Table 1; L17 Table I; K17 Table 1 (ICP; the XRF column gives 3.06)",
+        "unit": "wt%",
+        "value": 3.75
+      },
+      "solidificationVelocity": [
+        {
+          "basis": "FEA of this build, melt-pool bottom to trailing edge",
+          "locator": "K17 lines 243-246 and 323-325",
+          "max": 0.17,
+          "min": 0.01,
+          "source": "K17",
+          "unit": "m/s"
+        },
+        {
+          "basis": "quoted from an FEA of a binary Ni-Nb model alloy with the same build parameters",
+          "locator": "Z18 Materials and Methods (Manufacturing of Materials)",
+          "max": 0.03,
+          "min": 0.001,
+          "source": "Z18",
+          "unit": "m/s"
+        }
+      ],
+      "sources": {
+        "G18": "S. Ghosh, L. Ma, L.E. Levine, R.E. Ricker, M.R. Stoudt, J.C. Heigel, J.E. Guyer, 'Single-track melt-pool measurements and microstructures in Inconel 625', JOM (2018), doi:10.1007/s11837-018-2771-x",
+        "K17": "T. Keller, G. Lindwall, S. Ghosh, L. Ma, B.M. Lane, F. Zhang, U.R. Kattner, E.A. Lass, J.C. Heigel, Y. Idell, M.E. Williams, A.J. Allen, J.E. Guyer, L.E. Levine, 'Application of finite element, phase-field, and CALPHAD-based methods to additive manufacturing of Ni-based superalloys', Acta Materialia (2017), doi:10.1016/j.actamat.2017.05.003",
+        "L17": "E.A. Lass, M.R. Stoudt, M.E. Williams, M.B. Katz, L.E. Levine, T.Q. Phan, T.H. Gnaeupel-Herold, D.S. Ng, 'Formation of the Ni3Nb delta-phase in stress-relieved Inconel 625 produced via laser powder-bed fusion additive manufacturing', Metall. Mater. Trans. A (2017), doi:10.1007/s11661-017-4304-6",
+        "Z18": "F. Zhang, L.E. Levine, A.J. Allen, M.R. Stoudt, G. Lindwall, E.A. Lass, M.E. Williams, Y. Idell, C.E. Campbell, 'Effect of heat treatment on the microstructural evolution of a nickel-based superalloy additive-manufactured by laser powder bed fusion', Acta Materialia 152 (2018) 200, doi:10.1016/j.actamat.2018.03.017"
+      },
+      "status": "computed"
+    },
+    "modelId": "cieslak1988-dupont1996-binary-gamma-nb-scheil-v1",
+    "moduleEvidenceCeiling": "screening-only",
+    "moduleMaturity": "Research",
+    "notModelled": [
+      "carbon (gamma/NbC): no alloy 625 constants",
+      "silicon (promotes Laves and M6C, C88)",
+      "solid-state back-diffusion of Nb",
+      "solute trapping in the equilibrium-k upper bound (screening k(V) is given separately in rapidSolidification)",
+      "dendrite-tip undercooling",
+      "dependence of k_Nb and C_e on Fe, Mo and Si",
+      "mechanical consequences of Laves"
+    ],
+    "observations": {
+      "edsNbMassFraction": {
+        "comparability": "context-only",
+        "materialScope": "IN625 source batch",
+        "observable": "Nb mass fraction along the as-built EDS line scan",
+        "processScope": "EOS M270 195 W 800 mm/s",
+        "recordKind": "source-observation",
+        "sourceEvidenceKind": "Measured",
+        "sources": [
+          {
+            "id": "Z18",
+            "locator": "Results Figs. 3 and 4",
+            "readLevel": "primary-read"
+          }
+        ],
+        "unit": "1",
+        "value": {
+          "max": 0.0584,
+          "min": 0.0281
+        }
+      }
+    },
+    "processCoupling": {
+      "alloyId": "in718",
+      "inputProvenance": {
+        "liquidus_K": {
+          "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+          "defaultKind": null,
+          "defaultValue": 1609.15,
+          "dependsOn": [],
+          "followState": null,
+          "followsInput": null,
+          "kind": "declaredAssumption",
+          "label": "declaredAssumption",
+          "phase": null,
+          "referenceTemperature_K": null,
+          "scope": "no-provenance-entry",
+          "source": null,
+          "sourceEvidenceKind": "Unresolved",
+          "sourceId": "served-liquidus:in718",
+          "sourceLocator": null,
+          "sourceRange_K": null,
+          "status": "inRange"
+        }
+      },
+      "modelId": "solidification-front-v2",
+      "moduleEvidenceCeiling": "screening-only",
+      "moduleMaturity": "Research",
+      "normalizedEnthalpy": 14.5,
+      "quantities": {
+        "coolingRate": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-cooling-rate",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K/s",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "gOverR": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-g-over-r",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K*s/m^2",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "morphology": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "front-morphology",
+          "reasons": [
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "normalSpeed": {
+          "assumptions": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-normal-speed",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m/s",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "pdas": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "pdas-model-alternatives",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "sdas": {
+          "assumptions": [],
+          "dependsOn": [
+            "coolingRate"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "sdas",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "coolingRate",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "solidStateTransformation": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "solid-state-transformation",
+          "reasons": [
+            {
+              "code": "missing-thermal-history",
+              "params": {},
+              "parent": null
+            },
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "thermalGradient": {
+          "assumptions": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-thermal-gradient",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K/m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        }
+      },
+      "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+      "regime": "Conduction Mode (Stable)",
+      "schema": "lpbf-solidification-microstructure-2",
+      "source": "thermal.solidificationKinetics",
+      "status": "unavailable",
+      "usedInCalculation": false
+    },
+    "quantities": {
+      "maxBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "cieslak1988-dupont1996-binary-gamma-nb-scheil-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "C88-D96",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0453
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "maxTernary": {
+        "assumptions": [],
+        "dependsOn": [],
+        "fractionBasis": null,
+        "identity": {
+          "input": null,
+          "model": null,
+          "parent": null
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [
+          {
+            "code": "missing-source-bound-model",
+            "params": {},
+            "parent": null
+          }
+        ],
+        "sourceEvidenceKind": null,
+        "sources": [],
+        "status": "unavailable",
+        "uncertainty": null,
+        "unit": "1",
+        "validity": null,
+        "value": null,
+        "weakestInputs": []
+      },
+      "minBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "cieslak1988-dupont1996-binary-gamma-nb-scheil-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "C88-D96",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0258
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "minTernary": {
+        "assumptions": [],
+        "dependsOn": [],
+        "fractionBasis": null,
+        "identity": {
+          "input": null,
+          "model": null,
+          "parent": null
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [
+          {
+            "code": "missing-source-bound-model",
+            "params": {},
+            "parent": null
+          }
+        ],
+        "sourceEvidenceKind": null,
+        "sources": [],
+        "status": "unavailable",
+        "uncertainty": null,
+        "unit": "1",
+        "validity": null,
+        "value": null,
+        "weakestInputs": []
+      },
+      "nominalBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "cieslak1988-dupont1996-binary-gamma-nb-scheil-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "C88-D96",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0349
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "nominalTernary": {
+        "assumptions": [],
+        "dependsOn": [],
+        "fractionBasis": null,
+        "identity": {
+          "input": null,
+          "model": null,
+          "parent": null
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [
+          {
+            "code": "missing-source-bound-model",
+            "params": {},
+            "parent": null
+          }
+        ],
+        "sourceEvidenceKind": null,
+        "sources": [],
+        "status": "unavailable",
+        "uncertainty": null,
+        "unit": "1",
+        "validity": null,
+        "value": null,
+        "weakestInputs": []
+      }
+    },
+    "quantity": "fGammaLavesConstituent is the fraction of the liquid that remains when the binary Scheil liquid reaches C_e = 18.9 wt% Nb (D96 Eq. 5); D96 treats it as the gamma/Laves eutectic-type constituent (eutectic gamma included) and compares it with volume %. It is not a phase fraction of Laves, and its phase identity is not established (see validity.phaseIdentityNote).",
+    "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+    "rapidSolidification": {
+      "R_m_s": null,
+      "V_D_m_s": {
+        "max": 0.31,
+        "min": 0.23,
+        "nature": "Modelling range, not a measurement. G17 fitted the Aziz function to the partitioning of its own phase-field model, in which the anti-trapping current does not remove trapping at these velocities (Section 3.2.4 and Summary), and states that no experimental V_D for Ni-Nb is available. K17 (lines 385-391) likewise says the diffuse interface artificially magnifies trapping at LPBF speeds. Both fits use k_e = 0.48 (binary Ni-Nb, G17 Table 2).",
+        "unit": "m/s",
+        "values": [
+          {
+            "locator": "G17 Section 3.2.4: Eq. 12 fitted to the 1D planar-front phase-field results (k_v = c0/c_max, Fig. 13); G18 uses the same 0.23 m/s for IN625 (text with Fig. 4)",
+            "source": "G17",
+            "sourceCitation": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369",
+            "unit": "m/s",
+            "value": 0.23,
+            "verified": true
+          },
+          {
+            "locator": "G17 Section 3.2.4 and Fig. 12: Eq. 12 fitted to the 2D steady-state cell-tip values k_v = cs*/c_max",
+            "source": "G17",
+            "sourceCitation": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369",
+            "unit": "m/s",
+            "value": 0.31,
+            "verified": true
+          }
+        ]
+      },
+      "extrapolationNote": "Extrapolation: the eutectic-fraction formulas (D96 Eq. 5; D97/D98 pseudo-ternary) were calibrated on GTA welds and DTA samples with the equilibrium k. Here k_Nb is replaced by k(R) and held constant over the whole solidification at the single build-job R, so the numbers show the direction and rough size of the trapping effect, not a validated LPBF fraction.",
+      "kTransferNote": "V_D was fitted with k_e = 0.48 (G17, G18); this module applies it with its own equilibrium k_Nb (D98 0.45 for IN718, C88 0.51 for IN625). No source gives V_D for these k_e or for multicomponent IN718/IN625.",
+      "model": {
+        "equation": "k(V) = (k_e + V/V_D) / (1 + V/V_D)",
+        "locator": "G17 Eq. 12 (Section 3.2.4), after Aziz 1982 (G17 ref. 66, not read here)",
+        "originalCitation": "M.J. Aziz, 'Model for solute redistribution during rapid solidification', J. Appl. Phys. 53 (1982) 1158",
+        "source": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369"
+      },
+      "modelId": "aziz-continuous-growth-k-of-v-scheil-screening-v1",
+      "moduleEvidenceCeiling": "screening-only",
+      "moduleMaturity": "Research",
+      "notModelled": [
+        "velocity-dependent liquidus slope (G17 Eq. 14) and dendrite-tip undercooling / tip composition (G17 Eqs. 9-10, 15)",
+        "curvature correction of k (G17 Eq. 13)",
+        "trapping of carbon: k_C stays at its equilibrium value (no source V_D for C)",
+        "variation of R along the melt-pool boundary (one mean R from the build job; G17 Section 3.1: 0.01-0.3 m/s, K17 lines 243-246: 0.01-0.17 m/s)",
+        "solid-state back-diffusion of Nb"
+      ],
+      "quantities": {
+        "fraction": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": null,
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "laves-trapped-scheil-fraction",
+          "reasons": [
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        }
+      },
+      "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+      "reason": "A parent value this quantity depends on is unavailable.",
+      "replacesUpperBound": false,
+      "status": "unavailable"
+    },
+    "riskClass": null,
+    "riskClassPositiveByConstruction": null,
+    "riskClassRule": "No Laves risk class for alloy 625: whether the terminal constituent is Laves or NbC depends on C and Si and is not established here (see validity.phaseIdentityNote).",
+    "schema": "lpbf-solidification-segregation-2",
+    "secondarySource": {
+      "citation": "J.N. DuPont, 'Solidification of an Alloy 625 Weld Overlay', Metall. Mater. Trans. A 27A (1996) 3612-3620",
+      "note": "full text (journal article, 9 pages) read for this module; one GMAW overlay of alloy 625 filler on 2.25Cr-1Mo steel at about 25-28 % dilution (Table II), plus a DTA sample of the same deposit",
+      "read": true,
+      "url": "https://www.osti.gov/biblio/413291"
+    },
+    "segregation": {
+      "Nb_wt": 3.65,
+      "basis": "binary gamma-Nb Scheil (k_Nb C88 Table VIII, C_e D96), C = 0",
+      "coreNb_wt": 1.861,
+      "coreRatioToNominal": 0.51,
+      "interdendritic": [
+        {
+          "atEutecticComposition": false,
+          "fs": 0.9,
+          "liquidNb_wt": 11.28,
+          "ratioToNominal": 3.09
+        },
+        {
+          "atEutecticComposition": false,
+          "fs": 0.95,
+          "liquidNb_wt": 15.842,
+          "ratioToNominal": 4.34
+        }
+      ],
+      "note": "When the remaining liquid at fs is below the eutectic fraction the liquid has reached the gamma/Laves composition and the ratio is capped there (atEutecticComposition = true)."
+    },
+    "source": {
+      "citation": "M.J. Cieslak, T.J. Headley, T. Kollie, A.D. Romig Jr., 'A melting and solidification study of alloy 625', Metall. Trans. A 19A (1988) 2319-2331",
+      "note": "full text read for this module; factorial Nb/C/Si heats of alloy 625 with Fe about 2.2-2.6 wt% (Table I), GTA welds and DTA",
+      "read": true,
+      "url": "https://doi.org/10.1007/BF02645056"
+    },
+    "sourceAgreementNote": "C88 low-Fe alloy 625 (alloys 5-8, Nb 3.53-3.61 wt%, rapid-scan DTA specimens): measured total minor constituent 0.3-1.3 vol% (Section III-B); this model with each alloy's own k_Nb (Table VIII) and C_e 18.9 gives 2.9-3.4 %, about 2.4-9.8x the measurement (high in every case). D96's own check on its Fe-diluted overlay: Eq. 5 with C_0 2.07, k 0.46 and C_e 18.9 gives 1.7 vol% (this module: 1.66 %) against 1.3-2.2 vol% measured.",
+    "sourceComparison": {
+      "c88": [
+        {
+          "C_wt": 0.009,
+          "Nb_wt": 3.61,
+          "Si_wt": 0.03,
+          "alloy": "5",
+          "fComputed": 0.0295,
+          "fMeasured": 0.003,
+          "fMeasuredSd": 0.001,
+          "k": 0.53,
+          "phasesObserved": "Laves (predominant) and a little NbC",
+          "ratioComputedToMeasured": 9.8
+        },
+        {
+          "C_wt": 0.038,
+          "Nb_wt": 3.6,
+          "Si_wt": 0.03,
+          "alloy": "6",
+          "fComputed": 0.0339,
+          "fMeasured": 0.007,
+          "fMeasuredSd": 0.005,
+          "k": 0.51,
+          "phasesObserved": "NbC only (no Laves)",
+          "ratioComputedToMeasured": 4.8
+        },
+        {
+          "C_wt": 0.008,
+          "Nb_wt": 3.57,
+          "Si_wt": 0.38,
+          "alloy": "7",
+          "fComputed": 0.0311,
+          "fMeasured": 0.013,
+          "fMeasuredSd": 0.003,
+          "k": 0.52,
+          "phasesObserved": "Laves (predominant), NbC, M6C",
+          "ratioComputedToMeasured": 2.4
+        },
+        {
+          "C_wt": 0.035,
+          "Nb_wt": 3.53,
+          "Si_wt": 0.46,
+          "alloy": "8",
+          "fComputed": 0.0326,
+          "fMeasured": 0.009,
+          "fMeasuredSd": 0.004,
+          "k": 0.51,
+          "phasesObserved": "NbC (predominant) and Laves",
+          "ratioComputedToMeasured": 3.6
+        }
+      ],
+      "c88Locator": "C88 Table I (composition), Table VIII (k), Section III-B (measured fractions, constituents not separated), Tables IV and IX (phases)"
+    },
+    "sourceReproduction": {
+      "C0_wt": 2.07,
+      "Ce_wt": 18.9,
+      "fComputed": 0.0166,
+      "k": 0.46,
+      "locator": "D96 Section IV-C text after Eq. 5; Section III-A (1.3-2.2 vol%)",
+      "measuredRange": [
+        0.013,
+        0.022
+      ],
+      "paperValue": 0.017
+    },
+    "status": "computed",
+    "upperBoundNote": "Upper bound with respect to effects that are not modelled and that all reduce the terminal constituent: solid-state back-diffusion of Nb, solute trapping at high solidification rate, dendrite-tip undercooling, and Nb tied up as NbC by carbon (no carbon model for alloy 625). It is not a bound with respect to k_Nb or C_e. Against the C88 low-Fe measurements the estimate is high (see sourceAgreementNote), but that is one set of four heats at DTA cooling, not a guarantee.",
+    "validity": {
+      "ceTransferNote": "C_e = 18.9 wt% Nb is not measured on alloy 625: D96 (Section IV-C) builds it from Alloy 718 data (gamma 9.3 wt% Nb in the gamma/Laves eutectic, Table V) and the Fe-diluted overlay Laves (22.1 wt% Nb, Table III). C88 gives no eutectic composition; its Laves in low-Fe alloy 625 holds less Nb (16.8-19.2 wt%, Table V), so C_e for low-Fe IN625 may be lower, which would raise the computed fraction.",
+      "d96SourceComposition_wt": {
+        "C": 0.05,
+        "Cr": 16.67,
+        "Fe": 28.14,
+        "Mo": 6.78,
+        "Nb": 2.07,
+        "Ni": 44.91,
+        "Si": 0.24,
+        "Ti": 0.17
+      },
+      "d96SourceNote": "D96 is a single Fe-diluted (28.14 wt% Fe) GMAW overlay (Table II); wrought and LPBF IN625 (Fe <= 5 wt%) are outside it, so its k_Nb is used only as a cross-check.",
+      "kTransferNote": "k_Nb = 0.51 is the lowest of the four EPMA dendrite-core values in C88 Table VIII (0.51-0.53, alloys 5-8, Nb 3.53-3.61 wt%, Fe about 2.3 wt%); C88 Table VII gives 0.54 from liquidus/solidus slopes. The source Nb is 3.53-3.61 wt%, so the band ends (3.15 and 4.15 wt%) assume a constant k.",
+      "outsideSourceComposition": true,
+      "outsideSourceCompositionReasons": [
+        "Fe: IN625 specification <= 5.0 wt% extends outside the source 2.26-2.31 wt%",
+        "Cr: IN625 specification 20.0-23.0 wt% extends outside the source 21.65-21.83 wt%",
+        "Mo: IN625 specification 8.0-10.0 wt% extends outside the source 9.67-9.81 wt%",
+        "Nb: IN625 specification 3.15-4.15 wt% extends outside the source 3.53-3.61 wt%",
+        "Si: IN625 specification <= 0.5 wt% extends outside the source 0.03-0.46 wt%",
+        "C: IN625 specification <= 0.1 wt% extends outside the source 0.008-0.038 wt%",
+        "Ti: IN625 specification <= 0.4 wt% extends outside the source 0.06 wt%",
+        "Mn: IN625 specification <= 0.5 wt% extends outside the source 0.03 wt%"
+      ],
+      "outsideSourceRegime": true,
+      "outsideSourceRegimeReason": "LPBF is not among the source processes (C88: GTA welds and DTA samples; D96: one GMAW overlay); k_Nb and the Scheil assumption were not established at LPBF solidification rates",
+      "phaseIdentityNote": "Phase identity not established. In low-Fe alloy 625 (Fe about 2.3 wt%) C88 found the terminal constituent to depend on C and Si: with 0.038 wt% C and no added Si only gamma/NbC formed (alloy 6, no Laves); with low C and no added Si a small amount of mostly Laves formed (alloy 5); Si (0.38-0.46 wt%) promoted Laves and, at low C, M6C (Sections III-B and IV-B, Tables IV and IX). D96 adds that Fe favours Laves over NbC (Section IV-B). The IN625 specification allows C up to 0.10 and Si up to 0.50 wt%, so the computed number is a gamma/Laves-type estimate with C_e = 18.9 wt% Nb, not a Laves prediction; the constituent may be gamma/NbC, gamma/Laves or both.",
+      "sourceAbsentElements": [],
+      "sourceCompositionLocator": "C88 Table I, alloys 5-8 (Nb-bearing)",
+      "sourceCompositionRange_wt": {
+        "C": [
+          0.008,
+          0.038
+        ],
+        "Cr": [
+          21.65,
+          21.83
+        ],
+        "Fe": [
+          2.26,
+          2.31
+        ],
+        "Mn": [
+          0.03,
+          0.03
+        ],
+        "Mo": [
+          9.67,
+          9.81
+        ],
+        "Nb": [
+          3.53,
+          3.61
+        ],
+        "Si": [
+          0.03,
+          0.46
+        ],
+        "Ti": [
+          0.06,
+          0.06
+        ]
+      },
+      "sourceRegime": "gas tungsten arc (GTA) welds and DTA samples (20 degC/min) of vacuum-melted experimental alloy 625 heats with Fe about 2.3 wt% (C88 Section II)"
+    }
+  },
+  "in718_degenerate_floor_synthetic": {
+    "alloyId": "in718",
+    "band": [
+      {
+        "Nb_wt": 4.75,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0564,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "min",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.089,
+          "fGammaLavesConstituent": 0.0198,
+          "fGammaNbCConstituent": 0.0692,
+          "fLiquidPrimaryEnd": 0.089,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      },
+      {
+        "Nb_wt": 5.125,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0647,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "nominal",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.1003,
+          "fGammaLavesConstituent": 0.0282,
+          "fGammaNbCConstituent": 0.072,
+          "fLiquidPrimaryEnd": 0.1003,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      },
+      {
+        "Nb_wt": 5.5,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0736,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "max",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.112,
+          "fGammaLavesConstituent": 0.0372,
+          "fGammaNbCConstituent": 0.0747,
+          "fLiquidPrimaryEnd": 0.112,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      }
+    ],
+    "bandNote": "gamma/Laves constituent fraction at C = 0 (binary; model upper bound over C only) and at the specification maximum C with the pseudo-ternary model; fractions are of the liquid, which D98 compares with measured volume %",
+    "binaryBoundNote": "Binary gamma-Nb Scheil (C = 0): carbon ties Nb up as NbC, so within this model the binary value is an upper bound over carbon content on the gamma/Laves constituent fraction (a model statement, not a bound on measurement).",
+    "classIINote": "D98 Table 2 class II point (C_Nb, C_C) is not exactly on the regressed gamma/NbC line (a + b * C_Nb gives about 0.044 wt% C at 23.1 wt% Nb, against 0.04 tabulated); the eutectic-type integration stops when C_l,Nb reaches C_Nb,L->(gamma+Laves).",
+    "composition": {
+      "C_wt": {
+        "max": 0.08,
+        "min": null,
+        "note": "maximum only; C = 0 is the binary upper-bound end"
+      },
+      "Nb_wt": {
+        "max": 5.5,
+        "min": 4.75,
+        "nominal": 5.125,
+        "nominalIs": "midpoint of the specification range (not a measured composition)",
+        "note": "Niobium (plus Tantalum)"
+      },
+      "appNominalNote": "The app's alloy_registry in718 composition_wt (Nb 5.1, C 0.04 wt%) has no cited source, so the band uses the SMC-045 specification limits instead. Nb 5.1 lies inside the band (4.75-5.50) and C 0.04 inside the C range covered by the C = 0 and C max columns.",
+      "balanceByDifference_wt": {
+        "max": 24.6,
+        "min": 11.13
+      },
+      "balanceElement": "Fe",
+      "locator": "Table 1 - Limiting Chemical Composition, %",
+      "source": "Special Metals Corporation, INCONEL alloy 718 technical bulletin, Publication Number SMC-045 (2007), Table 1 - Limiting Chemical Composition (conforms to AMS specifications)"
+    },
+    "constantSet": "ni-base",
+    "constants": {
+      "C_C_laves": {
+        "locator": "D98 Table 2 (C_C,L->(gamma+Laves), Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C",
+        "value": 0.04,
+        "verified": true
+      },
+      "C_NbC_C": {
+        "locator": "D98 Table 2 (C_NbC,C); text after Eq. 11",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C",
+        "value": 9.5,
+        "verified": true
+      },
+      "C_NbC_Nb": {
+        "locator": "D98 Table 2 (C_NbC,Nb); text after Eq. 11",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% Nb",
+        "value": 90.5,
+        "verified": true
+      },
+      "C_Nb_laves": {
+        "locator": "D98 Table 2 (C_Nb,L->(gamma+Laves), Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% Nb",
+        "value": 23.1,
+        "verified": true
+      },
+      "a_wtC": {
+        "locator": "D98 Table 2 (a, Ni base alloys); Eq. 2",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C",
+        "value": 1.13,
+        "verified": true
+      },
+      "b_wtC_per_wtNb": {
+        "locator": "D98 Table 2 (b, Ni base alloys); Eq. 2",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C / wt% Nb",
+        "value": -0.047,
+        "verified": true
+      },
+      "k_gamma_C": {
+        "locator": "D98 Table 2 (k_gamma,C, Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "-",
+        "value": 0.21,
+        "verified": true
+      },
+      "k_gamma_Nb": {
+        "locator": "D98 Table 2 (k_gamma,Nb, Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "-",
+        "value": 0.45,
+        "verified": true
+      }
+    },
+    "feBaseSensitivity": {
+      "constantSet": "fe-base",
+      "constants": {
+        "C_C_laves": {
+          "locator": "D98 Table 2 (C_C,L->(gamma+Laves), Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C",
+          "value": 0.04,
+          "verified": true
+        },
+        "C_NbC_C": {
+          "locator": "D98 Table 2 (C_NbC,C); text after Eq. 11",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C",
+          "value": 9.5,
+          "verified": true
+        },
+        "C_NbC_Nb": {
+          "locator": "D98 Table 2 (C_NbC,Nb); text after Eq. 11",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% Nb",
+          "value": 90.5,
+          "verified": true
+        },
+        "C_Nb_laves": {
+          "locator": "D98 Table 2 (C_Nb,L->(gamma+Laves), Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% Nb",
+          "value": 20.4,
+          "verified": true
+        },
+        "a_wtC": {
+          "locator": "D98 Table 2 (a, Fe base alloys); Eq. 2",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C",
+          "value": 1.37,
+          "verified": true
+        },
+        "b_wtC_per_wtNb": {
+          "locator": "D98 Table 2 (b, Fe base alloys); Eq. 2",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C / wt% Nb",
+          "value": -0.065,
+          "verified": true
+        },
+        "k_gamma_C": {
+          "locator": "D98 Table 2 (k_gamma,C, Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "-",
+          "value": 0.21,
+          "verified": true
+        },
+        "k_gamma_Nb": {
+          "locator": "D98 Table 2 (k_gamma,Nb, Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "-",
+          "value": 0.25,
+          "verified": true
+        }
+      },
+      "note": "bracketing sensitivity with the D98 Fe-base constants; not an interpolation",
+      "point": {
+        "Nb_wt": 5.125,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.1585,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "nominal",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.1919,
+          "fGammaLavesConstituent": 0.1245,
+          "fGammaNbCConstituent": 0.0675,
+          "fLiquidPrimaryEnd": 0.1919,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      }
+    },
+    "inputProvenance": {
+      "composition": {
+        "declarationLocator": "python/alloy_registry.py",
+        "defaultKind": null,
+        "defaultValue": null,
+        "dependsOn": [],
+        "followState": null,
+        "followsInput": null,
+        "kind": "declaredAssumption",
+        "label": "declared assumption (no source)",
+        "phase": null,
+        "referenceTemperature_K": null,
+        "scope": "nominal-specification-screen",
+        "source": null,
+        "sourceEvidenceKind": "Unresolved",
+        "sourceId": "alloy-registry:composition",
+        "sourceLocator": null,
+        "sourceRange_K": null,
+        "status": "inRange"
+      },
+      "sourceCoefficients": {
+        "declarationLocator": null,
+        "defaultKind": null,
+        "defaultValue": null,
+        "dependsOn": [],
+        "followState": null,
+        "followsInput": null,
+        "kind": "sourceDefault",
+        "label": "sourced default",
+        "phase": null,
+        "referenceTemperature_K": null,
+        "scope": "source-alloy-process",
+        "source": null,
+        "sourceEvidenceKind": "Literature estimate",
+        "sourceId": "segregation:source-constants",
+        "sourceLocator": "python/lpbf_solidification_segregation.py#CONSTANTS",
+        "sourceRange_K": null,
+        "status": "inRange"
+      }
+    },
+    "k_Nb": {
+      "citation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+      "locator": "D98 Table 2 (k_gamma,Nb, Ni base alloys)",
+      "value": 0.45
+    },
+    "lpbfObservations": {
+      "observations": [],
+      "reason": "no as-built LPBF IN718 segregation measurement among the sources read: Z18, L17 and K17 are LPBF IN625, G17 is a binary Ni-Nb simulation",
+      "status": "unavailable"
+    },
+    "modelId": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+    "moduleEvidenceCeiling": "screening-only",
+    "moduleMaturity": "Research",
+    "notModelled": [
+      "solid-state back-diffusion of Nb",
+      "solute trapping in the equilibrium-k upper bound (screening k(V) is given separately in rapidSolidification)",
+      "dendrite-tip undercooling",
+      "Mo, Ti, Al and Si effects on the Laves reaction",
+      "mechanical consequences of Laves"
+    ],
+    "observations": {},
+    "processCoupling": {
+      "alloyId": "in718",
+      "inputProvenance": {
+        "liquidus_K": {
+          "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+          "defaultKind": null,
+          "defaultValue": 1609.15,
+          "dependsOn": [],
+          "followState": null,
+          "followsInput": null,
+          "kind": "declaredAssumption",
+          "label": "declaredAssumption",
+          "phase": null,
+          "referenceTemperature_K": null,
+          "scope": "no-provenance-entry",
+          "source": null,
+          "sourceEvidenceKind": "Unresolved",
+          "sourceId": "served-liquidus:in718",
+          "sourceLocator": null,
+          "sourceRange_K": null,
+          "status": "inRange"
+        }
+      },
+      "modelId": "solidification-front-v2",
+      "moduleEvidenceCeiling": "screening-only",
+      "moduleMaturity": "Research",
+      "normalizedEnthalpy": 10.81,
+      "quantities": {
+        "coolingRate": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-cooling-rate",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K/s",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "gOverR": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-g-over-r",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K*s/m^2",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "morphology": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "front-morphology",
+          "reasons": [
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "normalSpeed": {
+          "assumptions": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-normal-speed",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m/s",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "pdas": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "pdas-model-alternatives",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "sdas": {
+          "assumptions": [],
+          "dependsOn": [
+            "coolingRate"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "sdas",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "coolingRate",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "solidStateTransformation": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "solid-state-transformation",
+          "reasons": [
+            {
+              "code": "missing-thermal-history",
+              "params": {},
+              "parent": null
+            },
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "thermalGradient": {
+          "assumptions": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-thermal-gradient",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K/m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        }
+      },
+      "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+      "regime": "Conduction Mode (Stable)",
+      "schema": "lpbf-solidification-microstructure-2",
+      "source": "thermal.solidificationKinetics",
+      "status": "unavailable",
+      "usedInCalculation": false
+    },
+    "quantities": {
+      "maxBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0736
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "maxTernary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0372,
+          "gammaNbCConstituent": 0.0747
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "minBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0564
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "minTernary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0198,
+          "gammaNbCConstituent": 0.0692
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "nominalBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0647
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "nominalTernary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0282,
+          "gammaNbCConstituent": 0.072
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      }
+    },
+    "quantity": "fGammaLavesConstituent and fGammaNbCConstituent are fractions of the gamma/Laves and gamma/NbC eutectic-type constituents (remaining liquid that transforms, eutectic gamma included; D97 terminology), not phase fractions of Laves or NbC.",
+    "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+    "rapidSolidification": {
+      "R_m_s": null,
+      "V_D_m_s": {
+        "max": 0.31,
+        "min": 0.23,
+        "nature": "Modelling range, not a measurement. G17 fitted the Aziz function to the partitioning of its own phase-field model, in which the anti-trapping current does not remove trapping at these velocities (Section 3.2.4 and Summary), and states that no experimental V_D for Ni-Nb is available. K17 (lines 385-391) likewise says the diffuse interface artificially magnifies trapping at LPBF speeds. Both fits use k_e = 0.48 (binary Ni-Nb, G17 Table 2).",
+        "unit": "m/s",
+        "values": [
+          {
+            "locator": "G17 Section 3.2.4: Eq. 12 fitted to the 1D planar-front phase-field results (k_v = c0/c_max, Fig. 13); G18 uses the same 0.23 m/s for IN625 (text with Fig. 4)",
+            "source": "G17",
+            "sourceCitation": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369",
+            "unit": "m/s",
+            "value": 0.23,
+            "verified": true
+          },
+          {
+            "locator": "G17 Section 3.2.4 and Fig. 12: Eq. 12 fitted to the 2D steady-state cell-tip values k_v = cs*/c_max",
+            "source": "G17",
+            "sourceCitation": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369",
+            "unit": "m/s",
+            "value": 0.31,
+            "verified": true
+          }
+        ]
+      },
+      "extrapolationNote": "Extrapolation: the eutectic-fraction formulas (D96 Eq. 5; D97/D98 pseudo-ternary) were calibrated on GTA welds and DTA samples with the equilibrium k. Here k_Nb is replaced by k(R) and held constant over the whole solidification at the single build-job R, so the numbers show the direction and rough size of the trapping effect, not a validated LPBF fraction.",
+      "kTransferNote": "V_D was fitted with k_e = 0.48 (G17, G18); this module applies it with its own equilibrium k_Nb (D98 0.45 for IN718, C88 0.51 for IN625). No source gives V_D for these k_e or for multicomponent IN718/IN625.",
+      "model": {
+        "equation": "k(V) = (k_e + V/V_D) / (1 + V/V_D)",
+        "locator": "G17 Eq. 12 (Section 3.2.4), after Aziz 1982 (G17 ref. 66, not read here)",
+        "originalCitation": "M.J. Aziz, 'Model for solute redistribution during rapid solidification', J. Appl. Phys. 53 (1982) 1158",
+        "source": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369"
+      },
+      "modelId": "aziz-continuous-growth-k-of-v-scheil-screening-v1",
+      "moduleEvidenceCeiling": "screening-only",
+      "moduleMaturity": "Research",
+      "notModelled": [
+        "velocity-dependent liquidus slope (G17 Eq. 14) and dendrite-tip undercooling / tip composition (G17 Eqs. 9-10, 15)",
+        "curvature correction of k (G17 Eq. 13)",
+        "trapping of carbon: k_C stays at its equilibrium value (no source V_D for C)",
+        "variation of R along the melt-pool boundary (one mean R from the build job; G17 Section 3.1: 0.01-0.3 m/s, K17 lines 243-246: 0.01-0.17 m/s)",
+        "solid-state back-diffusion of Nb"
+      ],
+      "quantities": {
+        "fraction": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": null,
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "laves-trapped-scheil-fraction",
+          "reasons": [
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        }
+      },
+      "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+      "reason": "A parent value this quantity depends on is unavailable.",
+      "replacesUpperBound": false,
+      "status": "unavailable"
+    },
+    "riskClass": "eutectic Laves expected (Scheil)",
+    "riskClassPositiveByConstruction": true,
+    "riskClassRule": "gamma/Laves constituent > 0 at any band point under the Scheil-type model; no fitted threshold. Binary Scheil without back-diffusion predicts a terminal gamma/Laves eutectic for any Nb > 0, so this class is positive by construction for every Nb-bearing composition and does not discriminate between compositions.",
+    "schema": "lpbf-solidification-segregation-2",
+    "segregation": {
+      "Nb_wt": 5.125,
+      "basis": "binary gamma-Nb Scheil (D97 Eq. 1), C = 0",
+      "coreNb_wt": 2.306,
+      "coreRatioToNominal": 0.45,
+      "interdendritic": [
+        {
+          "atEutecticComposition": false,
+          "fs": 0.9,
+          "liquidNb_wt": 18.184,
+          "ratioToNominal": 3.548
+        },
+        {
+          "atEutecticComposition": true,
+          "fs": 0.95,
+          "liquidNb_wt": 23.1,
+          "ratioToNominal": 4.507
+        }
+      ],
+      "note": "When the remaining liquid at fs is below the eutectic fraction the liquid has reached the gamma/Laves composition and the ratio is capped there (atEutecticComposition = true)."
+    },
+    "source": {
+      "citation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+      "note": "full text (journal article) read for this module; Table 2 gives the solidification constants used here. Its Section 3.2 (negligible Nb diffusion / infinitely fast C diffusion, Eqs. 13-21) is the same model as the equations implemented here (D97 Eqs. 1-8)",
+      "read": true,
+      "url": "https://doi.org/10.1016/S1359-6454(98)00123-2"
+    },
+    "sourceAgreementNote": "Not conservative against measurement, even in the source's own weld regime: D97 Fig. 9b (measured vs calculated gamma/Laves) shows several alloys with measured gamma/Laves above the calculated value, including alloys for which the model predicts no gamma/Laves (measured about 0.5-1.5 vol%, e.g. Ni-base alloy 8 in Fig. 3), and low-C Ni-base alloys where the model is about 2-3x high (alloys 5 and 7: measured about 2-3 vol% in Fig. 3). D97 also reports that Fe and Si raise the gamma/Laves amount; IN718 contains about 18 wt% Fe plus Mo, which the source alloys do not.",
+    "status": "computed",
+    "upperBoundNote": "Upper bound with respect to effects that are not modelled and that all reduce segregation: solid-state back-diffusion of Nb, solute trapping at high solidification rate and dendrite-tip undercooling. It is not a bound with respect to the choice of k_Nb (see validity), and it is not an upper bound on measured Laves content (see sourceAgreementNote).",
+    "validity": {
+      "kTransferNote": "D98 reports k_Nb = 0.45 for its Ni base alloys (Fe about 11 wt%) and 0.25 for its Fe base alloys (Fe about 45 wt%) and attributes the drop to Fe. The source gives no k_Nb(Fe) relation here, so no interpolation is made; the Fe-base result is shown as a bracketing sensitivity.",
+      "outsideSourceComposition": true,
+      "outsideSourceCompositionReasons": [
+        "Fe (balance, 11.13-24.6 wt% by difference) extends outside the source 10.39-11.12 wt%",
+        "Nb specification 4.75-5.5 wt% extends outside the source 1.82-5.17 wt%",
+        "Mo (2.8-3.3 wt% in the specification) is absent from the source alloys",
+        "Ti (0.65-1.15 wt% in the specification) is absent from the source alloys",
+        "Al (0.2-0.8 wt% in the specification) is absent from the source alloys"
+      ],
+      "outsideSourceRegime": true,
+      "outsideSourceRegimeReason": "LPBF is not among the source processes (GTA welds, DTA samples); the k values and the Scheil assumption were not established at LPBF solidification rates",
+      "sourceAbsentElements": [
+        "Mo",
+        "Ti",
+        "Al",
+        "Co"
+      ],
+      "sourceCompositionLocator": "D97 Table 1, alloys 1-8 (Ni base)",
+      "sourceCompositionRange_wt": {
+        "C": [
+          0.01,
+          0.17
+        ],
+        "Cr": [
+          18.54,
+          19.3
+        ],
+        "Fe": [
+          10.39,
+          11.12
+        ],
+        "Nb": [
+          1.82,
+          5.17
+        ],
+        "Ni": [
+          63.93,
+          68.53
+        ],
+        "Si": [
+          0.03,
+          0.52
+        ]
+      },
+      "sourceRegime": "gas tungsten arc (GTA) autogenous welds and DTA samples of investment-cast experimental alloys (D97 Experimental Procedure)"
+    }
+  },
+  "in718_unavailable_keyhole_leg_285_960": {
+    "alloyId": "in718",
+    "band": [
+      {
+        "Nb_wt": 4.75,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0564,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "min",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.089,
+          "fGammaLavesConstituent": 0.0198,
+          "fGammaNbCConstituent": 0.0692,
+          "fLiquidPrimaryEnd": 0.089,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      },
+      {
+        "Nb_wt": 5.125,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0647,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "nominal",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.1003,
+          "fGammaLavesConstituent": 0.0282,
+          "fGammaNbCConstituent": 0.072,
+          "fLiquidPrimaryEnd": 0.1003,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      },
+      {
+        "Nb_wt": 5.5,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.0736,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "max",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.112,
+          "fGammaLavesConstituent": 0.0372,
+          "fGammaNbCConstituent": 0.0747,
+          "fLiquidPrimaryEnd": 0.112,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      }
+    ],
+    "bandNote": "gamma/Laves constituent fraction at C = 0 (binary; model upper bound over C only) and at the specification maximum C with the pseudo-ternary model; fractions are of the liquid, which D98 compares with measured volume %",
+    "binaryBoundNote": "Binary gamma-Nb Scheil (C = 0): carbon ties Nb up as NbC, so within this model the binary value is an upper bound over carbon content on the gamma/Laves constituent fraction (a model statement, not a bound on measurement).",
+    "classIINote": "D98 Table 2 class II point (C_Nb, C_C) is not exactly on the regressed gamma/NbC line (a + b * C_Nb gives about 0.044 wt% C at 23.1 wt% Nb, against 0.04 tabulated); the eutectic-type integration stops when C_l,Nb reaches C_Nb,L->(gamma+Laves).",
+    "composition": {
+      "C_wt": {
+        "max": 0.08,
+        "min": null,
+        "note": "maximum only; C = 0 is the binary upper-bound end"
+      },
+      "Nb_wt": {
+        "max": 5.5,
+        "min": 4.75,
+        "nominal": 5.125,
+        "nominalIs": "midpoint of the specification range (not a measured composition)",
+        "note": "Niobium (plus Tantalum)"
+      },
+      "appNominalNote": "The app's alloy_registry in718 composition_wt (Nb 5.1, C 0.04 wt%) has no cited source, so the band uses the SMC-045 specification limits instead. Nb 5.1 lies inside the band (4.75-5.50) and C 0.04 inside the C range covered by the C = 0 and C max columns.",
+      "balanceByDifference_wt": {
+        "max": 24.6,
+        "min": 11.13
+      },
+      "balanceElement": "Fe",
+      "locator": "Table 1 - Limiting Chemical Composition, %",
+      "source": "Special Metals Corporation, INCONEL alloy 718 technical bulletin, Publication Number SMC-045 (2007), Table 1 - Limiting Chemical Composition (conforms to AMS specifications)"
+    },
+    "constantSet": "ni-base",
+    "constants": {
+      "C_C_laves": {
+        "locator": "D98 Table 2 (C_C,L->(gamma+Laves), Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C",
+        "value": 0.04,
+        "verified": true
+      },
+      "C_NbC_C": {
+        "locator": "D98 Table 2 (C_NbC,C); text after Eq. 11",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C",
+        "value": 9.5,
+        "verified": true
+      },
+      "C_NbC_Nb": {
+        "locator": "D98 Table 2 (C_NbC,Nb); text after Eq. 11",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% Nb",
+        "value": 90.5,
+        "verified": true
+      },
+      "C_Nb_laves": {
+        "locator": "D98 Table 2 (C_Nb,L->(gamma+Laves), Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% Nb",
+        "value": 23.1,
+        "verified": true
+      },
+      "a_wtC": {
+        "locator": "D98 Table 2 (a, Ni base alloys); Eq. 2",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C",
+        "value": 1.13,
+        "verified": true
+      },
+      "b_wtC_per_wtNb": {
+        "locator": "D98 Table 2 (b, Ni base alloys); Eq. 2",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "wt% C / wt% Nb",
+        "value": -0.047,
+        "verified": true
+      },
+      "k_gamma_C": {
+        "locator": "D98 Table 2 (k_gamma,C, Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "-",
+        "value": 0.21,
+        "verified": true
+      },
+      "k_gamma_Nb": {
+        "locator": "D98 Table 2 (k_gamma,Nb, Ni base alloys)",
+        "source": "D98",
+        "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+        "unit": "-",
+        "value": 0.45,
+        "verified": true
+      }
+    },
+    "feBaseSensitivity": {
+      "constantSet": "fe-base",
+      "constants": {
+        "C_C_laves": {
+          "locator": "D98 Table 2 (C_C,L->(gamma+Laves), Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C",
+          "value": 0.04,
+          "verified": true
+        },
+        "C_NbC_C": {
+          "locator": "D98 Table 2 (C_NbC,C); text after Eq. 11",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C",
+          "value": 9.5,
+          "verified": true
+        },
+        "C_NbC_Nb": {
+          "locator": "D98 Table 2 (C_NbC,Nb); text after Eq. 11",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% Nb",
+          "value": 90.5,
+          "verified": true
+        },
+        "C_Nb_laves": {
+          "locator": "D98 Table 2 (C_Nb,L->(gamma+Laves), Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% Nb",
+          "value": 20.4,
+          "verified": true
+        },
+        "a_wtC": {
+          "locator": "D98 Table 2 (a, Fe base alloys); Eq. 2",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C",
+          "value": 1.37,
+          "verified": true
+        },
+        "b_wtC_per_wtNb": {
+          "locator": "D98 Table 2 (b, Fe base alloys); Eq. 2",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "wt% C / wt% Nb",
+          "value": -0.065,
+          "verified": true
+        },
+        "k_gamma_C": {
+          "locator": "D98 Table 2 (k_gamma,C, Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "-",
+          "value": 0.21,
+          "verified": true
+        },
+        "k_gamma_Nb": {
+          "locator": "D98 Table 2 (k_gamma,Nb, Fe base alloys)",
+          "source": "D98",
+          "sourceCitation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+          "unit": "-",
+          "value": 0.25,
+          "verified": true
+        }
+      },
+      "note": "bracketing sensitivity with the D98 Fe-base constants; not an interpolation",
+      "point": {
+        "Nb_wt": 5.125,
+        "binaryUpperBound": {
+          "C_wt": 0.0,
+          "fGammaLavesConstituent": 0.1585,
+          "riskClass": "eutectic Laves expected (Scheil)"
+        },
+        "label": "nominal",
+        "pseudoTernaryAtCmax": {
+          "C_wt": 0.08,
+          "fEutecticTotal": 0.1919,
+          "fGammaLavesConstituent": 0.1245,
+          "fGammaNbCConstituent": 0.0675,
+          "fLiquidPrimaryEnd": 0.1919,
+          "riskClass": "eutectic Laves expected (Scheil)",
+          "terminatedBy": "laves-point"
+        }
+      }
+    },
+    "inputProvenance": {
+      "composition": {
+        "declarationLocator": "python/alloy_registry.py",
+        "defaultKind": null,
+        "defaultValue": null,
+        "dependsOn": [],
+        "followState": null,
+        "followsInput": null,
+        "kind": "declaredAssumption",
+        "label": "declared assumption (no source)",
+        "phase": null,
+        "referenceTemperature_K": null,
+        "scope": "nominal-specification-screen",
+        "source": null,
+        "sourceEvidenceKind": "Unresolved",
+        "sourceId": "alloy-registry:composition",
+        "sourceLocator": null,
+        "sourceRange_K": null,
+        "status": "inRange"
+      },
+      "sourceCoefficients": {
+        "declarationLocator": null,
+        "defaultKind": null,
+        "defaultValue": null,
+        "dependsOn": [],
+        "followState": null,
+        "followsInput": null,
+        "kind": "sourceDefault",
+        "label": "sourced default",
+        "phase": null,
+        "referenceTemperature_K": null,
+        "scope": "source-alloy-process",
+        "source": null,
+        "sourceEvidenceKind": "Literature estimate",
+        "sourceId": "segregation:source-constants",
+        "sourceLocator": "python/lpbf_solidification_segregation.py#CONSTANTS",
+        "sourceRange_K": null,
+        "status": "inRange"
+      }
+    },
+    "k_Nb": {
+      "citation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+      "locator": "D98 Table 2 (k_gamma,Nb, Ni base alloys)",
+      "value": 0.45
+    },
+    "lpbfObservations": {
+      "observations": [],
+      "reason": "no as-built LPBF IN718 segregation measurement among the sources read: Z18, L17 and K17 are LPBF IN625, G17 is a binary Ni-Nb simulation",
+      "status": "unavailable"
+    },
+    "modelId": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+    "moduleEvidenceCeiling": "screening-only",
+    "moduleMaturity": "Research",
+    "notModelled": [
+      "solid-state back-diffusion of Nb",
+      "solute trapping in the equilibrium-k upper bound (screening k(V) is given separately in rapidSolidification)",
+      "dendrite-tip undercooling",
+      "Mo, Ti, Al and Si effects on the Laves reaction",
+      "mechanical consequences of Laves"
+    ],
+    "observations": {},
+    "processCoupling": {
+      "alloyId": "in718",
+      "inputProvenance": {
+        "liquidus_K": {
+          "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+          "defaultKind": null,
+          "defaultValue": 1609.15,
+          "dependsOn": [],
+          "followState": null,
+          "followsInput": null,
+          "kind": "declaredAssumption",
+          "label": "declaredAssumption",
+          "phase": null,
+          "referenceTemperature_K": null,
+          "scope": "no-provenance-entry",
+          "source": null,
+          "sourceEvidenceKind": "Unresolved",
+          "sourceId": "served-liquidus:in718",
+          "sourceLocator": null,
+          "sourceRange_K": null,
+          "status": "inRange"
+        }
+      },
+      "modelId": "solidification-front-v2",
+      "moduleEvidenceCeiling": "screening-only",
+      "moduleMaturity": "Research",
+      "normalizedEnthalpy": 30.8,
+      "quantities": {
+        "coolingRate": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-cooling-rate",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "keyhole-field-inconsistent",
+              "params": {},
+              "parent": null
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K/s",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "gOverR": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-g-over-r",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "keyhole-field-inconsistent",
+              "params": {},
+              "parent": null
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K*s/m^2",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "morphology": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "front-morphology",
+          "reasons": [
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "normalSpeed": {
+          "assumptions": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-normal-speed",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "keyhole-field-inconsistent",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m/s",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "pdas": {
+          "assumptions": [],
+          "dependsOn": [
+            "thermalGradient",
+            "normalSpeed"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "pdas-model-alternatives",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "keyhole-field-inconsistent",
+              "params": {},
+              "parent": null
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "thermalGradient",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "normalSpeed",
+                "kind": "derived"
+              }
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "sdas": {
+          "assumptions": [],
+          "dependsOn": [
+            "coolingRate"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "sdas",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "keyhole-field-inconsistent",
+              "params": {},
+              "parent": null
+            },
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": {
+                "input": "coolingRate",
+                "kind": "derived"
+              }
+            },
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "solidStateTransformation": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "solid-state-transformation",
+          "reasons": [
+            {
+              "code": "missing-thermal-history",
+              "params": {},
+              "parent": null
+            },
+            {
+              "code": "missing-source-bound-model",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        },
+        "thermalGradient": {
+          "assumptions": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": "solidification-front-v2",
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "liquidus-front-thermal-gradient",
+          "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "keyhole-field-inconsistent",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "K/m",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        }
+      },
+      "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+      "regime": "Keyhole Mode (melt-pool D/W > 0.5 screening onset)",
+      "schema": "lpbf-solidification-microstructure-2",
+      "source": "thermal.solidificationKinetics",
+      "status": "unavailable",
+      "usedInCalculation": false
+    },
+    "quantities": {
+      "maxBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0736
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "maxTernary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0372,
+          "gammaNbCConstituent": 0.0747
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "minBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0564
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "minTernary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0198,
+          "gammaNbCConstituent": 0.0692
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "nominalBinary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0647
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      },
+      "nominalTernary": {
+        "assumptions": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
+        "fractionBasis": "microconstituent",
+        "identity": {
+          "input": null,
+          "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [],
+        "sourceEvidenceKind": "Unresolved",
+        "sources": [
+          {
+            "id": "D98",
+            "locator": "constant and band locators in this result",
+            "readLevel": "primary-read"
+          }
+        ],
+        "status": "computed",
+        "uncertainty": {
+          "construction": "not-quantified",
+          "kind": "not-quantified"
+        },
+        "unit": "1",
+        "validity": null,
+        "value": {
+          "gammaLavesConstituent": 0.0282,
+          "gammaNbCConstituent": 0.072
+        },
+        "weakestInputs": [
+          "composition"
+        ]
+      }
+    },
+    "quantity": "fGammaLavesConstituent and fGammaNbCConstituent are fractions of the gamma/Laves and gamma/NbC eutectic-type constituents (remaining liquid that transforms, eutectic gamma included; D97 terminology), not phase fractions of Laves or NbC.",
+    "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+    "rapidSolidification": {
+      "R_m_s": null,
+      "V_D_m_s": {
+        "max": 0.31,
+        "min": 0.23,
+        "nature": "Modelling range, not a measurement. G17 fitted the Aziz function to the partitioning of its own phase-field model, in which the anti-trapping current does not remove trapping at these velocities (Section 3.2.4 and Summary), and states that no experimental V_D for Ni-Nb is available. K17 (lines 385-391) likewise says the diffuse interface artificially magnifies trapping at LPBF speeds. Both fits use k_e = 0.48 (binary Ni-Nb, G17 Table 2).",
+        "unit": "m/s",
+        "values": [
+          {
+            "locator": "G17 Section 3.2.4: Eq. 12 fitted to the 1D planar-front phase-field results (k_v = c0/c_max, Fig. 13); G18 uses the same 0.23 m/s for IN625 (text with Fig. 4)",
+            "source": "G17",
+            "sourceCitation": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369",
+            "unit": "m/s",
+            "value": 0.23,
+            "verified": true
+          },
+          {
+            "locator": "G17 Section 3.2.4 and Fig. 12: Eq. 12 fitted to the 2D steady-state cell-tip values k_v = cs*/c_max",
+            "source": "G17",
+            "sourceCitation": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369",
+            "unit": "m/s",
+            "value": 0.31,
+            "verified": true
+          }
+        ]
+      },
+      "extrapolationNote": "Extrapolation: the eutectic-fraction formulas (D96 Eq. 5; D97/D98 pseudo-ternary) were calibrated on GTA welds and DTA samples with the equilibrium k. Here k_Nb is replaced by k(R) and held constant over the whole solidification at the single build-job R, so the numbers show the direction and rough size of the trapping effect, not a validated LPBF fraction.",
+      "kTransferNote": "V_D was fitted with k_e = 0.48 (G17, G18); this module applies it with its own equilibrium k_Nb (D98 0.45 for IN718, C88 0.51 for IN625). No source gives V_D for these k_e or for multicomponent IN718/IN625.",
+      "model": {
+        "equation": "k(V) = (k_e + V/V_D) / (1 + V/V_D)",
+        "locator": "G17 Eq. 12 (Section 3.2.4), after Aziz 1982 (G17 ref. 66, not read here)",
+        "originalCitation": "M.J. Aziz, 'Model for solute redistribution during rapid solidification', J. Appl. Phys. 53 (1982) 1158",
+        "source": "S. Ghosh, L. Ma, N. Ofori-Opoku, J.E. Guyer, 'On the primary spacing and microsegregation of cellular dendrites in laser deposited Ni-Nb alloys', Modelling Simul. Mater. Sci. Eng. 25 (2017) 065002, doi:10.1088/1361-651X/aa7369"
+      },
+      "modelId": "aziz-continuous-growth-k-of-v-scheil-screening-v1",
+      "moduleEvidenceCeiling": "screening-only",
+      "moduleMaturity": "Research",
+      "notModelled": [
+        "velocity-dependent liquidus slope (G17 Eq. 14) and dendrite-tip undercooling / tip composition (G17 Eqs. 9-10, 15)",
+        "curvature correction of k (G17 Eq. 13)",
+        "trapping of carbon: k_C stays at its equilibrium value (no source V_D for C)",
+        "variation of R along the melt-pool boundary (one mean R from the build job; G17 Section 3.1: 0.01-0.3 m/s, K17 lines 243-246: 0.01-0.17 m/s)",
+        "solid-state back-diffusion of Nb"
+      ],
+      "quantities": {
+        "fraction": {
+          "assumptions": [],
+          "dependsOn": [],
+          "fractionBasis": null,
+          "identity": {
+            "input": null,
+            "model": null,
+            "parent": null
+          },
+          "labelSources": [],
+          "leafRole": "derived",
+          "numericalStatus": {
+            "residuals": {},
+            "settings": {},
+            "state": "not-assessed"
+          },
+          "physicalValidation": {
+            "experimentalValidation": false,
+            "productionReady": false,
+            "status": "unvalidated"
+          },
+          "quantityDefinition": "laves-trapped-scheil-fraction",
+          "reasons": [
+            {
+              "code": "parent-unavailable",
+              "params": {},
+              "parent": null
+            }
+          ],
+          "sourceEvidenceKind": null,
+          "sources": [],
+          "status": "unavailable",
+          "uncertainty": null,
+          "unit": "1",
+          "validity": null,
+          "value": null,
+          "weakestInputs": []
+        }
+      },
+      "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+      "reason": "A parent value this quantity depends on is unavailable.",
+      "replacesUpperBound": false,
+      "status": "unavailable"
+    },
+    "riskClass": "eutectic Laves expected (Scheil)",
+    "riskClassPositiveByConstruction": true,
+    "riskClassRule": "gamma/Laves constituent > 0 at any band point under the Scheil-type model; no fitted threshold. Binary Scheil without back-diffusion predicts a terminal gamma/Laves eutectic for any Nb > 0, so this class is positive by construction for every Nb-bearing composition and does not discriminate between compositions.",
+    "schema": "lpbf-solidification-segregation-2",
+    "segregation": {
+      "Nb_wt": 5.125,
+      "basis": "binary gamma-Nb Scheil (D97 Eq. 1), C = 0",
+      "coreNb_wt": 2.306,
+      "coreRatioToNominal": 0.45,
+      "interdendritic": [
+        {
+          "atEutecticComposition": false,
+          "fs": 0.9,
+          "liquidNb_wt": 18.184,
+          "ratioToNominal": 3.548
+        },
+        {
+          "atEutecticComposition": true,
+          "fs": 0.95,
+          "liquidNb_wt": 23.1,
+          "ratioToNominal": 4.507
+        }
+      ],
+      "note": "When the remaining liquid at fs is below the eutectic fraction the liquid has reached the gamma/Laves composition and the ratio is capped there (atEutecticComposition = true)."
+    },
+    "source": {
+      "citation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
+      "note": "full text (journal article) read for this module; Table 2 gives the solidification constants used here. Its Section 3.2 (negligible Nb diffusion / infinitely fast C diffusion, Eqs. 13-21) is the same model as the equations implemented here (D97 Eqs. 1-8)",
+      "read": true,
+      "url": "https://doi.org/10.1016/S1359-6454(98)00123-2"
+    },
+    "sourceAgreementNote": "Not conservative against measurement, even in the source's own weld regime: D97 Fig. 9b (measured vs calculated gamma/Laves) shows several alloys with measured gamma/Laves above the calculated value, including alloys for which the model predicts no gamma/Laves (measured about 0.5-1.5 vol%, e.g. Ni-base alloy 8 in Fig. 3), and low-C Ni-base alloys where the model is about 2-3x high (alloys 5 and 7: measured about 2-3 vol% in Fig. 3). D97 also reports that Fe and Si raise the gamma/Laves amount; IN718 contains about 18 wt% Fe plus Mo, which the source alloys do not.",
+    "status": "computed",
+    "upperBoundNote": "Upper bound with respect to effects that are not modelled and that all reduce segregation: solid-state back-diffusion of Nb, solute trapping at high solidification rate and dendrite-tip undercooling. It is not a bound with respect to the choice of k_Nb (see validity), and it is not an upper bound on measured Laves content (see sourceAgreementNote).",
+    "validity": {
+      "kTransferNote": "D98 reports k_Nb = 0.45 for its Ni base alloys (Fe about 11 wt%) and 0.25 for its Fe base alloys (Fe about 45 wt%) and attributes the drop to Fe. The source gives no k_Nb(Fe) relation here, so no interpolation is made; the Fe-base result is shown as a bracketing sensitivity.",
+      "outsideSourceComposition": true,
+      "outsideSourceCompositionReasons": [
+        "Fe (balance, 11.13-24.6 wt% by difference) extends outside the source 10.39-11.12 wt%",
+        "Nb specification 4.75-5.5 wt% extends outside the source 1.82-5.17 wt%",
+        "Mo (2.8-3.3 wt% in the specification) is absent from the source alloys",
+        "Ti (0.65-1.15 wt% in the specification) is absent from the source alloys",
+        "Al (0.2-0.8 wt% in the specification) is absent from the source alloys"
+      ],
+      "outsideSourceRegime": true,
+      "outsideSourceRegimeReason": "LPBF is not among the source processes (GTA welds, DTA samples); the k values and the Scheil assumption were not established at LPBF solidification rates",
+      "sourceAbsentElements": [
+        "Mo",
+        "Ti",
+        "Al",
+        "Co"
+      ],
+      "sourceCompositionLocator": "D97 Table 1, alloys 1-8 (Ni base)",
+      "sourceCompositionRange_wt": {
+        "C": [
+          0.01,
+          0.17
+        ],
+        "Cr": [
+          18.54,
+          19.3
+        ],
+        "Fe": [
+          10.39,
+          11.12
+        ],
+        "Nb": [
+          1.82,
+          5.17
+        ],
+        "Ni": [
+          63.93,
+          68.53
+        ],
+        "Si": [
+          0.03,
+          0.52
+        ]
+      },
+      "sourceRegime": "gas tungsten arc (GTA) autogenous welds and DTA samples of investment-cast experimental alloys (D97 Experimental Procedure)"
+    }
+  },
+  "ss316l_not_applicable": {
+    "alloyId": "ss316l",
+    "inputProvenance": {
+      "composition": {
+        "declarationLocator": "python/alloy_registry.py",
+        "defaultKind": null,
+        "defaultValue": null,
+        "dependsOn": [],
+        "followState": null,
+        "followsInput": null,
+        "kind": "declaredAssumption",
+        "label": "declared assumption (no source)",
+        "phase": null,
+        "referenceTemperature_K": null,
+        "scope": "nominal-specification-screen",
+        "source": null,
+        "sourceEvidenceKind": "Unresolved",
+        "sourceId": "alloy-registry:composition",
+        "sourceLocator": null,
+        "sourceRange_K": null,
+        "status": "inRange"
+      },
+      "sourceCoefficients": {
+        "declarationLocator": null,
+        "defaultKind": null,
+        "defaultValue": null,
+        "dependsOn": [],
+        "followState": null,
+        "followsInput": null,
+        "kind": "sourceDefault",
+        "label": "sourced default",
+        "phase": null,
+        "referenceTemperature_K": null,
+        "scope": "source-alloy-process",
+        "source": null,
+        "sourceEvidenceKind": "Literature estimate",
+        "sourceId": "segregation:source-constants",
+        "sourceLocator": "python/lpbf_solidification_segregation.py#CONSTANTS",
+        "sourceRange_K": null,
+        "status": "inRange"
+      }
+    },
+    "modelId": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+    "moduleEvidenceCeiling": "screening-only",
+    "moduleMaturity": "Research",
+    "observations": {},
+    "quantities": {
+      "phaseInventory": {
+        "assumptions": [],
+        "dependsOn": [],
+        "fractionBasis": null,
+        "identity": {
+          "input": null,
+          "model": null,
+          "parent": null
+        },
+        "labelSources": [],
+        "leafRole": "derived",
+        "numericalStatus": {
+          "residuals": {},
+          "settings": {},
+          "state": "not-assessed"
+        },
+        "physicalValidation": {
+          "experimentalValidation": false,
+          "productionReady": false,
+          "status": "unvalidated"
+        },
+        "quantityDefinition": "scheil-phase-inventory",
+        "reasons": [
+          {
+            "code": "not-requested",
+            "params": {},
+            "parent": null
+          }
+        ],
+        "sourceEvidenceKind": null,
+        "sources": [],
+        "status": "not-requested",
+        "uncertainty": null,
+        "unit": "1",
+        "validity": null,
+        "value": null,
+        "weakestInputs": []
+      }
+    },
+    "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+    "reason": "no Nb-bearing gamma/Laves model for this alloy",
+    "reasons": [
+      {
+        "code": "not-requested",
+        "params": {},
+        "parent": null
+      }
+    ],
+    "schema": "lpbf-solidification-segregation-2",
+    "status": "not-requested"
+  }
+}

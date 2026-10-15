@@ -17,4 +17,3 @@ test("transient G/R convergence checks appear under the unadmitted-liquidus sing
   assert.ok(!html.slice(0, html.indexOf("data-transient-convergence")).includes("thermalGradient_K_m"));
   assert.ok(html.slice(0, html.indexOf("data-transient-convergence")).includes("width_um"));
 });
-

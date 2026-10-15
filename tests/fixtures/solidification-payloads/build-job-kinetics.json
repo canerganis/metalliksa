@@ -1,0 +1,170 @@
+{
+  "aisi4140_in_map_30_hypothetical": {
+    "alloy": null,
+    "alloyId": "aisi4140",
+    "buildCoolingRateCctRow": null,
+    "buildCoolingRate_C_s": null,
+    "buildRateMartensite": null,
+    "calphadVsKineticsGap": null,
+    "cctContinuousCoolingMap": null,
+    "coolingRateSource": null,
+    "reason": "No eligible temperature history is available for this quantity.",
+    "reasons": [
+      {
+        "code": "missing-thermal-history",
+        "params": {},
+        "parent": null
+      }
+    ],
+    "reportedCoolingRate_K_s": null,
+    "status": "unavailable",
+    "success": false
+  },
+  "alsi10mg_no_model": {
+    "alloy": null,
+    "alloyId": "alsi10mg",
+    "buildCoolingRateCctRow": null,
+    "buildCoolingRate_C_s": null,
+    "buildRateMartensite": null,
+    "calphadVsKineticsGap": null,
+    "cctContinuousCoolingMap": null,
+    "coolingRateSource": null,
+    "reason": "No eligible temperature history is available for this quantity.",
+    "reasons": [
+      {
+        "code": "missing-thermal-history",
+        "params": {},
+        "parent": null
+      }
+    ],
+    "reportedCoolingRate_K_s": null,
+    "status": "unavailable",
+    "success": false
+  },
+  "in718_above_map": {
+    "alloy": null,
+    "alloyId": "in718",
+    "buildCoolingRateCctRow": null,
+    "buildCoolingRate_C_s": null,
+    "buildRateMartensite": null,
+    "calphadVsKineticsGap": null,
+    "cctContinuousCoolingMap": null,
+    "coolingRateSource": null,
+    "reason": "No eligible temperature history is available for this quantity.",
+    "reasons": [
+      {
+        "code": "missing-thermal-history",
+        "params": {},
+        "parent": null
+      }
+    ],
+    "reportedCoolingRate_K_s": null,
+    "status": "unavailable",
+    "success": false
+  },
+  "in718_degenerate_floor": {
+    "alloy": null,
+    "alloyId": "in718",
+    "buildCoolingRateCctRow": null,
+    "buildCoolingRate_C_s": null,
+    "buildRateMartensite": null,
+    "calphadVsKineticsGap": null,
+    "cctContinuousCoolingMap": null,
+    "coolingRateSource": null,
+    "reason": "No eligible temperature history is available for this quantity.",
+    "reasons": [
+      {
+        "code": "missing-thermal-history",
+        "params": {},
+        "parent": null
+      }
+    ],
+    "reportedCoolingRate_K_s": null,
+    "status": "unavailable",
+    "success": false
+  },
+  "in718_in_map_30": {
+    "alloy": null,
+    "alloyId": "in718",
+    "buildCoolingRateCctRow": null,
+    "buildCoolingRate_C_s": null,
+    "buildRateMartensite": null,
+    "calphadVsKineticsGap": null,
+    "cctContinuousCoolingMap": null,
+    "coolingRateSource": null,
+    "reason": "No eligible temperature history is available for this quantity.",
+    "reasons": [
+      {
+        "code": "missing-thermal-history",
+        "params": {},
+        "parent": null
+      }
+    ],
+    "reportedCoolingRate_K_s": null,
+    "status": "unavailable",
+    "success": false
+  },
+  "ss316l_no_model": {
+    "alloy": null,
+    "alloyId": "ss316l",
+    "buildCoolingRateCctRow": null,
+    "buildCoolingRate_C_s": null,
+    "buildRateMartensite": null,
+    "calphadVsKineticsGap": null,
+    "cctContinuousCoolingMap": null,
+    "coolingRateSource": null,
+    "reason": "No eligible temperature history is available for this quantity.",
+    "reasons": [
+      {
+        "code": "missing-thermal-history",
+        "params": {},
+        "parent": null
+      }
+    ],
+    "reportedCoolingRate_K_s": null,
+    "status": "unavailable",
+    "success": false
+  },
+  "ti6al4v_above_map": {
+    "alloy": null,
+    "alloyId": "ti6al4v",
+    "buildCoolingRateCctRow": null,
+    "buildCoolingRate_C_s": null,
+    "buildRateMartensite": null,
+    "calphadVsKineticsGap": null,
+    "cctContinuousCoolingMap": null,
+    "coolingRateSource": null,
+    "reason": "No eligible temperature history is available for this quantity.",
+    "reasons": [
+      {
+        "code": "missing-thermal-history",
+        "params": {},
+        "parent": null
+      }
+    ],
+    "reportedCoolingRate_K_s": null,
+    "status": "unavailable",
+    "success": false
+  },
+  "ti6al4v_in_map_30": {
+    "alloy": null,
+    "alloyId": "ti6al4v",
+    "buildCoolingRateCctRow": null,
+    "buildCoolingRate_C_s": null,
+    "buildRateMartensite": null,
+    "calphadVsKineticsGap": null,
+    "cctContinuousCoolingMap": null,
+    "coolingRateSource": null,
+    "reason": "No eligible temperature history is available for this quantity.",
+    "reasons": [
+      {
+        "code": "missing-thermal-history",
+        "params": {},
+        "parent": null
+      }
+    ],
+    "reportedCoolingRate_K_s": null,
+    "status": "unavailable",
+    "success": false
+  }
+}

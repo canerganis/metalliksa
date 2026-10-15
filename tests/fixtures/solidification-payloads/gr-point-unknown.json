@@ -1,0 +1,5 @@
+{
+  "error": "Unknown alloy ID; no fallback alloy.",
+  "errorKind": "validation",
+  "success": false
+}
