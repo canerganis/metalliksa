@@ -60,6 +60,7 @@ import {
   PythonEngineStatus,
   PythonCalphadDatabaseEntry,
   isAbortError,
+  calphadUnreachableResult,
 } from "../services/pythonComputationService";
 import { useMaterialSpecimenStore } from "../store/useMaterialSpecimenStore";
 import { isPythonValidationError } from "../utils/pythonValidationError";
@@ -275,7 +276,7 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
           setIsSolving(false);
         })
         .catch((err) => {
-          if (isAbortError(err)) {
+          if (isAbortError(err) && controller.signal.aborted) {
             finish(false);
             return; // superseded by newer input
           }
@@ -287,8 +288,14 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
             setIsSolving(false);
             return;
           }
+          // Any other end without an answer is shown as such: the studio never keeps waiting on a request
+          // that is over (no numbers; the reason names the failure).
           console.warn("Async solve error:", err);
-          if (finish(false)) setIsSolving(false);
+          if (!finish(true)) return;
+          setPythonValidationMessage(null);
+          setAsyncSolveResult(calphadUnreachableResult(customAlloy, win.tMin, win.tMax, win.tStep,
+            `the CALPHAD request failed in the browser (${err instanceof Error ? err.message : String(err)})`));
+          setIsSolving(false);
         });
     }, 80); // Debounce slider changes
 
@@ -302,7 +309,12 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
   }, [requestKey, visible]);
 
   // Unmount: stop the request still waiting on this studio's behalf.
-  useEffect(() => () => inflightRef.current?.controller.abort(), []);
+  // The ref is cleared too: if the effects run again on the same instance (Fast Refresh), the same key is sent
+  // again instead of waiting on the aborted request.
+  useEffect(() => () => {
+    inflightRef.current?.controller.abort();
+    inflightRef.current = null;
+  }, []);
 
   // Switch preloaded alloy
   const handleSelectPreload = (idx: number) => {

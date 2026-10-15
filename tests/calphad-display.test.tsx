@@ -1,8 +1,14 @@
 import React from "react";
 import { afterEach, test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { isAbortError, pythonComputationService } from "../src/services/pythonComputationService";
+import {
+  CALPHAD_CLIENT_TIMEOUT_MS,
+  CALPHAD_SERVER_TIMEOUT_MS,
+  isAbortError,
+  pythonComputationService,
+} from "../src/services/pythonComputationService";
 import {
   calphadProvenanceLabels,
   calphadUnavailableDetails,
@@ -426,20 +432,74 @@ test("Python ON never shows a client result left from a Python-OFF period (revie
   assert.match(off, /MetalliX-Client-TS-Solver/);
 });
 
-test("the service sends the supersede key, and a superseded answer is an abort, not a result", async () => {
+test("the service sends the supersede key, and a superseded answer is an abort once the caller moved on", async () => {
   let sent: any = null;
+  const controller = new AbortController();
   globalThis.fetch = (async (_url: string, init: any) => {
     sent = init;
+    controller.abort(); // the caller moved on while the server was answering
     return new Response(JSON.stringify({ success: false, status: "superseded", reason: "x" }),
       { status: 200, headers: { "Content-Type": "application/json" } });
   }) as any;
-  const controller = new AbortController();
   await assert.rejects(
     pythonComputationService.solveCalphadEquilibrium(ALLOY, 500, 1450, 50, true, undefined, undefined, false, true, 0.5,
       { signal: controller.signal, supersedeKey: "studio-abc" }),
     (err: unknown) => isAbortError(err));
   assert.equal(JSON.parse(sent.body).supersedeKey, "studio-abc");
-  assert.equal(sent.signal, controller.signal);
+  assert.equal(sent.signal.aborted, true); // the caller's abort reaches the fetch
+});
+
+test("a superseded answer for a caller that still waits is an unavailable result, never a silent abort (stuck studio)", async () => {
+  globalThis.fetch = (async () =>
+    new Response(JSON.stringify({ success: false, status: "superseded", reason: "x" }),
+      { status: 200, headers: { "Content-Type": "application/json" } })) as any;
+  const res = await pythonComputationService.solveCalphadEquilibrium(ALLOY, 500, 1450, 50, true, undefined, undefined,
+    false, false, 0.5, { signal: new AbortController().signal, supersedeKey: "studio-abc" });
+  assert.equal(res.pythonUnavailable?.unavailableKind, "engine-unreachable");
+  assert.match(res.pythonUnavailable?.reason ?? "", /superseded/);
+  assert.equal(res.equilibriumProfile.length, 0);
+});
+
+test("a request with no answer ends at the client deadline as unavailable (stuck studio)", async () => {
+  let seen: AbortSignal | null = null;
+  // A server that never answers: the fetch settles only when its signal aborts.
+  globalThis.fetch = ((_url: string, init: any) => new Promise((_resolve, reject) => {
+    seen = init.signal;
+    init.signal.addEventListener("abort", () => {
+      const err = new Error("aborted");
+      err.name = "AbortError";
+      reject(err);
+    });
+  })) as any;
+  const t0 = Date.now();
+  const res = await pythonComputationService.solveCalphadEquilibrium(ALLOY, 500, 1450, 50, true, undefined, undefined,
+    false, false, 0.5, { signal: new AbortController().signal, timeoutMs: 50 });
+  assert.ok(Date.now() - t0 < 5000);
+  assert.equal(seen!.aborted, true);
+  assert.equal(res.pythonUnavailable?.unavailableKind, "engine-unreachable");
+  assert.match(res.pythonUnavailable?.reason ?? "", /no answer within/);
+  assert.equal(res.equilibriumProfile.length, 0);
+  assert.equal(res.isPythonEngine, false);
+});
+
+test("the caller's abort before the deadline is still an abort, and the client deadline outlasts the server budget", async () => {
+  globalThis.fetch = ((_url: string, init: any) => new Promise((_resolve, reject) => {
+    init.signal.addEventListener("abort", () => {
+      const err = new Error("aborted");
+      err.name = "AbortError";
+      reject(err);
+    });
+  })) as any;
+  const controller = new AbortController();
+  const pending = pythonComputationService.solveCalphadEquilibrium(ALLOY, 500, 1450, 50, true, undefined, undefined,
+    false, false, 0.5, { signal: controller.signal, timeoutMs: 60000 });
+  controller.abort();
+  await assert.rejects(pending, (err: unknown) => isAbortError(err));
+  assert.ok(CALPHAD_CLIENT_TIMEOUT_MS > CALPHAD_SERVER_TIMEOUT_MS);
+  // The server budget constant is the one the route really uses.
+  const route = readFileSync(new URL("../routes/physics.ts", import.meta.url), "utf8");
+  const budget = route.match(/calphad-minimize"[\s\S]*?handlePythonDispatch\("python\/calphad_solver\.py", req\.body, res, (\d+)\)/);
+  assert.equal(Number(budget?.[1]), CALPHAD_SERVER_TIMEOUT_MS);
 });
 
 test("order/disorder model phase names carry 'ordering not checked' (review S4)", () => {
