@@ -79,8 +79,16 @@ export function canonicalBuildJobMaterialSnapshot(snapshot: unknown): string {
     || !value.slicer || typeof value.slicer !== "object" || Array.isArray(value.slicer)) {
     throw new Error("Unsupported build-job material snapshot schema");
   }
-  if (Object.keys(value).sort().join(",") !== "alloyId,schemaVersion,slicer,thermal") {
+  // P7b freezes the numeric kernel ledger identity for ledger-backed alloys;
+  // Python omits this field for other alloys. Keep both root shapes closed.
+  const fields = Object.keys(value).sort().join(",");
+  if (fields !== "alloyId,schemaVersion,slicer,thermal"
+    && fields !== "alloyId,kernelLedgerSha256,schemaVersion,slicer,thermal") {
     throw new Error("Invalid build-job material snapshot fields");
+  }
+  if (Object.hasOwn(value, "kernelLedgerSha256")
+    && (typeof value.kernelLedgerSha256 !== "string" || !/^[a-f0-9]{64}$/.test(value.kernelLedgerSha256))) {
+    throw new Error("Invalid build-job material snapshot kernel ledger SHA-256");
   }
   return canonical(snapshot, true);
 }
