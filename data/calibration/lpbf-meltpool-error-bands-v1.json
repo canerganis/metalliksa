@@ -1,5 +1,5 @@
 {
- "bandsId": "lpbf-meltpool-error-bands-2026-10-14-8269e5c19091",
+ "bandsId": "lpbf-meltpool-error-bands-2026-10-15-c7251cb59484",
  "cells": [
   {
    "alloys": [
@@ -6072,8 +6072,8 @@
  ],
  "codeRevision": {
   "dirtyTrackedPaths": 0,
-  "gitBranch": "feat/p7b-combined",
-  "gitHead": "5b41d5d2bb093e1a260fb6ca9315a647499624dc",
+  "gitBranch": "batch/solidification-2026-10-15",
+  "gitHead": "027f5ad24d87ebf14aaa3daf6d51b248544bad76",
   "python": "3.12.10"
  },
  "config": {
@@ -6142,7 +6142,7 @@
   "z80": 1.2816
  },
  "configSha256": "398d02d54da2261b5c5d2944b89d5147f8534f043bb291c1a83f235c7e70303f",
- "contentSha256": "8269e5c19091c0a2e42b31b566247dc151e654391929fb5b23d09ea2eab5d8ea",
+ "contentSha256": "c7251cb59484e458f2e889194ce0826b025422c0de324fe1816e5cf07ea7241a",
  "evidenceKind": "screening-only",
  "evidenceLabel": "Screening only",
  "excluded": {
@@ -6154,12 +6154,12 @@
   "width|rosenthal": 47
  },
  "experimentalValidation": false,
- "generatedAt": "2026-10-14",
+ "generatedAt": "2026-10-15",
  "honesty": "typical error of the frozen screening kernels on published single tracks, per kernel, alloy family and screening regime class; reporting text only: it is not a tolerance, not a prediction interval for any other machine and not experimental validation; the leave-one-source-out coverage is reported next to every band and shows that a band built from some published sources does not transfer to another; no per-row measurement uncertainty exists in any source; digitized figures (Trapp, Ghosh) and a development sentinel (NIST AMB2022-03 IN718) are flagged; experimentalValidation=false",
- "implementationHash": "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348",
+ "implementationHash": "dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5",
  "labelPromotionProposed": "none",
  "rowCount": 863,
- "rowsSha256": "a8e594ab7f5d72293752d39b164230486631f25bf7896b6f1c274a00f847a6a7",
+ "rowsSha256": "2ce7f709db1944826e1a7980e595b5b48878598bd18648ed7fa28c9c6012f105",
  "schema": "lpbf-meltpool-error-bands-1",
  "sources": [
   {
