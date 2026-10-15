@@ -1,18 +1,22 @@
 """Source-bounded synthetic coupling checks; never opens physical datasets.
 
 Run from any directory with Python's standard library only:
-    python -B docs/research/scripts/check_solidification_coupling.py
+    python -I -B docs/research/scripts/check_solidification_coupling.py --check
 This is software/algebra evidence, not a numerical-convergence or blind test.
 """
 from __future__ import annotations
 
 import ast
+import copy
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
 import sys
 import math
 sys.dont_write_bytecode = True
+# -I deliberately excludes the script directory; admit this resolved sibling only.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _solidification_check_common import emit, require
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -33,6 +37,92 @@ def source_functions(path, names):
     scope = {"Any": object, "Dict": dict, "math": __import__("math")}
     exec(compile(ast.Module(body=selected, type_ignores=[]), str(path), "exec"), scope)
     return scope
+
+
+def synthetic_front_semantics(mapped, liquidus, speed):
+    """Prospective non-null contract probe, NOT a runtime/wire implementation.
+
+    The explicit synthetic parent admits its liquidus only within this fixture.
+    No source endpoint, real alloy admission, production envelope builder or
+    integration vocabulary is installed by this software-only check.
+    """
+    definitions = {
+        "G": ("liquidus-front-thermal-gradient", "K/m", "G_K_m"),
+        "R": ("liquidus-front-normal-speed", "m/s", "R_m_s"),
+        "cooling": ("liquidus-front-cooling-rate", "K/s", "coolingRate_K_s"),
+        "G_over_R": ("liquidus-front-g-over-r", "K s/m2", None),
+    }
+    request = {"namedLiquidusInput": {"name": "synthetic-liquidus_K", "value": liquidus,
+                                      "sourceLabel": "Explicit synthetic test input; no measured or alloy claim"},
+               "scanSpeed_m_s": speed, "material": "synthetic-no-alloy"}
+    digest = lambda obj: hashlib.sha256(json.dumps(obj, sort_keys=True, allow_nan=False).encode("utf-8")).hexdigest()
+    parent = {"engine": "manufactured-analytic-field-test-only", "input": digest(request),
+              "field": "rear-ellipse-spatial-amplitude", "admission": "synthetic-fixture-only"}
+    quantities = {}
+    for name, (definition, unit, sample_key) in definitions.items():
+        values = [(s[sample_key] if sample_key else s["G_K_m"]/s["R_m_s"]) for s in mapped["samples"]]
+        quantities[name] = {
+            "status": "computed", "value": sorted(values)[len(values)//2], "unit": unit,
+            "quantityDefinition": definition, "evidenceKind": "screening-only",
+            "numericalStatus": {"state": "not-assessed", "settings": "synthetic semantic probe only"},
+            "physicalValidation": {"status": "unvalidated", "experimentalValidation": False, "productionReady": False},
+            "sources": [{"id": "synthetic-front-fixture", "label": "Synthetic field relation and explicitly named test liquidus",
+                         "locator": "check_solidification_coupling.py manufactured field and fixture request",
+                         "verification": "synthetic-test-input; no literature measurement"}],
+            "assumptions": ["Synthetic admitted liquidus applies only to this fixture", "No real alloy or physical applicability"],
+            "validity": {"domain": "manufactured test field only", "samples": len(values), "weighting": "unweighted fixed-y slice"},
+            "inputIdentity": {"digest": digest(request), "request": copy.deepcopy(request)},
+            "modelIdentity": {"engine": parent["engine"], "algorithm": "paired-local-values-then-upper-median-test-only"},
+            "parentIdentity": {"digest": digest(parent), "request": copy.deepcopy(parent)},
+            "uncertainty": {"kind": "not-quantified", "construction": "No experimental or numerical coverage"},
+        }
+    fixture = {"request": request, "parent": parent, "quantities": quantities}
+
+    def problems(candidate):
+        """Narrow §2 physics-semantic assertions, not the Phase 0.1 validator."""
+        errors = []
+        for name, (definition, unit, _) in definitions.items():
+            q = candidate["quantities"][name]
+            if q.get("status") != "computed" or not isinstance(q.get("value"), (int, float)) or not math.isfinite(q["value"]) or q["value"] <= 0:
+                errors.append(name + ": invalid non-null computed value")
+            if (q.get("unit"), q.get("quantityDefinition")) != (unit, definition):
+                errors.append(name + ": observable or SI unit missing")
+            if q.get("evidenceKind") != "screening-only" or q.get("physicalValidation") != {"status": "unvalidated", "experimentalValidation": False, "productionReady": False}:
+                errors.append(name + ": evidence/validation upgrade")
+            if not q.get("sources") or any(not s.get("label") or not s.get("verification") for s in q["sources"]):
+                errors.append(name + ": per-value source label missing")
+            identity = q.get("inputIdentity", {})
+            named = identity.get("request", {}).get("namedLiquidusInput", {})
+            if not named.get("name") or not named.get("sourceLabel") or named.get("value") is None:
+                errors.append(name + ": missing named/admitted liquidus input")
+            if identity.get("digest") != digest(candidate["request"]) or identity.get("request") != candidate["request"]:
+                errors.append(name + ": stale input")
+            if not q.get("modelIdentity", {}).get("engine") or q.get("parentIdentity") != {"digest": digest(candidate["parent"]), "request": candidate["parent"]}:
+                errors.append(name + ": missing/stale engine or parent identity")
+            if not q.get("assumptions") or not q.get("validity") or not q.get("uncertainty") or not q.get("numericalStatus"):
+                errors.append(name + ": domain/numerical/uncertainty restriction missing")
+        return errors
+
+    mutations = {}
+    for name in ("missingPerValueSourceLabel", "unnamedUnresolvedInput", "missingParent", "staleNonNull", "nullComputed", "wrongUnit"):
+        mutant = copy.deepcopy(fixture)
+        q = mutant["quantities"]["G"]
+        if name == "missingPerValueSourceLabel":
+            q["sources"][0].pop("label")
+        elif name == "unnamedUnresolvedInput":
+            q["inputIdentity"]["request"]["namedLiquidusInput"] = {"value": None, "sourceLabel": "Unresolved test input"}
+        elif name == "missingParent":
+            q.pop("parentIdentity")
+        elif name == "staleNonNull":
+            mutant["request"]["namedLiquidusInput"]["value"] += 1.0
+        elif name == "nullComputed":
+            q["value"] = None
+        else:
+            q["unit"] = "mm/s"
+        mutations[name] = problems(mutant)
+    return {"fixture": fixture, "controlProblems": problems(fixture), "mutationProblems": mutations,
+            "contractStatus": "Prospective physics-semantic fixture only; no normative wire vocabulary, runtime restoration or Phase 0.1 compliance claimed.",
+            "requiredLaterCheck": "Phase 0.1/SOL-A1 must inject the same synthetic admitted parent into the actual Python/TypeScript envelope builders and validators in a test-only path; narrow integration check remains required. SOL-A1 runtime remains blanket-null for all real alloys."}
 
 
 def main():
@@ -95,6 +185,7 @@ def main():
         }
     }
     low_rate = projection.project_build_job_microstructure(synthetic_low_rate)
+    envelope_fixture = synthetic_front_semantics(mapped, liquidus, speed)
     # A translating planar level set T=Tl+G*(x-v*t) solidifies with R=v
     # even when liquid velocity U=0. This disproves U.n as an interface speed.
     planar_gradient, planar_speed, liquid_velocity = 1e6, 0.1, 0.0
@@ -120,6 +211,7 @@ def main():
         "analyticCoolingOracle": {"definition":"v*dT/dx at unrounded original sample positions in laboratory frame; translating quasi-steady field", "relativeTolerance":3e-6,"maximumRelativeResidual":analytic_residual,"R_equals_scanSpeed_mutantResidual":mutant_residual},
         "evenCountFront": {"sampleCount":even["nPoints"],"productOfUpperMedians_K_s":even["G_median_K_m"]*even["R_median_m_s"],"maximumLocalCooling_K_s":max(s["coolingRate_K_s"] for s in even["samples"])},
         "nonmonotonePairedEvaluation":paired,
+        "prospectiveNonNullFrontContract": envelope_fixture,
         "manufacturedFront": {
             "fieldDefinition": "T=1700+100*(1-(x/0.001)^2-(z/0.0002)^2)*(1+0.8*x/0.001), y-independent",
             "scanSpeed_m_s": speed, "sampleCount": mapped["nPoints"],
@@ -150,6 +242,8 @@ def main():
         "implementationManifest": {"manifestCount": len(manifest), "targetMembership": {t: t in manifest for t in targets},
             "legacyCfdHeaderMember": "openfoam/meltPoolFoam/solidificationModel.H" in manifest},
         "checks": {
+            "prospectiveNonNullFrontSemanticControlAccepted": not envelope_fixture["controlProblems"],
+            "prospectiveNonNullFrontSemanticMutantsRejected": all(envelope_fixture["mutationProblems"].values()),
             "analyticCoolingOracle": analytic_residual <= 3e-6,
             "R_equals_scanSpeed_mutantDetected": mutant_residual > .1,
             "evenUpperMedianPairExceedsLocalMaximum": even["G_median_K_m"]*even["R_median_m_s"] > max(s["coolingRate_K_s"] for s in even["samples"]),

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import copy
 import hashlib
 import json
 import math
@@ -21,6 +22,7 @@ SPEC = "docs/research/SPEC_solidification_2026-10-14.md"
 
 def source(filename, sha256, url, locator, kind):
     return dict(filename=filename, sha256=sha256, url=url, locator=locator, kind=kind,
+                attributionStatus="historical-Amendment-2-attribution; pending-review; not-current-admission",
                 verification="direct source text; relevant property paragraph/table checked")
 
 
@@ -73,25 +75,26 @@ def pair(ts, tl, unit):
 
 def record(aid, name, sid, ts, tl, unit, admission, chemistry, transfer, uncertainty):
     return dict(alloyId=aid, alloy=name, sourceId=sid, **pair(ts, tl, unit),
-                admission=admission, sourceChemistry=chemistry, transfer=transfer,
+                amendment2Proposal=admission, admission="deferred-pending-RT1-RT8",
+                installed=False, sourceChemistry=chemistry, transfer=transfer,
                 uncertainty=uncertainty, experimentalValidation=False)
 
 
 def records():
     return [
         record("ti6al4v", "Ti-6Al-4V", "MP01", 1877, 1933, "K",
-               "admitted-fixed-front-literature-model",
+               "proposed-fixed-front-literature-model",
                "Named nominal Ti64; source-specific measured batch chemistry not established",
                "Nominal material-name model convention; not measured endpoints or exact specimen chemistry",
                {"type": "not-quantified", "note": "Neither endpoint measurement nor batch-transfer uncertainty quantified"}),
         record("alsi10mg", "AlSi10Mg", "MP02", 567, 599, "degC",
-               "admitted-fixed-front-explicit-family-transfer",
+               "proposed-fixed-front-explicit-family-transfer",
                {"Si_wt_pct": 9.0, "Mg_wt_pct": 0.6, "balance": "Al"},
                "Heating pair, Al9Si0.6Mg -> nominal AlSi10Mg. Mg exceeds MP07 product range0.2-0.45wt%; exact-composition claim refused",
                {"type": "not-quantified", "note": "Endpoint and chemistry-transfer uncertainty unknown; conductivity6% is inapplicable",
                 "cycleAlternative": pair(549, 596, "degC"), "alternativeKind": "cycle/method sensitivity, not CI"}),
         record("in718", "IN718", "MP03", 1528, 1610, "K",
-               "admitted-fixed-front-explicit-family-transfer",
+               "proposed-fixed-front-explicit-family-transfer",
                {"Mo_wt_pct": 4.34, "C_wt_pct": 0.01, "Nb_wt_pct": 5.09, "Ni_wt_pct": 54.29,
                 "Cr_wt_pct": 17.27, "Fe_wt_pct": 16.78, "Al_wt_pct": 0.59, "Ti_wt_pct": 0.76,
                 "Co_wt_pct": 0.51, "Cu_wt_pct": 0.01, "Mn_wt_pct": 0.18, "S_wt_pct": 0.00, "Si_wt_pct": 0.18},
@@ -99,12 +102,12 @@ def records():
                {"type": "not-quantified", "note": "DTA endpoint/transfer uncertainty not quantified; pulse3% is not DTA uncertainty",
                 "pulseAlternative": pair(1580, 1610, "K"), "alternativeKind": "approximate fast-pulse method, not CI"}),
         record("in625", "IN625", "MP04", 1290, 1350, "degC",
-               "admitted-fixed-front-literature-model",
+               "proposed-fixed-front-literature-model",
                "Named nominal IN625; model batch chemistry not established",
                "Reproduce source fixed constitutive interval, not measured or database-assessed specimen endpoints",
                {"type": "not-quantified", "note": "Literature/JMatPro origin unresolved; no quantified model/batch uncertainty"}),
         record("ss316l", "316L", "MP05", 1675, 1708, "K",
-               "not-admissible-default-liquidus; operational-proxy-only",
+               "proposed-refusal-default-liquidus; operational-proxy-only",
                {"coverage": "major elements only; certified trace chemistry in MP05 Table1 must be preserved when using this batch",
                 "C_wt_pct": 0.026, "Cr_wt_pct": 17.803, "Ni_wt_pct": 12.471, "Mo_wt_pct": 2.188,
                 "Mn_wt_pct": 1.593, "Si_wt_pct": 0.521, "Fe_wt_pct": 64.71},
@@ -134,6 +137,105 @@ def text_sha(path):
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 
+def phase_contract():
+    """Record the re-gate decision, without claiming implementation or admission."""
+    return {
+        "implementationStatus": "not-implemented-by-this-ledger",
+        "order": ["SOL-A1", "SOL-T", "SOL-C"],
+        "SOL-A1": {
+            "contract": "blanket-null-all-five-alloys",
+            "W_D": "byte-equal",
+            "endpointInstallation": "none",
+        },
+        "SOL-T": {
+            "status": "deferred-pending-RT1-RT8",
+            "batch": "separate-W-D-changing-batch",
+            "requires": [f"RT{i}" for i in range(1, 9)],
+            "narrowPhysicsCheck": "required-before-installation",
+            "referenceNeverDriftDecision": "required-protected-path-decision",
+            "fullBandsRun": "required-in-R-lane; restamp-insufficient",
+            "P8ParentAndLiteralRepin": "required-with-owner-coordination",
+        },
+        "SOL-C": {
+            "status": "deferred-pending-SOL-T-and-RC1-RC2",
+            "sampleScope": "co-located-local-tuples-only",
+            "wholeFrontMedians": "not-admitted",
+            "availability": "conditional-on-admitted-endpoints-and-field-sample-model-gates",
+        },
+    }
+
+
+def phase_semantic_checks(rows, phases):
+    """Check decisions independently of source transcription/unit arithmetic."""
+    first = [r["afterAdoptingAmendmentAtFirstBump"] for r in rows]
+    return {
+        "first_bump_is_SOL_A1_with_W_D_invariant": all(
+            r["phase"] == "SOL-A1" and r["W_D"] == "byte-equal"
+            and r["endpointInstallation"] == "none" for r in first)
+            and phases["SOL-A1"] == {"contract": "blanket-null-all-five-alloys",
+                                      "W_D": "byte-equal", "endpointInstallation": "none"},
+        "first_bump_all_front_and_downstream_defaults_unavailable": all(
+            all(r[k] == "unavailable-default" for k in (
+                "thermal_G_R_cooling_G_over_R", "pdas", "sdas_morphology_CET_phase_note",
+                "buildJobCCT")) for r in first),
+        "endpoint_admission_deferred_and_not_installed": all(
+            r["admission"] == "deferred-pending-RT1-RT8" and r["installed"] is False
+            for r in rows),
+        "SOL_T_follows_SOL_A1_before_SOL_C_with_all_RT_gates":
+            phases["order"] == ["SOL-A1", "SOL-T", "SOL-C"]
+            and phases["SOL-T"]["status"] == "deferred-pending-RT1-RT8"
+            and phases["SOL-T"]["requires"] == [f"RT{i}" for i in range(1, 9)]
+            and phases["SOL-T"]["batch"] == "separate-W-D-changing-batch",
+        "SOL_T_reference_decision_and_full_bands_cannot_be_restamped":
+            phases["SOL-T"]["narrowPhysicsCheck"] == "required-before-installation"
+            and phases["SOL-T"]["referenceNeverDriftDecision"] == "required-protected-path-decision"
+            and phases["SOL-T"]["fullBandsRun"] == "required-in-R-lane; restamp-insufficient"
+            and phases["SOL-T"]["P8ParentAndLiteralRepin"] == "required-with-owner-coordination",
+        "SOL_C_is_conditional_local_tuples_never_whole_front_medians":
+            phases["SOL-C"]["status"] == "deferred-pending-SOL-T-and-RC1-RC2"
+            and phases["SOL-C"]["sampleScope"] == "co-located-local-tuples-only"
+            and phases["SOL-C"]["wholeFrontMedians"] == "not-admitted"
+            and phases["SOL-C"]["availability"] == "conditional-on-admitted-endpoints-and-field-sample-model-gates",
+    }
+
+
+def validate_phase_semantics(rows, phases):
+    checks = phase_semantic_checks(rows, phases)
+    failed = [name for name, passed in checks.items() if not passed]
+    if failed:
+        raise ValueError("Phase/admission contradiction: " + ", ".join(failed))
+    return checks
+
+
+def rejected_semantic_mutations(rows, phases):
+    """Negative controls: the former first-bump promise must actually fail."""
+    mutations = [
+        ("first_bump_restores_local_front", "row", ("afterAdoptingAmendmentAtFirstBump", "thermal_G_R_cooling_G_over_R"), "eligible-screening-with-field-and-sample-gates"),
+        ("first_bump_restores_pdas", "row", ("afterAdoptingAmendmentAtFirstBump", "pdas"), "conditional-transferred-Ni-Nb-only"),
+        ("first_bump_moves_W_D", "row", ("afterAdoptingAmendmentAtFirstBump", "W_D"), "changed"),
+        ("proposed_endpoint_becomes_admitted", "row", ("admission",), "admitted-fixed-front-literature-model"),
+        ("proposed_endpoint_becomes_installed", "row", ("installed",), True),
+        ("SOL_T_skips_RT8", "phase", ("SOL-T", "requires"), [f"RT{i}" for i in range(1, 8)]),
+        ("SOL_T_uses_restamp_instead_of_full_bands", "phase", ("SOL-T", "fullBandsRun"), "restamp-only"),
+        ("SOL_C_before_SOL_T", "phase", ("order",), ["SOL-A1", "SOL-C", "SOL-T"]),
+        ("SOL_C_admits_whole_front_medians", "phase", ("SOL-C", "wholeFrontMedians"), "admitted"),
+    ]
+    results = {}
+    for name, target, keys, value in mutations:
+        changed_rows, changed_phases = copy.deepcopy((rows, phases))
+        obj = changed_rows[0] if target == "row" else changed_phases
+        for key in keys[:-1]:
+            obj = obj[key]
+        obj[keys[-1]] = value
+        try:
+            validate_phase_semantics(changed_rows, changed_phases)
+        except ValueError:
+            results[name] = True
+        else:
+            results[name] = False
+    return results
+
+
 def build():
     rows = records()
     snapshot = read_endpoint_literals("python/four_alloy_materials.py", "_THERMAL",
@@ -147,11 +249,14 @@ def build():
         current = snapshot[aid]
         row["reviewedServedPair"] = current
         row["proposedMinusServed_K"] = {k: round(row[k] - current[k], 8) for k in ("Ts_K", "Tl_K")}
-        admitted = row["admission"].startswith("admitted-")
         row["afterAdoptingAmendmentAtFirstBump"] = {
-            "thermal_G_R_cooling_G_over_R": "eligible-screening-with-field-and-sample-gates" if admitted else "unavailable-default",
-            "pdas": "conditional-transferred-Ni-Nb-only" if aid in ("in625", "in718") else "unavailable",
+            "phase": "SOL-A1",
+            "W_D": "byte-equal",
+            "endpointInstallation": "none",
+            "thermal_G_R_cooling_G_over_R": "unavailable-default",
+            "pdas": "unavailable-default",
             "sdas_morphology_CET_phase_note": "unavailable-default",
+            "buildJobCCT": "unavailable-default",
             "calphadCoupling": "unavailable-until-independent-identity-reconciliation",
         }
     alternatives = {
@@ -171,24 +276,34 @@ def build():
         "all_source_hashes_valid": all(len(s["sha256"]) == 64 and all(c in "0123456789abcdef" for c in s["sha256"]) for s in SOURCES.values()),
         "all_pairs_ordered": all(0 < r["Ts_K"] < r["Tl_K"] for r in rows),
         "unit_roundtrip": all(pair(r["original"]["Ts"],r["original"]["Tl"],r["original"]["unit"])["Tl_K"] == r["Tl_K"] for r in rows),
-        "four_qualified_fronts_not_five_true_measurements": sum(r["admission"].startswith("admitted-") for r in rows) == 4,
-        "316L_evaporation_biased_proxy_refused": rows[4]["afterAdoptingAmendmentAtFirstBump"]["thermal_G_R_cooling_G_over_R"] == "unavailable-default",
+        "four_historical_proposals_are_not_current_admissions": sum(r["amendment2Proposal"].startswith("proposed-fixed-front-") for r in rows) == 4,
+        "316L_proxy_preserves_historical_refusal": rows[4]["amendment2Proposal"] == "proposed-refusal-default-liquidus; operational-proxy-only",
         "Al_heating_pair_not_mixed_with_cooling": (rows[1]["Ts_K"],rows[1]["Tl_K"]) == (840.15,872.15),
         "IN718_DTA_not_pulse_solidus": rows[2]["Ts_K"] == 1528,
         "Cieslak_alternatives_preserve_pairing": len(alternatives["IN625_MP06"]) == 4,
         "no_experimental_validation_claim": all(r["experimentalValidation"] is False for r in rows),
     }
+    phases = phase_contract()
+    checks.update(validate_phase_semantics(rows, phases))
+    mutation_checks = rejected_semantic_mutations(rows, phases)
+    checks["semantic_negative_controls_all_rejected"] = all(mutation_checks.values())
     if not all(checks.values()):
         raise ValueError("Ledger checks failed: " + ", ".join(k for k,v in checks.items() if not v))
     paths = [SPEC, "python/four_alloy_materials.py", "python/lpbf_thermal_solver.py",
-             "python/lpbf_material_registry.py", str(Path(__file__).relative_to(ROOT)).replace("\\","/")]
-    return dict(schemaVersion=1, reviewedBaselineHead="7146e11e008e19a9601b058169030458304a3795",
-                checkKind="manual source transcription and deterministic arithmetic/admission replay, not PDF extraction or physics validation",
+             "python/lpbf_material_registry.py", "python/in625_thermal_material.py",
+             str(Path(__file__).relative_to(ROOT)).replace("\\","/")]
+    return dict(schemaVersion=2, reviewedBaselineHead="7146e11e008e19a9601b058169030458304a3795",
+                checkKind="manual source transcription, deterministic arithmetic and phase/admission semantic checks; not independent PDF authentication or physics validation",
                 servedCodeModified=False, experimentalValidation=False, sources=SOURCES, alloys=rows,
+                phaseContract=phases, semanticNegativeControls=mutation_checks,
+                endpointReview=dict(status="unresolved-pending-RT1-RT8",
+                                    note="Historical Amendment 2 proposals are retained for review, not selected or installed endpoints. No new source verification in this revision."),
                 sourceAlternatives=alternatives, checks=checks,
                 uncertaintyRule="Never infer transfer error/CI from method spread, family envelope or thermal/CALPHAD difference",
                 couplingRule="Report both parents; same admitted chemistry/interface or separately recompute full thermal parent; never average",
-                historicalIN718Gap=dict(range_K=[35,46], status="prior gate report; not reproduced here; not a tolerance or uncertainty"),
+                historicalIN718Gap=dict(range_K=[35,46],
+                                       comparison="mc_ni versus TCNI12 (supplied Opus verdict; not thermal-vs-CALPHAD)",
+                                       status="prior gate report; not reproduced here; not a tolerance or uncertainty"),
                 blindAccess=dict(cleanBlindAccessCertified=False, measuredDepthsUsed=False, forbiddenPapersOpened=False,
                                  incident="Broad text searches accidentally exposed existing depth-result JSON; excluded from decisions; not a blind validation run"),
                 sourceIdentityAlgorithm="sha256-utf8-lf-v1", sourceSha256={p: text_sha(ROOT/p) for p in paths})
@@ -201,7 +316,8 @@ def main():
     action.add_argument("--check", type=Path, nargs="?", const=RECEIPT)
     parser.add_argument("--verify-pdfs", type=Path, help="Directory containing exactly named allowed source copies; no recursive scan")
     args = parser.parse_args()
-    rendered = json.dumps(build(), indent=2, ensure_ascii=False, allow_nan=False) + "\n"
+    ledger = build()
+    rendered = json.dumps(ledger, indent=2, ensure_ascii=False, allow_nan=False) + "\n"
     if args.verify_pdfs:
         for s in SOURCES.values():
             path = args.verify_pdfs / s["filename"]
@@ -210,7 +326,8 @@ def main():
     if args.check:
         if args.check.read_text(encoding="utf-8").replace("\r\n","\n") != rendered:
             raise SystemExit("Ledger receipt differs; review source/decision changes before regenerating")
-        print("PASS: 12 replay checks; exact JSON receipt" + ("; 7 source PDF hashes" if args.verify_pdfs else ""))
+        print(f"PASS: {len(ledger['checks'])} replay checks; {len(ledger['semanticNegativeControls'])} semantic negative controls; exact JSON receipt"
+              + ("; 7 source PDF hashes" if args.verify_pdfs else ""))
     elif args.output:
         args.output.write_text(rendered, encoding="utf-8")
         print("Wrote " + str(args.output))

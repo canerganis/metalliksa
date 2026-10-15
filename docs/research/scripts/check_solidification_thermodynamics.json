@@ -424,8 +424,8 @@
   "readsMeasuredMeltPoolDepths": false,
   "sourceIdentityAlgorithm": "sha256-utf8-lf-v1",
   "sourceSha256": {
-    "docs/research/scripts/_solidification_check_common.py": "d4ec3e59f1aa55b05e4ab5f23df19c518b98f74b2d2b77d1d27ede970e699029",
-    "docs/research/scripts/check_solidification_thermodynamics.py": "99aad20aad4bf17af371621e58301a2504f7dfc918726de4be5a8ef43b401736",
+    "docs/research/scripts/_solidification_check_common.py": "65997ab31ad9fd764bfe554cfe134c59bfdd6b411aa6e26d6f9f3df1a117a51a",
+    "docs/research/scripts/check_solidification_thermodynamics.py": "67ea61b53726e15eac4b84bacc3120c565bc2f7dba66ab344bdbd6434a133a4d",
     "python/calphad_solver.py": "a266bbabfcb8d6db9c337de07db41e6ea2d3321fcc3d9fde831f056b59581ac2",
     "python/databases/COST507.tdb": "6565f4d67695fbbf779d68b9eeeb83e86e44a1a3dde9bafd612d99daffb9c34d",
     "python/databases/mc_fe_v2062_repaired.tdb": "cb0a7f9f747b9b16bc8bb5085250f9449091e0031480e3d7527eb0ad1e1f3fd4",

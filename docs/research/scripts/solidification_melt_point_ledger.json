@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "reviewedBaselineHead": "7146e11e008e19a9601b058169030458304a3795",
-  "checkKind": "manual source transcription and deterministic arithmetic/admission replay, not PDF extraction or physics validation",
+  "checkKind": "manual source transcription, deterministic arithmetic and phase/admission semantic checks; not independent PDF authentication or physics validation",
   "servedCodeModified": false,
   "experimentalValidation": false,
   "sources": {
@@ -11,6 +11,7 @@
       "url": "https://doi.org/10.1038/s41467-021-22704-0",
       "locator": "SI PDF20 Supplementary Table1 Ti64 row; PDF23 reference13",
       "kind": "primary-model-prescription; upstream compiled handbook, not primary measurement",
+      "attributionStatus": "historical-Amendment-2-attribution; pending-review; not-current-admission",
       "verification": "direct source text; relevant property paragraph/table checked; relevant source page/table visually checked"
     },
     "MP02": {
@@ -19,6 +20,7 @@
       "url": "https://doi.org/10.1007/s10765-006-0144-0",
       "locator": "PDF14/printed1442 TableII AlSi-10 heating/cooling; PDF3,5,7-8 methods",
       "kind": "primary four-probe resistivity measurement; Al9Si0.6Mg family transfer",
+      "attributionStatus": "historical-Amendment-2-attribution; pending-review; not-current-admission",
       "verification": "direct source text; relevant property paragraph/table checked; relevant source page/table visually checked"
     },
     "MP03": {
@@ -27,6 +29,7 @@
       "url": "https://doi.org/10.1034/j.1600-0692.2002.310301.x",
       "locator": "PDF3/printed163 first paragraph DTA; PDF1-2 chemistry; PDF7 pulse uncertainty",
       "kind": "primary DTA; source-batch to nominal IN718 family transfer",
+      "attributionStatus": "historical-Amendment-2-attribution; pending-review; not-current-admission",
       "verification": "direct source text; relevant property paragraph/table checked"
     },
     "MP04": {
@@ -35,6 +38,7 @@
       "url": "https://d-nb.info/1214552161/34",
       "locator": "PDF7/printed1269 Setup of STLF Simulation Model and Material Properties, thermophysical paragraph",
       "kind": "primary constitutive-model prescription; literature/JMatPro endpoint origin unresolved",
+      "attributionStatus": "historical-Amendment-2-attribution; pending-review; not-current-admission",
       "verification": "direct source text; relevant property paragraph/table checked"
     },
     "MP05": {
@@ -43,6 +47,7 @@
       "url": "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=928362",
       "locator": "PDF6 Table2; PDF5 Table1 chemistry; PDF9-10 Results, evaporation caveat",
       "kind": "primary DSC/enthalpy measurement; liquidus proxy biased by evaporation",
+      "attributionStatus": "historical-Amendment-2-attribution; pending-review; not-current-admission",
       "verification": "direct source text; relevant property paragraph/table checked"
     },
     "MP06": {
@@ -51,6 +56,7 @@
       "url": "https://doi.org/10.1007/BF02645056",
       "locator": "PDF2/printed2320 TableI chemistry; PDF3/printed2321 TableII, alloys5-8",
       "kind": "primary heating DTA; deliberately varied C/Si in Alloy625 family",
+      "attributionStatus": "historical-Amendment-2-attribution; pending-review; not-current-admission",
       "verification": "direct source text; relevant property paragraph/table checked; relevant source page/table visually checked"
     },
     "MP07": {
@@ -59,6 +65,7 @@
       "url": "https://www.3dsystems.com/sites/default/files/2023-12/3d-systems-laserform-alsi10mga-mds-letter-us-revd-web.pdf",
       "locator": "PDF2 Thermal Properties and footnote16; 3DS-10104D|10-23",
       "kind": "manufacturer literature-based declaration; not primary melt-point measurement",
+      "attributionStatus": "historical-Amendment-2-attribution; pending-review; not-current-admission",
       "verification": "direct source text; relevant property paragraph/table checked; relevant source page/table visually checked"
     }
   },
@@ -75,7 +82,9 @@
       "Ts_K": 1877.0,
       "Tl_K": 1933.0,
       "meltingInterval_K": 56,
-      "admission": "admitted-fixed-front-literature-model",
+      "amendment2Proposal": "proposed-fixed-front-literature-model",
+      "admission": "deferred-pending-RT1-RT8",
+      "installed": false,
       "sourceChemistry": "Named nominal Ti64; source-specific measured batch chemistry not established",
       "transfer": "Nominal material-name model convention; not measured endpoints or exact specimen chemistry",
       "uncertainty": {
@@ -98,9 +107,13 @@
         "Tl_K": -0.15
       },
       "afterAdoptingAmendmentAtFirstBump": {
-        "thermal_G_R_cooling_G_over_R": "eligible-screening-with-field-and-sample-gates",
-        "pdas": "unavailable",
+        "phase": "SOL-A1",
+        "W_D": "byte-equal",
+        "endpointInstallation": "none",
+        "thermal_G_R_cooling_G_over_R": "unavailable-default",
+        "pdas": "unavailable-default",
         "sdas_morphology_CET_phase_note": "unavailable-default",
+        "buildJobCCT": "unavailable-default",
         "calphadCoupling": "unavailable-until-independent-identity-reconciliation"
       }
     },
@@ -116,7 +129,9 @@
       "Ts_K": 840.15,
       "Tl_K": 872.15,
       "meltingInterval_K": 32,
-      "admission": "admitted-fixed-front-explicit-family-transfer",
+      "amendment2Proposal": "proposed-fixed-front-explicit-family-transfer",
+      "admission": "deferred-pending-RT1-RT8",
+      "installed": false,
       "sourceChemistry": {
         "Si_wt_pct": 9.0,
         "Mg_wt_pct": 0.6,
@@ -154,9 +169,13 @@
         "Tl_K": 4.0
       },
       "afterAdoptingAmendmentAtFirstBump": {
-        "thermal_G_R_cooling_G_over_R": "eligible-screening-with-field-and-sample-gates",
-        "pdas": "unavailable",
+        "phase": "SOL-A1",
+        "W_D": "byte-equal",
+        "endpointInstallation": "none",
+        "thermal_G_R_cooling_G_over_R": "unavailable-default",
+        "pdas": "unavailable-default",
         "sdas_morphology_CET_phase_note": "unavailable-default",
+        "buildJobCCT": "unavailable-default",
         "calphadCoupling": "unavailable-until-independent-identity-reconciliation"
       }
     },
@@ -172,7 +191,9 @@
       "Ts_K": 1528.0,
       "Tl_K": 1610.0,
       "meltingInterval_K": 82,
-      "admission": "admitted-fixed-front-explicit-family-transfer",
+      "amendment2Proposal": "proposed-fixed-front-explicit-family-transfer",
+      "admission": "deferred-pending-RT1-RT8",
+      "installed": false,
       "sourceChemistry": {
         "Mo_wt_pct": 4.34,
         "C_wt_pct": 0.01,
@@ -220,9 +241,13 @@
         "Tl_K": 0.85
       },
       "afterAdoptingAmendmentAtFirstBump": {
-        "thermal_G_R_cooling_G_over_R": "eligible-screening-with-field-and-sample-gates",
-        "pdas": "conditional-transferred-Ni-Nb-only",
+        "phase": "SOL-A1",
+        "W_D": "byte-equal",
+        "endpointInstallation": "none",
+        "thermal_G_R_cooling_G_over_R": "unavailable-default",
+        "pdas": "unavailable-default",
         "sdas_morphology_CET_phase_note": "unavailable-default",
+        "buildJobCCT": "unavailable-default",
         "calphadCoupling": "unavailable-until-independent-identity-reconciliation"
       }
     },
@@ -238,7 +263,9 @@
       "Ts_K": 1563.15,
       "Tl_K": 1623.15,
       "meltingInterval_K": 60,
-      "admission": "admitted-fixed-front-literature-model",
+      "amendment2Proposal": "proposed-fixed-front-literature-model",
+      "admission": "deferred-pending-RT1-RT8",
+      "installed": false,
       "sourceChemistry": "Named nominal IN625; model batch chemistry not established",
       "transfer": "Reproduce source fixed constitutive interval, not measured or database-assessed specimen endpoints",
       "uncertainty": {
@@ -261,9 +288,13 @@
         "Tl_K": 0.0
       },
       "afterAdoptingAmendmentAtFirstBump": {
-        "thermal_G_R_cooling_G_over_R": "eligible-screening-with-field-and-sample-gates",
-        "pdas": "conditional-transferred-Ni-Nb-only",
+        "phase": "SOL-A1",
+        "W_D": "byte-equal",
+        "endpointInstallation": "none",
+        "thermal_G_R_cooling_G_over_R": "unavailable-default",
+        "pdas": "unavailable-default",
         "sdas_morphology_CET_phase_note": "unavailable-default",
+        "buildJobCCT": "unavailable-default",
         "calphadCoupling": "unavailable-until-independent-identity-reconciliation"
       }
     },
@@ -279,7 +310,9 @@
       "Ts_K": 1675.0,
       "Tl_K": 1708.0,
       "meltingInterval_K": 33,
-      "admission": "not-admissible-default-liquidus; operational-proxy-only",
+      "amendment2Proposal": "proposed-refusal-default-liquidus; operational-proxy-only",
+      "admission": "deferred-pending-RT1-RT8",
+      "installed": false,
       "sourceChemistry": {
         "coverage": "major elements only; certified trace chemistry in MP05 Table1 must be preserved when using this batch",
         "C_wt_pct": 0.026,
@@ -314,13 +347,69 @@
         "Tl_K": 34.85
       },
       "afterAdoptingAmendmentAtFirstBump": {
+        "phase": "SOL-A1",
+        "W_D": "byte-equal",
+        "endpointInstallation": "none",
         "thermal_G_R_cooling_G_over_R": "unavailable-default",
-        "pdas": "unavailable",
+        "pdas": "unavailable-default",
         "sdas_morphology_CET_phase_note": "unavailable-default",
+        "buildJobCCT": "unavailable-default",
         "calphadCoupling": "unavailable-until-independent-identity-reconciliation"
       }
     }
   ],
+  "phaseContract": {
+    "implementationStatus": "not-implemented-by-this-ledger",
+    "order": [
+      "SOL-A1",
+      "SOL-T",
+      "SOL-C"
+    ],
+    "SOL-A1": {
+      "contract": "blanket-null-all-five-alloys",
+      "W_D": "byte-equal",
+      "endpointInstallation": "none"
+    },
+    "SOL-T": {
+      "status": "deferred-pending-RT1-RT8",
+      "batch": "separate-W-D-changing-batch",
+      "requires": [
+        "RT1",
+        "RT2",
+        "RT3",
+        "RT4",
+        "RT5",
+        "RT6",
+        "RT7",
+        "RT8"
+      ],
+      "narrowPhysicsCheck": "required-before-installation",
+      "referenceNeverDriftDecision": "required-protected-path-decision",
+      "fullBandsRun": "required-in-R-lane; restamp-insufficient",
+      "P8ParentAndLiteralRepin": "required-with-owner-coordination"
+    },
+    "SOL-C": {
+      "status": "deferred-pending-SOL-T-and-RC1-RC2",
+      "sampleScope": "co-located-local-tuples-only",
+      "wholeFrontMedians": "not-admitted",
+      "availability": "conditional-on-admitted-endpoints-and-field-sample-model-gates"
+    }
+  },
+  "semanticNegativeControls": {
+    "first_bump_restores_local_front": true,
+    "first_bump_restores_pdas": true,
+    "first_bump_moves_W_D": true,
+    "proposed_endpoint_becomes_admitted": true,
+    "proposed_endpoint_becomes_installed": true,
+    "SOL_T_skips_RT8": true,
+    "SOL_T_uses_restamp_instead_of_full_bands": true,
+    "SOL_C_before_SOL_T": true,
+    "SOL_C_admits_whole_front_medians": true
+  },
+  "endpointReview": {
+    "status": "unresolved-pending-RT1-RT8",
+    "note": "Historical Amendment 2 proposals are retained for review, not selected or installed endpoints. No new source verification in this revision."
+  },
   "sourceAlternatives": {
     "IN625_MP06": [
       {
@@ -415,12 +504,19 @@
     "all_source_hashes_valid": true,
     "all_pairs_ordered": true,
     "unit_roundtrip": true,
-    "four_qualified_fronts_not_five_true_measurements": true,
-    "316L_evaporation_biased_proxy_refused": true,
+    "four_historical_proposals_are_not_current_admissions": true,
+    "316L_proxy_preserves_historical_refusal": true,
     "Al_heating_pair_not_mixed_with_cooling": true,
     "IN718_DTA_not_pulse_solidus": true,
     "Cieslak_alternatives_preserve_pairing": true,
-    "no_experimental_validation_claim": true
+    "no_experimental_validation_claim": true,
+    "first_bump_is_SOL_A1_with_W_D_invariant": true,
+    "first_bump_all_front_and_downstream_defaults_unavailable": true,
+    "endpoint_admission_deferred_and_not_installed": true,
+    "SOL_T_follows_SOL_A1_before_SOL_C_with_all_RT_gates": true,
+    "SOL_T_reference_decision_and_full_bands_cannot_be_restamped": true,
+    "SOL_C_is_conditional_local_tuples_never_whole_front_medians": true,
+    "semantic_negative_controls_all_rejected": true
   },
   "uncertaintyRule": "Never infer transfer error/CI from method spread, family envelope or thermal/CALPHAD difference",
   "couplingRule": "Report both parents; same admitted chemistry/interface or separately recompute full thermal parent; never average",
@@ -429,6 +525,7 @@
       35,
       46
     ],
+    "comparison": "mc_ni versus TCNI12 (supplied Opus verdict; not thermal-vs-CALPHAD)",
     "status": "prior gate report; not reproduced here; not a tolerance or uncertainty"
   },
   "blindAccess": {
@@ -439,10 +536,11 @@
   },
   "sourceIdentityAlgorithm": "sha256-utf8-lf-v1",
   "sourceSha256": {
-    "docs/research/SPEC_solidification_2026-10-14.md": "e420502104579a5d0c5010c5a889a7964d94cbf537dfd79dd4b2072c38bb72f2",
+    "docs/research/SPEC_solidification_2026-10-14.md": "f5088bf7257ec7fe0c0ba71bda202871b2d11acb02ad79dd5cb590af4930e47b",
     "python/four_alloy_materials.py": "b5aedb24b5261c7ef8dfd7bcb80c723ca1eb32c9be4e94a6519f06db951c90a9",
     "python/lpbf_thermal_solver.py": "39be376d71b59c528dad8ae93dab3082495ae36bb92569ed2f9b6880dc6239ba",
     "python/lpbf_material_registry.py": "6fb3200863155e51d8d46cce8bcb750491bc1c1272cb10cb899392f690775c42",
-    "docs/research/scripts/solidification_melt_point_ledger.py": "5ae3ee1f790ef4f59252d93aeed2d61c4b70cda00125938d1cbd2c202537a759"
+    "python/in625_thermal_material.py": "735b27b3a6bb0de7a3ff14257dc4e67f27aae0950b5fabf94fd51a73d77bd174",
+    "docs/research/scripts/solidification_melt_point_ledger.py": "8bf82a7480e006cd84099543f86c8d2b7e3fcfcd814611da3fabc9623ad2d447"
   }
 }

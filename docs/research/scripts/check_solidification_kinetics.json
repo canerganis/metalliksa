@@ -5,6 +5,12 @@
   "scope": "synthetic counterexamples and source-form software reproduction only; no physical or blind validation",
   "checks": {
     "HuntEquationArithmeticExpectedValue": true,
+    "KurzFisherEquationArithmeticExpectedValue": true,
+    "gate4CurrentServedCoefficientsRejectedPendingSOL_A1": true,
+    "gate4CanonicalServedASTControlAccepted": true,
+    "gate4WrongServedHuntMutantRejected": true,
+    "gate4NonCanonicalPrecisionMutantRejected": true,
+    "gate4RoundedCaptionKFMutantRejected": true,
     "KnappPrintedColumnarWithin2Percent": true,
     "KnappPrintedEquiaxedWithin2Percent": true,
     "HuntArithmeticWithinRoundedSource3PerMille": true,
@@ -213,6 +219,74 @@
       "reason": "no Nb-bearing gamma/Laves model for this alloy",
       "evidenceLabel": null
     },
+    "gate4ServedCoefficientBinding": {
+      "currentServed": {
+        "encodedConstants": {
+          "PDAS_A_HUNT_SI": 0.000956,
+          "PDAS_A_KURZ_FISHER_SI": 0.0026
+        },
+        "probeG_K_m": 10000000.0,
+        "probeR_m_s": 0.01,
+        "probeBand_um": {
+          "hunt": 0.9560000000000001,
+          "kurzFisher": 2.6
+        },
+        "accepted": false
+      },
+      "canonicalInMemoryControl": {
+        "encodedConstants": {
+          "PDAS_A_HUNT_SI": 0.0011773863284676703,
+          "PDAS_A_KURZ_FISHER_SI": 0.0025821435943712695
+        },
+        "probeG_K_m": 10000000.0,
+        "probeR_m_s": 0.01,
+        "probeBand_um": {
+          "hunt": 1.1773863284676702,
+          "kurzFisher": 2.5821435943712694
+        },
+        "accepted": true
+      },
+      "wrongHuntMutant": {
+        "encodedConstants": {
+          "PDAS_A_HUNT_SI": 0.001189160191752347,
+          "PDAS_A_KURZ_FISHER_SI": 0.0025821435943712695
+        },
+        "probeG_K_m": 10000000.0,
+        "probeR_m_s": 0.01,
+        "probeBand_um": {
+          "hunt": 1.189160191752347,
+          "kurzFisher": 2.5821435943712694
+        },
+        "accepted": false
+      },
+      "nonCanonicalPrecisionMutant": {
+        "encodedConstants": {
+          "PDAS_A_HUNT_SI": 0.001177386328467788,
+          "PDAS_A_KURZ_FISHER_SI": 0.0025821435943712695
+        },
+        "probeG_K_m": 10000000.0,
+        "probeR_m_s": 0.01,
+        "probeBand_um": {
+          "hunt": 1.1773863284677881,
+          "kurzFisher": 2.5821435943712694
+        },
+        "accepted": false
+      },
+      "roundedCaptionKFMutant": {
+        "encodedConstants": {
+          "PDAS_A_HUNT_SI": 0.0011773863284676703,
+          "PDAS_A_KURZ_FISHER_SI": 0.0026
+        },
+        "probeG_K_m": 10000000.0,
+        "probeR_m_s": 0.01,
+        "probeBand_um": {
+          "hunt": 1.1773863284676702,
+          "kurzFisher": 2.6
+        },
+        "accepted": false
+      },
+      "scope": "Future SOL-A1 coefficient acceptance only; current served rejection is an expected unresolved defect. In-memory substitutions do not alter served source, model or fingerprint, and do not admit physical samples."
+    },
     "independentHuntArithmetic": {
       "formula": "2.83*(k_e*Gamma*DeltaT0*D_l)^0.25",
       "inputs": {
@@ -225,6 +299,23 @@
       "served_A_SI": 0.000956,
       "roundedSource_A_SI": 0.00118,
       "roundedRelativeTolerance": 0.003
+    },
+    "independentKurzFisherArithmetic": {
+      "formula": "4.3*(Gamma*DeltaT0*D_l/k_e)^0.25",
+      "sourceLocator": "S04 Eq.8/Table2; Fig.6 caption rounded alternative",
+      "inputs": {
+        "k_e": 0.48,
+        "Gamma_K_m": 3.65e-07,
+        "DeltaT0_K": 57,
+        "D_l_m2_s": 3e-09
+      },
+      "expected_A_SI": 0.0025821435943712695,
+      "canonical_A_SI": 0.0025821435943712695,
+      "display_A_SI": 0.0025821,
+      "caption_A_SI": 0.0026,
+      "captionRelativeDifferenceFromEquation": 0.006915341837554934,
+      "served_A_SI": 0.0026,
+      "decision": "Use full Eq.8 value in future SOL-A1 arithmetic; shorter representations are display only. Current served rounded caption value remains unchanged in this documentary check work."
     },
     "PDAS_sourceStabilityCounterexamples": [
       {
@@ -269,8 +360,8 @@
   "readsMeasuredMeltPoolDepths": false,
   "sourceIdentityAlgorithm": "sha256-utf8-lf-v1",
   "sourceSha256": {
-    "docs/research/scripts/_solidification_check_common.py": "d4ec3e59f1aa55b05e4ab5f23df19c518b98f74b2d2b77d1d27ede970e699029",
-    "docs/research/scripts/check_solidification_kinetics.py": "bec0bdb18e2707754aa750659630d53c627c93fef980fd5e20e81663334dd917",
+    "docs/research/scripts/_solidification_check_common.py": "65997ab31ad9fd764bfe554cfe134c59bfdd6b411aa6e26d6f9f3df1a117a51a",
+    "docs/research/scripts/check_solidification_kinetics.py": "6098653230c21f80b0bcc68e0616ef2c5b84bd865e430eb2fdc30657f697ed98",
     "python/alloy_data_calphad_battery_icme.py": "8253a0407b12887ff010163276755cc1cc22d2ede5e6f057d91b93d94afc0fd0",
     "python/alloy_data_kinetics_uq_fatigue.py": "9d1349085981f2f86ed465bbc048e9fc9704138ebec68e9d1a4e7eee5f5ecf95",
     "python/alloy_registry.py": "ec2a6f4fc8dda5c322b60444d197af5fd81e908363cd6eba44de21f2839a7268",

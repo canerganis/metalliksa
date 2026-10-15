@@ -3,7 +3,7 @@
 Extracts the pure Scheil kernel and the actual liquid-reporting adapter with AST.
 Exercises synthetic conserved tie lines and raw phase vertices; no database solver
 call or measured melt-pool quantity is read or executed. Package versions are metadata only.
-Run: python docs/research/scripts/check_solidification_thermodynamics.py
+Run: python -I -B docs/research/scripts/check_solidification_thermodynamics.py --check
 """
 from __future__ import annotations
 
@@ -17,6 +17,8 @@ import time
 import sys
 from types import SimpleNamespace
 sys.dont_write_bytecode = True
+# -I deliberately excludes the script directory; admit this resolved sibling only.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _solidification_check_common import emit, require
 from typing import Any, Callable, Dict, List, Optional
 

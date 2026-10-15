@@ -22,13 +22,21 @@ def emit(report, paths):
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description="Software-only check: stdout by default, no implicit file writes")
-    parser.add_argument("--output", type=Path, help="Explicit JSON destination (may refresh a tracked artifact)")
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument("--output", type=Path, help="Explicit JSON destination (may refresh a tracked artifact)")
+    action.add_argument("--check", type=Path, nargs="?",
+                        const=Path(sys.argv[0]).resolve().with_suffix(".json"),
+                        help="Compare exact deterministic JSON with the sibling receipt, or an explicit path")
     args = parser.parse_args()
     report.update(checkKind="synthetic software and algebra checks", experimentalValidation=False,
                   readsMeasuredMeltPoolDepths=False, sourceIdentityAlgorithm="sha256-utf8-lf-v1",
                   sourceSha256=source_identity(list(paths) + [Path(__file__)]))
     rendered = json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False) + "\n"
-    if args.output:
+    if args.check:
+        if args.check.read_text(encoding="utf-8").replace("\r\n", "\n") != rendered:
+            raise SystemExit("Audit receipt differs; review source/decision changes before regenerating")
+        print(f"PASS: {len(report['checks'])} replay checks; exact JSON receipt")
+    elif args.output:
         args.output.write_text(rendered, encoding="utf-8")
         print(json.dumps({"output": str(args.output), "checks": report["checks"]}, sort_keys=True))
     else:
