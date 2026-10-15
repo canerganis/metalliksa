@@ -54,13 +54,11 @@ observation key), comma-separated or repeated:
   effectiveMode, experimentalValidation, experimentalComparison, unresolvedPhysics,
   opticalOperatorMatched, each with or without .key., and the G9 observation
   in625.validateScreeningAdmission) never drift in ANY case, whatever the allowlist.
-- Error rule (solidification integration contract Revision 1, 6.1, F10): a value that turns into
-  an error never passes, under any entry (whole case, glob or exact), in the three shapes the
-  harness writes: a value becoming {"error": ...} at its key (observe_value); a new key whose
-  value is {"error": ...} (G11 meltpool.{i}, whose success keys vanish); a key ending in
-  ".error" that appears or changes (G16). A recorded error that changes to another error, and a
-  removed observation (<missing>, a deliberate deletion), pass only by an entry naming that
-  exact key.
+- Error rule (integration contract 6.1, gate P02): value to error never passes, under any entry.
+  This covers {"error": text}, G11's run keys, G16's *.error, per-item ["error", text] in each()
+  raw lists, and reject.* plain-string refusals. A refusal becoming NO-ERROR never passes.
+  Changed errors, error to value, new error keys and removals need the exact observation key;
+  protected honesty and reference-numerics observations retain their stricter rules.
 - With --allow-environment-mismatch a drift run ends DIAGNOSTIC (exit 3), never PASS.
 
 --record refuses to overwrite an existing golden without --force, and refuses to
@@ -798,11 +796,10 @@ def case_g19_emissivity_echo(ctx: CaseContext) -> Dict[str, Any]:
     _, explicit = ctx.run_case({**SMALL, "emissivity": 0.35}, prefix="explicit")
     observations["explicit0.35.canonicalEqualsImplicit"] = (
         explicit["explicit.canonicalSha256"] == implicit["implicit.canonicalSha256"])
-    # A different user emissivity changes the material dict but not its revision identity:
-    # the core contract rejects the run after the solve (fail closed), pinned here.
-    rejected = 0.36  # the key carries the value, so a different override changes the golden
-    status, value = capture_call(lambda: ctx.run_case({**SMALL, "emissivity": rejected}, prefix="override")[1])
-    observations[f"run.override{rejected!r}"] = (value["override.canonicalSha256"] if status == "ok"
+    # Explicit overrides are accepted, become part of the material identity, and change the run digest.
+    override = 0.36
+    status, value = capture_call(lambda: ctx.run_case({**SMALL, "emissivity": override}, prefix="override")[1])
+    observations[f"run.override{override!r}"] = (value["override.canonicalSha256"] if status == "ok"
                                                  else {"error": value})
     return observations
 
@@ -1280,7 +1277,7 @@ CASES: Tuple[Case, ...] = (
          "IN625 fusion latent heat per path: Rosenthal melt pool (260 kJ/kg), screening (290), transient spec (227)",
          runs_solver=False),
     Case("g19_emissivity_echo", "G19", case_g19_emissivity_echo,
-         "Registry emissivity literal 0.35 echoed into p/m per alloy; overrides; 0.36 override rejected"),
+         "Registry emissivity literal 0.35 echoed into p/m per alloy; accepted overrides including 0.36"),
     Case("g8_observers", "G8", case_g8_observers,
          "final-state, selected-time, local-history observers and CpuRunProgress; rejection messages"),
     Case("g9_material_snapshots", "G9", case_g9_material_snapshots,
@@ -1388,9 +1385,9 @@ def environment_mismatch(recorded: Dict[str, Any]) -> Optional[str]:
 def execute(case: Case, work_root: Path) -> Tuple[Dict[str, Any], List[str], float]:
     """Run one case; returns (observations, implementation hashes, seconds).
 
-    The raw pre-hash values of the digest observations (when small, see remember_raw) are
-    left in LAST_RAW_VALUES for the caller: they are recorded next to the observations so a
-    drift report can print before -> after numbers, and are never compared.
+    Raw pre-hash values (small values and all each() lists, see remember_raw) are left in
+    LAST_RAW_VALUES for reports and per-item error transitions. Bit equality still compares
+    the observations; raw errors additionally constrain which planned drifts may pass.
     """
     global _RAW_SINK
     work_root.mkdir(parents=True, exist_ok=True)
@@ -1645,10 +1642,8 @@ def parse_expect_drift(values: Optional[List[str]]) -> List[DriftEntry]:
     return entries
 
 
-# Error rule (solidification integration contract Revision 1, 6.1; F10). The harness records a failed call in three
-# shapes: observe_value stores {"error": text} under the observation's own key; G11 writes meltpool.{i} =
-# {"error": text} while that payload's success keys vanish; G16 writes the plain text under "<prefix>.error". Under
-# every --expect-drift entry, whole case, glob or exact, a value that turns into an error never passes.
+# Error rule: five shapes, including each() raw lists and reject.* refusals. The gate makes
+# new/changed/recovered errors exact-key only; value -> error remains forbidden under every entry.
 _ABSENT = object()
 
 
@@ -1662,20 +1657,31 @@ def is_error_key(key: str) -> bool:
     return key == "error" or key.endswith(".error")
 
 
+def error_items(key: str, value: Any) -> Dict[str, Any]:
+    """Errors indexed by item path, so a pre-existing error cannot hide another item's failure."""
+    if value is _ABSENT:
+        return {}
+    if is_error_observation(value):
+        return {"": value["error"]}
+    if is_error_key(key) or (key.startswith("reject.") and isinstance(value, str) and value != "NO-ERROR"):
+        return {"": value}
+    errors = {}
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            if isinstance(item, list) and len(item) == 2 and item[0] == "error":
+                errors[str(index)] = item[1]
+    return errors
+
+
 def error_rule_problem(key: str, before: Any, after: Any) -> Optional[str]:
-    """Why a diff of ``key`` (before -> after, _ABSENT for a missing side) is an error observation that may never
-    pass under --expect-drift, or None. A removal (after _ABSENT) is not an error; it needs an exact entry."""
+    """Non-waivable transitions; new errors and changes/recoveries are checked for exact keys by the caller."""
     if after is _ABSENT:
         return None
-    if is_error_key(key):
-        verb = "new observation" if before is _ABSENT else "changed"
-        return f"{verb} {key}: an error observation (G16 shape) never passes under --expect-drift"
-    if is_error_observation(after):
-        if before is _ABSENT:
-            return (f"new observation {key}: an error observation (G11 shape, the run's success keys vanish) "
-                    "never passes under --expect-drift")
-        if not is_error_observation(before):
-            return f"changed {key}: the value became an error observation, which never passes under --expect-drift"
+    old, new = error_items(key, before), error_items(key, after)
+    if key.startswith("reject.") and old and after == "NO-ERROR":
+        return f"changed {key}: a refusal became NO-ERROR, which never passes under --expect-drift"
+    if before is not _ABSENT and any(path not in old for path in new):
+        return f"changed {key}: the value became an error observation, which never passes under --expect-drift"
     return None
 
 
@@ -1720,14 +1726,16 @@ def jsonable(value: Any) -> Any:
 
 def remember_raw(key: str, value: Any) -> None:
     """Keep the raw value behind a digest observation when it is small (<= RAW_VALUE_LIMIT
-    characters of JSON), for drift reports. Never part of the comparison."""
+    characters of JSON), for drift reports. each() lists are always kept for the error rule."""
     if _RAW_SINK is None:
         return
     try:
         text = json.dumps(jsonable(value), allow_nan=False)
     except (TypeError, ValueError):
         return
-    if len(text) <= RAW_VALUE_LIMIT:
+    each_list = isinstance(value, list) and value and all(
+        isinstance(item, list) and len(item) == 2 and item[0] in ("ok", "error") for item in value)
+    if len(text) <= RAW_VALUE_LIMIT or each_list:
         _RAW_SINK[key] = json.loads(text)
 
 
@@ -1799,8 +1807,8 @@ def evaluate_drift(case: Case, outcome: Dict[str, Any], entries: List[DriftEntry
     entry for the case this is the plain check. With entries, only observation diffs that an
     entry matches and that are not protected may drift; implementation, pin and golden
     problems always fail; an entry that matches no drifted observation is stale. The error
-    rule (error_rule_problem) comes first and no entry overrides it; a removed observation and
-    a recorded error that changes pass only by an entry naming that exact key.
+    rule (error_rule_problem) comes first and no entry overrides it; removals, new errors,
+    changed errors and recoveries pass only by an entry naming that exact key.
     """
     mine = [entry for entry in entries if entry.case_id == case.id]
     if not mine:
@@ -1814,7 +1822,10 @@ def evaluate_drift(case: Case, outcome: Dict[str, Any], entries: List[DriftEntry
     for key in diff_keys(golden["observations"], outcome["observations"]):
         before = golden["observations"].get(key, _ABSENT)
         after = outcome["observations"].get(key, _ABSENT)
-        error_problem = error_rule_problem(key, before, after)
+        # Raw each() items retain their status; comparing just the digest would hide failures.
+        error_before = golden.get("rawValues", {}).get(key, before)
+        error_after = outcome.get("rawValues", {}).get(key, after)
+        error_problem = error_rule_problem(key, error_before, error_after)
         if error_problem is not None:
             problems.append(error_problem)
             continue
@@ -1822,7 +1833,7 @@ def evaluate_drift(case: Case, outcome: Dict[str, Any], entries: List[DriftEntry
         if after is _ABSENT and not exact:
             problems.append(f"removed {key}: a removal is allowed only by an entry naming this exact key")
             continue
-        if is_error_observation(before) and is_error_observation(after) and not exact:
+        if (error_items(key, error_before) or error_items(key, error_after)) and not exact:
             problems.append(f"changed {key}: a recorded error that changes is allowed only by an entry naming "
                             "this exact key")
             continue
