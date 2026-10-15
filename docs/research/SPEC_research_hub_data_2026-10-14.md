@@ -2,9 +2,12 @@
 
 File: `docs/research/SPEC_research_hub_data_2026-10-14.md`. Design gate draft, written 2026-10-15 on worktree
 `Metalliksa-1-wt-hub` (branch `feat/research-hub-data`, HEAD `835466fa`, fingerprint pin `36cd9d4a…`). Nothing in the
-product implements it yet. Not committed. Revision 2 (2026-10-15): the gate's must-fix items, missing items and
-contradictions are applied in place; the P8 contract is P8 v2 (`research/p8-research-arm` `b6e68dfe`, schema
-`p8-research-v2`).
+product implements it yet. Revision 2 (2026-10-15): the gate's must-fix items, missing items and contradictions are
+applied in place (committed as `2f0d884a`). Revision 3 (2026-10-15, section 14): sharing with the maintainer (Mode A
+"share my result", Mode B "sealed submission"), transport without a server, anti-fabrication trust tiers, the
+maintainer's per-value label decisions, and section 7.6 reconciled with the P8 integration contract
+(`research/p8-research-arm` `29ae2183`: no served bump, research only through its own opt-in route, block schema
+`p8-research-v3`), integrated into the affected sections (Appendix A.5).
 
 Goals: roadmap items 1 and 2 of `.orchestra/GOAL.md` ("Roadmap after the batch push", maintainer approved 2026-10-14).
 
@@ -14,7 +17,8 @@ listed in Appendix A. Where this spec and a design disagree, this spec wins.
 
 Labels unchanged by this work: `experimentalValidation=false`, evidence kind `screening-only`, no module or result
 promoted, no served physics change, fingerprint manifest untouched (36 files), `routes/AUTHORITY_ALLOWLIST.json` and every
-`*.ceiling.json` untouched, legacy contract count stays 3.
+`*.ceiling.json` untouched, legacy contract count stays 3. Revision 3 adds a per-value `sourceEvidenceKind` under that
+unchanged screening-only ceiling (14.6); no ceiling is raised.
 
 ## 1. Purpose and non-goals
 
@@ -30,22 +34,29 @@ promoted, no served physics change, fingerprint manifest untouched (36 files), `
    sets, where the model deviates and which catalogued, untested explanation applies, labelled "not validation, data
    already seen".
 3. Both features share one definition of "served" (the Build Job thermal call, reproduced and parity tested) and one of
-   "research arm" (the P8 `researchModels` block, read through a closed adapter).
+   "research arm" (the `researchModels` block of the P8 research route response, read through a closed adapter, 7.6).
+4. Revision 3: a user may share a finished local test with the maintainer (Mode A, counted as seen) or submit a sealed
+   block that the maintainer predicts before the targets are released (Mode B, an independent blind test of the app at
+   tier Evidenced or above). Both modes produce files only; the app uploads nothing (section 14).
 
 ### 1.2 Non-goals
 
 1. No validation claim for the app, no G3, G3o, N3 or N4 credit, no physics bump, no calibration from user data (the
    existing machine-calibration path stays separate and unchanged), no leaderboard entry, no automatic link into the
-   research registry.
+   research registry. This holds for every local test and every Mode A share. The one route to a G3o block and a
+   leaderboard row is a Mode B sealed submission handled by the maintainer under the sealed protocol (14.4).
 2. No served physics change. All new Python files sit outside `lpbf_simulation.IMPLEMENTATION_SOURCE_FILES`; the
    served modules outside that manifest are pinned separately (3.6).
 3. No new HTTP route, no allowlist or ceiling growth, no new registry module, no `App.tsx` edit, no nav golden change.
    Node gets one edit and no route edit: `server/pythonRuntime.ts` forwards the blind environment variables to a WSL
-   worker (3.3).
-4. No hosted or multi-user service. The store is local to one workstation and is not scoped per user; on a server bound
-   to a non-loopback address blind mutations are refused unless the operator declares a single-user install (9.7).
-5. No proof of ordering to third parties. The app records local order and hashes; provable order needs the user to
-   anchor the receipt hash outside this computer.
+   worker (3.3). The research route `POST /api/python/lpbf-research-models` belongs to the P8 integration contract;
+   this spec uses it and adds nothing to it (7.6).
+4. No hosted or multi-user service, no upload. The store is local to one workstation and is not scoped per user; on a
+   server bound to a non-loopback address blind mutations are refused unless the operator declares a single-user
+   install (9.7). Sharing writes files the user sends by hand; the app makes no outbound call (14.1, 9.14).
+5. No proof of ordering to third parties from the local store alone. The app records local order and hashes; provable
+   order needs the user to anchor the receipt hash outside this computer, or a Mode B submission, whose order rests on
+   GitHub and Zenodo server times (14.5).
 6. Protocol 1 scores melt-pool depth only. Width is descriptive. Vapour-depression depth is descriptive (scored
    against nothing until a separate registration). Multi-track, powder-layer scoring, xlsx files, property-fragile arms
    and per-user stores are out of scope.
@@ -73,6 +84,23 @@ Every blind document (preview, receipt, reveal record, report, list entry) carri
 The descriptive record carries `{label, statement, experimentalValidation: false, labelPromotionProposed: "none",
 evidenceKind: "screening-only", spentOnly: true}`.
 
+Revision 3 scopes. Shared and sealed documents carry the same block with these differences; Python and TypeScript
+refuse any other combination:
+
+| Field | Mode A (share manifest, maintainer import record) | Mode B (commitment, predictions, result, sealed record) |
+|---|---|---|
+| `resultScope` | `shared-result` | `sealed-submission` |
+| `protocolId` | the frozen test's `lpbf-user-blind-protocol-1` | `lpbf-sealed-protocol-1` |
+| `notG3oRecord` | `true` | `true` unless `g3oBlock` is true (14.4.6 item 6) |
+| `appBlindTest` (new) | `false` | `true` for a scored sealed block at tier Evidenced or above; `false` otherwise |
+| `neverEnters` | every member `true` | `g3`, `n3`, `n4`, `physicsBump`, `calibration`, `researchRegistry` `true`; `g3o` `false` only for a G3o block; `leaderboard` `false` |
+| `seenByMaintainer` (new) | `true` after import | `false` until `released`, then `true` |
+| `tier` (new) | the current tier (14.7) | the tier at score and the current tier |
+
+`experimentalValidation`, `appValidation`, `labelPromotionProposed`, `evidenceKind` (the module ceiling) and `dataLabel`
+keep their 2.1 values in every scope. Every predicted or measured value also carries `sourceEvidenceKind` and
+`sourceLocator` (14.6).
+
 ### 2.2 Wording (proposals; the maintainer decides user-facing label wording, ORCHESTRA section 6)
 
 Tests pin the strings only after approval (open question Q1). Until then they live in one wording table
@@ -93,7 +121,15 @@ out of `protocolSha256` and out of every identity (3.6), so an approved wording 
 | Status `unavailable` | `Research arm not available: <reason>.` |
 | Descriptive badge | `Not validation: data already seen` |
 | Descriptive "why" prefix | `Candidate explanation, not tested:` |
-| Research arm label | `Literature estimate / Research / not validated` (GOAL item 0 wording; see Q2) |
+| Research arm label | `Literature estimate / Research / not validated` (GOAL item 0 wording; see Q2); under revision 3 the first part is the leaf's own `sourceEvidenceKind` (14.6) |
+| Research opt-in (revision 3) | `Include the research arm (runs the research models for every condition; values stay hidden until scoring)` |
+| Share step (revision 3) | `Share my result` |
+| Share notice | `Sharing sends nothing by itself. The app writes a file and you decide where it goes. Once the maintainer opens it, this data counts as seen and can never be a blind test of the app.` |
+| Sealed step | `Sealed submission` |
+| Sealed notice | `Your measurements stay with you until the maintainer has published predictions. Submit the commitment file, wait for the predictions, then release the targets file you committed.` |
+| Sealed Declared reason | `tier Declared: table only, not checked` |
+| Leaderboard table | `Independent sealed blind tests`, caption `Each row is one data owner's block, scored once under the sealed protocol. Rows are not ranked or pooled.` |
+| Tier badges, flag line, export and fabrication notices | 14.7.5 |
 
 Status words are lower-case kebab identifiers in data; the UI never shows PASS, FAIL, "validated" or "accuracy".
 
@@ -122,8 +158,8 @@ Four tiers, one authority (Python in the existing LPBF worker). Root below: `WT 
 | Module | Role |
 |---|---|
 | `python/lpbf_blind_stats.py` | Verbatim extraction of the MELT runner's pure functions from `research/ti64-primary` `e91d0fbd` (`python/tools/run_lpbf_melt_depth.py`, blob `2bff1378`): thresholds as strings compared as Fractions (`MEDIAN_MAX 0.20`, `P90_MAX 0.35`, `BIAS_MAX 0.10`, `MAXAPE_MAX 0.50`), `N_MIN 12`, `SIDE_MIN 4`, `U_MAX 0.10`, `LEVERAGE_LOW_CUT`, `LEVERAGE_HIGH_CUT 20`, `POWER_BAND 0.05`, `BEAM_BAND_GRADE_B 0.05`, `U_M_REL_FLOOR 0.03`, `U_M_F_UM`, `CV_POOL_MIN_CONDITIONS 3`, `CV_POOL_MIN_DF 3`, `BOOT_B 2000`, `BOOT_SEED 20261011`, `rank_quantile_exact` (+inf rule), `mean_signed_exact`, `block_statistics`, `bootstrap_intervals`, `index_bins`, `power_grade`, `beam_grade`, `block_grade`, `u_m_default_um`, `cv_pool`, `resolution_qualifier`, `reduce_conditions`, `arm_rels`, `leverage_qualifier`, `block_verdict`, `served_bins`, the fragile flip block of `score_phase`, `beam_d_um` (runner 666), `assert_no_target_loaded` (1390, applied to the blind input source's `columnsLoaded` and the protocol's target logicals), `served_index` (1499), plus `signflip_p_enumerate`, `signflip_p_dp`, `signflip_p` (830 to 900), `paired_differences` (901) and `FWHM_FACTOR = sqrt(ln 2 / 2)` (117) copied from `research/p3-cavity-astra` `c4470b01` `run_lpbf_p3_cavity.py`. Provenance header names blobs and line ranges. No git guards, amendment pins or research-branch imports (the P8 spec forbids runtime imports of mutable research branches). Only additions, each declared in 7.7: per-alloy leverage cuts (section 7.4), the `SERVED_NAME` map of `served_index` widened from two alloys to five, the not-formed-track and measurement-loss handling around `reduce_conditions` (4.4), and status words mapped at the report layer, never inside extracted code. |
-| `python/lpbf_served_arms.py` | Single definition of served and research arms, shared by the blind test and the descriptive tool. `served_arm(alloy, P, v, d_1e2_um, T0_C, layer_um)` reproduces `lpbf_build_job_solver.py:910-1028` exactly: `resolve_alloy_id`, `ALLOY_MATERIALS`, `build_material_property_snapshot`, `canonical_material_source`, `build_build_job_identity(BUILD_JOB_MODEL_ID, BUILD_JOB_SOLVER_REVISION)`, then `calculate_meltpool_physics(thermal_mat, P, v, d, T0, layer, 110.0, "IR_1064nm", incline_angle_deg=0.0, process_seed=DEFAULT_PROCESS_SEED, prop_overrides=snapshot["thermal"], include_process_map=X)`. X is `False` only if the parity test proves identical geometry with `True`; otherwise `True`. Returns `depth_um` and `width_um` only when `meltPoolGeometry.extentStatus == "computed"`, else `{status: "failed", reason: "EXTENT_NOT_COMPUTED"}`; also `keyholeModel.fabbroDepth_um` (context) and the unrounded index from `lpbf_public_datasets.normalized_enthalpy` (the runner's leverage convention; the served response rounds it to 2 dp). IN625 is not a Build Job alloy: the direct thermal path with `"Inconel 625"`, flat-plate, Rosenthal, no overrides, `buildJobIdentity: null`, reason label `IN625_DIRECT_THERMAL_PATH`, and the result's `materialEvidence` (`legacy-estimated-secondary`) copied into the arm label. `sensitivity_arms()`: served at P x 0.95, P x 1.05, d x 0.95, d x 1.05 (MELT `POWER_BAND` and `BEAM_BAND_GRADE_B`), with the P8 research block switched off on these calls once the P8 bump provides the switch (7.6 item 10). `research_arms(thermal)`: delegates to `lpbf_p8_adapter` (section 7.6); never passes `researchOptions`. `predictor_identity()`: section 3.6. |
-| `python/lpbf_p8_adapter.py` | Closed P8 v2 adapter (7.6): `P8_ADAPTERS["p8-research-v2"]`, the reason-code class table, band and `consistencyNote` extraction, the `researchOptions`-absent assertion. Pinned in the served-closure pin (3.6). No import of a research branch. |
+| `python/lpbf_served_arms.py` | Single definition of served and research arms, shared by the blind test and the descriptive tool. `served_arm(alloy, P, v, d_1e2_um, T0_C, layer_um)` reproduces `lpbf_build_job_solver.py:910-1028` exactly: `resolve_alloy_id`, `ALLOY_MATERIALS`, `build_material_property_snapshot`, `canonical_material_source`, `build_build_job_identity(BUILD_JOB_MODEL_ID, BUILD_JOB_SOLVER_REVISION)`, then `calculate_meltpool_physics(thermal_mat, P, v, d, T0, layer, 110.0, "IR_1064nm", incline_angle_deg=0.0, process_seed=DEFAULT_PROCESS_SEED, prop_overrides=snapshot["thermal"], include_process_map=X)`. X is `False` only if the parity test proves identical geometry with `True`; otherwise `True`. Returns `depth_um` and `width_um` only when `meltPoolGeometry.extentStatus == "computed"`, else `{status: "failed", reason: "EXTENT_NOT_COMPUTED"}`; also `keyholeModel.fabbroDepth_um` (context) and the unrounded index from `lpbf_public_datasets.normalized_enthalpy` (the runner's leverage convention; the served response rounds it to 2 dp). IN625 is not a Build Job alloy: the direct thermal path with `"Inconel 625"`, flat-plate, Rosenthal, no overrides, `buildJobIdentity: null`, reason label `IN625_DIRECT_THERMAL_PATH`, and the result's `materialEvidence` (`legacy-estimated-secondary`) copied into the arm label. `sensitivity_arms()`: served at P x 0.95, P x 1.05, d x 0.95, d x 1.05 (MELT `POWER_BAND` and `BEAM_BAND_GRADE_B`); no served call evaluates research (P8 integration contract, 7.6). `research_requests(conditions, identity)`: builds the closed research request bodies of 7.6 item 2 from inputs only; it imports no research module and computes no research value. `predictor_identity()`: section 3.6. |
+| `python/lpbf_p8_adapter.py` | Closed P8 adapter (7.6): `P8_ADAPTERS["p8-research-v3"]` over the relayed response subsets, the identity checks of 7.6 item 3, the reason-code class table, band and `consistencyNote` extraction, the `researchOptions`-absent and no-`userInput` assertions, the research pin read as bytes. Pinned in the served-closure pin (3.6). Imports no `lpbf_research_*` module (contract guard R-ISO-1) and no research branch. |
 | `python/lpbf_user_blind_inputs.py` | Metadata schema and validation, inputs CSV parsing (dialects, closed alias table, header whitelist checked before any data row, caps, base64 decode, UTF-8), structure checks, input-only exclusions (runner `parse_input_rows` rules), beam conversion, grades, block issues, design checks, preview. Must not import the targets parser. |
 | `python/lpbf_user_blind_targets.py` | Targets CSV parsing, exact key join, `depth_status` rules, repeated-input check, commitment check. |
 | `python/lpbf_user_blind_store.py` | Store root, layout, exclusive create (`open(mode="x")`), sha256 sidecars, read-only bit after write, content-addressed uploads, staging and rename (the commit point), ledger with sequence and previous-entry hash, OS-held store lock, start-of-mutation reconciliation (3.5), caps, listing of incomplete staging dirs, the reveal-or-score state gate shared by the artifact branch, the bundle job and the CLI, `source_identity(paths)` (hashes files by path without importing them), read-only tuple readers for the calibration stores (6.4 item 7). |
@@ -131,8 +167,13 @@ Four tiers, one authority (Python in the existing LPBF worker). Root below: `WT 
 | `python/lpbf_user_blind_score.py` | Score: verify freeze, join targets, reduce, statistics per arm, coverage and common subset, qualifiers, fragile labels, blindness rule, scorer identity, report. |
 | `python/lpbf_user_blind.py` | Façade for the worker: `USER_BLIND_RPC_TYPES` and `USER_BLIND_JOB_TYPES` (3.2.1), `validate_request(raw)` per type (closed keys, Phase 6a validation envelope so the route answers 422), `stage_request(p)`, `run_job(input)` (silent child, fixed error codes), `rpc(raw)` for the estimate RPC (preview, list, get), `enforce_user_blind_job_result(result, params)`, `filter_blind_log(text)`, `blind_document(result, name)` for the artifact branch, label constants. Lazy imports per job type keep the freeze path free of the targets parser. |
 | `python/lpbf_spent_ledger.py` | Loader and checks for `data/benchmark/spent-ledger-v1.json`; used by the descriptive tool and by the blind test exposure check. |
-| `python/tools/lpbf_user_blind.py` | Offline CLI for air-gapped labs on the same library: `templates [--from-plan plan.json]`, `preview`, `freeze`, `reveal`, `score`, `list`, `show`, `bundle`, `verify`, `export-protocol [--check]`, `pin-served-closure [--check]`. No network. The CLI goes through the same store functions and the same state gate as the worker: `show` prints predicted values and `bundle` writes a tar only when a reveal record or a score exists for the freeze, or when `--reveal "<phrase>"` is given, which writes `reveal-<n>.json` and the `revealed` ledger event first; otherwise both refuse with `REVEAL_REQUIRED`. `list` and `verify` print receipts, hashes, statuses and check results only, never a predicted or measured value. Run it in the same environment as the worker (both Windows or both WSL), because an `msvcrt` lock and an `flock` on a `/mnt` path do not exclude each other. |
+| `python/tools/lpbf_user_blind.py` | Offline CLI for air-gapped labs on the same library: `templates [--from-plan plan.json]`, `preview`, `freeze [--research-responses <dir>]`, `reveal`, `score`, `list`, `show`, `bundle`, `verify`, `export-protocol [--check]`, `pin-served-closure [--check]`, and in revision 3 `share`, `share-verify`, `share-import` (Mode A), `sealed-precheck`, `commit`, `check-predictions`, `release` (Mode B, user side). No network. The CLI goes through the same store functions and the same state gate as the worker: `show` prints predicted values and `bundle` writes a tar only when a reveal record or a score exists for the freeze, or when `--reveal "<phrase>"` is given, which writes `reveal-<n>.json` and the `revealed` ledger event first; otherwise both refuse with `REVEAL_REQUIRED`. `list` and `verify` print receipts, hashes, statuses and check results only, never a predicted or measured value. Run it in the same environment as the worker (both Windows or both WSL), because an `msvcrt` lock and an `flock` on a `/mnt` path do not exclude each other. |
 | `python/tools/lpbf_spent_descriptive.py` | Offline producer of the descriptive record (section 8). |
+| `python/lpbf_blind_share.py` (revision 3) | Mode A (14.3): deterministic share tar, consent, licence and attribution checks, ledger excerpt with redacted links; `share_verify(tar)` and `share_import(tar)` with the checks of 14.3.4, closed member names and caps (9.16), writes only under the shared-results root, drafts the spent ledger entry. Imports the store, the scorer (re-score) and `lpbf_served_arms` (re-predict); never a research module. |
+| `python/lpbf_sealed_submission.py` (revision 3) | Mode B (14.4): commitment builder and checks (user side); the maintainer's sealed store (layout of 3.5, same lock, ledger and commit-point rules); the state machine of 14.4.3; import, run amendment builder (closed key set of MELT Amendment 6 item 14.4), freeze (served arms through `lpbf_served_arms`, the MELT runner's prediction file imported by hash, research subsets from route responses), publish, receive-targets, intake, tier events, score (`lpbf_blind_stats` under the sealed rule record, compared with the MELT runner's verdict file), result and record entry, `verify`. |
+| `python/lpbf_submission_plausibility.py` (revision 3) | The flag-only checks of 14.7.2; pure functions; reads spent sets through `lpbf_spent_ledger`; returns codes and keys, never values. |
+| `python/tools/lpbf_sealed.py` (revision 3) | Maintainer and reader CLI: `export-protocol [--check]`, `import`, `anchor`, `run-amendment`, `freeze`, `publish`, `receive-targets`, `intake`, `tier`, `score`, `record`, `status`, `verify`. No network; anchors (URLs, server times) are typed by the maintainer. |
+| `scripts/research-route-batch.ts` (revision 3) | Explicit batch client for the P8 research route on the local server: reads a list of request bodies, runs the contract's band loop per request, writes one response file per request; authenticates with the server's bearer token when one is configured (`tokenAuth`, `server/security.ts:271`). Runs only when a person starts it (OD1). |
 
 ### 3.2 Tier B: worker transport (`python/lpbf_worker.py`, `python/lpbf_worker_rpc.py`; not fingerprint files)
 
@@ -158,8 +199,10 @@ RPC.
    `submit-repeat` (forced `execution_scope="repeat"`); idempotency of mutations lives in the blind store. The one
    exception is `user-blind-open`, which writes nothing and is deduplicated on `(freezeKey, name, attempt, document
    sha256)`. Cache key for blind jobs is `sha256(canonical_json(p))`, not `fingerprint(p, m)` (which hashes every
-   `python/*.py`). Per-type `timeout_s` (read by `execute()` at line 1017): freeze 180 s (re-derived with the P8 band
-   cost, 7.6 item 10), score 60 s, reveal 30 s, bundle 60 s, open 30 s.
+   `python/*.py`). Per-type `timeout_s` (read by `execute()` at line 1017): freeze 180 s (served calls only; research
+   runs in the P8 research lane before the job is queued, 7.6 item 12), score 60 s, reveal 30 s, bundle 60 s, open 30 s,
+   share 60 s, sealed commit 30 s, sealed release 60 s. Revision 3: the relayed research subsets of a freeze request are
+   staged like the other documents (`uploads/<sha256>.research.json`), so `input.json` holds `researchSha256` only.
 3. Child `main()`: `elif job_type in USER_BLIND_JOB_TYPES: result = run_job(input_data)`; no `write_artifacts`.
    The child's stdout and stderr are `progress.log` (`_spawn_execution_child`, line 637), which `execute()` copies
    into the sqlite `log` column (lines 1049 to 1082) and, through `_execution_failure_message`, into `error`; `GET
@@ -189,7 +232,8 @@ RPC.
    `capture()` refuses blind job types explicitly ("blind tests are not archivable"), so the run archive and portable
    bundles never copy them.
 7. `artifact()` branch for blind jobs: names are a closed set (`blind-receipt.json`, `blind-freeze.json`,
-   `blind-report.json`, `blind-bundle.tar`). The file is resolved in the blind store from the job result's validated
+   `blind-report.json`, `blind-bundle.tar`; revision 3 adds `blind-share.tar`, served only when a score exists,
+   `sealed-commitment.json`, `sealed-commitment-public.json`, `sealed-release.json` and `sealed-score-local.json`). The file is resolved in the blind store from the job result's validated
    `freezeKey` and attempt number (never from the client), checked against the size and sha256 the store sidecar and
    the job result declare, and state gated through the store's reveal-or-score gate: `blind-freeze.json` and
    `blind-bundle.tar` (both hold predictions; the tar contains `freeze.json`) are served only when a reveal record or a
@@ -208,11 +252,10 @@ RPC.
 Queue starvation: the worker runs one queued job at a time (`work()`, lines 997 to 1008), so a freeze delays a waiting
 Build Job. The condition cap (section 4.3) is set from measured timing so that a freeze at the cap takes at most 60 s
 (p95, warm worker, cold child, reference machine), and the UI states "a freeze can hold the simulation queue for up to
-about a minute". Reveal, score, bundle and open make no solver call; preview, list and get are not queued at all. P8 is
-not free: once merged, every `calculate_meltpool_physics` call also evaluates the declared research arms (18 for
-Ti-6Al-4V, 24 for AlSi10Mg, P8 A4). The freeze cost is planned with those arms in phase 0, the sensitivity calls skip
-them once the P8 bump provides a switch, and the cost is re-measured in phase 6 with the cap lowered if needed (7.6
-item 10).
+about a minute". Reveal, score, bundle and open make no solver call; preview, list and get are not queued at all.
+Revision 3: under the P8 integration contract no served call evaluates research, so P8 adds nothing to the freeze job;
+the opt-in research step runs in the research lane before the freeze is queued and never holds the worker queue (7.6
+item 12). Share, sealed commit and sealed release make no solver call.
 
 ### 3.2.1 Blind request types and closed payloads
 
@@ -225,11 +268,16 @@ honesty block of 2.1.
 | `user-blind-preview` | estimate RPC | `{jobType, schema, metadata, inputsCsvBase64, inputsFileName}` | preview (4.5 item 1) |
 | `user-blind-list` | estimate RPC | `{jobType, schema, page?: int >= 0, pageSize?: int 1 to 50}` | `{entries [{freezeKey, blockLabel, alloy, createdAt, counts, state (frozen, revealed, scored), attempts, latestStatus}], total, page, readOnly, sharedHost}`; receipt fields only |
 | `user-blind-get` | estimate RPC | `{jobType, schema, freezeKey}` | receipt summary, reveal events, attempts with status words, `documents [{name, attempt or null, sha256, size, jobId, jobRecordPresent}]` for the documents the state gate allows; no predicted or measured value |
-| `user-blind-freeze` | queued | `{jobType, schema, metadata, inputsCsvBase64, inputsFileName, previewSha256, overlapSha256, acknowledgements}` (`overlapSha256` copied from the reviewed preview) | receipt (4.5 item 3) |
+| `user-blind-freeze` | queued | `{jobType, schema, metadata, inputsCsvBase64, inputsFileName, previewSha256, overlapSha256, acknowledgements, research?: {requested: true, subsets [closed subset per condition, 7.6 item 2]}}` (`overlapSha256` copied from the reviewed preview; `research` absent means not requested) | receipt (4.5 item 3) |
 | `user-blind-reveal` | queued | `{jobType, schema, freezeKey, confirmation}` (exact phrase) | `{freezeKey, revealN, ledgerSeq, documents}` |
 | `user-blind-score` | queued | `{jobType, schema, freezeKey, targetsCsvBase64, targetsFileName, declarations {viewedPredictionsBeforeFinalisingTargets}, acceptCommitmentMismatch}` | `{freezeKey, attempt, alreadyScored, statuses, documents}` |
 | `user-blind-bundle` | queued | `{jobType, schema, freezeKey, revealConfirmation?: exact phrase}` | `{freezeKey, bundleN, sha256, size, documents}`. Refused at submit and again in the child with `REVEAL_REQUIRED` unless a reveal record or a score exists; with `revealConfirmation` the child writes `reveal-<n>.json` and the `revealed` event before the tar |
 | `user-blind-open` | queued, deduplicated | `{jobType, schema, freezeKey, name (closed set of 3.2 item 7), attempt?: int >= 1}` | `{freezeKey, name, attempt, sha256, size}`; writes nothing; same state gate |
+| `user-blind-share` (revision 3) | queued | `{jobType, schema, freezeKey, consent {includeTargets}, licence, publishAllowed, attribution?, evidenceManifest?}` | `{freezeKey, shareN, shareId, sha256, size, documents}`; refused with `SHARE_NO_SCORE` unless a score exists (14.3) |
+| `user-sealed-precheck` (revision 3) | estimate RPC | `{jobType, schema, metadata, inputsCsvBase64, inputsFileName, targetsCsvBase64, targetsFileName, evidenceManifest?}` | structure checks of inputs and targets (4.2, 4.4), `targetsSha256` computed in Python, plausibility flags for the user only (14.7.2), counts and codes, never a value; writes nothing; no solver call |
+| `user-sealed-commit` (revision 3) | queued | `{jobType, schema, metadata, inputsCsvBase64, inputsFileName, targetsSha256, evidenceManifest?, submitter?, licence, publishAllowed, confidential, declarations}` | `{commitmentId, documents}`; writes `commitments/<commitmentId>/`; refusals of 14.4.4 |
+| `user-sealed-check-predictions` (revision 3) | estimate RPC | `{jobType, schema, commitmentId, predictionsJsonBase64}` | hashes, counts and identities; `PREDICTIONS_INPUTS_MISMATCH` when the file names other inputs; writes nothing |
+| `user-sealed-release` (revision 3) | queued | `{jobType, schema, commitmentId, targetsCsvBase64, targetsFileName, predictionsJsonBase64}` | `{commitmentId, releaseN, documents}`; `TARGETS_HASH_MISMATCH` and `PREDICTIONS_NOT_PUBLISHED` refusals; writes `release.json` and `sealed-score-local.json` |
 
 `USER_BLIND_RPC_TYPES` and `USER_BLIND_JOB_TYPES` are the only two sets. A test asserts that every type in them has a
 closed schema, a Python validator, a TypeScript result validator and a refusal test, and that no other `user-blind-*`
@@ -299,6 +347,24 @@ Python and Python enforces the per-file caps.
    `location.hostname` is not `localhost`, `127.0.0.1` or `[::1]`, the tab shows a permanent warning `Every signed-in
    user of this server can list and open every blind test on it, including your measurements and the frozen
    predictions.` (enforcement is in the worker, 9.7).
+8. Revision 3.
+   a. Research relay (7.6 item 2): `src/services/lpbfUserBlindClient.ts` runs the band loop per condition through
+      `pythonComputationService.solveLpbfResearchModels` (the contract's client method), sequential and awaited, with
+      Cancel; `src/data/lpbfUserBlind.ts` gains the closed extractor `extractBlindResearchSubset(response)` (the members
+      of 7.6 item 4, `requestKey`, `identity` and `clientRequestId`; it throws on an unknown key in those members). The
+      subsets live only in the pending freeze request; nothing renders, persists or logs them (sentinel test, 11.2
+      item 7).
+   b. Components: `BlindTestShareStep` (consent per part, licence, attribution, evidence list, file list before export),
+      `SealedSubmissionPanel` (precheck with the user's own flags, identity form with a `public` choice per field and the
+      public-and-permanent notice, commitment export, predictions file check, release preparation, local score view),
+      `SubmissionTierBadge` and the tier and flag strings of 14.7.5, all under `src/components/research/`, reachable from
+      the blind-test tab. Evidence files are hashed in the browser and listed; their bytes are never sent to the server.
+   c. Closed checkers in `src/data/lpbfSealed.ts`: commitment, public commitment, predictions, release, result, evidence
+      manifest, share manifest, each closed, with the scope literals of 2.1.
+   d. No non-same-origin request anywhere in these modules; links to the submissions repository and Zenodo are text
+      with a copy button (14.1 item 3).
+   e. `useUserBlindStore` may persist commitment ids, share numbers and their states, never targets, research subsets,
+      evidence bytes or identity fields other than the user's own draft.
 
 ### 3.5 Storage
 
@@ -321,8 +387,20 @@ Python and Python enforces the per-file caps.
 <root>/.staging/<random>/              freeze staging; renamed into place; leftovers listed as incomplete, never used
 ```
 
+Revision 3 adds to the user's store `freezes/<freezeKey>/shares/share-<n>.tar (+ .sha256)` (Mode A) and
+`commitments/<commitmentId>/` with `commitment.json`, `commitment-public.json` (confidential variant),
+`predictions-check-<n>.json`, `release-<n>.json` and `sealed-score-local.json`, each with a sidecar (Mode B, user side).
+The maintainer's tools use two further roots, never the maintainer's own blind store: `METALLIKSA_SHARED_ROOT` (default
+`<repo>/.runtime/shared-results/`: one directory per imported share, plus `index/seen-tuples.jsonl`) and
+`METALLIKSA_SEALED_ROOT` (default `<repo>/.runtime/sealed-submissions/`: `store.json`, `store.lock`, `ledger.jsonl` and
+`submissions/<commitmentId>/` with the files of 14.4.2). Both sit under the ignored `.runtime`, follow the lock,
+exclusive-create, sidecar, ledger and reconciliation rules above, and are written only by the CLI (no worker job, so no
+WSL forwarding is needed).
+
 Ledger events: `frozen`, `revealed`, `score-refused` (code only), `commitment-mismatch`, `scored`, `bundle-exported`,
-`reconciled` (names the event it restored). The ledger never holds measured values, predictions or free text; `jobId`
+`reconciled` (names the event it restored); revision 3 adds `share-exported`, `commitment-exported`,
+`predictions-checked`, `release-prepared`, `release-refused` (user store) and the sealed events of 14.4.3 (sealed
+store). The ledger never holds measured values, predictions or free text; `jobId`
 is the worker's fixed-format job id. No delete API: history is evidence; the user guide explains manual removal. Caps:
 500 freezes, 200 MB total; beyond them new uploads are refused (`STORE_FULL`). Mutations are refused when
 `METALLIKSA_READ_ONLY=true` reaches the worker (`STORE_READ_ONLY`; forwarded under WSL, 3.3) and on a shared host
@@ -362,9 +440,15 @@ mutation is written to survive a kill at each step:
 Predictor identity (recorded at preview, freeze and score):
 `{implementationFingerprint (live lpbf_simulation.implementation_fingerprint()), pinnedFingerprint (lpbf_fingerprint_pin),
 servedClosure {pinSha256, files [{path, liveSha256, pinnedSha256}]}, buildJobSolverRevision, buildJobModelId,
-per-alloy materialPropertySha256, materialAuthorityRevisionSha256, buildJobIdentitySha256, research {schemaVersion or
-null, researchOptions: "absent (sourced defaults)", armManifestSha256 or null, bandMethod or null}, heatSource
-"rosenthal", absorptionModel "flat-plate", includeProcessMap, python, numpy and scipy versions}`.
+per-alloy materialPropertySha256, materialAuthorityRevisionSha256, buildJobIdentitySha256, research {requested,
+researchPinSha256 (the content of `python/lpbf_research_identity.expected`, read as bytes, or null when the file is
+absent), researchImplementationSha256 or null (from the responses, equal to the pin), researchSchemaVersion
+"p8-research-v3" or null, responseSchemaVersion "p8-research-response-v1" or null, propertyContextKind,
+requestKeysSha256 (sha256 of the ordered `requestKey` list) or null, researchOptions: "absent (sourced defaults)"},
+heatSource "rosenthal", absorptionModel "flat-plate", includeProcessMap, python, numpy and scipy versions}`. The research
+member is outside the served-closure pin. The preview carries `researchPinSha256` only, and the other research members
+are filled at freeze, so ticking the opt-in never causes `PREVIEW_DRIFT`; `research.requested` enters `freezeKey`, so a
+freeze with and one without the research arm differ.
 
 Served-closure pin. `IMPLEMENTATION_SOURCE_FILES` (`python/lpbf_simulation.py:44-81`) does not cover every module the
 served arm runs through, so the fingerprint alone cannot make "served" mean "the reviewed served model". A committed pin
@@ -445,7 +529,8 @@ silent value. Every field has a help disclosure that says what it is and how it 
 Help text of `predictionsViewedBeforeFreeze` names every place a served depth is visible, so "no" is an informed
 answer: the Build Job result, the process window, the thermal route (melt-pool cross-section lab), the Dataset
 Comparison lab including the new spent-set descriptive panel (section 8), the Melt Pool vs Measurements lab, the
-machine-calibration block, the experiment plan panel, and any CLI that prints a served depth. A test pins that the help
+machine-calibration block, the experiment plan panel, the Research model panel of the P8 contract (Melt Pool lab and
+Build Job Decision lab; revision 3), and any CLI that prints a served or research depth. A test pins that the help
 data lists each of these surfaces.
 
 Acknowledgements are not metadata. They are a top-level field of the freeze request (5 step 5, 3.2.1):
@@ -496,13 +581,13 @@ Canonical columns, in any order: `condition_id`, `track_id`, `section_id`, `powe
 ### 4.3 Caps
 
 Inputs and targets files: 256 KiB each after base64 decode (base64 request field at most 350,000 characters; one RPC
-line at most 1,000,000 characters). Rows: 2000. Conditions per freeze: provisional 48 before P8 (5 served calls each,
-240 calls). With P8 merged, each condition also costs 18 (Ti-6Al-4V) or 24 (AlSi10Mg) research arm evaluations on the
-nominal call, or five times that if the sensitivity calls cannot skip the research block (7.6 item 10); the cap is
-therefore stored per alloy and per research state (`conditionCap {pre-P8, P8 with switch, P8 without switch}`),
-derived in phase 0 from timing (P8 cost from the committed synthetic reproduction as a planning proxy only), set in
-phase 1 for the pre-P8 tree and re-measured in phase 6, always so that a freeze at the cap takes at most 60 s p95 with
-a cold research cache (every freeze child starts cold). A larger campaign is split into blocks; each block needs at
+line at most 1,000,000 characters). Rows: 2000. Conditions per freeze: provisional 48 (5 served calls each, 240
+calls), derived in phase 0 from timing and set in phase 1 so that a freeze at the cap takes at most 60 s p95. Revision 3:
+P8 adds no cost to the freeze job (7.6 item 12), so there is one served cap, not one per research state. The opt-in
+research step runs in the research lane before the freeze is queued; its time per condition comes from the contract's
+phase C measurements, the preview shows the estimate for the block, and phase 6 records it. Research request bodies
+are at most 65,536 bytes each (contract 3.1) and the relayed subsets of one freeze stay under the RPC line cap at the
+condition cap (checked in phase 6 against real responses). A larger campaign is split into blocks; each block needs at
 least 12 conditions to be scored, which the preview says.
 
 ### 4.4 targets.csv (scoring phase whitelist)
@@ -548,8 +633,10 @@ least 12 conditions to be scored, which the preview says.
    block}`, block issues, labels, design checks `{nConditions, nMinMet, leverage {cut, nBelow, nAtOrAbove20, ok or
    "not evaluable"}, resolution {evaluable, reason}, uMNote}`, overlap `{earlierTests[], publishedSets[],
    calibrationStores[]}` (condition counts and store ids only), `bestReachable {status, reasons[]}`,
-   `acknowledgementsRequired[]`, budget `{conditions, solverCalls, researchArms, cap, estimate_s}`, divergences that
-   apply, honesty. Leverage is reported as bin counts only, never per-condition index values. No predicted depth.
+   `acknowledgementsRequired[]`, budget `{conditions, solverCalls, cap, estimate_s, researchEstimate_s or null}`,
+   divergences that apply, `researchRequests` (revision 3: the closed request bodies of 7.6 item 2, inputs only, or
+   empty when the research pin is absent), honesty. Leverage is reported as bin counts only, never per-condition index
+   values. No predicted depth.
 2. Freeze record (`lpbf-user-blind-freeze-1`, on disk only): `freezeKey = sha256(canonical {protocolId, metadata,
    canonical input rows, predictorIdentity})` (createdAt excluded, so re-freezing identical inputs returns the same
    record); `createdAt` (local clock, stated as unverified); metadata; `metadataSha256`, `inputsSha256` (raw bytes),
@@ -557,10 +644,10 @@ least 12 conditions to be scored, which the preview says.
    v_mm_s, d_declared_um, beamQuantity, beamDefinition, d_1e2_um, conversion, P_u_k1_W, indexUnrounded, indexBin}]`;
    per condition `pred {served, "served:P-5%", "served:P+5%", "served:d-5%", "served:d+5%", "research:melt-link",
    "research:cavity", "context:fabbro"}`, each `{value_um, status ok|failed|unavailable, reasonCode, reasonClass,
-   extentStatus, warnings[]}`, research arms also `band` (the P8 `ResearchNumericBand` of the leaf: `min`, `nominal`,
-   `max`, `successfulArms`, `totalArms`, `completeness`, `method`, `minArmId`, `maxArmId`, `statusSupport`,
-   `failedArms`) and `consistencyNote` (`status`, `worstArmStatus`, `statusSupport`, `sentence`, `knownContradictions`
-   ids); acknowledgements; excluded inputs; design checks; grades; block issues; labels; predictor identity; scorer
+   extentStatus, warnings[]}`, research arms also `requestKey`, `sourceEvidenceKind` with `weakestInputs`, `band` (the
+   `p8-research-v3` fields of 7.6 item 7, with `manifestSha256` in place of the descriptor list; the cavity band's
+   `statusSupport` on `research:cavity`) and `consistencyNote` (the fields of 7.6 item 4); served and research values
+   carry `sourceEvidenceKind` and `sourceLocator` (14.6); acknowledgements; excluded inputs; design checks; grades; block issues; labels; predictor identity; scorer
    identity at freeze; `predictionsSha256`; honesty. Sidecar `freeze.json.sha256`.
 3. Receipt (`lpbf-user-blind-receipt-1`, freeze job result): `freezeKey`, `freezeSha256`, `predictionsSha256`,
    `inputsSha256`, `metadataSha256`, `previewSha256`, `targetCommitmentSha256 or null`, `createdAt`, `alreadyFrozen`,
@@ -593,7 +680,7 @@ least 12 conditions to be scored, which the preview says.
 
 `data/blind/lpbf-user-blind-protocol-v1.json`, generated by `python/tools/lpbf_user_blind.py export-protocol` and
 checked with `--check`: protocol id, vocabularies, alias tables, regexes, caps, thresholds as exact decimal strings, arm
-catalogue, the P8 reason-code class table (7.6 item 3), the declared divergence list with ids and rules (7.7), the
+catalogue, the P8 reason-code class table (7.6 item 5), the declared divergence list with ids and rules (7.7), the
 blind request types (3.2.1), template columns and the path and sha256 of the served-closure pin (3.6). Its sha256 is
 `protocolSha256`. A released protocol version is immutable; any rule, threshold or vocabulary change is a new id.
 Label and status sentences live in `data/blind/lpbf-user-blind-wording-v1.json` (same generator, `--check` too),
@@ -606,6 +693,64 @@ templates, header checks and display only.
 `SYNTHETIC-EXAMPLE` in its ids) and `blind_metadata_v1.json`; the browser generates the same files with `toCsv`. A
 cross-language test pins the TypeScript header lists to the protocol record. The example row is refused if it is
 uploaded (`SYNTHETIC_EXAMPLE_ROW`, 4.2 item 7), and the browser header check warns about it before upload.
+
+### 4.8 Mode A share documents (revision 3)
+
+All closed, canonical JSON (14.4.2 rules).
+
+1. `share-manifest.json` (`lpbf-user-blind-share-1`): `shareId` (sha256 of the canonical manifest without `shareId`),
+   `freezeKey`, `freezeSha256`, `predictionsSha256`, `receiptLedgerEntryHash`, `files [{name, sha256, size, kind}]`
+   (closed name set of 14.3.1), `consent {includeInputs: true, includeMetadata: true, includeTargets}`, `licence`
+   (`CC-BY-4.0` | `CC0-1.0` | `none`), `publishAllowed`, `attribution` or null, `submitter` or null (14.7.1),
+   `evidenceManifestSha256` or null, `anchors [{kind github | zenodo | other, url, note}]` as typed by the user,
+   `createdAt` (local, unverified), `appIdentity {protocolSha256, wordingSha256, scorer identity}`, honesty (2.1, scope
+   `shared-result`).
+2. `ledger-excerpt.jsonl`: full lines for this freeze, redacted links `{seq, prevEntryHash, entryHash}` for the others
+   (14.3.2).
+3. Maintainer import record `shared-results/<shareId>/import.json` (`lpbf-shared-import-1`): `shareId`, the check
+   results of 14.3.4 by id, `order` (`local-ledger-only` or `anchored <time>`), `importedAt`, the spent ledger entry
+   draft, `tier` with its events (14.7.4).
+
+### 4.9 Mode B sealed documents (revision 3)
+
+All closed, canonical JSON (14.4.2 rules); the honesty block of 2.1 with scope `sealed-submission` in each.
+
+1. `commitment.json` (`lpbf-sealed-commitment-1`): `commitmentId`, `sealedProtocolSha256`, `createdAt` (local,
+   unverified), `metadata` (4.1, with `mode: "post-measurement"` and `targetCommitment: null`; the commitment carries the
+   hash), `metadataSha256`, `inputs {fileName, csvBase64, sha256}`, `targets {sha256, sizeBytes, fileName, dialect}`,
+   `evidenceManifest` (14.7.1) or null with `evidenceManifestSha256`, `submitter` (public fields only; private fields as
+   sha256), `licence`, `publishAllowed`, `confidential: false`, `declarations {predictionsViewedBeforeCommitment: "no",
+   targetsPublic: "no", dataPreviouslyPublished: "no", usedForMachineCalibration: false}`, `appIdentity {protocolSha256,
+   wordingSha256}`. No target value, no flag, no micrograph.
+2. `commitment-public.json` (`lpbf-sealed-commitment-public-1`, confidential variant, 14.4.5): `commitmentId`, the
+   hashes, alloy, condition count, licence `none`, `confidential: true`, public identity fields.
+3. `run-amendment.json`: exactly the closed key set of MELT Amendment 6 item 14.4 (`whitelist`, `served_commit`,
+   `p1_commit`, `p3_verdict_commit`, `constants_amendment`, `candidate_arm`, `beam`, `powder_absorptance_or_p5_bias`,
+   `datum_statement`, `track_section_protocol`, `grades`, `cavity_physics_statement`, `exposure_exclusions`,
+   `data_hashes`), filled from the commitment metadata plus the maintainer's sourced sensitivity beams where the beam is
+   nominal; `data_hashes` holds `commitmentId`, `inputsSha256`, `targetsSha256` and `evidenceManifestSha256`.
+4. `predictions.json` (`lpbf-sealed-predictions-1`): `commitmentId`, `inputsSha256`, `targetsSha256`,
+   `runAmendmentSha256`, `servedIdentity` (3.6 served part with the served-closure pin), `researchIdentity` (3.6 research
+   member) or `{requested: false}`, `meltRunner {commit, amendment6TextSha256, amendment6JsonSha256,
+   predictionFileSha256}`, `candidateArm`, per condition every MELT arm from the runner's prediction file and every app
+   arm of 7.1 in the freeze record form of 4.5 item 2, `frozenAt` (maintainer clock), `predictionsContentSha256`.
+   `predictions-public.json` holds the identities and `predictionsSha256` only.
+5. `publication.json`: `predictionsSha256`, `url`, `serverTime`, `recordedBy`, `recordedAt`.
+6. `release.json` (`lpbf-sealed-release-1`, user side): `commitmentId`, `predictionsSha256` as checked, `files [{name,
+   sha256, size, role targets | inputs | metadata | commitment | predictions | evidence}]`, `licence`,
+   `depositInstructions` (text), `localScoreSha256`.
+7. `release-<n>.json` (maintainer): `source {kind zenodo | email, doi or null, publicationDate or receivedAt}`, file
+   hashes, `accepted` or `refused {code}`.
+8. `intake.json`: flags `[{code, keys, sentence}]`, evidence re-hash results, identity completeness, plausibility
+   constants sha256.
+9. `tier.json`: append-only events (14.7.4).
+10. `result.json` (`lpbf-sealed-result-1`): the protocol 1 report fields of 4.5 item 5 that apply, plus `meltVerdict
+    {verdictFileSha256, status, statistics, qualifiers, licenceSentence or null}`, `scorerAgreement` (14.4.6 item 2),
+    `tierAtScore`, `g3oBlock {value, reasons}`, `blindness {status: "blind-sealed"}`, the anchors of 14.4.9 and
+    `sealedDepartures` (SD1 to SD3).
+11. `data/benchmark/sealed-submissions-v1.json` (`lpbf-sealed-submissions-1`, main repository): the entries of 14.4.9,
+    never per-condition values.
+12. `data/benchmark/approved-reviewers-v1.json` (`lpbf-approved-reviewers-1`): `{reviewerId, approvedBy, approvedAt}`.
 
 ## 5. Blind protocol with server-enforced order
 
@@ -628,7 +773,10 @@ queued job). Browser checks are convenience only. Request shapes are the closed 
 4. Review (browser). Shown before anything is frozen: `Best reachable outcome: inconclusive (atmosphere not stated;
    single-track conditions need at least 3 replicated conditions)`, each block issue with how to fix it, the labels,
    the declared divergences that apply, the overlap list (the user may drop overlapping conditions now; deciding from
-   inputs before freeze is legitimate), and the acknowledgement boxes.
+   inputs before freeze is legitimate), and the acknowledgement boxes. Revision 3: the research opt-in box (2.2),
+   unticked, with the estimated research time; when ticked, pressing Freeze first runs the research step of 7.6 item 2
+   in the research lane (progress `research <k> of <n> conditions`, Cancel leaves the arm `RESEARCH_NOT_REQUESTED`),
+   then submits the freeze with the subsets. Nothing is shown from the responses.
 5. Freeze submit: `POST /api/lpbf/jobs {jobType: "user-blind-freeze", schema, metadata, inputsCsvBase64,
    inputsFileName, previewSha256, overlapSha256, acknowledgements}`. `acknowledgements` is a top-level request field, outside
    `metadata`, `metadataSha256` and `previewSha256` (4.1). Python (submit) re-runs the preview; first compares the live
@@ -636,8 +784,9 @@ queued job). Browser checks are convenience only. Request shapes are the closed 
    ones (`ACK_REQUIRED`), so the message says what changed; then refuses any other drift with `PREVIEW_DRIFT`; stages the
    canonical metadata and raw inputs bytes by hash; enqueues a job whose `input.json` holds hashes only.
 6. Freeze (child). Silent child (3.2 item 3). Verify uploads by hash; re-run the preview; check the live fingerprint
-   and the served-closure pin (3.6); for every condition compute the served arm, four sensitivity arms and the research
-   arms (research from the nominal call's thermal result, 7.6); `assert_no_target_loaded`; record `columnsLoaded` and
+   and the served-closure pin (3.6); for every condition compute the served arm and four sensitivity arms; parse the
+   relayed research subsets through the adapter with the identity checks of 7.6 item 3 (`RESEARCH_CONTRACT_BROKEN` or
+   `RESEARCH_RELAY_INCOMPLETE` refuse; no research is computed here); `assert_no_target_loaded`; record `columnsLoaded` and
    `targetColumnsRead: false`; compute `freezeKey`. If `freezes/<freezeKey>` exists, verify its sidecar and return the
    receipt with `alreadyFrozen: true`. Else write `freeze.json` (mode `x`) and its sidecar into `.staging/<random>/`
    and fsync; take the store lock and reconcile (3.5); re-derive the required acknowledgements and the overlap against
@@ -689,7 +838,33 @@ and deterministic, so viewing predictions elsewhere in the app (every surface li
 `predictionsViewedBeforeFreeze` help, 4.1) is declared, not prevented (phase 4 adds a partial Build Job history check
 and the calibration-store overlap check); a person with disk access can rewrite or delete the store and sidecars
 together, which is detectable only against an externally anchored hash; on a shared host every signed-in user can read
-every test (9.7).
+every test (9.7). Revision 3: the research values pass through the user's browser on their way to the freeze; they are
+not rendered, but a user with developer tools can read them, as they can run the Research model panel at any time, so
+this is declared (D13), not prevented.
+
+### 5.1 Mode A flow (revision 3, design in 14.3)
+
+1. The user opens a scored test, chooses `Share my result`, reads the file list, ticks the consent per part, chooses a
+   licence and, for CC BY 4.0, an attribution; optionally lists evidence files and identity (14.7.1).
+2. `user-blind-share` writes the tar; the browser downloads it through the artifact route with the sha256 check.
+3. The user deposits it on Zenodo or emails it, following the instruction sheet; the app sends nothing.
+4. The maintainer runs `share-verify`, then `share-import`; the set becomes `EXPOSED` (14.3.5); a tier review is
+   optional and descriptive only.
+
+### 5.2 Mode B flow (revision 3, design and state machine in 14.4)
+
+1. The user, post-measurement, picks the inputs and targets files and optional evidence files; `user-sealed-precheck`
+   checks both files and shows the user's own plausibility flags; the user fixes any structural problem now, because
+   the committed targets bytes can never change.
+2. The user fills identity and licence, confirms the four declarations, and `user-sealed-commit` writes
+   `commitment.json` (no target value, flag or micrograph inside).
+3. The user opens a pull request or issue in the submissions repository with the commitment, following the sheet.
+4. The maintainer runs `import`, `anchor`, `run-amendment`, `freeze` (served arms, the MELT runner's prediction file,
+   research subsets from an explicit batch), then publishes `predictions.json` by a merge and records it with `publish`.
+5. The user downloads the published predictions file; `user-sealed-check-predictions` confirms it names the committed
+   inputs; `user-sealed-release` checks the targets hash, writes `release.json` and the local score.
+6. The user publishes the release folder on Zenodo (or emails it); the maintainer runs `receive-targets`, `intake`,
+   `tier`, `score` once, and `record`; the result enters `sealed-submissions-v1.json` and the leaderboard (14.4.9).
 
 ## 6. Metadata gates and refusal messages
 
@@ -724,7 +899,7 @@ every test (9.7).
 | `PREVIEW_DRIFT` | `The request differs from the check you reviewed, or the predictor changed. Run the check again.` |
 | `PREDICTOR_NOT_PINNED` | `The running solver does not match the reviewed served model (<fingerprint or file list>), so predictions cannot be frozen from an unreviewed build.` |
 | `PROTOCOL_CHANGED` | `The protocol rules changed since this test was frozen under the same protocol id. This test cannot be scored by this build.` |
-| `RESEARCH_CONTRACT_BROKEN` | `The research block does not match the pinned P8 contract (<check>). Nothing was frozen.` (child) |
+| `RESEARCH_CONTRACT_BROKEN` | `The research results do not match the pinned P8 research contract (<check>). Nothing was frozen.` (child; check ids of 7.6 item 3; for `RESEARCH_CODE_STALE` the message adds `Restart the server and run the research step again.`) |
 | `STORE_READ_ONLY`, `STORE_FULL`, `STORE_LOCKED`, `STORE_SHARED_HOST` | `This installation is read-only.` / `The blind test store is full; see the guide for manual archiving.` / `Another blind job holds the store (job <id>). Try again when it finishes.` / `This server is reachable by other users, so blind tests are switched off. An operator can declare a single-user install (see the guide).` |
 | `FREEZE_UNKNOWN` | `No frozen test with this key on this computer.` |
 | `TARGETS_KEYS_MISMATCH` | `The targets file must list exactly the frozen rows: <m> missing, <e> extra, <d> duplicate (first: <key>).` |
@@ -737,11 +912,25 @@ every test (9.7).
 | `CONFIRMATION_PHRASE` | `Type the phrase exactly to reveal the predictions.` |
 | `REVEAL_REQUIRED` | `This shows or exports the frozen predictions, which ends blind status. Reveal them first, or confirm the reveal phrase with this request.` (bundle job, CLI `show` and `bundle`) |
 | `TARGET_OUT_OF_RANGE` | `Row <n>, column <col>: outside <lo> to <hi> um. <hint>` (hint `values look like millimetres; enter micrometres` or `values look like nanometres or a wrong column`) |
+| `RESEARCH_RELAY_INCOMPLETE` (rev. 3) | `The research step did not finish for every condition. Run it again, or freeze without the research arm.` |
+| `SHARE_NO_SCORE` | `Share a test after it has been scored.` |
+| `SHARE_ATTRIBUTION_REQUIRED` | `CC BY 4.0 needs a name or pseudonym for attribution.` |
+| `SHARE_VERIFY_FAILED` (maintainer CLI) | `Check <id> failed: <check sentence>. Nothing was imported.` |
+| `SEALED_PREDICTIONS_VIEWED` | `A sealed submission needs data whose predictions you have not viewed. Run a local test or share your result instead.` |
+| `SEALED_DATA_PUBLISHED` | `Published data cannot be a sealed submission.` |
+| `SEALED_CALIBRATION_OVERLAP` | `These conditions were used for machine calibration on this computer (<store id>), so they cannot be a sealed submission.` |
+| `SUBMISSION_SCHEMA`, `SUBMISSION_ID_MISMATCH`, `SUBMISSION_PROTOCOL_UNKNOWN`, `SUBMISSION_INPUTS_CHANGED`, `SUBMISSION_DATA_EXPOSED`, `SUBMISSION_STATE` (maintainer CLI) | one sentence each naming the field, hash or state, never a value (14.4.4) |
+| `TARGETS_HASH_MISMATCH` | `This targets file does not match the hash in your commitment. Only the committed file can be scored.` |
+| `TARGETS_RELEASED_EARLY` (maintainer CLI) | `The targets were released before the predictions were published, so this is not a sealed test.` |
+| `PREDICTIONS_NOT_PUBLISHED`, `PREDICTIONS_INPUTS_MISMATCH`, `PREDICTIONS_ALTERED`, `PREDICTIONS_DUPLICATE` | `Check the published predictions file first.` / `This predictions file is for other inputs. Do not release your targets; contact the maintainer.` / `The published predictions differ from the frozen file.` / `This commitment already has a predictions file.` |
+| `EVIDENCE_HASH_MISMATCH` | `<k> evidence files do not match the committed hashes; they cannot support a tier above Declared.` (listed, not a refusal of the score) |
+| `TIER_REVIEWER_NOT_APPROVED`, `TIER_REQUIREMENT_MISSING` (maintainer CLI) | `<id> is not an approved reviewer.` / `Tier <t> needs: <list>.` |
+| `SEALED_SCORER_DISAGREEMENT` (maintainer CLI) | `The app's recomputation differs from the MELT runner for <arm>. The result is not recorded.` |
 
 A child job ends with one code from the closed `BLIND_CHILD_ERROR_CODES` table: the codes above that can arise after
 submit (`PREVIEW_DRIFT`, `ACK_REQUIRED`, `OVERLAP_CHANGED`, `PREDICTOR_NOT_PINNED`, `PROTOCOL_CHANGED`,
-`RESEARCH_CONTRACT_BROKEN`, `FREEZE_ALTERED`, `REVEAL_REQUIRED`, `STORE_*`) plus `SOLVER_EXCEPTION` and
-`INTERNAL_ERROR`. The job's `error` text is the code's fixed message, never an exception message (3.2 item 3).
+`RESEARCH_CONTRACT_BROKEN`, `RESEARCH_RELAY_INCOMPLETE`, `FREEZE_ALTERED`, `REVEAL_REQUIRED`, `SHARE_NO_SCORE`,
+`TARGETS_HASH_MISMATCH`, `PREDICTIONS_NOT_PUBLISHED`, `STORE_*`) plus `SOLVER_EXCEPTION` and `INTERNAL_ERROR`. The job's `error` text is the code's fixed message, never an exception message (3.2 item 3).
 
 ### 6.2 Block issues (scored arms become `inconclusive`; statistics still shown)
 
@@ -774,8 +963,9 @@ conditions or pooled df below 3; leverage counts below 4 on either side; IN625 l
 quantity), `not blind` (exposure, 6.4, including calibration overlap from phase 4). The preview also states the
 arithmetic of the resolution rule without data: with u_m not released, a condition needs a measured depth of at least
 100 um on bare plate (200 um on powder or an AM block) for U_c at most 0.10 even with no track scatter. For a research
-arm the preview also states the number of conditions inside the P8 scope that can be decided from inputs alone
-(alloy chain admitted; numerical Peclet range 0.01 to 10 needs the solver, so it is reported only after the freeze).
+arm the preview states only the number of research requests and the estimated research time; scope (alloy chain
+admitted, numerical Peclet range 0.01 to 10) is read from the responses and reported after the freeze, because the
+worker imports no research code (7.6).
 
 ### 6.4 Blindness rule (Python, at score)
 
@@ -824,6 +1014,20 @@ Otherwise blind: `blind-committed` (post-measurement, commitment matched), `blin
 
 Any `not-blind-*` status makes every scored arm `descriptive-exposed`.
 
+Revision 3. (a) `blind-sealed` is the status of a Mode B block (14.4.6 item 3): the targets were committed in public
+before predictions were published by a party who never held them, the commit-time declarations hold (items 1, 5 and 7
+apply through them) and the release came after the publication. It ranks above `blind-committed` and exists only in
+the sealed scope. (b) Item 5 covers Mode A sets: on the maintainer's machine a test or submission whose hashes or
+condition tuples match a `shared-result` entry or the local seen-tuples index is `not-blind-data-already-used-by-app`
+(or refused at sealed import, `SUBMISSION_DATA_EXPOSED`). (c) A sealed block released early is
+`not-blind-targets-released-early` if it is scored at all, always descriptive.
+
+### 6.5 Plausibility flags (revision 3; never refusals)
+
+The checks of 14.7.2 produce flags, not codes of 6.1: they never refuse a file, block a step or change a statistic.
+They are shown to the user at precheck and before a share, recorded at maintainer intake, printed in sealed and shared
+records with their codes and keys, and decide only whether a tier above Declared can be granted (14.7.3).
+
 ## 7. Scoring
 
 ### 7.1 Arms
@@ -831,9 +1035,9 @@ Any `not-blind-*` status makes every scored arm `descriptive-exposed`.
 | Arm | Source | Scored |
 |---|---|---|
 | `served` | Build Job thermal call (`lpbf_served_arms.served_arm`); IN625 direct thermal path, labelled | yes |
-| `served:P-5%`, `served:P+5%`, `served:d-5%`, `served:d+5%` | same call with perturbed power or 1/e2 beam (research block off once P8 provides the switch, 7.6 item 10) | only for the input-fragile label |
-| `research:melt-link` | P8 v2 `meltDepthLink.fields.linkedMeltDepth_um` with its `band` and the module `consistencyNote` (conditional and conduction depths and `controllingLeg` carried as context); Ti-6Al-4V and AlSi10Mg only (P8 section 3: other alloys `ALLOY_CONSTANT_CHAIN_NOT_ADMITTED`) | yes, side by side, never changes served labels |
-| `research:cavity` | P8 v2 `keyholeCavity.fields.cavityDepth_um` with its band | only against `vapour-depression-depth`, descriptive in protocol 1; otherwise shown with `OBSERVABLE_MISMATCH` (goal deviation G1, 7.7) |
+| `served:P-5%`, `served:P+5%`, `served:d-5%`, `served:d+5%` | same call with perturbed power or 1/e2 beam (no served call evaluates research, 7.6 item 12) | only for the input-fragile label |
+| `research:melt-link` | `p8-research-v3` `meltDepthLink.fields.linkedMeltDepth_um` from the opt-in research route (7.6 item 2), with its `band` and the module `consistencyNote` (conditional and conduction depths, `controllingLeg` and `conductionMeltState` carried as context); alloys outside the admitted chains give `ALLOY_CONSTANT_CHAIN_NOT_ADMITTED`, read from the response | yes, side by side, never changes served labels |
+| `research:cavity` | `p8-research-v3` `keyholeCavity.fields.cavityDepth_um` with its band and onset support | only against `vapour-depression-depth`, descriptive in protocol 1; otherwise shown with `OBSERVABLE_MISMATCH` (goal deviation G1, 7.7) |
 | `context:fabbro` | served `keyholeModel.fabbroDepth_um` | never |
 
 A failed prediction (served `extentStatus` not `computed`, a served exception, a research code of class `failed`)
@@ -852,14 +1056,15 @@ labels when an interval crosses a threshold. Served index bins (`served_bins`) a
 ### 7.3 Status precedence (runner `block_verdict`, extended)
 
 1. `descriptive-exposed` (any `not-blind-*`)
-2. `descriptive-not-scored` (powder layer; vapour quantity; research cavity against melt depth)
+2. `descriptive-not-scored` (powder layer; vapour quantity; research cavity against melt depth; a sealed block at tier
+   Declared, 14.4.6 item 4)
 3. `inconclusive` (n < 12 counted inside the arm's scope, any block issue)
 4. `threshold-not-met` (any of the four)
 5. `inconclusive` (leverage not met or not evaluable, the latter for IN625; resolution `not_met` or `not_evaluable`)
 6. `thresholds-met`
 
-`unavailable` applies to a research arm with no in-scope condition (P8 absent, schema unknown or malformed, alloy chain
-not admitted, every condition outside the numerical scope). Each status maps to one plain sentence (2.2) plus the label
+`unavailable` applies to a research arm with no in-scope condition (`P8_NOT_IN_THIS_BUILD`, `RESEARCH_NOT_REQUESTED`,
+schema unknown or malformed, alloy chain not admitted, every condition outside the numerical scope). Each status maps to one plain sentence (2.2) plus the label
 list.
 
 ### 7.4 Grade, resolution and leverage
@@ -891,96 +1096,134 @@ counted as model misses`; `measurement losses: <s> sections, <t> tracks, <c> con
 differs from the as-built property convention`; `research arm scored on <k> of <n> conditions (<codes>)`; `research
 consistency: inRange <a>, extrapolated <b>, outOfRange <c>`; `band-fragile`; `bare plate: layer argument 40 um passed
 (no effect on served depth)` shown only if the phase 0 Astra check confirms invariance, otherwise the layer used is
-printed as a predictor note in the collapsed predictor section.
+printed as a predictor note in the collapsed predictor section. Revision 3 adds: `research arm not requested`; `model
+predicted no melt track in <k> conditions` (7.6 item 5); `envelope arms extrapolated or out of range in <k>
+conditions`; per value the `sourceEvidenceKind` badge (`Measured`, `Literature estimate`, `User input`, `Unresolved`
+with the inputs named, 14.6); in sealed and shared records the tier badge, `descriptive only (tier Declared)`, the flag
+counts, `same rules, not the registered candidate`, `confidential sealed test: third parties cannot re-score it`, and
+`order: local-ledger-only` or `order: anchored <time>`.
 
-### 7.6 Served versus P8 research arm (contract: P8 v2, `research/p8-research-arm` `b6e68dfe`)
+### 7.6 Served versus the P8 research arm (contract: P8 integration contract, `research/p8-research-arm` `29ae2183`)
 
-The P8 specification at `b6e68dfe` (`docs/research/SPEC_p8_research_arm_2026-10-14.md`, Amendment 1) declares
-`schemaVersion "p8-research-v2"` (spec line 61), seven closed containers, a `band` of type `ResearchNumericBand` with
-method `declared-ofat-envelope-v1`, and a closed `consistencyNote` on `keyholeCavity`, `meltDepthLink`, `marangoni` and
-`surfaceBalance` (lines 73 and 328 to 369). Earlier drafts of this section were written against a v1 contract that was
-never served and are replaced here.
+Revision 3 replaces the revision 2 text of this section. That text assumed a P8 served bump that would put
+`researchModels` into every `calculate_meltpool_physics` result, a `research_models=False` solver switch for the
+sensitivity calls, and the `p8-research-v2` block read from `thermal.researchModels`. The integration contract
+(`docs/research/SPEC_p8_integration_contract_2026-10-15.md` at `29ae2183`, aligned with P8 Amendment 2 `1c76a2fd`, a
+proposal for the P8 re-gate) supersedes those parts of the P8 spec, and this section follows it. (a) P8 is not a served
+bump: `calculate_meltpool_physics`, the Build Job path, the 36 manifest files, the fingerprint pin, the goldens,
+`BUILD_JOB_SOLVER_REVISION` and the job cache key stay byte-identical whether research runs or not (contract 0 and
+10.1). (b) Research is computed only when `POST /api/python/lpbf-research-models` receives an explicit request, by
+`python/lpbf_research_models.py` in its own single-process IPC lane (contract 1 and 3); no served route, worker job or
+internal caller computes it, and no module outside `lpbf_research_*` imports a research module (guard R-ISO-1). (c)
+Request `p8-research-request-v1`, response `p8-research-response-v1`, block schema `p8-research-v3` with the names of
+contract 7, the provenance of contract 6 and the reason classes of contract 9.
 
-1. Side by side in one table: per arm status, sentence, coverage, the four statistics, bootstrap, labels, and the four
-   P8 evidence labels copied from the leaf (`evidenceKind "Literature estimate"`, `moduleMaturity "Research"`, the
-   `validationStatus` text per Q2, `experimentalValidation false`), never retyped.
-2. Adapter `python/lpbf_p8_adapter.py`, `P8_ADAPTERS["p8-research-v2"]` (closed; there is no v1 entry). It reads
-   `thermal.researchModels` only: the scored leaf `meltDepthLink.fields.linkedMeltDepth_um` (`value`, `reasonCode`,
-   `warnings`, `band`, `consistencyNoteRef`), context leaves `conditionalMeltDepth_um`, `conductionDepth_um`,
-   `controllingLeg`, `keyholeCavity.fields.cavityDepth_um` with its band (descriptive), the module onset support
-   statement and `meltDepthLink.consistencyNote`. An absent block gives `P8_NOT_IN_THIS_BUILD`; any other
-   `schemaVersion` gives `RESEARCH_SCHEMA_UNKNOWN`; a block that fails the closed check (seven containers, no extra
-   keys, band and note present on the four modules) gives `RESEARCH_BLOCK_MALFORMED`. All three are `unavailable` for
-   every condition. The adapter never guesses or fills a value.
-3. Reason codes (closed table in the protocol record, from P8 sections 3 to 5 and A1 to A4; Astra signs off the class
-   split in phase 0):
+The contract is being revised on the same branch (P8 Amendment 3, `78607f3e`, scenario provenance and secondary-alloy
+manifests). This section depends only on the committed contract plus the two facts above; arm counts, arm names and
+leaf provenance are read from each response, never pinned here.
 
-   | Class | Codes on the scored leaf | Scoring |
+1. Nothing waits for a P8 bump. The served arms (7.1) never change because of P8; the served-closure pin and the served
+   part of the predictor identity do not move when the research route lands. The research arm becomes available when the
+   contract's phases B to E land (route, lane, evaluator, types), with no served parity event.
+2. Research values reach the blind test through the route only, on explicit request. The review step offers `Include
+   the research arm (runs the research models for every condition; values stay hidden until scoring)`, unticked by
+   default. The preview returns the closed list `researchRequests` (4.5 item 1): one request body per condition, inputs
+   only: `process {material, laserPower_W, scanSpeed_mm_s, beamDiameter_um (the 1/e2 value), preheatTemp_C,
+   laserWavelength "IR_1064nm", absorptionModel "flat-plate"}`, `propertyContext {kind "build-job-snapshot", alloyId,
+   materialPropertySha256}` equal to the served arm's snapshot (`{kind "nominal"}` for IN625), no `researchOptions`,
+   `supersedeKey "p8-research:blind-test"`, `clientRequestId "blind:<ordinal>:<first 16 hex of previewSha256>"`. After
+   the user ticks the option and presses Freeze, the client runs the contract's band loop per condition (`stage "band"`,
+   budget 1500 ms, each request awaited, until `progress.complete`; the contract 3.5 rule 6 fallback to one request with
+   `timeBudgetMs: null`; one retry after a timeout), then passes each complete response through the closed extractor
+   `extractBlindResearchSubset` (3.4 item 4) into the freeze request. The client never renders, stores or logs a research
+   value. The freeze child parses the subsets through the adapter and binds them into `predictionsSha256` before any
+   target reaches the server. The worker never imports a research module and never calls the route, so research cost
+   never holds the worker queue. This relay is declared divergence D13 (7.7). Without the option the arm is `unavailable`
+   with `RESEARCH_NOT_REQUESTED`. The CLI takes the same subsets from response files written by the explicit batch client
+   `scripts/research-route-batch.ts` (`freeze --research-responses <dir>`), which the maintainer also uses for Mode A
+   reruns, Mode B and the descriptive record. Admitting the blind tab and the batch client as senders is open dependency
+   OD1 (section 13).
+3. Identity checks in the freeze child; any failure refuses with `RESEARCH_CONTRACT_BROKEN` and the check id, and nothing
+   is written: every subset comes from a response with `success true`, `schemaVersion "p8-research-response-v1"`,
+   `identity.researchSchemaVersion "p8-research-v3"`, `progress.complete true`, a non-null block and the expected
+   `clientRequestId`; one `identity.researchImplementationSha256` across the block, equal to the committed research pin
+   `python/lpbf_research_identity.expected` (read as bytes, no import; absent file: research option disabled with
+   `P8_NOT_IN_THIS_BUILD`); `identity.servedImplementationFingerprint` equal to the live fingerprint and the fingerprint
+   pin (3.6); `identity.propertyContextKind` as requested; no arm descriptor of family `user-endpoint`, no input
+   provenance of kind `userInput`, and `band.totalArms` equal to the length of `band.manifest`. A request-level refusal
+   (class C1: `RESEARCH_REQUEST_INVALID`, `PROPERTY_SNAPSHOT_MISMATCH`, `RESEARCH_CODE_STALE`,
+   `RESEARCH_RESPONSE_TOO_LARGE`) or a request-scope failure envelope refuses the same way; `RESEARCH_CODE_STALE` adds
+   the instruction to restart the server. The research identity is recorded in the predictor identity (3.6).
+4. Adapter `python/lpbf_p8_adapter.py`, `P8_ADAPTERS["p8-research-v3"]` (closed; no v1 or v2 entry). From the block it
+   reads the scored leaf `meltDepthLink.fields.linkedMeltDepth_um` (`value`, `reasonCode`, `warnings`, `evidenceKind`,
+   `leafRole`, `weakestInputs`, `band`), the context leaves `conditionalMeltDepth_um`, `conductionDepth_um`,
+   `controllingLeg`, `conductionMeltState`, `floorFieldModelId`, `floorExtractorId`, the descriptive leaf
+   `keyholeCavity.fields.cavityDepth_um` with its band, the onset support `statusSupport` of `keyholeCavity.band` (onset
+   support lives only there, contract 5.5), `meltDepthLink.consistencyNote` (`status`, `worstArmStatus`, the primary
+   sentence verbatim, `knownContradictions[].id`, `reasons[].code` with `fieldPaths`, `onsetMismatch.comparison`) and
+   the `labels` entries of those paths. Route absent from the build: `P8_NOT_IN_THIS_BUILD`. Option not ticked:
+   `RESEARCH_NOT_REQUESTED`. Another block `schemaVersion`: `RESEARCH_SCHEMA_UNKNOWN`. A block that fails the closed check
+   (seven containers, contract 7 names, no extra keys, band and note present on the four modules, no `pending` band in a
+   complete response): `RESEARCH_BLOCK_MALFORMED`. These four are `unavailable` for every condition. The adapter never
+   guesses or fills a value.
+5. Reason-code classes (closed table in the protocol record, from contract 9.1; Astra signs off the split in phase 0):
+
+   | Class here | Codes on the scored leaf | Scoring |
    |---|---|---|
-   | failed: inside the declared scope, the model gave no value | `CAVITY_ROOT_SCAN_UNRESOLVED`, `CAVITY_RESIDUAL_FAILED`, `NO_STRICTLY_STABLE_ROOT`, `OPTICAL_TRACE_UNRESOLVED`, `CYLINDER_CONVERGENCE_FAILED`, `TIP_SHELL_UNRESOLVED`, `CONDUCTION_EXTENT_UNRESOLVED`, `MELT_BRACKET_FAILURE`, `MELT_OPTIMIZER_FAILURE`, `MELT_CONVERGENCE_FAILED`, `NONFINITE_RESULT`, `RESEARCH_EVALUATION_FAILED`, and any code not in this table (`RESEARCH_REASON_UNKNOWN` added, so an unknown code can only hurt the arm) | APE +inf, in n, never dropped |
-   | unavailable: outside the declared scope | `ALLOY_CONSTANT_CHAIN_NOT_ADMITTED`, `PECLET_OUTSIDE_NUMERICAL_SCOPE`, `ASPECT_BOUND_OUTSIDE_NUMERICAL_SCOPE`, `NUMERICAL_INPUT_BELOW_FLOOR`, `ONSET_REFERENCE_UNAVAILABLE`, `INVALID_INPUT`, `PREHEAT_OUTSIDE_PROPERTY_SCOPE`, `WAVELENGTH_UNSUPPORTED`, `POWDER_CONTEXT_UNSUPPORTED`, `UNSOURCED_PROPERTY_OVERRIDE` | out of n, listed, counted in coverage |
-   | inherited | `MELT_LINK_NOT_AVAILABLE` (upstream cavity null) | takes the class of `keyholeCavity.fields.cavityDepth_um.reasonCode` |
-   | never on the scored leaf | `NOT_APPLICABLE_BELOW_ONSET` (P8 sets it on `selectedBranch` and `rootScanRelativeDifference` only; a zero cavity below onset is a result and the linked depth is still computed) | an occurrence on the scored leaf is `RESEARCH_BLOCK_MALFORMED` |
-   | refuses the freeze | `RESEARCH_OPTIONS_INVALID`, `RESEARCH_ARM_LIMIT_EXCEEDED` (impossible with `researchOptions` absent and the default 18 or 24 arms) | freeze fails with `RESEARCH_CONTRACT_BROKEN`, nothing written |
+   | failed: inside the declared scope, no value | C8 (`CYLINDER_CONVERGENCE_FAILED`, `OPTICAL_TRACE_UNRESOLVED`, `CAVITY_ROOT_SCAN_UNRESOLVED`, `CAVITY_RESIDUAL_FAILED`, `NO_STRICTLY_STABLE_ROOT`, `CONDUCTION_EXTENT_UNRESOLVED`, `MELT_BRACKET_FAILURE`, `MELT_OPTIMIZER_FAILURE`, `MELT_CONVERGENCE_FAILED`, `TIP_SHELL_UNRESOLVED`, `NONFINITE_RESULT`), C2 `RESEARCH_EVALUATION_FAILED`, and any code not in the contract registry (`RESEARCH_REASON_UNKNOWN`) | APE +inf, in n, never dropped |
+   | unavailable: outside the declared scope | C4 `ALLOY_CONSTANT_CHAIN_NOT_ADMITTED`, `UNSOURCED_PROPERTY_OVERRIDE`; C5 (`INVALID_INPUT`, `PREHEAT_OUTSIDE_PROPERTY_SCOPE`, `WAVELENGTH_UNSUPPORTED`, `POWDER_CONTEXT_UNSUPPORTED`, `PECLET_OUTSIDE_NUMERICAL_SCOPE`, `ASPECT_BOUND_OUTSIDE_NUMERICAL_SCOPE`, `NUMERICAL_INPUT_BELOW_FLOOR`, `VAPOUR_PRESSURE_OUTSIDE_SOURCE_RANGE`); C6 `ONSET_REFERENCE_UNAVAILABLE`; client `RESEARCH_TIMEOUT` after one retry (an infrastructure event, not a model answer) | out of n, listed, counted in coverage |
+   | inherited | C7 `MELT_LINK_NOT_AVAILABLE` | the class of `keyholeCavity.fields.cavityDepth_um.reasonCode` |
+   | never on the scored leaf | other C7 codes (`NOT_APPLICABLE_BELOW_ONSET`, `NOT_APPLICABLE_FOR_CONVENTION`, `ONSET_COMPARISON_EVENT_MISMATCH`), C9, C10, other C6 codes, `ALLOY_NOT_ALSI10MG`, a W code used as `reasonCode` | `RESEARCH_BLOCK_MALFORMED` |
+   | refuses the freeze | C1; C3 (`RESEARCH_OPTIONS_INVALID`, `RESEARCH_PRESET_ALLOY_MISMATCH`, `SURFACTANT_BINARY_COMBINATION_UNSUPPORTED`, `RESEARCH_ARM_LIMIT_EXCEEDED`; impossible with `researchOptions` absent) | `RESEARCH_CONTRACT_BROKEN`, nothing written |
 
-   `UNSOURCED_PROPERTY_OVERRIDE` is a P8 section 3 gate (spec line 113) for overrides that change a physical value; a
-   full Build Job snapshot identical to the nominal resolved set is admitted there, and P8 reads `prop_overrides` as a
-   request input (line 81). The served arm passes `snapshot["thermal"]`, so the code should not occur on this path;
-   phase 6 asserts its absence on the Ti-6Al-4V and AlSi10Mg parity conditions, and an occurrence is reported as an
-   integration finding, not absorbed silently.
-4. Pinned P8 inputs: the freeze never passes `researchOptions` (P8 A1, an optional member of thermal and Build Job
-   requests), so the block uses sourced defaults, the default arm manifest (Ti-6Al-4V 18 arms, AlSi10Mg 24) and no user
-   endpoints. The adapter asserts it on every condition: no `inputProvenance` entry of kind `userInput`,
-   `band.totalArms` equal to the default count, and the module arm manifest sha256 equal to
-   `predictorIdentity.research.armManifestSha256`; a mismatch fails the freeze with `RESEARCH_CONTRACT_BROKEN`. The
-   predictor identity records `research.researchOptions: "absent (sourced defaults)"` and `bandMethod
-   "declared-ofat-envelope-v1"`.
-5. Coverage and common subset: the research arm's n counts conditions with a value or a failure; unavailable conditions
-   are listed with codes. The arm row always shows `scored on k of n conditions` (n = conditions the served arm scores)
-   with the code counts. Statistics for served and research are also computed on the common subset (conditions where
-   the research value is not unavailable) and shown as `common subset (k conditions)`, so the side-by-side comparison
-   and the paired test use the same conditions. The research status needs n >= 12 inside its scope (7.3 step 3) even
-   when the served arm has 12; k = 0 gives `unavailable`.
-6. Bands (used now, not deferred): per condition the freeze records the scored leaf's `band` (4.5 item 2). The report
-   gives `bandCoverage {complete {inside, total, wilson95}, partial {inside, total, failedArms}, unavailable}`: a
-   measured condition depth inside `[min, max]` is counted separately for `complete` and `partial` bands (a partial
-   envelope lost arms in `failedArms`, so it is narrower than declared and is never merged into the complete count);
-   `unavailable` bands are listed. Wilson 95 % interval from `lpbf_calibration_stats.wilson` on the complete count. The
-   sentence uses the P8 A4 framing: `share of conditions whose measured depth lies inside the declared one-at-a-time
-   envelope (scenario support, not a probability or confidence interval)`. `statusSupport` of each band is summed
-   into the label `envelope arms extrapolated or out of range in <k> conditions`. `band-fragile`: the research status
-   recomputed with every complete-band condition at its band `min` and at its band `max`; a different status gives
-   the label.
-7. Consistency notes: per condition the freeze records `meltDepthLink.consistencyNote` (`status`, `worstArmStatus`,
-   `statusSupport`, `sentence.value` verbatim, `knownContradictions[].id`). The report counts `status` per condition
-   (`inRange`, `extrapolated`, `outOfRange`) and `worstArmStatus`, shows the counts as a label, and prints each
-   distinct sentence once with its condition count. An `outOfRange` note on a condition whose value is present does not
-   remove the value from scoring; the count is shown beside the statistics.
-8. Paired comparison (phase 6): exact one-sided sign-flip test of research versus served APE (`paired_differences`,
-   `signflip_p`, p <= 0.05) on the common subset, descriptive, never a verdict.
-9. Goal deviation, stated (G1 in 7.7): GOAL roadmap item 1 asks for the served path and the P8 research arm
-   (`keyholeCavity`, `meltDepthLink` with uncertainty bands) scored side by side. `meltDepthLink` is scored with its
-   band; `keyholeCavity` is not scored against melt-pool depth, because a vapour cavity depth and a melt-pool depth are
-   different quantities (evidence rule 4); it is shown per condition with `OBSERVABLE_MISMATCH` and scored only
-   against `vapour-depression-depth` data, descriptively, in phase 6.
-10. Freeze cost with P8 bands: P8 A4 evaluates every declared arm (18 or 24) inside each `calculate_meltpool_physics`
-    call, and those arms already contain `0.95 P`, `1.05 P`, `0.95 d` and `1.05 d`. Running the block on the four
-    served sensitivity calls would repeat the whole envelope four more times for no new information, so "P8 adds no
-    solver call" was wrong. Plan: the P8 bump adds a solver switch that skips the research block (for example a
-    `research_models=False` keyword on `calculate_meltpool_physics`), and the sensitivity calls use it; it must land in
-    the P8 bump because `python/lpbf_thermal_solver.py` is a fingerprint manifest file. Research input fragility is read
-    from the nominal call's band (its P and d arms are part of the declared envelope), never from extra calls. Cost per
-    condition with the switch: 5 served solves plus 18 or 24 research arm evaluations; without it: 5 x (1 served plus 18
-    or 24 arms). Every freeze child starts with a cold research cache (P8 A4 cache is in-process), so the cold cost is
-    the planning number. Phase 0 estimates it from the committed synthetic reproduction
-    (`docs/research/scripts/p8_amendment1_synthetic.py` at `b6e68dfe`) as a planning proxy only (P8 forbids treating
-    it as product latency), re-derives the 48-condition cap per alloy for both cases (4.3), and phase 6 re-measures it
-    on the merged build.
-11. P8 integration check (phase 6, Astra and a fresh Opus gate): the adapter against the real block, the
-    `UNSOURCED_PROPERTY_OVERRIDE` absence of item 3, the switch of item 10, and the reason-code table of item 3 against
-    the merged code. If `researchModels` is null on the Build Job call path, Astra decides whether the research arm uses
-    the direct thermal path (stated as a different property source) or stays unavailable. Nothing is wired until the P8
-    bump is merged.
+   W codes stay warnings; the counts of `THERMAL_CYLINDER_CLOSURE_EXTRAPOLATED` and `VAPOUR_PRESSURE_EXTRAPOLATED` become
+   labels. A linked depth of exactly 0 um with `conductionMeltState "resolved-no-melting"` is a result, not a failure
+   (contract 7.2): on a formed track it scores APE 1; on a condition whose tracks did not form it is listed as `model
+   predicted no melt track` and kept out of that arm's APE statistics with the count printed, the one exception to the
+   D11 miss rule (Astra confirms in phase 0). `UNSOURCED_PROPERTY_OVERRIDE` should not occur: the Build Job snapshot
+   resolves to the nominal tuple for the four Build Job alloys (contract 3.8); an occurrence is an integration finding.
+6. Coverage and common subset: unchanged. The research arm's n counts conditions with a value or a failure; unavailable
+   conditions are listed with codes; `scored on k of n conditions`; statistics also on the common subset; the research
+   status needs n >= 12 inside its scope; k = 0 gives `unavailable`.
+7. Bands. Per condition the freeze records the scored leaf's band: `completeness` (`complete`, `partial` or
+   `unavailable`; `pending` is refused by item 4), `min`, `nominal`, `max`, `successfulArms`, `totalArms`, `method`,
+   `minArmId`, `maxArmId`, `minArmTies`, `maxArmTies`, `failedArms`, and the sha256 of the canonical `band.manifest`
+   descriptor list (the descriptors stay in the response). The report gives `bandCoverage {complete {inside, total,
+   wilson95}, partial {inside, total, failedArms}, unavailable}` as in revision 2 (complete and partial never merged;
+   Wilson 95 % interval from `lpbf_calibration_stats.wilson` on the complete count). Band text follows contract 4.7: the
+   caption "Min / nominal / max is an envelope of named one-at-a-time scenarios. Interactions are not evaluated. It is not
+   a confidence interval, an error bar, or a physical lower or upper bound." under every band; three numbers, never
+   "nominal plus or minus x"; extremes named by their arm labels with provenance. The cavity band's `statusSupport` is
+   summed into the label `envelope arms extrapolated or out of range in <k> conditions`. `band-fragile` as in revision
+   2. Research input fragility is read from the process arms of the cavity manifest (contract 5.1), never from extra
+   calls.
+8. Consistency notes: per condition the freeze records the fields of item 4. The report counts `status` (`inRange`,
+   `extrapolated`, `outOfRange`) and `worstArmStatus`, prints each distinct primary sentence once with its condition
+   count, and lists `onsetMismatch.comparison` counts. An `outOfRange` note does not remove a present value from scoring.
+9. Labels (decision items 1 and 2 of 2026-10-15, 14.6): each research value carries `sourceEvidenceKind` copied from the
+   leaf's `evidenceKind` under the maintainer rule (`Literature estimate`, `User input` naming inputs, or `Unresolved`
+   naming inputs, `Unresolved` first), with `weakestInputs`, plus `moduleMaturity "Research"`, the `validationStatus`
+   text (Q2) and `experimentalValidation false`, copied, never retyped; the document ceiling stays `screening-only`.
+   Leaf labels come from the response `labels` map (contract 7). These decisions settle the contract's M-1 and M-2.
+10. Paired comparison (phase 6): unchanged; exact one-sided sign-flip test of research versus served APE on the common
+    subset, descriptive, never a verdict.
+11. Goal deviation G1 (7.7): unchanged; `keyholeCavity` is never scored against melt-pool depth.
+12. Cost. The worker freeze runs served calls only: 5 per condition. The revision 2 plan (18 or 24 research arm
+    evaluations inside every served call, a solver switch for the sensitivity calls, caps per research state) is void,
+    because no served call evaluates research. Research cost lands in the research lane before the freeze is queued, so
+    it never delays a Build Job; it can delay a Research model panel request, whose status line already shows queueing.
+    Per-condition research time comes from the contract's phase C measurements (P-7); the preview shows the estimate and
+    the condition count, and the UI allows cancelling the research step, which leaves the arm `RESEARCH_NOT_REQUESTED`
+    (all conditions or none; a partial relay is refused, `RESEARCH_RELAY_INCOMPLETE`). Manifest sizes come from each
+    response (contract 5.1 gives, at 200 W, 21 Ti-6Al-4V and 26 AlSi10Mg cavity and link arms; Amendment 3 may change
+    them).
+13. Integration check (phase 6, Astra and a fresh Opus gate): the adapter against real route responses and against the
+    contract fixture `tests/fixtures/lpbf-research-response-v1.json` (R-TR-11), copied into `python/fixtures/` with its
+    blob hash; the class table against `lpbf_research_codes.py`; the absence of `UNSOURCED_PROPERTY_OVERRIDE` on the
+    Ti-6Al-4V and AlSi10Mg parity conditions; served bytes unchanged while a research relay runs (contract P-5 and P-6).
+14. Removed by revision 3: `research_arms(thermal)`, `P8_ADAPTERS["p8-research-v2"]`, the fixture
+    `p8_research_v2_synthetic.json`, the `research_models=False` switch, and the per-research-state condition caps (3.1,
+    4.3, 10.1, 11.1, 12).
 
 ### 7.7 Declared divergences from MELT and from GOAL
 
@@ -1000,7 +1243,8 @@ the entries that applied to the block. Adding an entry is a protocol change (new
 | D9 | MELT exposure: a target read before the prediction hash | blindness statuses of 6.4, several of them declared by the user (`*-declared`) | no custodian in a user lab; the receipt anchor advice covers provable order |
 | D10 | MELT status words PASS, FAIL, INCONCLUSIVE | `thresholds-met`, `threshold-not-met`, `inconclusive` and the descriptive words of 7.3 | naming only, same precedence |
 | D11 | MELT refuses a non-positive target | `track-not-formed` counts as APE +inf for every arm | an adverse outcome is counted against the model, never excluded |
-| D12 | no MELT counterpart | band coverage and consistency counts (7.6 items 6 and 7) are reported descriptively | P8 v2 output, no threshold attached |
+| D12 | no MELT counterpart | band coverage and consistency counts (7.6 items 7 and 8) are reported descriptively | P8 `p8-research-v3` output, no threshold attached |
+| D13 | MELT section 6 item 6: every arm's prediction is written by the prediction process before scoring | the research arm is computed by the P8 research route on the user's explicit request and relayed by the browser into the freeze, where it is bound by hash before any target reaches the server; the worker cannot recompute it; a Mode A rerun or a maintainer batch reproduces it from the recorded requests (7.6 item 2, 14.3.4 item 7) | the P8 integration contract allows research only through its own opt-in route, never inside a worker job |
 | G1 | GOAL roadmap item 1: served and P8 (`keyholeCavity`, `meltDepthLink` with bands) side by side | `keyholeCavity` not scored against melt-pool depth (7.6 item 9) | evidence rule 4 |
 
 ## 8. Descriptive panel on spent sets
@@ -1040,7 +1284,11 @@ Hofmann stays in the existing comparison view.
 1. Load rows through the pinned loaders with hash verification; predictions through `lpbf_served_arms` (the same served
    definition as the blind test), flat-plate pinned as in `pin_flat_plate(allow_raytracer=False)` of
    `python/tools/lpbf_dataset_comparison.py:79` (a tools module with that signature; `lpbf_calibration_stats.py:33` and
-   `lpbf_powder_layer_analysis.py:69` have their own zero-argument versions, which are not used).
+   `lpbf_powder_layer_analysis.py:69` have their own zero-argument versions, which are not used). Revision 3: research
+   curves come only from route responses written by the explicit batch client `scripts/research-route-batch.ts`
+   (`--research-responses <dir>`), parsed by the same adapter with the identity checks of 7.6 item 3; the producer
+   imports no research module. Every measured value carries `sourceEvidenceKind: "Measured"` with `transcription` and
+   its locator, every model value its own kind (14.6).
 2. Curves per group (alloy, power or speed, beam, substrate) with at least 3 points: 25 log-spaced points from 0.8 x min
    to 1.25 x max of the group axis; each point also carries the unrounded index so the UI can switch the x axis.
 3. Deviation per set and arm: n, failed, unavailable, median signed relative difference in percent, p10 and p90, and the
@@ -1060,7 +1308,8 @@ Hofmann stays in the existing comparison view.
    Every sentence starts `Candidate explanation, not tested:`.
 6. Output: full JSON plus slim `docs/LPBF_SPENT_DESCRIPTIVE_<date>.view.json` (schema
    `lpbf-spent-descriptive-view-1`, canonical JSON, 6 significant digits, under 150 KB raw): `generatedAt`,
-   `implementationHash`, `servedIdentity`, `researchSchemaVersion`, `spentLedgerSha256`, `reasonsCatalogSha256`,
+   `implementationHash`, `servedIdentity`, `researchSchemaVersion` (`p8-research-v3`) with `researchImplementationSha256`
+   and the research pin, `spentLedgerSha256`, `reasonsCatalogSha256`,
    `honesty`, `arms`, `sets [{provenance, spent, observable, beam, groups [{fixed, curve, points}], deviation, notes}]`,
    `modelMap`. `servedIdentity` includes the served-closure pin sha256 (3.6). `--check` re-derives and compares; a
    Python test fails when `implementationHash` differs from the live fingerprint (leaderboard pattern), so the record
@@ -1090,9 +1339,10 @@ Hofmann stays in the existing comparison view.
    about x % (n)`) per bin; notes with source; a data table fallback inside `details`; empty state; a link `Test the
    model on your own tracks`. Not the parity `ScatterPlot` (its 1:1 and plus or minus 30 % guides look like
    thresholds). Every number carries `data-source` with its record field path.
-4. Research columns read `unavailable: P8_NOT_IN_THIS_BUILD` until P8 lands. With P8 v2 the research curve carries its
-   band as a shaded envelope labelled `declared one-at-a-time envelope, not a probability` and the per-point
-   `consistencyNote.status`, through the same adapter as the blind test (7.6).
+4. Research columns read `unavailable: P8_NOT_IN_THIS_BUILD` until the research route lands and the maintainer has run
+   the explicit batch (no served bump is involved, 7.6). With `p8-research-v3` responses the research curve carries its
+   band as a shaded envelope with the contract 4.7 caption and the per-point `consistencyNote.status`, through the same
+   adapter as the blind test (7.6). The committed record is static: viewing the panel sends no research request.
 5. Contract: `python/module_contracts_dataset_view.py` gains browser-local operation `display-spent-descriptive-record`
    (output fields `datasets`, `curves`, `deviation`, `notes`, `honesty`, chosen so `looks_like_status_key` stays clear)
    and its source refs. Its legacy note (`python/module_contracts_dataset_view.py:32`, "Vite eagerly bundles the
@@ -1142,6 +1392,28 @@ Hofmann stays in the existing comparison view.
     computed, and the browser hash check is skipped with a visible note; the worker check always runs (3.4 item 5).
 13. CSV exports: `blockLabel` and file names are restricted at input, and every text cell of a blind export is
     neutralised against formula injection; numbers are never prefixed (3.4 item 4).
+14. No upload (revision 3): share and sealed features make no outbound request from Node, Python or the browser; the
+    only network use is the same-origin research route on the user's explicit request (7.6 item 2). Python tests run
+    under the NoNetwork socket patch; a TypeScript test fails on any non-same-origin URL in the new client modules;
+    links are text with a copy button. Air-gap mode needs no change (`server/airgap.ts` untouched).
+15. Research relay: the relayed subsets are closed, size-capped and bound by hash at freeze; the client never renders,
+    persists or logs them; the worker never trusts a relayed value beyond the identity checks of 7.6 item 3, and the
+    record says the values were relayed (D13).
+16. Imported files are untrusted (maintainer side): a share tar is read member by member against the closed name set;
+    absolute paths, `..`, links, devices, duplicate names, non-regular members and members outside the manifest refuse
+    the import; caps 32 MiB per tar and 2 MiB per JSON member; no zip reader; nothing is extracted to a path from the
+    archive; commitments, predictions and release manifests are closed JSON of at most 512 KiB; nothing imported is
+    executed or imported as code, and the served model never reads an imported file. Evidence images are hashed and
+    listed only, never decoded by the app.
+17. Personal data: identity fields are optional below Evidenced, each with a `public` choice; an institutional email
+    appears in public files only as its sha256; the UI states that a Mode B commitment is public and permanent; exports
+    never contain the OS user name, host name, store paths or machine identifiers (a test scans export bytes for them);
+    the UI asks the user to strip camera and location metadata from images before hashing.
+18. Order and integrity limits: local ledgers prove local order only (14.3.4); Mode B order rests on GitHub server
+    times and Zenodo publication dates, never on git author or committer dates a client can set; an email release is
+    timed by the maintainer's record and labelled so.
+19. Fabrication: a sealed submission proves when targets were fixed, not that they are real; tiers, review, plausibility
+    flags and the two-independent-campaign rule are the mitigation (14.1 item 7, 14.7).
 
 ## 10. Files to add and change, with owners
 
@@ -1169,7 +1441,7 @@ acceptance lines below means this: a fresh Opus gate for Opus-authored code, the
 | `python/lpbf_spent_ledger.py` | Sonnet |
 | `python/tools/lpbf_user_blind.py` | Sonnet |
 | `python/tools/lpbf_spent_descriptive.py` | Sonnet; Astra owns quantity mapping |
-| `python/test_lpbf_blind_stats.py`, `test_lpbf_served_arms.py`, `test_lpbf_p8_adapter.py`, `test_lpbf_user_blind_inputs.py`, `test_lpbf_user_blind_store.py`, `test_lpbf_user_blind_crash.py`, `test_lpbf_user_blind.py`, `test_lpbf_worker_blind_jobs.py`, `test_lpbf_spent_ledger.py`, `test_lpbf_spent_descriptive.py`, fixture `python/fixtures/p8_research_v2_synthetic.json` (copied from `b6e68dfe` with its blob hash) | Sonnet (Opus writes the isolation, blindness, leak and crash cases) |
+| `python/test_lpbf_blind_stats.py`, `test_lpbf_served_arms.py`, `test_lpbf_p8_adapter.py`, `test_lpbf_user_blind_inputs.py`, `test_lpbf_user_blind_store.py`, `test_lpbf_user_blind_crash.py`, `test_lpbf_user_blind.py`, `test_lpbf_worker_blind_jobs.py`, `test_lpbf_spent_ledger.py`, `test_lpbf_spent_descriptive.py`, fixture `python/fixtures/p8_research_response_v1.json` (copied from the contract fixture `tests/fixtures/lpbf-research-response-v1.json` once it is committed, with its blob hash; revision 3) | Sonnet (Opus writes the isolation, blindness, leak and crash cases) |
 | `data/blind/lpbf-user-blind-protocol-v1.json` and `data/blind/lpbf-user-blind-wording-v1.json` (generated), `data/blind/templates/blind_inputs_v1.csv`, `blind_targets_v1.csv`, `blind_metadata_v1.json` | Haiku |
 | `data/benchmark/spent-ledger-v1.json` | Haiku transcribes, Opus reviews |
 | `data/benchmark/spent-descriptive-reasons-v1.json` | Astra writes, Opus gates |
@@ -1179,6 +1451,12 @@ acceptance lines below means this: a fresh Opus gate for Opus-authored code, the
 | `src/components/research/BlindTestPanel.tsx`, `BlindTestMetadataForm.tsx`, `BlindTestInputsStep.tsx`, `BlindTestReceiptView.tsx`, `BlindTestTargetsStep.tsx`, `BlindTestReportView.tsx`, `BlindTestList.tsx` | Sonnet |
 | `src/components/research/blindTestHelp.ts` | Haiku drafts, Opus reviews wording |
 | `src/data/lpbfSpentDescriptive.ts`, `src/data/lpbfSpentDescriptiveRecord.ts`, `src/components/3d-distortion-lab/SpentSetDescriptivePanel.tsx` | Sonnet |
+| Revision 3: `python/lpbf_blind_share.py`, `python/lpbf_sealed_submission.py` | Opus, fresh Opus gate (integrity-critical: hashes, chain, state machine, import safety) |
+| Revision 3: `python/lpbf_submission_plausibility.py` | Sonnet; Astra signs off the constants; Opus review |
+| Revision 3: `python/tools/lpbf_sealed.py`, `scripts/research-route-batch.ts` | Sonnet, Opus review |
+| Revision 3: `data/blind/lpbf-sealed-protocol-v1.json` (generated), `data/benchmark/sealed-submissions-v1.json` (empty `entries` at start), `data/benchmark/approved-reviewers-v1.json` (empty until the maintainer approves a reviewer) | Haiku runs the generator; the maintainer owns the reviewer list |
+| Revision 3: `python/test_lpbf_blind_share.py`, `python/test_lpbf_sealed_submission.py`, `python/test_lpbf_submission_plausibility.py`, `python/test_lpbf_research_relay.py` | Sonnet (Opus writes the order, tamper, state-machine and leak cases) |
+| Revision 3: `src/data/lpbfSealed.ts`, `src/components/research/BlindTestShareStep.tsx`, `SealedSubmissionPanel.tsx`, `SubmissionTierBadge.tsx`, `tests/lpbf-sealed.test.ts`, `tests/lpbf-sealed-panel.test.tsx` | Sonnet |
 | `tests/lpbf-user-blind.test.ts`, `tests/lpbf-user-blind-panel.test.tsx`, `tests/lpbf-spent-descriptive.test.tsx`, `tests/fixtures/lpbf-user-blind-report.SYNTHETIC.json`, `tests/fixtures/lpbf-spent-descriptive.SYNTHETIC.json` | Sonnet (fixtures Haiku) |
 
 ### 10.2 Change
@@ -1200,6 +1478,9 @@ acceptance lines below means this: a fresh Opus gate for Opus-authored code, the
 | `python/module_contracts_dataset_view.py`, `python/test_module_contract_dataset_view.py` | second browser-local operation and refs | Sonnet |
 | `src/generated/moduleRegistry.json`, `moduleRegistry.ts`, `moduleRegistryCore.ts`, `docs/modules/lpbf-dataset-comparison.md` | regenerated only | Haiku runs the emitter |
 | `src/components/LpbfExperimentPlanPanel.tsx` | phase 4: `Download blind-test templates from this plan` | Sonnet |
+| `python/tools/lpbf_benchmark_score.py`, `src/data/lpbfLeaderboard.ts`, `src/components/LpbfLeaderboardPanel.tsx`, `tests/lpbf-leaderboard.test.tsx`, `docs/LPBF_BENCHMARK.md` | revision 3: leaderboard schema `lpbf-leaderboard-2` with the `sealedTests` member copied from `sealed-submissions-v1.json`; the separate never-ranked table of 14.4.9; `--check` on structure and hashes only | Sonnet, Opus review |
+| `src/services/lpbfUserBlindClient.ts`, `src/data/lpbfUserBlind.ts` | revision 3: research relay and `extractBlindResearchSubset` (3.4 item 8) | Sonnet, Opus review |
+| `data/benchmark/spent-ledger-v1.json` | revision 3: entry kind `shared-result` (14.3.5), added only by maintainer commits | Haiku drafts the schema change, Opus reviews |
 | `docs/MODULE_EVIDENCE_INVENTORY.md` | research-hub and lpbf-dataset-comparison rows name the new files and next gap; the research-hub row also says that the wired registry keeps the legacy research-hub row, which does not list the LPBF worker calls the blind-test tab makes (they are bound under `3d-distortion-lab`), and that the contracted research-hub builder documents them | Haiku |
 | `docker-compose.yml`, `Dockerfile` | `METALLIKSA_USER_BLIND_ROOT=/data/user-blind` and mkdir; `METALLIKSA_USER_BLIND_SINGLE_USER=true` in `docker-compose.yml` with the comment of 9.7 | Haiku |
 | `.github/workflows/ci.yml` (protected) | append the new Python test modules to the explicit list (lines 80 to 130) | Haiku prepares; maintainer adds the Ceiling-Review trailer at the batch push |
@@ -1208,7 +1489,9 @@ acceptance lines below means this: a fresh Opus gate for Opus-authored code, the
 Not changed: `server.ts`, `routes/*` (read-only mode is enforced in the worker after forwarding, not in a route),
 `routes/AUTHORITY_ALLOWLIST*.json`, `python/module_registry.py`,
 `python/module_registry_seed.json`, `src/App.tsx`, `src/modules/views.ts`, nav golden, every `*.ceiling.json`, every
-fingerprint manifest file, `python/lpbf_implementation_fingerprint.expected`, `src/services/pythonComputationService.ts`.
+fingerprint manifest file, `python/lpbf_implementation_fingerprint.expected`, `src/services/pythonComputationService.ts`
+(its research method comes from the P8 contract, not from this spec), `server/airgap.ts`, every file of the P8
+contract (`lpbf_research_*`, `routes/physics.ts`, `python/persistent_ipc_service.py`, the research pin).
 
 ## 11. Tests
 
@@ -1231,14 +1514,19 @@ fingerprint manifest file, `python/lpbf_implementation_fingerprint.expected`, `s
    test (3.6) finds no project module outside the manifest and the closure pin; a one-byte edit of any closure file in
    a temp copy gives `PREDICTOR_NOT_PINNED` naming that file; importing the modules leaves
    `IMPLEMENTATION_SOURCE_FILES` and both pins unchanged.
-3. `test_lpbf_p8_adapter.py` (self-contained fixture `python/fixtures/p8_research_v2_synthetic.json`, shapes from
-   `docs/research/scripts/p8_amendment1_synthetic.json` at `b6e68dfe`, blob hash recorded): `P8_NOT_IN_THIS_BUILD` on
-   this tree; a v2 block parses (value, band, consistency note, onset statement); every code of the 7.6 item 3 table
-   lands in its class, `MELT_LINK_NOT_AVAILABLE` inherits the cavity class, an unknown code is failed with
-   `RESEARCH_REASON_UNKNOWN`, `NOT_APPLICABLE_BELOW_ONSET` on the scored leaf is `RESEARCH_BLOCK_MALFORMED`; unknown
-   schema and a missing container are unavailable; a `userInput` provenance, a non-default `totalArms` or a different
-   arm manifest hash give `RESEARCH_CONTRACT_BROKEN`; `partial` and `unavailable` bands keep their `failedArms`; no
-   value is filled or guessed.
+3. `test_lpbf_p8_adapter.py` and `test_lpbf_research_relay.py` (revision 3; self-contained fixture
+   `python/fixtures/p8_research_response_v1.json`, a copy of the contract's R-TR-11 fixture with its blob hash, plus
+   synthetic edits of it): `P8_NOT_IN_THIS_BUILD` when the research pin file is absent; `RESEARCH_NOT_REQUESTED` without
+   the opt-in; a `p8-research-v3` subset parses (value, band with ties and manifest hash, consistency note, cavity onset
+   support); every code of the 7.6 item 5 table lands in its class, `MELT_LINK_NOT_AVAILABLE` inherits the cavity
+   class, an unknown code is failed with `RESEARCH_REASON_UNKNOWN`, `NOT_APPLICABLE_BELOW_ONSET` on the scored leaf is
+   `RESEARCH_BLOCK_MALFORMED`, a `pending` band in a complete response is malformed; each identity check of 7.6 item 3
+   fails alone with its check id (wrong schema, incomplete progress, research hash not equal to the pin, served
+   fingerprint not equal to the live one, `userInput` provenance, `user-endpoint` family, `totalArms` not equal to the
+   manifest length, a C1 envelope); a subset missing for one condition gives `RESEARCH_RELAY_INCOMPLETE`; a 0 um linked
+   depth with `resolved-no-melting` is a value, scored APE 1 on a formed track and listed on a not-formed condition;
+   `sourceEvidenceKind` and `weakestInputs` are copied unchanged; an AST check proves no blind module imports
+   `lpbf_research_*` and no blind module references the research route; no value is filled or guessed.
 4. `test_lpbf_user_blind_inputs.py`: every refusal code in 6.1 for inputs and metadata, including
    `SYNTHETIC_EXAMPLE_ROW`, `FILE_NAME_INVALID`, a formula-like or tabbed `blockLabel`, and published data in
    pre-measurement mode; target-like header refused with a deliberately malformed second line that must not be
@@ -1302,7 +1590,43 @@ fingerprint manifest file, `python/lpbf_implementation_fingerprint.expected`, `s
 9. Contract and guards: `python -B -m unittest test_module_contract test_module_contract_research
    test_module_contract_dataset_view test_allowlist_ceilings test_module_warm_parity`, `python
    scripts/emit-module-registry.py --check`, fingerprint pin test unchanged, `pin-served-closure --check`,
-   `export-protocol --check`.
+   `export-protocol --check`, and in revision 3 `lpbf_sealed.py export-protocol --check`.
+10. `test_lpbf_blind_share.py` (revision 3): the share tar is deterministic; `SHARE_NO_SCORE`; targets absent without
+    consent and present for every attempt with it (no attempt can be left out); licence and `publishAllowed` rules and
+    `SHARE_ATTRIBUTION_REQUIRED`; the ledger excerpt verifies with redacted links and a one-byte edit of any line fails;
+    `share-verify` passes on an untouched tar and fails, with the right check id, on each tamper (a member hash, the
+    freeze record, a `scored` event moved before `frozen`, a commitment that does not match, a member outside the
+    manifest); re-score byte for byte with targets, the skip label without them; `share-verify` writes nothing;
+    `share-import` writes only under the shared-results root and creates the `EXPOSED` entry draft and the seen-tuples
+    index; a later local test with an overlapping tuple on the maintainer's machine is
+    `not-blind-data-already-used-by-app`; a later sealed import with the same hashes gives `SUBMISSION_DATA_EXPOSED`;
+    the tar safety cases of 9.16 (absolute path, `..`, link, duplicate name, oversize member) refuse.
+11. `test_lpbf_sealed_submission.py` and `test_lpbf_submission_plausibility.py` (revision 3): commitment schema closed
+    and `commitmentId` recomputed; no target value, flag or micrograph in a commitment (sentinel scan); every refusal of
+    14.4.4 at its stage; the state machine table-driven: every allowed transition succeeds and every other command
+    gives `SUBMISSION_STATE`, with `score` before `tier-decided`, `freeze` before `amended` and `receive-targets` before
+    `published` among them; `TARGETS_HASH_MISMATCH` records `release-refused` and leaves the state at `published`; a
+    release dated not later than the publication time gives `void-early-release`; changed inputs in a release are
+    refused and scoring uses the committed bytes; `PREDICTIONS_ALTERED`, `PREDICTIONS_INPUTS_MISMATCH` and
+    `PREDICTIONS_DUPLICATE`; the user's local score equals the maintainer's result byte for byte; a synthetic runner
+    verdict that differs from the app's recomputation gives `SEALED_SCORER_DISAGREEMENT`; the confidential variant
+    publishes hashes only (scan of every public file for sentinel inputs and targets); `sealed-submissions-v1.json`
+    holds no per-condition value (sentinel scan); a tier Declared block is `descriptive-not-scored` with its reason;
+    G3o eligibility follows 14.4.6 item 6 case by case. Tiers: requirements per tier, `TIER_REVIEWER_NOT_APPROVED`,
+    `TIER_REQUIREMENT_MISSING`, append-only history, a promotion after scoring leaves `g3oBlock` false, a demotion of a
+    scored G3o block marks `tier-revoked`, the spot-check sample is the same for the same hashes. Plausibility: each
+    flag fires on its synthetic case and stays silent on a clean synthetic set; flags never refuse (the commitment,
+    import and score still succeed); flag output carries keys, never values; rounded values give the label, not a
+    flag; the known-set check runs over every registry entry with a loader and flags a synthetic copy of a spent set
+    without printing a value.
+12. Labels (revision 3): every predicted and measured value in reports, shared and sealed records and the descriptive
+    record carries `sourceEvidenceKind` and `sourceLocator`; served values carry `Unresolved` with
+    `SERVED_VALUE_KIND_NOT_PROVIDED`; the research rule on synthetic leaves (all sourced gives `Literature estimate`,
+    one user input gives `User input` naming it, one unsourced default gives `Unresolved` naming it, both give
+    `Unresolved`, a user input equal to its sourced default keeps the sourced label) is copied, never recomputed; the
+    document `evidenceKind` stays `screening-only` in every scope.
+13. No network (revision 3): every share, sealed and relay test runs under the NoNetwork socket patch; the CLIs
+    `lpbf_sealed.py` and `lpbf_user_blind.py` open no socket in any subcommand.
 
 ### 11.2 TypeScript
 
@@ -1338,6 +1662,19 @@ fingerprint manifest file, `python/lpbf_implementation_fingerprint.expected`, `s
    re-score with changed targets, exports, print view; descriptive panel set selector, axis toggle, details fallback;
    light and dark themes; hidden-tab polling pause; the same hub opened through a LAN address (no secure context)
    showing the paste field, the skipped-hash note and the shared-host warning.
+7. `tests/lpbf-sealed.test.ts` and `tests/lpbf-sealed-panel.test.tsx` (revision 3): closed checkers for every
+   document of 4.8 and 4.9 with the scope literals of 2.1; `extractBlindResearchSubset` keeps only the members of 7.6
+   item 4 and throws on an unknown key; the relay never renders, persists or logs a research value (sentinel research
+   values absent from the rendered markup, the persisted store snapshot and console calls); share step file list,
+   consent and licence rules; sealed panel states, the public-and-permanent notice, identity `public` choices with the
+   email private by default, flags shown to the user, tier badges and the fabrication notice; the leaderboard sealed
+   table has no rank control, groups by alloy, shows `descriptive only` on Declared rows and the pending, withdrawn,
+   expired and void counts.
+8. No outbound request (revision 3): a fetch mock fails the test on any non-same-origin URL from the blind, share,
+   sealed and relay modules; the submissions repository and Zenodo links render as text with a copy button.
+9. Real browser additions (revision 3): opt-in research step with progress and Cancel against a local server with the
+   research route; share export and download; sealed precheck, commitment export, predictions check and release on
+   synthetic files; the same in air-gap mode with identical behaviour.
 
 ## 12. Phased plan with acceptance checks
 
@@ -1350,16 +1687,17 @@ Work: commit nothing yet; a fresh Opus run gates this spec; Astra signs off the 
 parity fixtures, `FWHM_FACTOR` and D4sigma equivalence, `beam.quantity` radius handling, sensitivity arm set, leverage
 cuts for 316L, IN718 and IN625, bare plate layer invariance, u_m f defaults for non-Ti64 alloys, the AlSi10Mg as-built
 property convention of the served ledger, descriptive quantity mapping, the reasons catalogue sentences with locators,
-the divergence list of 7.7); P8 v2 reconciliation against `b6e68dfe` (schema `p8-research-v2`, the
-`ResearchNumericBand` and `consistencyNote` fields the adapter reads, the reason-code class table of 7.6 item 3, the
-`researchOptions`-absent assertion, the solver switch for sensitivity calls agreed with the P8 owner as part of the P8
-bump), signed by Astra and checked by the fresh Opus gate; Haiku times 48 conditions x 5 served calls
-(include_process_map True and False) on the worker child path and reports p50 and p95, and times the 18 and 24 arm
-evaluations per condition with the committed synthetic reproduction as a cold-cache planning proxy; Haiku transcribes the
+the divergence list of 7.7 including D13); P8 reconciliation against the integration contract (`29ae2183`, schema
+`p8-research-v3`, and whatever the P8 re-gate settles after Amendment 3 `78607f3e`: the subset members the adapter
+reads, the reason-code class table of 7.6 item 5, the identity checks of 7.6 item 3, the opt-in senders of OD1),
+signed by Astra and checked by the fresh Opus gate; Haiku times 48 conditions x 5 served calls (include_process_map
+True and False) on the worker child path and reports p50 and p95 (research time per condition comes from the contract's
+phase C, not from this spike); revision 3: Astra signs off the plausibility constants of 14.7.2 and the sealed
+departures SD1 to SD3, and the maintainer answers Q6 to Q11; Haiku transcribes the
 spent ledger, Opus reviews; a spike adds the dataset-view browser-local op and runs `route-authority` and
 `emit-module-registry --check`, then is discarded or kept; maintainer answers Q1 to Q5 (Q2 can wait until phase 6).
-Accept: gate record with decisions; the condition caps of 4.3 (pre-P8 from the measured p95, P8 with and without the
-switch from served p95 plus the proxy arm cost, each at most 60 s); Astra sign-off note including the P8 table.
+Accept: gate record with decisions; the served condition cap of 4.3 from the measured p95 (at most 60 s); Astra
+sign-off note including the P8 class table, the plausibility constants and the sealed departures.
 
 ### Phase 1, Python core offline (Opus stats, store, freeze, score, P8 adapter; Sonnet served arms, intake, CLI, tests; Haiku vectors and templates)
 
@@ -1411,17 +1749,19 @@ library versions recorded (not in CI, 8.3 item 6), and the structure-and-hash te
 dataset-view legacy note updated; bundle check; browser run in light and dark; agents printed no measured values
 (review of logs).
 
-### Phase 6, P8 integration after the P8 bump merges (Opus with Astra; Sonnet)
+### Phase 6, P8 research route integration after the contract's phases B to E land (Opus with Astra; Sonnet)
 
-Work: enable `P8_ADAPTERS["p8-research-v2"]` against the real block; confirm the reason-code table and the absence of
-`UNSOURCED_PROPERTY_OVERRIDE` on the served path (7.6 items 3 and 11); wire the sensitivity-call switch if the P8 bump
-carries it; band coverage, partial bands and consistency counts on real output; common-subset statistics and the
-sign-flip comparison; `vapour-depression-depth` quantity descriptive against `research:cavity`; label display per Q2;
-regenerate the descriptive record at the new fingerprint and update the served-closure pin in the same reviewed commit;
-re-measure freeze timing with a cold research cache and lower the caps if needed.
-Accept: served parity unchanged across the bump; freezes made before P8 still score with `predictor changed since
-freeze`; research arms populated or unavailable with codes and coverage labels; guard regex change applied only as
-approved; fresh Opus gate.
+No served bump is involved (7.6). Work: enable `P8_ADAPTERS["p8-research-v3"]` against real route responses and the
+committed contract fixture; the research relay of 7.6 item 2 in the client and the CLI `--research-responses` path;
+`scripts/research-route-batch.ts`; confirm the class table and the absence of `UNSOURCED_PROPERTY_OVERRIDE` on the
+Build Job snapshot context (7.6 items 5 and 13); band coverage, partial bands and consistency counts on real output;
+common-subset statistics and the sign-flip comparison; `vapour-depression-depth` quantity descriptive against
+`research:cavity`; label display per Q2 and 14.6; regenerate the descriptive record with research curves from an
+explicit batch; record research time per condition and relayed subset sizes at the cap.
+Accept: served bytes unchanged with a relay running (contract P-5 and P-6), served-closure pin unchanged; freezes made
+before the route existed keep `P8_NOT_IN_THIS_BUILD` (no research value is ever added after a freeze); research arms
+populated or unavailable with codes and coverage labels; OD1 settled by the P8 re-gate; guard regex change applied only
+as approved; fresh Opus gate.
 
 ### Phase 7, close-out (Opus; Haiku docs and docker)
 
@@ -1430,6 +1770,22 @@ secure-context limit and the CLI environment rule); inventory rows; docker env; 
 checks with exact counts and what was not run, limits, `labels unchanged: experimentalValidation=false, no label
 promoted`, Build Job cache invalidation noted); STATUS milestone in Turkish; ci.yml additions prepared for the
 maintainer's single Ceiling-Review trailer; one batch push only on the maintainer's word, explicit paths staged.
+
+### Phase 8, sharing with the maintainer (revision 3; Opus share and sealed core, fresh Opus gate; Sonnet CLI, plausibility, UI, leaderboard; Haiku guide and templates; Astra constants)
+
+Can start after phase 4 (bundle) and run beside phases 5 and 6; the research parts wait for phase 6.
+Work: Mode A (`lpbf_blind_share.py`, `user-blind-share`, share step, `share-verify` and `share-import`, spent ledger
+entry kind); Mode B user side (`user-sealed-precheck`, `user-sealed-commit`, `user-sealed-check-predictions`,
+`user-sealed-release`, sealed panel); maintainer side (`lpbf_sealed_submission.py`, `lpbf_sealed.py`, sealed rule record,
+`sealed-submissions-v1.json`, `approved-reviewers-v1.json`); plausibility checks and tiers (14.7); leaderboard schema 2
+and the sealed table; guide sections (both modes, licences, the fabrication statement, the tiers) and, for the
+maintainer to place, a README and pull request template for the submissions repository.
+Accept: 11.1 items 10 to 13 and 11.2 items 7 to 9 green with counts; a full synthetic Mode B run on one machine with two
+stores (user and maintainer) through every state of 14.4.3, including each refusal of 14.4.4, ending in a leaderboard
+row whose public files hold no sentinel value; a synthetic Mode A share verified and imported, then refusing a sealed
+submission of the same data; no socket opened (NoNetwork) and no non-same-origin fetch; MELT runner pins recorded or the
+G3o path marked not run; OD2 recorded by the lead; fresh Opus gate. Creating the submissions repository and the Zenodo
+community stays with the maintainer; until then the placeholder name stays in the wording table.
 
 ## 13. Open questions for the maintainer
 
@@ -1447,9 +1803,425 @@ maintainer's single Ceiling-Review trailer; one batch push only on the maintaine
    those alloys descriptive only because the thresholds were registered for Ti-6Al-4V and AlSi10Mg.
 5. Q5, digitized AAAS figure data (Cunningham, Zhao): show per point in the app (proposal, with the digitization note and
    read uncertainty), or show group summaries only.
+6. Q6, Mode B candidate arm: the MELT candidate (S1, or S2 with a P3 primary block PASS on record, Amendment 2 item 4;
+   Eagar and Tsai kernel; pinned MELT runner) with the app's served Build Job arm and the research arm scored beside it
+   under the same rules (proposal, 14.4.6), or the served Build Job arm as the candidate, which needs a MELT amendment
+   before any submitted target is read.
+7. Q7, which sealed blocks may count toward G3o: proposal Ti-6Al-4V and AlSi10Mg only, public blocks only (confidential
+   blocks listed, not counted), tier Evidenced or above before scoring; and whether a block with declared measurement
+   losses (SD2) may count (Astra's ruling).
+8. Q8, release window and withdrawal: proposal 180 days from `published` to `expired-unreleased`; withdrawals before
+   predictions leave only the public commitment, after predictions they are listed as `withdrawn-after-predictions`.
+9. Q9, labels: served values carry `Unresolved` (`SERVED_VALUE_KIND_NOT_PROVIDED`) until the served payload itemises
+   per-value provenance (proposal; that change is a served bump outside this spec); process conditions (P, v, d, T0)
+   are request inputs that never make a research output `User input` (contract 6.2; confirm).
+10. Q10, licences and identity: the licence menu (CC BY 4.0 proposed default, CC0 1.0, none) and whether an ORCID alone
+    is enough identity for Evidenced, or a lab and machine model must also be public.
+11. Q11, plausibility constants and tier tolerances: `ASPECT_MAX` 6, scatter floor 0.5 %, digit test at p < 0.001 with at
+    least 50 values, known-set match within max(1 um, 1 %), spot check of min(5, n) sections within 2 u_m or 5 %
+    (proposals; Astra signs off the physical ones in phase 0).
+
+Q1 also covers the revision 3 strings: the share and sealed step texts of 2.2, the refusal messages of 6.1 added in
+revision 3, the tier badges and descriptions, the flag line, the export and fabrication notices (14.7.5), and the
+leaderboard table heading and caption (14.4.9).
+
+Open dependencies (not maintainer questions):
+
+1. OD1, P8 contract re-gate: the integration contract at `29ae2183` lets only the Research model panel send research
+   requests (contract 1.1 and 1.3). The blind tab's opt-in research step and the explicit batch client
+   `scripts/research-route-batch.ts` (7.6 item 2) need to be admitted as senders, with the same route, lane and request
+   schema. If the re-gate refuses, the research arm stays `RESEARCH_NOT_REQUESTED` in protocol 1, and only maintainer
+   batches (Mode A rerun, Mode B, descriptive record) carry it, if admitted. The contract is being revised on
+   `research/p8-research-arm` (P8 Amendment 3 at `78607f3e` changes scenario provenance and secondary-alloy
+   manifests); the adapter reads arm counts and names from each response and pins nothing that Amendment 3 may change.
+2. OD2, MELT amendment by the lead: the sealed protocol (14.4.6), the two-independent-campaign rule for submitted data
+   (14.4.7) and the tier condition for G3o counting are written into the MELT pre-registration before any submitted
+   target is read.
 
 Maintainer actions (not questions): the Ceiling-Review trailer for `.github/workflows/ci.yml` at the batch push; the push
-itself.
+itself; creating the submissions repository and the Zenodo community (14.5); approving reviewers (14.7.4).
+
+## 14. Revision 3: sharing with the maintainer and label decisions (2026-10-15)
+
+Source: the maintainer decisions in `.orchestra/GOAL.md` (main checkout, gitignored lead file), section "Label and data
+decisions (maintainer, 2026-10-15)", items 1 to 5, and the maintainer's answer of the same day on anti-fabrication trust
+tiers ("Olur"). This section holds the design; the affected sections carry the integrated changes and point here
+(Appendix A.5 lists them). Section 7.6 is rewritten against the P8 integration contract in the same revision. Nothing
+here is implemented; the revision goes to the design gate with the rest of the spec.
+
+### 14.1 Decisions and fixed principles
+
+1. Processing stays on the user's machine. A local blind test (protocol 1, sections 3 to 7) runs in the user's own blind
+   store, separate from the calibration stores. The maintainer has no account, remote access, telemetry or job path into
+   a user's app and never processes raw data inside it. The maintainer's tools (14.3, 14.4) run on the maintainer's own
+   machine, on files the user chose to send, in stores separate from the maintainer's own blind store.
+2. Two sharing modes, both started by the user, both producing files only: Mode A "share my result" (14.3) and Mode B
+   "sealed submission" (14.4, preferred).
+3. The app uploads nothing. No mode makes an outbound request: no GitHub, Zenodo or mail API, no SMTP, no prefetch of a
+   link. The app writes files and shows instructions; links to the submissions repository and to Zenodo are shown as
+   text with a copy button. Behaviour is identical with `AIRGAPPED=1`; `server/airgap.ts` needs no change, because
+   there is no outbound call to block (`AIRGAP_BLOCKED_SERVICES` stays as it is).
+4. The main repository stores results, hashes, DOIs and the identity fields a submitter chose to make public (14.7.1),
+   never inputs, targets, metadata text, micrographs or predictions of a submission. Commitments and predictions files
+   live in the separate public submissions repository; data files on Zenodo or, for confidential labs, in private email
+   (14.5).
+5. Roles. The user is the data owner and, in Mode B, the custodian of MELT section 6 item 7 and of MELT Amendment 6 item
+   12: only the user holds the targets and the evidence files until the predictions are published. The maintainer is
+   the predictor and scorer of Mode B. Anyone can recheck a published result from the published files (14.4.8).
+6. Labels (decision items 1 and 2): 14.6.
+7. Fabrication, stated plainly. The model and its source code are public, so anyone can compute its predictions for any
+   inputs, and a sealed submission alone cannot prevent measurements fabricated to match the model: a commitment proves
+   only that the targets were fixed before the maintainer published predictions, not that they are real. The
+   mitigation is the trust tiers with raw evidence, identity, plausibility flags and review (14.7), and the
+   two-independent-campaign rule: no milestone statement rests on one submitter's data (14.4.7).
+
+### 14.2 The three paths compared
+
+| | Local test (protocol 1) | Mode A, share my result | Mode B, sealed submission |
+|---|---|---|---|
+| Who predicts | user's app | user's app | maintainer's app |
+| Targets fixed before predictions by | local order, optional commitment and anchor | as in the local test | public commitment of the targets SHA-256 before predictions are published |
+| Maintainer sees the targets | never | when the user consents to include them | only after the predictions are published |
+| Counts as | the user's own test | a result the maintainer has seen; never an app blind test | an independent blind test of the app under the sealed protocol (14.4.6), at tier Evidenced or above |
+| Leaves the machine as | nothing | a share bundle the user sends | a commitment file, later a release folder, both sent by the user |
+| Enters | nothing | spent ledger as `EXPOSED` (14.3.5) | `data/benchmark/sealed-submissions-v1.json` and the leaderboard (14.4.9) |
+
+### 14.3 Mode A: share my result
+
+14.3.1 Export (user's app). Precondition: the freeze has at least one score (`SHARE_NO_SCORE` otherwise). Queued job
+`user-blind-share` (3.2.1) or CLI `share`. The dialog lists every file that will be written and what it holds, asks for
+consent per part and for a licence, then writes `freezes/<freezeKey>/shares/share-<n>.tar` (the deterministic tar of
+phase 4: sorted names, mtime 0, uid and gid 0, mode 0644), served as `blind-share.tar`. Contents (schemas in 4.8):
+
+1. `share-manifest.json`, `metadata.json` (canonical) and `inputs.csv` (raw bytes; sha256 equal to the freeze
+   `inputsSha256`);
+2. `freeze.json`, every `reveal-*.json` and every `score-*.json` with their sidecars: every attempt, so a favourable
+   attempt cannot be shared alone;
+3. `ledger-excerpt.jsonl` (14.3.2) and `research-requests.json` (the research request bodies of 4.5 item 1, inputs
+   only);
+4. `targets-<n>.csv` for every attempt, only with `consent.includeTargets: true`;
+5. `evidence-manifest.json` when the user lists evidence files (14.7.1); the image files travel beside the tar, never
+   inside the store;
+6. `README.txt`: contents, licence, the verify command, and the sentence that the maintainer will count the data as
+   seen.
+
+14.3.2 Ledger excerpt: every ledger line that names this freeze key, in full, plus a redacted link `{seq, prevEntryHash,
+entryHash}` for every line of other tests between them, so the chain verifies without disclosing other tests.
+
+14.3.3 Licence and publication. `licence`: `CC-BY-4.0` (proposed default), `CC0-1.0`, or `none` (no public licence: the
+maintainer may read and score the data for this record only). `publishAllowed: true` needs `CC-BY-4.0` or `CC0-1.0`
+and lets the maintainer list the result and its DOI publicly; `none` forces `publishAllowed: false`. `CC-BY-4.0` needs
+`attribution` (a name or pseudonym, 1 to 120 characters, the `blockLabel` character rule), else
+`SHARE_ATTRIBUTION_REQUIRED`. The user deposits the tar on Zenodo or sends it by email (14.5).
+
+14.3.4 Maintainer import. `python/tools/lpbf_user_blind.py share-verify <tar>` is offline, writes nothing and prints
+check results, hashes and counts only; `share-import <tar>` runs the same checks, then writes under
+`METALLIKSA_SHARED_ROOT` (default `<repo>/.runtime/shared-results/<shareId>/`), never into the maintainer's own blind
+store. The tar is read member by member from a closed name set (9.16); nothing is extracted to a path taken from the
+archive. Checks, each with an id in the output:
+
+1. every member's sha256 and size equal the manifest, and no member lies outside it;
+2. `freeze.json` recomputes `freezeKey`, matches its sidecar, has `targetColumnsRead: false` and a recomputed
+   `predictionsSha256`;
+3. chain: the excerpt verifies link by link; the `frozen` event of this freeze precedes, by sequence, every event that
+   names a targets hash (`score-refused`, `commitment-mismatch`, `scored`) and every `revealed` event; the receipt's
+   `ledgerEntryHash` is that `frozen` entry;
+4. commitment: when the frozen metadata holds `targetCommitment`, the shared targets file of the matched attempt hashes
+   to it, so the targets were fixed no later than the freeze;
+5. re-score: with targets, every report is recomputed byte for byte when the scorer identity matches, else `re-score
+   skipped: different scorer` with both identities; without targets, `targets withheld: statistics not reproducible by
+   the recipient`;
+6. re-predict: served arms are recomputed when the predictor identity equals the maintainer's live pinned build, else
+   `re-prediction skipped: different predictor`;
+7. research: when the frozen research identity equals the maintainer's research pin, the maintainer reruns the recorded
+   requests through the research route on an explicit command (`scripts/research-route-batch.ts`, 7.6 item 2) and
+   compares the frozen subsets by parsed value: `research reproduced`, `research not reproduced (<k> conditions)` or
+   `skipped: different research identity`;
+8. anchors: an external anchor of `freezeSha256` (a commit or issue in the submissions repository, a Zenodo record) is
+   recorded with its URL and server time as typed by the maintainer; the tool cannot fetch it.
+
+What the import proves: the frozen predictions are unchanged since their `frozen` ledger entry, and the user's ledger
+records them before any targets hash. What it cannot prove: wall-clock order against a person who rewrote the whole
+store and ledger consistently. Only an external anchor of `freezeSha256` made before the targets existed proves order
+to a third party; the import record says which case applies (`order: local-ledger-only` or `order: anchored <time>`).
+
+14.3.5 Effects. A Mode A set is seen by the maintainer. It never counts as an app blind test (`appBlindTest: false`,
+every `neverEnters` member true), whatever its local status was. Import appends its condition tuples to the local index
+`shared-results/index/seen-tuples.jsonl` and, in a maintainer commit, adds a spent ledger entry of kind
+`shared-result` with status `EXPOSED`, targets shared or not, because the statistics are outcome information:
+`{datasetId "shared-<first 12 hex of shareId>", kind, alloy, nConditions, inputsSha256, targetsSha256 [],
+shareManifestSha256, doi or null, licence, publishAllowed, importedAt, tier}`. Condition tuples enter that public entry
+only with `publishAllowed: true`; otherwise they stay in the maintainer's local index. A later test on the maintainer's
+machine, or a Mode B submission, whose hashes or tuples match is not blind (6.4 item 5) or refused
+(`SUBMISSION_DATA_EXPOSED`). A Mode A result appears in no leaderboard table; with `publishAllowed: true` the guide may
+list it under "Shared results, seen by the maintainer", its statistics labelled as the user's own test. The descriptive
+panel (section 8) admits a shared set only through a separate maintainer-approved ledger commit, like Zhao (Q3).
+
+### 14.4 Mode B: sealed submission
+
+14.4.1 Order. The user commits in public (inputs, metadata, evidence manifest, SHA-256 of the targets file); the
+maintainer imports, writes the run amendment, freezes and publishes predictions with the served and research
+identities; the user releases the targets and evidence files; the maintainer checks hash and timing, runs the intake
+checks, records the pre-score tier, scores once and records the result.
+
+14.4.2 Files and hashes (schemas in 4.9). Canonical JSON everywhere: UTF-8, LF, `json.dumps(obj, sort_keys=True,
+separators=(",", ":"), ensure_ascii=True)`, floats as Python `repr`. Hashes are lower-case hex SHA-256 over the exact
+bytes; TypeScript never re-serializes a hashed document.
+
+| File | Written by | Where | Hashes |
+|---|---|---|---|
+| `commitment.json` | user's app (`user-sealed-commit`, CLI `commit`) | submissions repository `submissions/<commitmentId>/` (the public variant only for a confidential lab, 14.4.5) | `commitmentId` = sha256 of the canonical commitment without `commitmentId`; `inputsSha256` (raw bytes), `metadataSha256`, `targetsSha256` (raw bytes of the targets file: the value `sha256sum` and `certutil -hashfile <file> SHA256` print), `evidenceManifestSha256`, `sealedProtocolSha256` |
+| `run-amendment.json` | maintainer (`lpbf_sealed.py run-amendment`) | submissions repository, before predictions | `runAmendmentSha256`; the closed key set of MELT Amendment 6 item 14.4 |
+| `predictions.json` | maintainer (`freeze`) | submissions repository | `predictionsSha256` (file bytes, sidecar); names `commitmentId`, `inputsSha256`, `targetsSha256`, `runAmendmentSha256`, the served identity, the research identity and the MELT runner pins |
+| `publication.json` | maintainer (`publish`) | sealed store; copied into the result | URL and GitHub server time of the merge that published `predictions.json`, sha256 of the published bytes |
+| `release.json` | user's app (`user-sealed-release`, CLI `release`) | inside the Zenodo deposit or the email | sha256 of every released file: targets (equal to `targetsSha256`), inputs, metadata, commitment, predictions, evidence files |
+| `release-<n>.json` | maintainer (`receive-targets`) | sealed store | one per release attempt: source (DOI and Zenodo publication date, or email and the maintainer's receipt time), hashes, accepted or refused with its code |
+| `intake.json` | maintainer (`intake`) | sealed store; summary in the result | plausibility flags (14.7.2), evidence re-hashes, identity completeness |
+| `tier.json` | maintainer or approved reviewer (`tier`) | sealed store, mirrored in the result record | append-only tier events (14.7.4) |
+| `result.json` | maintainer (`score`) | sealed store; entry in `data/benchmark/sealed-submissions-v1.json` | `resultSha256`; statistics, statuses, identities, anchors, tier at score |
+
+14.4.3 State machine. The maintainer's sealed store holds the reference state; ledger events are in brackets and follow
+their commit points as in 3.5. The user's store mirrors the user-side states.
+
+| State | Entered when | Next |
+|---|---|---|
+| `committed` | the user's app writes `commitment.json` [user ledger `commitment-exported`] | `submitted`, `withdrawn` |
+| `submitted` | the user opens a pull request or issue with the commitment in the submissions repository, outside the app; GitHub server time of creation | `imported`, `refused-at-import`, `withdrawn` |
+| `imported` | `import` passes every check of 14.4.4 [`imported`, with the submission anchor typed by the maintainer] | `amended`, `withdrawn` |
+| `amended` | `run-amendment.json` is written and committed to the submissions repository [`amended`] | `frozen`, `withdrawn` |
+| `frozen` | `predictions.json` is written exclusive [`frozen`] | `published` |
+| `published` | the merge that adds the exact `predictions.json` bytes to the submissions repository is recorded with its server time [`published`] | `released`, `expired-unreleased`, `withdrawn-after-predictions` |
+| `released` | a release attempt is accepted: the targets bytes hash to `targetsSha256` and the release time is later than the publication time [`targets-received`] | `intake-checked`, `void-targets-invalid` |
+| `intake-checked` | plausibility flags and evidence re-hashes are written [`intake-checked`] | `tier-decided` |
+| `tier-decided` | the pre-score tier is recorded; Declared is a valid decision [`tier-decided`] | `scored` |
+| `scored` | the one declared run writes `result.json` [`scored`] | `recorded` |
+| `recorded` | the maintainer commits the result entry to the main repository | terminal; tier events stay possible (14.7.4) |
+
+Terminal states without a sealed score: `refused-at-import` (with its code), `withdrawn` (before predictions; nothing
+more is published), `withdrawn-after-predictions`, `expired-unreleased` (no accepted release within the release window,
+proposal 180 days after `published`, Q8), `void-early-release`, `void-targets-invalid`. Every terminal state is listed
+in the results record and counted on the leaderboard (14.4.9), so a withheld or withdrawn block stays visible.
+
+Ordering rules enforced by the tools: a command used out of order refuses with `SUBMISSION_STATE` (for example `score`
+before `tier-decided`, `freeze` before `amended`, `receive-targets` before `published`); exactly one `predictions.json`
+per commitment (`PREDICTIONS_DUPLICATE`); one declared run (a crash is recorded; a rerun is allowed only with identical
+inputs, code and store, and must reproduce the bytes).
+
+14.4.4 Refusal cases.
+
+| Case | Where | Code | Effect |
+|---|---|---|---|
+| commitment id does not recompute, unknown key, unknown schema or sealed protocol | `import` | `SUBMISSION_SCHEMA`, `SUBMISSION_ID_MISMATCH`, `SUBMISSION_PROTOCOL_UNKNOWN` | `refused-at-import`; the user may submit a corrected commitment (new id) |
+| the embedded inputs bytes do not hash to `inputsSha256`, or inputs or metadata break 4.1 or 4.2 | `import` | `SUBMISSION_INPUTS_CHANGED`, the 6.1 code | `refused-at-import` |
+| the data was published, used for machine calibration, or its predictions were viewed (declarations and the 6.4 item 7 tuple check), or its hashes or tuples match an `EXPOSED` or `SPENT` entry | user's app at commit, again at `import` | `SEALED_DATA_PUBLISHED`, `SEALED_CALIBRATION_OVERLAP`, `SEALED_PREDICTIONS_VIEWED`, `SUBMISSION_DATA_EXPOSED` | no commitment, or `refused-at-import` |
+| changed inputs later: a release carries inputs that differ from the committed bytes | `receive-targets` | `SUBMISSION_INPUTS_CHANGED` | attempt refused; state stays `published`; scoring always uses the committed inputs |
+| hash mismatch: the released targets file does not hash to `targetsSha256` | user's app at release, again at `receive-targets` | `TARGETS_HASH_MISMATCH` | attempt refused and recorded; state stays `published`; only the committed bytes can ever be scored; no continue path (unlike protocol 1 `acceptCommitmentMismatch`) |
+| published predictions differ from the frozen file, or name other inputs | `publish`; user's app at `user-sealed-check-predictions` | `PREDICTIONS_ALTERED`, `PREDICTIONS_INPUTS_MISMATCH` | state stays `frozen`; the user's app tells the user not to release targets |
+| targets released before predictions were published: the Zenodo publication date or email receipt is not later than the publication server time, or a public copy of the targets that predates it is shown | `receive-targets`, or a later report | `TARGETS_RELEASED_EARLY` | terminal `void-early-release`; the targets are spent; the maintainer may score them descriptively, recorded `EXPOSED` like Mode A |
+| the user asks for a release package before the published predictions file was checked | user's app | `PREDICTIONS_NOT_PUBLISHED` | nothing written |
+| the committed targets file breaks 4.4 (keys, statuses, ranges) | `receive-targets`; unreachable when the user's precheck ran | the 4.4 code | terminal `void-targets-invalid` |
+| released evidence files do not hash to the evidence manifest | `intake` | `EVIDENCE_HASH_MISMATCH` | not a score refusal: the files are listed and cannot support a tier above Declared |
+
+14.4.5 Confidential variant. For a lab that cannot publish inputs: the public `commitment-public.json` holds
+`commitmentId`, `inputsSha256`, `metadataSha256`, `targetsSha256`, `evidenceManifestSha256`, `sealedProtocolSha256`,
+alloy, condition count, licence `none` and the public identity fields; the full commitment goes by private email. The
+maintainer publishes `predictions-public.json` (`predictionsSha256` and identities only) and emails `predictions.json`;
+targets and evidence go by email. The result record holds statistics and statuses only, no per-condition values,
+labelled `confidential sealed test: third parties cannot re-score it`. Proposal: confidential blocks are listed but do
+not count toward G3o, which is an open-data objective (Q7).
+
+14.4.6 Scoring under the sealed protocol (`lpbf-sealed-protocol-1`). The rule record
+`data/blind/lpbf-sealed-protocol-v1.json` (generated by `python/tools/lpbf_sealed.py export-protocol [--check]`) holds
+the MELT G3o rule set of MELT Amendment 6 (thresholds, input metrology grades, power and beam arms, resolution qualifier
+with `cv_pool` and the `u_m` default, leverage, input-fragile and property-fragile wording, cavity physics statement,
+licence sentence) with the Amendment 6 text and JSON sha256 pins of its item 14.2, the sealed departures below, the
+plausibility constants (14.7.2), the tier definitions (14.7.3), the state table, the refusal codes and the file schemas.
+Its sha256 is `sealedProtocolSha256`. The commitment carries it, so the user commits to the rules as well as to the
+targets, and `import` refuses another value (`SUBMISSION_PROTOCOL_UNKNOWN`). A released sealed protocol is immutable.
+
+1. The G3o verdict comes from the pinned MELT runner (`python/tools/run_lpbf_melt_depth.py` at the pinned
+   `research/ti64-primary` commit, the only G3o authority), run once on the maintainer's machine against the block's
+   run amendment, with the user as custodian. Candidate arm per MELT Amendment 2 item 4 (S1, or S2 with a P3 primary
+   block PASS on record) (Q6).
+2. The app arms of 7.1 (`served` Build Job path and its four sensitivity arms, `research:melt-link`, `research:cavity`
+   descriptive, `context:fabbro`) are frozen in the same `predictions.json` and scored with `lpbf_blind_stats` under the
+   same rule table; the report shows them beside the candidate, labelled `same rules, not the registered candidate`.
+   The app also recomputes the candidate's statistics from the predictions file with the extracted functions; a
+   difference from the runner's numbers blocks the result (`SEALED_SCORER_DISAGREEMENT`, an integration defect).
+3. Blindness: `blind-sealed` (6.4) when the targets were committed in public before predictions were published by a
+   party who never held them, and the declarations hold. Items 1, 5 and 7 of 6.4 apply through the commit-time
+   declarations and checks; an early release gives `void-early-release`.
+4. Tier: a block whose pre-score tier is Declared is scored with every arm at `descriptive-not-scored`, reason `tier
+   Declared: table only, not checked` (7.3 step 2); the statistics are shown.
+5. Sealed departures from Amendment 6, declared in the rule record and printed in every sealed report:
+   SD1, the data owner is the custodial reader of Amendment 6 item 12, and the inputs header whitelist of 4.2 is the
+   whitelist; SD2, measurement losses declared in the committed targets file follow D1 and D11 of 7.7, because they are
+   fixed by hash before any prediction exists (whether a block with any declared loss may count toward G3o is Astra's
+   ruling, Q7); SD3, alloys other than Ti-6Al-4V and AlSi10Mg are scored as sealed tests outside G3o (the G3o milestones
+   are G3o-Ti64 and G3o-AlSi10Mg, Amendment 6 item 1.3).
+6. A block counts toward G3o only when all hold: tier Evidenced or above recorded before scoring (14.7.4); a public, not
+   confidential, block; Ti-6Al-4V or AlSi10Mg; a committed run amendment; a MELT runner run that did not refuse; SD2
+   cleared by Astra. Otherwise it is listed as an independent sealed test with `g3oBlock: false` and the reason.
+
+14.4.7 Claims. A sealed block licenses at most the MELT Amendment 6 item 13 sentence for that block (a G3o block) or a
+block sentence of the same form without the G3o name (another sealed test). It never claims G3, N3, a raised evidence
+ceiling, a served change or a label promotion (`labelPromotionProposed: "none"`; a ceiling proposal after a G3o PASS is
+a separate maintainer decision with its own gate). Two-independent-campaign rule (GOAL kill criterion 6, applied to
+submitted data): a milestone statement built on submitted data needs at least two sealed blocks at Evidenced or above
+from independent labs (different lab and machine, no shared submitter identity), each judged alone and never pooled.
+Writing this rule into the MELT pre-registration is a lead amendment before any submitted target is read (open
+dependency OD2, section 13).
+
+14.4.8 Rechecking by anyone. `python/tools/lpbf_sealed.py verify` (offline) takes the commitment, the predictions file
+and the release folder (and optionally the result): it re-hashes every file, recomputes `commitmentId`, checks that
+`predictions.json` names the commitment, the committed inputs and the run amendment, recomputes every statistic from
+the predictions file and the released targets with `lpbf_blind_stats` under the sealed rule record and compares with
+`result.json` byte for byte (bootstrap reproducibility stated per numpy version), and prints the anchors and times as
+recorded, which the reader checks on GitHub and Zenodo. Re-prediction needs the pinned commits and is optional. The
+user's app runs the same computation at release (`sealed-score-local.json`), so the user can compare it with the
+maintainer's record.
+
+14.4.9 Leaderboard. `data/benchmark/sealed-submissions-v1.json` (schema `lpbf-sealed-submissions-1`, committed by the
+maintainer with explicit paths) holds one entry per commitment in every state from `imported` on: `commitmentId`,
+state, anchors (submission URL and server time, predictions merge URL and server time, release DOI and publication date
+or `email, received <date> (maintainer record)`), every hash of 14.4.2, identities (served fingerprint, served-closure
+pin, research implementation sha256 and schema, MELT runner commit and Amendment 6 pins), alloy, condition count,
+grades, tier at score with the current tier and its history, flag counts by code, statuses per arm, statistics,
+qualifiers, labels, `g3oBlock` with its reason, the licence sentence for a G3o block that met all thresholds and
+qualifiers, the public identity fields, and the honesty block of 2.1 for the sealed scope. It holds no per-condition
+input, target or prediction: for public blocks those stay on Zenodo and in the submissions repository, and the record
+carries their hashes and the DOI. `python/tools/lpbf_benchmark_score.py builtin` copies the record into a new member
+`sealedTests` of the leaderboard record (schema `lpbf-leaderboard-2`; `--check` compares structure and hashes only,
+because the targets are not in the repository and no command uses the network). The Calibration Scorecard page shows a
+separate table `Independent sealed blind tests` after the screening tables: one row per block, grouped by alloy, never
+ranked, never pooled with other blocks or with the screening benchmark, with the tier badge, `descriptive only` on
+Declared rows, and a line per alloy counting pending, withdrawn, expired and void submissions. A G3o result, PASS, FAIL
+or INCONCLUSIVE, also gets a PROOF.md entry, and its targets are spent (GOAL kill criterion 3).
+
+### 14.5 Transport without a server
+
+1. Submissions repository (placeholder name `metalliksa-submissions`, created later by the maintainer; the name sits in
+   the wording table, so the real name is a one-file change). Layout: `submissions/<commitmentId>/commitment.json` (or
+   `commitment-public.json`), `run-amendment.json`, `predictions.json` (or `predictions-public.json`) and a
+   `status.json` the maintainer updates per state. The times that count are GitHub server times (creation of the pull
+   request or issue, and the merge made through the GitHub web interface), never git author or committer dates, which
+   a client sets freely. The pull request template and the README are maintainer tasks (phase 8).
+2. Zenodo (DOI, licence, optional Metalliksa community, created later by the maintainer): the user deposits the release
+   folder (inputs, metadata, targets, evidence files, commitment, a copy of the predictions, `release.json`). The release
+   time is the publication date of the record; a draft or an embargoed file is not a release. A correction is a new
+   Zenodo version, and only the version whose targets bytes hash to `targetsSha256` is scored.
+3. Private email for confidential labs (14.4.5). The maintainer records the receipt time, and the record says `email`,
+   so the weaker timing is visible.
+4. Main repository: `data/benchmark/sealed-submissions-v1.json`, `data/benchmark/approved-reviewers-v1.json`, spent
+   ledger entries for Mode A sets and voided blocks, the leaderboard record and PROOF entries. Never raw user data.
+5. The app's part: per step it writes the files and a plain-text instruction sheet (where to submit, what to deposit,
+   which licence was chosen, what happens next), shown in the UI and written beside the files. It calls no network API.
+
+### 14.6 Labels (decision items 1 and 2)
+
+1. Per-value label. Every predicted or measured value in a blind, shared or sealed document and in the descriptive
+   record carries `sourceEvidenceKind` with `sourceLocator`. The document-level `evidenceKind: "screening-only"` (2.1)
+   stays the module evidence ceiling, and no per-value label raises it.
+
+   | Value | `sourceEvidenceKind` | Locator |
+   |---|---|---|
+   | user measured depth, width, uncertainty | `Measured` (data label `Measured (user-supplied)`) | `{targetsSha256, key}`; after a Zenodo release also the DOI |
+   | spent-set value (section 8) | `Measured`, with `transcription` `table` or `digitized-figure` | citation, DOI, table or figure locator |
+   | research leaf value | the leaf's own `evidenceKind` under the rule of item 2, copied, never retyped | the source locators of the leaf's input provenance; `weakestInputs` names when not `Literature estimate` |
+   | served value | `Unresolved`, reason `SERVED_VALUE_KIND_NOT_PROVIDED`, until the served result carries per-value provenance (a served-side change outside this spec, Q9) | served identity |
+   | statistics | none: derived comparisons under the screening-only ceiling | report |
+
+2. Research output rule (decision item 2; settles contract M-1): all model inputs sourced defaults gives `Literature
+   estimate` with its sources; any user-typed input gives `User input`, naming the inputs; any unsourced default
+   (declared assumption, legacy estimate) gives `Unresolved`, naming the inputs; `Unresolved` takes precedence over
+   `User input`; a user input left at its sourced default keeps the sourced label. Process conditions (P, v, d, T0,
+   wavelength) are request inputs, not model inputs, for this rule (contract 6.2; Q9 asks the maintainer to confirm).
+   The blind, sealed and descriptive paths send no `researchOptions`, so `User input` cannot occur there; a response
+   that shows a `userInput` provenance refuses the freeze (7.6 item 3).
+3. Module ceiling (decision item 1; settles contract M-2): a per-value `Literature estimate` may appear under the
+   screening-only ceiling of the legacy `3d-distortion-lab` contract. No value label, Mode A import or sealed result
+   raises the ceiling.
+
+### 14.7 Trust tiers, raw evidence and plausibility flags (maintainer decision, 2026-10-15)
+
+14.7.1 Fields. Raw evidence and identity are optional for every submission and required for tiers above Declared.
+
+1. Per-section values: targets with `reduction: per-section-raw` and `section_id` (4.4), so a reviewer can compare
+   sections with micrographs.
+2. `evidence-manifest.json` (schema `lpbf-submission-evidence-1`): `files [{fileName (4.2 item 10 rule), sha256,
+   sizeBytes, mediaType image/png | image/jpeg | image/tiff, kind micrograph | raw-image, key {condition_id, track_id,
+   section_id} or null, scaleBar {present bool, length_um number or null}, magnification text or null}]`. The app
+   identifies the type from the first bytes, hashes each file in the browser (SubtleCrypto, or the pasted-hash path
+   without a secure context, 3.4 item 5) or in the CLI, and lists it; it never uploads, stores, decodes or edits an
+   image. Raw images are optional. In Mode B the manifest (names, keys, hashes) is part of the public commitment, so the
+   micrographs are fixed before predictions exactly like the targets; the image files are released only with the
+   targets, because a micrograph shows the depth. The UI tells the user to remove camera and location metadata before
+   hashing, because the app does not alter a file whose hash it records.
+3. Identity (`submitter`): `orcid` (format and checksum checked offline) or `institutionalEmail` (at least one for
+   Evidenced), `lab`, `machineModel`, `measurementDate` (ISO date or month), each with a `public` choice.
+   `institutionalEmail` is private by default: only its sha256 appears in a public file, and the address goes to the
+   maintainer by email. The UI states before export that a Mode B commitment is public and permanent in the submissions
+   repository.
+
+14.7.2 Plausibility checks (`python/lpbf_submission_plausibility.py`; constants with sources in the sealed rule record;
+Astra signs off the constants in phase 0). They flag and never reject: no check refuses a file, blocks a commitment, an
+import or a score, or changes a statistic. Each flag has a code, the keys involved (never a value) and one sentence.
+
+1. Energy bound `FLAG_ENERGY_BOUND`: with width released, `0.5 D W H_min > P / v` for a condition, where `H_min = rho
+   (cp (T_solidus - T0) + L_f)` from the lowest sourced values of the served property ledger, with absorptance 1 and no
+   conduction loss (the triangle spanned by the depth and the surface width is a lower bound on the area of a convex
+   fusion zone). Without width: `energy bound not evaluable`.
+2. Monotonicity `FLAG_DEPTH_DECREASES_WITH_POWER`: two conditions with speed and 1/e2 beam within 1 % and P2 >= 1.05
+   P1, where D(P2) < D(P1) by more than `2 sqrt(u1^2 + u2^2)` (u from replicates, else the u_m default of 7.4 item 2);
+   the mirror check `FLAG_DEPTH_INCREASES_WITH_SPEED` at fixed power and beam.
+3. Aspect `FLAG_ASPECT_RATIO`: D / W above `ASPECT_MAX` (proposal 6; Astra sets it).
+4. Too-perfect scatter `FLAG_SCATTER_TOO_SMALL`: a condition with 3 or more sections or tracks all identical at the
+   reported precision, or `cv_pool` (7.4) below 0.5 % with at least 3 replicated conditions.
+5. Terminal digits `FLAG_DIGIT_PATTERN`: with at least 50 depth values carrying at least 3 significant digits, a
+   chi-square test of last-digit uniformity at p < 0.001. Values that are all multiples of 5 or 10 get the label
+   `rounded values`, not a flag.
+6. Duplicated rows `FLAG_DUPLICATED_ROWS`: identical (depth, width) pairs across different conditions in more than 5 %
+   of rows, or a run of 3 or more consecutive rows repeated elsewhere.
+7. Known-set match `FLAG_MATCHES_KNOWN_SET <datasetId>`: at least 3 conditions whose alloy, P, v and 1/e2 beam match a
+   row of a set in the spent registry within 1 % and whose depth lies within max(1 um, 1 %) of that row. Every registry
+   entry with a loader takes part (NIST, Cunningham, KU Leuven, Totis, Zhao, Gan, Bitharas with its inferred keys
+   labelled inferred, and the others), read through `lpbf_spent_ledger`. A tuple match without a depth match is the
+   note `inputs match known set <datasetId>`, not a flag, because standard parameters are common.
+
+Where they run: in the user's app at `user-sealed-precheck` and before a share, shown to the user only (in Mode B they
+are not part of the commitment, so the maintainer learns nothing from the targets before predictions); on the
+maintainer side at Mode A import and at Mode B `intake`, which is the record. Tests use synthetic data; agents never
+print values (2.3 item 6). What the checks cannot do: data fabricated with realistic scatter around the model passes
+them; they catch careless and copied data only (14.1 item 7).
+
+14.7.3 Tiers (cumulative: each requires the one below).
+
+| Tier | Requires | Effect |
+|---|---|---|
+| `Declared` | nothing; default for every submission | descriptive only; never counts toward G3o |
+| `Evidenced` | per-section values; micrographs with scale bars, at least for the spot-check sample; identity with ORCID or institutional email, lab, machine model and date; no open plausibility flag (absent, or cleared by the reviewer with a written reason); a spot check in which the reviewer measures depth on a sample of micrographs drawn deterministically from the hashes (seed sha256 of `targetsSha256` and `predictionsSha256`, min(5, n) sections) and records agreement within the declared tolerance (proposal: 2 u_m or 5 %, whichever is larger) | may count toward G3o (14.4.6 item 6) |
+| `Published` | Evidenced, plus a peer-reviewed article or a DOI dataset holding the per-section values and the micrographs (a micrograph figure in an article counts by its figure locator) | as Evidenced |
+| `Replicated` | Evidenced or Published, plus an independent second lab (different lab and machine, no shared submitter) whose block at Evidenced or above measured comparable conditions (same alloy and substrate kind, at least 4 conditions with P, v and 1/e2 beam each within 5 %) | as Evidenced; supports the two-campaign rule (14.4.7) |
+
+14.7.4 Tier state machine. Every submission, Mode A or Mode B, starts at `Declared`. Promotions and demotions are events
+appended to `tier.json`: `{seq, from, to, by (ORCID or GitHub handle), role maintainer | approved-reviewer, at, reason,
+evidenceLocators [], flagsCleared [{code, reason}]}`; the history is never edited. Only the maintainer or a reviewer
+listed in `data/benchmark/approved-reviewers-v1.json` (maintainer-committed `{reviewerId, approvedBy, approvedAt}`) may
+promote; the tool refuses another `by` (`TIER_REVIEWER_NOT_APPROVED`) and a promotion with a missing requirement
+(`TIER_REQUIREMENT_MISSING`, naming it). The tool cannot authenticate who runs it; the trace is the record plus the
+maintainer's commit of it. Moves: up one or more tiers when every requirement holds; down to any lower tier with a reason
+(a flag found later, an evidence mismatch, a retraction). A demotion of a scored G3o block below Evidenced marks its
+record `tier-revoked`; nothing is deleted. The tier that decides G3o eligibility is the one recorded at `tier-decided`,
+before scoring: a promotion after the score never makes a scored block count, so a good result cannot be promoted into
+G3o after the fact. A later Published or Replicated tier is shown as the current tier.
+
+14.7.5 UI labels (proposals under Q1): tier badges `Declared: table only, not checked`, `Evidenced: micrographs and
+identity checked by a reviewer`, `Published: in a peer-reviewed article or a DOI dataset`, `Replicated: measured again
+by an independent lab`; flag line `Flag: <sentence>. Flags never reject data; a reviewer looks at them.`; export notice
+`Your submission starts as Declared. Per-section values, micrographs with scale bars and your ORCID or institutional
+email let a reviewer raise it to Evidenced.`; fabrication notice `The model is open source, so anyone can compute its
+predictions. A sealed submission proves when your measurements were fixed, not that they are real. Evidence, review
+and independent replication are what make a result count.`
 
 ## Appendix A. Grafts and judge defects
 
@@ -1531,7 +2303,7 @@ itself.
 | Prediction leak through the generic job record | silent child, fixed codes, counts-only progress, log filter (3.2 items 3 and 4); sentinel-prediction scan (11.1 item 7, phase 2) |
 | Bundle job and CLI `show` and `bundle` ungated | one reveal-or-score gate or a reveal written first (3.1, 3.2 item 7, 3.2.1, 5 step 8); tests (11.1 item 6) |
 | Read-only mode and store root do not reach a WSL worker | `WSLENV` forwarding in `server/pythonRuntime.ts` (1.2, 3.3, 10.2); tests (11.2 item 4, phase 2) |
-| 7.6 written against a stale P8 v1 contract | 7.6 rewritten against P8 v2 `b6e68dfe`: adapter, reason-code classes, pinned `researchOptions`, coverage, common subset, bands, consistency counts, freeze cost with 18 or 24 arms |
+| 7.6 written against a stale P8 v1 contract | 7.6 rewritten against P8 v2 `b6e68dfe`: adapter, reason-code classes, pinned `researchOptions`, coverage, common subset, bands, consistency counts, freeze cost with 18 or 24 arms (superseded by revision 3: the P8 integration contract, A.5) |
 | `PREDICTOR_NOT_PINNED` narrower than the served path | served-closure pin and import-closure test; separate scorer identity; wording out of `protocolSha256` (3.6, 4.6) |
 | Post-freeze exclusions | not-formed tracks counted as misses; losses counted for tracks and conditions; policy declared as D1 (4.4 item 2, 7.7) |
 | No divergence list; `beam.profile` default; IN625 leverage | 7.7 in the protocol record and every report; `unknown` is a label; leverage at step 5 (6.2, 7.3, 7.4) |
@@ -1541,3 +2313,15 @@ itself.
 | Crash consistency | OS-held lock, commit points, ledger after commit, reconciliation, kill-at-each-step tests (3.5) |
 | Missing refusals and limits | `TARGET_OUT_OF_RANGE`, `SYNTHETIC_EXAMPLE_ROW`, `FILE_NAME_INVALID`, `blockLabel` rule, export neutralisation, secure-context behaviour, shared-host refusal (4.2, 4.4, 6.1, 3.4, 9.7) |
 | Request types not enumerated; anchor errors; Opus gating its own code | 3.2.1; anchors fixed in 3.1, 3.4, 8.3, 10.2; fresh Opus gate (section 10, section 12) |
+
+### A.5 Revision 3: decisions and where they land
+
+| Decision or change | Where |
+|---|---|
+| Processing on the user's machine; maintainer never inside the user's app | 14.1, 1.2, 9.14 |
+| Mode A share bundle, maintainer verify and import, data counted as seen | 14.3, 3.1, 3.2.1, 3.5, 4.8, 5.1, 6.1, 6.4 item 5, 9.16, 11.1 item 10, phase 8 |
+| Mode B commitment, state machine, refusals, sealed protocol, leaderboard | 14.4, 3.1, 3.2.1, 3.5, 4.9, 5.2, 6.1, 6.4, 7.3, 10, 11.1 item 11, 11.2 item 7, phase 8 |
+| Transport without a server; no upload; air-gap unchanged | 14.5, 9.14, 11.1 item 13, 11.2 item 8 |
+| Per-value `sourceEvidenceKind`, research label rule, ceiling unchanged | 14.6, 2.1, 7.5, 7.6 item 9, 8.3, 11.1 item 12 |
+| Trust tiers, raw evidence, identity, plausibility flags, two-campaign rule | 14.7, 14.4.7, 2.2, 4.9, 6.5, 9.17, 11.1 item 11, phase 8, Q1 |
+| 7.6 reconciled with the P8 integration contract (no served bump, opt-in route only, `p8-research-v3`) | 7.6, 1.2, 3.1, 3.2, 3.6, 4.3, 4.5, 5, 7.1, 7.7 D12 and D13, 8.3, 8.4, 10, 11.1 item 3, phase 6, OD1 |
