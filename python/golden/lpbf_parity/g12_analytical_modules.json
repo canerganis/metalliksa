@@ -4,9 +4,9 @@
  "group": "G12",
  "description": "Eagar-Tsai, Rosenthal, Goldak, Fabbro, Marangoni, solidification front",
  "slow": false,
- "recordedImplementationHash": "1f8ad2b28ef951c4b062ee8f25ce4e463a519e6eb12ccd75098424cf556ff916",
+ "recordedImplementationHash": "dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "3d694540153324891c14c1a588b2a235b6402c4d",
+ "recordedGitHead": "c6ec6dbf5fdbcbfff58056285596c290eaf0b517",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,7 +68,7 @@
   }
  },
  "recordedRuns_s": [
-  0.0,
+  0.1,
   0.1
  ],
  "recordedTwice": true,
@@ -79,10 +79,10 @@
   "fabbro.depth": "6ecad13825def95bf5c6d1019ead87e8d1a15417b73cafb9ffd0345efe14038d",
   "marangoni.heipleRoper": "76d623965f3510de7d4a8bf448f689e2cf121e63c88cad7aba5e30cd48950684",
   "marangoni.screening": "4bd91bbbca7c8f6e50e3c250c6286ad692169e64f01d7be9dfd7564b6868513d",
-  "solidification.evaluate": "f12201c7b4b59e2f3b43cfdf2d18a023b8996fc2a905b1a03bb5dd9f0d762855",
+  "solidification.evaluate": "987c68342e123737c71bbca2636a56b5160746dd929c5bbebee3e1bf3d14446c",
   "solidification.pdasAdmission": "4511b168f467dc5b3a054959247f0d60c9064e88c4f1b2147f8fd857d5c1d167",
-  "solidification.defaultBlock": "c6d24ad332aaedd72c854f6c7b394b2e5c6e59c485f9a01770239fadbb4f7777",
-  "solidification.unknownAlias": "c63ef9317d2eb4509fc79c66b53d9f36afe9b4234304b33dfeee7100a0efac60",
+  "solidification.defaultBlock": "83b041e35952d5e0575cbe310db78eebffc02401614794c661b56714edcb552b",
+  "solidification.unknownAlias": "5ff569faa311e4b89d3f3c9c3aa309d02c460e64e8171e328f7b6876c5d66c7c",
   "powderPacker.seeded": {
    "error": "NotImplementedError: Fabrication of powder bed via random packing is disabled. Use proper LPBF DEM coupling."
   }

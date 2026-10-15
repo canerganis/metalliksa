@@ -62,8 +62,11 @@ PRE_BUMP_REVISION = "520903802a5cb89e368af60f68e53f232c99046d"
 # meltpool.0/1/2 digests, G18 meltpool.in625, G12 the four retired helper observations removed, solidification.evaluate
 # and the three new 6.3 observations); geometry, peak temperature and reference numerics bit equal; the rest recording
 # metadata.
-GOLDEN_FINGERPRINT = "1f8ad2b28ef951c4b062ee8f25ce4e463a519e6eb12ccd75098424cf556ff916"
-GOLDEN_REVISION = "84e76219cbe772f92c5a04207ef167e578772bf8"
+# SOL-A1 envelope repair (2026-10-15, 1f8ad2b2 -> dc6f5fdd, c6ec6dbf): only ten existing digest
+# observations change (six G11 thermal digests, G12 default/evaluate/unknown-alias, G18 IN625 thermal digest).
+# Null dependency/provenance metadata only; every numerical/reference observation stays bit equal.
+GOLDEN_FINGERPRINT = "dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5"
+GOLDEN_REVISION = "c6ec6dbf5fdbcbfff58056285596c290eaf0b517"
 SLOW = os.environ.get("LPBF_PARITY_SLOW") == "1"
 # Off the reference machine every case test is skipped (the goldens are bit-exact for one
 # environment). METALLIKSA_REQUIRE_PARITY=1 turns such a "NOT VERIFIED" skip into a failure,

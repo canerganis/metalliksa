@@ -4,9 +4,9 @@
  "group": "G11",
  "description": "lpbf_thermal_solver.calculate_meltpool_physics for three fixed payloads",
  "slow": false,
- "recordedImplementationHash": "1f8ad2b28ef951c4b062ee8f25ce4e463a519e6eb12ccd75098424cf556ff916",
+ "recordedImplementationHash": "dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "3d694540153324891c14c1a588b2a235b6402c4d",
+ "recordedGitHead": "c6ec6dbf5fdbcbfff58056285596c290eaf0b517",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,21 +68,21 @@
   }
  },
  "recordedRuns_s": [
-  0.5,
-  0.5
+  0.8,
+  0.8
  ],
  "recordedTwice": true,
  "observations": {
-  "meltpool.0.typedSha256": "40f8afbcb6b29d3eed86699b43cd425918d27e0aa0ab2ffd21612080c109f63f",
-  "meltpool.0.canonicalSha256": "15d52f49299ab249c990653c7f5b7915e14eac284665c46e59c9afb777df7575",
+  "meltpool.0.typedSha256": "6c86f8a93e295e02e871d9d8a663cc6ac4e0fe76c676824ac114a986b1d62942",
+  "meltpool.0.canonicalSha256": "5c2e435e569b583e528386e337012f2c63be05622aed46157571841ec2b68771",
   "meltpool.0.geometry_um": "4963b6a5b1ac9b8bcc380825a82811a1acebf9cea6384dcc0ed64fe8de932c79",
   "meltpool.0.peakTemperature_C": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
-  "meltpool.1.typedSha256": "ba443473d7f552091abab7889ac31a3fe841e5317ed94652d919138e9f2abaff",
-  "meltpool.1.canonicalSha256": "f47679185de1cea96b5160769b0006f9908ecb43fe0cf02585993f726da786a9",
+  "meltpool.1.typedSha256": "56a682ffbc05aaa16ffc6542b5387cf9d6540f049b892b6811a36448873f9c0b",
+  "meltpool.1.canonicalSha256": "955698f3702f8de9a44ea459d1fc1dbd3306a9981e487cd31c29ba388a1b2c80",
   "meltpool.1.geometry_um": "0f0bd74850b4098f71b7e0cf3b943d52389599d62b52ef68a639e2deb4e9e7d5",
   "meltpool.1.peakTemperature_C": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
-  "meltpool.2.typedSha256": "eee4906ef92b6cf60d5822f1473af74d2214811925c5f1fcbfb9fbd53d5c0b96",
-  "meltpool.2.canonicalSha256": "40d146e2ba4d0b3f87feb25c045e2bc4e783d5d2905b6012b1ac27a74567b5c4",
+  "meltpool.2.typedSha256": "cf54b41a0e5814da7a1035a93581a37a538fff35eca99667b72cc17739869d3c",
+  "meltpool.2.canonicalSha256": "62702063bef98f6e35f61625ed8c05a7124b250c5fab829850ca5684049dc219",
   "meltpool.2.geometry_um": "58347a6c431a5244c3a0befb0e83ea6a075562181f1eea2e5a5145adef04da80",
   "meltpool.2.peakTemperature_C": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
   "thermalSolver.THERMOPHYSICAL_DB": "2032f4be6e5d9f4e1a596851263274f0ce8b59f2d9f82cfab4c12fa6978a1b30",

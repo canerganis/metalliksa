@@ -32,7 +32,7 @@ The only changed manifest file is `solidification_front.py`; changing its depend
 - G12 `solidification.defaultBlock`, `solidification.evaluate`, `solidification.unknownAlias`.
 - G18 `meltpool.in625`.
 
-The planned-drift record uses these exact keys, without globs. All geometry, peak-temperature, transient/reference replay, direct source-model PDAS/admission and error observations stay protected. This is software/metadata verification, not experimental validation. Goldens will be recorded once with two identical executions and then checked using the required locked Windows Python 3.12 runtime.
+The planned-drift record uses these exact keys, without globs. All geometry, peak-temperature, transient/reference replay, direct source-model PDAS/admission and error observations stay protected. This is software/metadata verification, not experimental validation. All 25 goldens were recorded once with `--record --force --twice --slow`, at code/pin commit `c6ec6dbf`, using the required locked Windows Python 3.12 runtime. A programmatic comparison with `5aca4599` confirms exactly the ten observation changes above, identical observation-key sets and solver version, and `recordedTwice: true` with two equal executions in every file. The full post-record `--check --slow` passes all 25 cases with no skip or drift. `test_lpbf_parity_golden.ParityHarnessTests`: 50/50 pass, including rejection/mutation tests; printed REFUSED/INCOMPLETE messages inside those negative tests are expected assertions.
 
 ## Separate records lane, untouched
 
@@ -49,7 +49,7 @@ T-FRZ-3 stays red before merge. Review-trailer checks are not bypassed or satisf
 
 ## Validation checkpoint
 
-Full final unit: 1289 total, 1286 pass, 2 fail, 1 skip; the two failures are stale demo/bands record identity checks. Focused TS payload/segregation/CALPHAD tests including the new rejection guard: 18/18 pass. Component reachability: 12/12 pass. Lint passes. HTTP/pin checks: 7/7 pass. Full final suites and parity recording are in progress; final counts will be appended before delivery. Real-browser interaction was not exercised; UI verification uses real Python fixtures and server-rendered components.
+Full final unit: 1289 total, 1286 pass, 2 fail, 1 skip; the two failures are stale demo/bands record identity checks. Focused TS payload/segregation/CALPHAD tests including the new rejection guard: 18/18 pass. Component reachability: 12/12 pass. Lint passes. HTTP/pin checks: 7/7 pass. Final CI Python list: 127 entries, 1655 tests in 753.609 s; 2 failures, 1 error, 53 skips. Failures: `test_lpbf_calibration_frozen.FrozenGuards.test_diff_against_the_named_base_has_no_frozen_file` (T-FRZ-3; expected before merge) and `test_lpbf_benchmark.LeaderboardTests.test_committed_record_is_current_when_present` (stale records lane). Error: `test_lpbf_error_bands.CommittedArtefactTests.setUpClass` raises `BandsStale` on the old record. Unit failures: `tests/demo-snapshots.test.ts` / committed snapshot provenance and `tests/lpbf-error-bands.test.tsx` / summary pinned identity. None of these guards was changed or skipped. The base `origin/main` ceiling checker reports 28 unreviewed changes (CI/parity-harness history, pin and 25 goldens); no approval/review trailer was added. Raw logs are retained under `.runtime/solbatch/repair-*.log` (ignored local files). Real-browser interaction was not exercised; UI verification uses real Python fixtures and server-rendered components.
 
 Producer-bound fixture files changed (exact names):
 
@@ -69,3 +69,5 @@ Producer-bound fixture files changed (exact names):
 - `tests/fixtures/solidification-payloads/thermal-ti6al4v.json`
 - `tests/fixtures/solidification-payloads/worker-cfd-refused.json`
 - `tests/fixtures/solidification-payloads/worker-result.json`
+
+Additional CI identity job: 36 tests, OK with 1 host symlink-creation skip (35 pass); no skip rule changed.
