@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { LpbfEngineeringSimulation } from "./LpbfEngineeringSimulation";
 import { CalibratedMeltpoolPanel } from "./CalibratedMeltpoolPanel";
+import { ResearchModelPanel } from "./ResearchModelPanel";
+import { researchProcessSignature, type ResearchHostInput } from "../../utils/lpbfResearchPanelModel";
 import * as THREE from "three";
 import { useVisibleAnimationFrame } from "../../hooks/useVisibleAnimationFrame";
 import {
@@ -149,6 +151,9 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
 
   // Late analytical responses cannot roll back a newer shared process vector.
   const solveGeneration = useRef(0);
+  // Research panel (P8 4.6): signature of the inputs that produced pyResult, so a served number is shown beside a research
+  // one only when both come from the same inputs. A ref write only; it sends nothing.
+  const servedResearchSignatureRef = useRef<string | null>(null);
   const onParametersChangeRef = useRef(onParametersChange);
   onParametersChangeRef.current = onParametersChange;
   const sharedInputSignature = JSON.stringify([initialPower_W, initialSpeed_mms, initialBeamDiameter_um, initialPreheat_C, initialLayer_um, initialHatch_um, initialMaterial]);
@@ -177,6 +182,7 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
         throw new Error("Analytical melt pool response is incomplete.");
       }
       if(generation!==solveGeneration.current||sharedAtStart!==latestSharedInput.current)return;
+      servedResearchSignatureRef.current = researchProcessSignature({ material: selectedMaterial, laserPower_W, scanSpeed_mm_s: scanSpeed_mms, beamDiameter_um, preheatTemp_C, laserWavelength });
       setPyResult(res);
 
       if (onParametersChangeRef.current) {
@@ -209,6 +215,17 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
     heatSource,
     sulfurPpm,
   ]);
+
+  // Request values of the Research model panel: the lab's own process state, no copy kept elsewhere.
+  const researchInput = useMemo<ResearchHostInput>(() => ({
+    material: selectedMaterial,
+    laserPower_W,
+    scanSpeed_mm_s: scanSpeed_mms,
+    beamDiameter_um,
+    preheatTemp_C,
+    laserWavelength,
+    propertyContext: { kind: "nominal" },
+  }), [selectedMaterial, laserPower_W, scanSpeed_mms, beamDiameter_um, preheatTemp_C, laserWavelength]);
 
   // Debounced execution on parameter changes
   useEffect(() => {
@@ -1220,6 +1237,9 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
             material={selectedMaterial}
             request={{ laserPower_W, scanSpeed_mm_s: scanSpeed_mms, beamDiameter_um, preheatTemp_C, layerThickness_um, hatchSpacing_um, laserWavelength, sulfur_ppm: sulfurPpm }}
           />
+
+          {/* Research model: separate, collapsed, opt-in. Reads this lab's process values; writes nothing back. */}
+          <ResearchModelPanel host="melt-pool" input={researchInput} served={pyResult} servedSignature={servedResearchSignatureRef.current} />
 
           {/* Solidification Kinetics & Microstructure */}
           <div className="p-3.5 rounded-xl bg-[#090e18] border border-[#162032] space-y-2.5">

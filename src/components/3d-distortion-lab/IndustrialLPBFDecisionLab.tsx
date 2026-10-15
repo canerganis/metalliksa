@@ -22,6 +22,7 @@ import {
   findNearestLiteratureRecord,
   inferSlicerPreset,
   literatureOverlayPoints,
+  mapSpecimenToBuildJobMaterials,
   mapSpecimenToSolverMaterials,
   PrintVerdict,
   PRINT_VERDICT_SCREENING_LABEL,
@@ -40,6 +41,8 @@ import { STRESS_PROXY_LABEL, stressProxyPresentation } from "../../utils/residua
 import { STRESS_UNAVAILABLE_NOTE } from "../../utils/distortionHeuristic";
 import { peakTemperatureBasisLabel } from "../../utils/peakTemperatureDisplay";
 import { PublishedTrackBands } from "../PublishedTrackBands";
+import { ResearchModelPanel } from "./ResearchModelPanel";
+import type { ResearchHostInput } from "../../utils/lpbfResearchPanelModel";
 
 interface Props {
   onOpenSlicer?: () => void;
@@ -61,6 +64,24 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
   );
 
   const demoVectors = LPBF_DEMO_VECTORS[materials.alloyId] ?? LPBF_DEMO_VECTORS.in718;
+
+  // Request values of the Research model panel, built from the aligned job only; the Build Job store is not touched.
+  const researchInput = useMemo<ResearchHostInput | null>(() => {
+    if (!job) return null;
+    const strict = mapSpecimenToBuildJobMaterials(specimen.name, specimen.baseMetal);
+    if (!strict || strict.alloyId !== job.alloyId) return null;
+    return {
+      material: strict.pythonThermal,
+      laserPower_W: lpbf.laserPower_W,
+      scanSpeed_mm_s: lpbf.scanSpeed_mms,
+      beamDiameter_um: lpbf.beamDiameter_um,
+      preheatTemp_C: lpbf.preheatTemp_C,
+      laserWavelength: "IR_1064nm",
+      propertyContext: job.materialPropertySha256
+        ? { kind: "build-job-snapshot", alloyId: job.alloyId, materialPropertySha256: job.materialPropertySha256 }
+        : { kind: "nominal" },
+    };
+  }, [job, specimen.name, specimen.baseMetal, lpbf.laserPower_W, lpbf.scanSpeed_mms, lpbf.beamDiameter_um, lpbf.preheatTemp_C]);
 
   const thermal = job?.thermal ?? null;
   const slicer = job?.slicer ?? null;
@@ -636,6 +657,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
       {thermal && <MeltPoolExtentNotice geometry={thermal.meltPoolGeometry} />}
       {thermal && <DepthBiasNotice geometry={thermal.meltPoolGeometry} material={thermal.material} heatSource={thermal.processParameters?.heatSource} enthalpy={thermal.processParameters?.normalizedEnthalpy} />}
       {thermal && <PublishedTrackBands thermal={thermal} />}
+      {job && researchInput && <ResearchModelPanel host="build-job" input={researchInput} served={thermal} />}
 
       {job?.porosity && (
         <div className="rounded-2xl border border-violet-500/30 bg-[#090e18] p-3.5 grid grid-cols-2 md:grid-cols-4 gap-4">
