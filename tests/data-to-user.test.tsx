@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { getHostPython } from '../server/pythonRuntime';
 import { DATA_TO_USER, SPENT_ENTRIES, isOpenDataset, spentPoints, signedDeviation } from '../src/data/spentDatasets';
 import { LpbfDatasetComparisonLab } from '../src/components/3d-distortion-lab/LpbfDatasetComparisonLab';
 import { ServedConstantsView } from '../src/components/ServedConstantsView';
@@ -74,6 +75,7 @@ test('projection contains no measurement copies and matches current source ident
     const bytes = path.endsWith('.py') ? Buffer.from(readFileSync(path, 'utf8').replaceAll('\r\n', '\n')) : readFileSync(path);
     assert.equal(createHash('sha256').update(bytes).digest('hex'), digest, path);
   }
-  const result = spawnSync('python', ['-B', 'scripts/emit-data-to-user.py', '--check'], { encoding: 'utf8', timeout: 60000 });
+  const python = getHostPython();
+  const result = spawnSync(python.cmd, [...python.prefix, '-B', 'scripts/emit-data-to-user.py', '--check'], { encoding: 'utf8', timeout: 60000 });
   assert.equal(result.status, 0, result.stderr || result.error?.message);
 });
