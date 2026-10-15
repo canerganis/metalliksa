@@ -316,6 +316,24 @@ test("fx-kinetics: floor line only when at least one point is on the floor; LSW 
     { status: "unavailable-aging-temperature-at-or-above-solvus", reason: "aging temperature 720 C is at or above the registry Ae3" }
   );
   assert.deepEqual(unavailable, { available: false, reason: "aging temperature 720 C is at or above the registry Ae3." });
+  // SOL-K: the solver returns null rows with a status and reason codes for every alloy (Ti-6Al-4V at 720 C used to
+  // return 5.03 nm / 209.3 MPa); the helper shows the existing note of the status, no sentence is added for a code
+  const nullRow = {
+    meanRadius_nm: null,
+    precipitationHardening_MPa: null,
+    strengtheningMechanism: null,
+    status: "unavailable-not-modelled",
+    reasonCodes: ["missing-source-bound-model", "missing-source-constant"],
+  };
+  assert.deepEqual(
+    kineticsLswAvailability([nullRow, nullRow], {
+      status: "unavailable-not-modelled",
+      reason: null,
+      reasonCodes: ["missing-source-bound-model", "missing-source-constant"],
+    }),
+    { available: false, reason: "Unavailable: not modelled." }
+  );
+  assert.equal(kineticsLswAvailability([nullRow], { status: "unavailable-not-modelled" }).available, false);
   assert.equal(kineticsLswAvailability([{ meanRadius_nm: 2.5 }], null).available, true);
   assert.equal(
     kineticsLswAvailability(null, { status: "unavailable-aging-temperature-at-or-above-solvus" }).reason,
