@@ -1,7 +1,7 @@
-"""Synthetic P8 Amendment 3 reproduction; historical filename, no target data.
+"""Synthetic P8 Amendment 4 reproduction; historical filename, no target data.
 
 Loads only explicit immutable Python source blobs (no research runners).
-Run with python -B; --check compares the committed synthetic fixture.
+Run with python -I; --check compares the committed synthetic fixture.
 Astra owns the equations here; see the companion spec for their limitations.
 """
 from __future__ import annotations
@@ -19,8 +19,20 @@ from scipy.integrate import quad
 from scipy.optimize import brentq, minimize_scalar
 from scipy.special import i0e, iv, kv, kvp
 import numpy as np
-import p8_cavity_kernel as kernel
-import p8_input_provenance as provenance_data
+import importlib.util
+
+
+def sibling_module(name):
+    """Load only a named adjacent source file, also under isolated Python."""
+    spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(name + ".py"))
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+kernel = sibling_module("p8_cavity_kernel")
+provenance_data = sibling_module("p8_input_provenance")
 
 BASE = "835466fa"
 P3 = "c4470b017cfe533c74b23dc5712a2df720ae00c4"
@@ -365,17 +377,30 @@ def input_scope_reasons(module, provenance):
     return reasons
 
 
+def field_shape_policy(ratio, floor, excess, shape):
+    """Declared disclosure convention; no experimental threshold inference."""
+    resolution = max(2e-5, 1e-6 * abs(floor))  # um; Gaussian refinement bound
+    share = shape / excess if ratio > 1 and excess > resolution else None
+    below_near = .999 <= ratio <= 1.
+    dominant = share is not None and shape > resolution and share >= .5
+    return dict(nearOnset=bool(below_near or dominant), fieldShapeShare=share,
+                excessResolution_um=resolution,
+                nearOnsetTrigger="below-or-at-onset-0.1-percent" if below_near else
+                    "field-shape-share-at-least-half" if dominant else None)
+
+
 def field_shape_diagnostic(s, output):
     """Same-absorbed-power point counterfactual; not an alternate prediction."""
     if not output["modeledAboveOnset"]:
-        return dict(applicable=False, reason="Gaussian dispatch at or below inception")
+        return dict(applicable=False, reason="Gaussian dispatch at or below inception",
+                    **field_shape_policy(output["powerOverOnset"], output["conductionDepth_um"], 0., 0.))
     point = kernel.melt_depth_from_e(0.,output["absorbedPower_W"],s["v"],s["K"],
         s["Tl"]-s["T0"],s["alpha"],chi=0.,observable="envelope",order=64,x_samples=129)*1e6
     excess = output["conditionalMeltDepth_um"]-output["conductionDepth_um"]
     shape = point-output["conductionDepth_um"]
     return dict(applicable=True,samePowerPointDepth_um=point,fieldShapeExcess_um=shape,
         conditionalExcessOverGaussian_um=excess,
-        fieldShapeShare=shape/excess if excess>0 else None,
+        **field_shape_policy(output["powerOverOnset"], output["conductionDepth_um"], excess, shape),
         caveat="Counterfactual decomposition at the same absorbed power; no physical validation.")
 
 
@@ -496,6 +521,8 @@ def run():
                         validationStatus=SURFACE_VALIDATION if module=="surfaceBalance" else NON_SURFACE_VALIDATION,
                         experimentalValidation=False,moduleEvidenceCeiling="screening-only")
                     row["valueProvenance"]=value_provenance(module,row["values"],row["inputProvenance"])
+                    row["provenance"]=provenance_data.changed_input_provenance(
+                        alloy,name,arm,s,row["inputProvenance"])
                     row["inputScopeReasons"]=input_scope_reasons(module,row["inputProvenance"])
                     if module=="meltDepthLink":row["fieldShapeDiagnostics"]=field_shape_diagnostic(arm,output)
                     records[module].append(row)
@@ -506,6 +533,8 @@ def run():
                 for key,field in module_band["fields"].items():
                     field["sourceEvidence"]={position:by_id[field[position+"ArmId"] if position!="nominal" else "nominal"]["valueProvenance"][key]
                         for position in ("min","nominal","max")}
+                    field["armProvenance"]={position:by_id[field[position+"ArmId"] if position!="nominal" else "nominal"]["provenance"]
+                        for position in ("min","nominal","max")}
                 statuses={}
                 for row in rows:statuses[row["consistencyStatus"]]=statuses.get(row["consistencyStatus"],0)+1
                 module_band.update(armIds=[r["armId"] for r in rows],successfulArms=len(rows),failedArms=[],
@@ -515,7 +544,15 @@ def run():
                 if module in {"cavity","meltDepthLink"}:
                     support=sum(r["inputs"]["P"]>onset_power(r["inputs"]) for r in rows)
                     module_band["modeledOnsetSupport"]=dict(above=support,total=len(rows),unresolved=0,
+                       arms=[dict(armId=r["armId"],modeledAboveOnset=r["inputs"]["P"]>onset_power(r["inputs"]),
+                                  provenance=r["provenance"]) for r in rows],
                        caveat="Positive-depression inception scenarios only; equal-weight conventions, not a calibrated probability. O2 geometric threshold is excluded.")
+                    if module=="meltDepthLink":
+                        crossing=0<support<len(rows)
+                        module_band["bandCrossesOnset"]=crossing
+                        for row in rows:
+                            diagnostic=row["fieldShapeDiagnostics"]
+                            diagnostic["warningRequired"]=diagnostic["nearOnset"] or crossing
                 point["modules"][module]=module_band
             points.append(dict(alloy=alloy,power_W=power,values=nom))
             bands.append(dict(alloy=alloy,power_W=power,modules=point["modules"]))
@@ -546,7 +583,8 @@ def run():
                 assert value["controllingLeg"]=="conduction" and value["roots"]==[]
             else:
                 assert value["cavityDepth_um"]>0. and value["controllingLeg"]=="conditional-link"
-            side_records.append(dict(side=side,powerFactor=factor,inputs=near,values=value))
+            side_records.append(dict(side=side,powerFactor=factor,inputs=near,values=value,
+                                     fieldShapeDiagnostics=field_shape_diagnostic(near,value)))
         at=side_records[1]["values"];point=kernel.melt_depth_from_e(0.,state["A"]*pstar,state["v"],state["K"],
             state["Tl"]-state["T0"],state["alpha"],chi=0.,observable="envelope",order=64,x_samples=129)*1e6
         step=point-at["conductionDepth_um"]
@@ -558,6 +596,32 @@ def run():
             independentPointLimitDepth_um=analytic_point,pointLimitIndependentDifference_m=abs(analytic_point-point)*1e-6,
             fieldShapeStep_um=step,pointToGaussianRatio=point/at["conductionDepth_um"],
             aboveOnsetFieldChanged=False,cause="Finite Gaussian below/at onset versus singular surface-point limit above onset."))
+    field_warning_checks=[]
+    for alloy, expected in (("ti6al4v",False),("alsi10mg",True)):
+        link=next(item for item in bands if item["alloy"]==alloy)["modules"]["meltDepthLink"]
+        nominal_row=next(row for row in link["armResults"] if row["armId"]=="nominal")
+        assert nominal_row["fieldShapeDiagnostics"]["nearOnset"] is expected
+        field_warning_checks.append(dict(case=alloy+"-nominal-200W",expectedNearOnset=expected,
+            diagnostics=nominal_row["fieldShapeDiagnostics"]))
+        if alloy=="alsi10mg":
+            above=[row for row in link["armResults"] if row["inputs"]["P"]>onset_power(row["inputs"])]
+            assert len(above)==22 and all(row["fieldShapeDiagnostics"]["nearOnset"] for row in above)
+            ht=next(row for row in link["armResults"] if row["armId"]=="state_HT")
+            assert ht["fieldShapeDiagnostics"]["nearOnset"] and ht["fieldShapeDiagnostics"]["fieldShapeShare"] is None
+            field_warning_checks.append(dict(case="alsi10mg-state_HT-below",expectedNearOnset=True,
+                powerOverOnset=ht["inputs"]["P"]/onset_power(ht["inputs"]),diagnostics=ht["fieldShapeDiagnostics"]))
+    for case,ratio,floor,excess,shape,expected in [
+        ("share-boundary",1.3,10.,4.,2.,True),
+        ("share-below-boundary",1.3,10.,4.,1.999,False),
+        ("unresolved-excess",1.3,10.,1e-7,1e-7,False),
+        ("no-positive-shape-excess",1.3,10.,4.,-1.,False),
+        ("below-window-inside",.9995,10.,0.,0.,True),
+        ("below-window-boundary",.999,10.,0.,0.,True),
+        ("below-window-outside",.998,10.,0.,0.,False)]:
+        policy=field_shape_policy(ratio,floor,excess,shape)
+        assert policy["nearOnset"] is expected,case
+        field_warning_checks.append(dict(case=case,powerOverOnset=ratio,gaussianFloor_um=floor,
+            conditionalExcess_um=excess,pointExcess_um=shape,expectedNearOnset=expected,diagnostics=policy))
     status_checks=[]
     for name,parameters,expected in [
         ("source-transfer",dict(source_transfer=True),"extrapolated"),
@@ -656,7 +720,7 @@ def run():
     provenance_bytes=Path(provenance_data.__file__).read_text(encoding="utf-8").replace("\r\n","\n").encode("utf-8")
     return dict(evidence="synthetic software reproduction; not experimental validation",sourceBase=BASE,
        sourceP3=P3,sourceP3Blob="b762dc6268b82f15f9e1fe529845b5e3e9013415",
-       kernelAmendment="p8-amendment3-kernel-2026-10-15",modelIdentity="p8-research-synthetic-v3",
+       kernelAmendment="p8-amendment3-kernel-2026-10-15",modelIdentity="p8-research-synthetic-v4",
        belowOnsetPolicy="Gaussian floor dispatch; above-onset point/line field has a residual discontinuity at P* despite continuous energy allocation",
        kernelCanonicalLfSha256=hashlib.sha256(kernel_bytes).hexdigest(),
        scriptCanonicalLfSha256=hashlib.sha256(script_bytes).hexdigest(),
@@ -675,6 +739,7 @@ def run():
           extremumTieBreak="first manifest arm among equal values"),
        points=points,bands=bands,noMeltLimits=no_melt,onsetSurfaceContradictions=contradictions,
        geometricThresholdDiagnostics=geometric,fieldShapeStepChecks=field_steps,
+       fieldShapeWarningChecks=field_warning_checks,
        statusSemanticsChecks=status_checks,secondaryAlloyManifests=provenance_data.secondary_manifests(registry),
        independentTransientChecks=onset_checks,gaussianFieldCrosschecks=gaussian_crosschecks,syntheticRootTopology=folds)
 

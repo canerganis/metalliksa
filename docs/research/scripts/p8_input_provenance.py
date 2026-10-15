@@ -137,7 +137,8 @@ def input_provenance(alloy, name, arm, nominal):
     if "Tl" in out:
         out["Tl"] = (_record("sourceModelAssumption", "gan2021:ti64:liquidus", "Gan 2021 SI Table 1 PDF p.20",
                              phase="solid-liquid-mean", reference=tl, source="P8 source-model liquidus") if ti else
-                     _assumption("alsi10mg:liquidus", "Supplier/binary proxy convention; not specimen DSC", "solid-liquid-mean", tl))
+                             _assumption(alloy + ":liquidus", "Supplier/binary proxy convention; not specimen DSC" if alloy == "alsi10mg" else
+                                 "Registry liquidus preset without independently located source; missing stays null", "solid-liquid-mean", tl))
     if "A" in out:
         source = ("Simonds 2021 Sec.3.2 Fig.3a PDF p.4; NIST mds2-2525" if ti else
                   "Leis, Weber, Graf 2020 Sec.3 Figs.4-6 pp.175-176" if alloy == "alsi10mg" else
@@ -337,6 +338,30 @@ def source_evidence_kind(provenance, physical_keys):
     return evidence_kind(provenance, physical_keys)[0]
 
 
+def changed_input_provenance(alloy, name, arm, nominal, records):
+    """Arm display support follows its weakest changed input, not its name.
+
+    This scenario label is separate from each output's dependency support.
+    Nominal has no changed inputs and retains its explicit preset summary.
+    """
+    changed = [key for key in arm if arm[key] != nominal.get(key)]
+    if not changed:
+        return arm_provenance(alloy, name)
+    order = {kind: index for index, kind in enumerate((
+        "legacyEstimate", "declaredAssumption", "userInput", "alloyTransfer",
+        "derived", "followsInput", "sourceModelAssumption", "sourcedAlternative",
+        "sourceDefault", "modelConvention"))}
+    def rank(key):
+        record = records[key]
+        return ({"Unresolved": 0, "User input": 1, "Literature estimate": 2}[record["sourceEvidenceKind"]],
+                order[record["kind"]])
+    weakest = min(changed, key=rank)
+    result = copy.deepcopy(records[weakest])
+    result.update(label="Unresolved" if result["sourceEvidenceKind"] == "Unresolved" else result["kind"],
+                  changedInputs=changed, weakestInputs=[key for key in changed if rank(key) == rank(weakest)])
+    return result
+
+
 def _exact(value):
     return float(value).hex() if type(value) in (int, float) else value
 
@@ -418,6 +443,7 @@ def secondary_manifests(registry):
                         scope="Explicit IN625 Raoult all-CC/table-weighted research alternative; cavity chain not admitted")
             missing = [key for key in ACTIVE_INPUTS["surfaceBalance"] if state.get(key) is None]
             rows.append(dict(armId=name, family=family, label=name, onsetEvent=None,
+                provenance=changed_input_provenance(alloy, name, state, s, provenance),
                 changes=[dict(input=k, value=state[k], nominalAnchor=s[k], provenance=provenance[k])
                          for k in state if state[k] != s[k]], aliasArmIds=[], inputs=state,
                 inputProvenance=provenance, prerequisiteNulls=missing))
@@ -460,10 +486,24 @@ def check():
             if "armResults" in obj:
                 rows = obj["armResults"]
                 nominal = next(r["inputs"] for r in rows if r["armId"] == "nominal")
+                by_id = {row["armId"]: row for row in rows}
+                for field in obj["fields"].values():
+                    for position in ("min", "nominal", "max"):
+                        arm_id = field[position + "ArmId"] if position != "nominal" else "nominal"
+                        assert field["armProvenance"][position] == by_id[arm_id]["provenance"]
+                if "modeledOnsetSupport" in obj:
+                    for arm in obj["modeledOnsetSupport"]["arms"]:
+                        assert arm["provenance"] == by_id[arm["armId"]]["provenance"]
                 # Primary fixture rows are disambiguated by their vapour/solid tuple.
                 for row in rows:
                     alloy = "ti6al4v" if nominal["Tv"] == 3560 else "alsi10mg"
                     records = input_provenance(alloy, row["armId"], row["inputs"], nominal)
+                    assert row["inputProvenance"] == records, (alloy, row["armId"], "stale inputProvenance")
+                    assert row["provenance"] == changed_input_provenance(alloy, row["armId"], row["inputs"], nominal, records)
+                    if row["armId"] in {"slope_-0.000244", "slope_-7.86e-05"}:
+                        assert row["provenance"]["kind"] == "alloyTransfer", row["armId"]
+                    if row["armId"].startswith("liquidus_"):
+                        assert row["provenance"]["label"] == "Unresolved", row["armId"]
                     assert set(records) == set(row["inputs"])
                     assert all(r["kind"] in KINDS for r in records.values())
                     assert all(r["sourceId"] and "sourceLocator" in r and "phase" in r and "referenceTemperature_K" in r and "sourceRange_K" in r for r in records.values())
@@ -480,6 +520,12 @@ def check():
                 visit(value)
     visit(fixture)
     assert found > 0
+    for diagnostic in fixture["geometricThresholdDiagnostics"]:
+        alloy = diagnostic["alloy"]
+        cavity = next(b["modules"]["cavity"] for b in fixture["bands"] if b["alloy"] == alloy)
+        nominal = next(row["inputs"] for row in cavity["armResults"] if row["armId"] == "nominal")
+        records = input_provenance(alloy, "onset_O2", {**nominal, "onsetMethod": "O2"}, nominal)
+        assert diagnostic["inputProvenance"] == records, (alloy, "onset_O2", "stale inputProvenance")
     class EmptyRegistry:
         def thermal_props(self, alloy):
             return {}
@@ -492,6 +538,11 @@ def check():
     registry = types.ModuleType("p8_provenance_check_registry")
     exec(compile(source, LEDGER, "exec"), registry.__dict__)
     secondary = secondary_manifests(registry)
+    assert fixture["secondaryAlloyManifests"] == secondary, "stale secondary inputProvenance"
+    for alloy, modules in secondary.items():
+        for module in ("marangoni", "surfaceBalance"):
+            for row in modules[module]["manifest"]:
+                assert "alsi10mg" not in row["inputProvenance"]["Tl"]["sourceId"], alloy
     for registry_input in (EmptyRegistry(), registry):
         tested = secondary_manifests(registry_input)
         for alloy, n in (("in625", 7), ("in718", 8), ("ss316l", 7)):
@@ -501,6 +552,11 @@ def check():
     assert secondary["in718"]["marangoni"]["manifest"][0]["inputs"]["Tref"] == 1859.15
     assert secondary["ss316l"]["marangoni"]["manifest"][0]["inputs"]["Tref"] == 1923.15
     assert secondary["in625"]["marangoni"]["manifest"][0]["inputs"]["mu"] is None
+    in625_surface = secondary["in625"]["surfaceBalance"]["manifest"]
+    assert len(in625_surface) == 9
+    candidates = [r["armId"] for r in in625_surface if all(r["inputs"][k] is not None for k in ("Tv", "Lv", "M"))]
+    assert candidates == ["vapour_melt_in625_raoult"]
+    assert sum(r["availability"] == "available" for r in in625_surface) <= 1
     assert evidence_kind({"mu": _assumption("mu", "test")}, ("mu",))[0] == "Unresolved"
     user = _record("userInput", "test:user")
     assert source_evidence_kind({"mu": user}, ("mu",)) == "User input"

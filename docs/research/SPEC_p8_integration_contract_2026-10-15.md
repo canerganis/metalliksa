@@ -4,7 +4,7 @@ Date: 2026-10-15. Owner: system architect (Opus). Scope: the engineering items 2
 Base: branch `research/p8-research-arm`. Its code is identical to main `835466fa` (the branch adds documents only), so every `file:line` below is a line of `835466fa`.
 Companion: `docs/research/SPEC_p8_research_arm_2026-10-14.md` (base and Amendments 1 to 3; physics owner Astra; Amendment 3 is `78607f3e`). Amendment 2 landed on this branch as `1c76a2fd` while this contract was written; the contract is aligned with it. Amendment 2 (header and B9) assigns to this contract the transport, gating, caching, provenance vocabulary, field names, reason-code serialization and availability enums, and lists eight physics requirements the final schema must carry (0.2). This file does not edit the physics spec. Where this contract still needs a physics decision it says so in section 12; the re-gate reconciles both files.
 
-Status: re-gated 2026-10-15, APPROVE_WITH_CHANGES (`../Metalliksa-1/.orchestra/reports/p8_regate_verdict_2026-10-15.md`). Revision 1 (section 13) applies the architect's share of R1 to R15 and records the maintainer's label decisions. Revision 2 fixes the residuals of the lead check at `e6934ffd` (Phase A GO) in place, marked "Rev. 2". Nothing is implemented; no code, pin, golden, allowlist or test changes in these commits.
+Status: re-gated 2026-10-15, APPROVE_WITH_CHANGES (`../Metalliksa-1/.orchestra/reports/p8_regate_verdict_2026-10-15.md`). Revision 1 (section 13) applies the architect's share of R1 to R15 and records the maintainer's label decisions. Revision 2 fixes the residuals of the lead check at `e6934ffd` (Phase A GO) in place, marked "Rev. 2". Revision 3 (section 14) admits the research hub's blind-test tab and batch client as research senders with a hash-bound relay into the blind freeze (hub gate R12(a)). Nothing is implemented; no code, pin, golden, allowlist or test changes in these commits.
 
 W-1: every English user-facing string in this contract (panel text, labels, help, sentences, captions, n/a texts, option messages, difference statements) is a draft awaiting maintainer approval W-1, except text quoted verbatim from the P8 spec. Tests pin the approved wording, not these drafts.
 
@@ -53,7 +53,7 @@ The physics content (sections 3 to 7, A2, A3, the physics of A4 and A5, and Amen
 
 ### 1.1 Rule
 
-Research is computed only when the research route receives a request. Only the Research model panel sends one, and only after the user presses **Run research models**. No served route, worker job, internal caller, page load or input edit sends one.
+Research is computed only when the research route receives a request. Revision 3 admits a closed list of senders, each started by a person (14.1): the Research model panel (after **Run research models**), the research hub's blind-test tab (after the user ticks the research option and presses Freeze), and the batch client `scripts/research-route-batch.ts` (started by a person). No served route, worker job, internal caller, page load or input edit sends one.
 
 ### 1.2 Mechanism (structural, not a flag)
 
@@ -90,7 +90,7 @@ The reviewer's cost finding (an envelope of about 0.9 to 3.5 s against 0.02 to 0
 
 ### 1.5 No channel to served code (Rev. 1, R3)
 
-The research route offers no channel to served code. No served route, solver call, worker job or internal caller can send options to it or receive values from it, and the closed request schema `p8-research-request-v1` admits no member for any other lane. A lane that needs an opt-in served-side diagnostic (for example SOL-C, which needs the served heat source that this request deliberately excludes) defines its own route, request and cache; it cannot ride on P8's transport, cache or schema. P8 is not a served bump, holds no pin slot, leaves the manifest at 36 files and does not edit `python/test_phase6a_leaf_modules.py`. The matching amendment of the solidification integration plan belongs to its owner.
+The research route offers no channel to served code. No served route, solver call, worker job or internal caller can send options to it or receive values from it, and the closed request schema `p8-research-request-v1` admits no member for any other lane. A lane that needs an opt-in served-side diagnostic (for example SOL-C, which needs the served heat source that this request deliberately excludes) defines its own route, request and cache; it cannot ride on P8's transport, cache or schema. P8 is not a served bump, holds no pin slot, leaves the manifest at 36 files and does not edit `python/test_phase6a_leaf_modules.py`. One exception, Revision 3 (14.2): a blind freeze job may receive research values as relayed data, the hash-bound `relay.subsetJson` strings that a person's client obtained from the route; the job never calls the route, never imports a research module and never feeds a relayed value into a served computation. The matching amendment of the solidification integration plan belongs to its owner.
 
 ## 2. Files touched
 
@@ -186,7 +186,9 @@ Ad-hoc spawn fallback (`server/processOrchestrator.ts:647-650`): every research 
   },
   "propertyContext": { "kind": "nominal" },
   // or { "kind": "build-job-snapshot", "alloyId": "ti6al4v", "materialPropertySha256": "<64 lowercase hex>" }
-  "researchOptions": { "marangoni": {}, "surfaceBalance": {}, "ranges": {} }   // A1 member, optional
+  "researchOptions": { "marangoni": {}, "surfaceBalance": {}, "ranges": {} },  // A1 member, optional
+  "sender": "research-panel",                 // Rev. 3: "research-panel" | "blind-freeze" | "batch-client"; optional, default "research-panel" (14.1)
+  "relay": { "kind": "blind-freeze-v1", "previewSha256": "<64 hex>", "conditionOrdinal": 0 }   // Rev. 3, optional (14.3)
 }
 ```
 
@@ -223,6 +225,8 @@ Not in the request: hatch, layer, incline, seed, the served sulfur slider, the s
     "propertySetSha256": "<hex>", "propertyContextKind": "nominal"
   },
   "cache": { "cacheInstanceId": "<uuid4 hex>", "armsHit": 30, "armsComputed": 11 },
+  "digests": { "researchModelsSha256": "<hex>", "labelsSha256": "<hex>" },   // Rev. 3: complete responses only (14.3)
+  "relay": { "kind": "blind-freeze-v1", "subsetJson": "<ASCII canonical JSON>", "subsetSha256": "<hex>" },   // Rev. 3: relay requests, complete only
   "computeMs": 812.4                           // volatile, excluded from every equality check
 }
 ```
@@ -518,7 +522,7 @@ Label rules:
 
 1. No label, help text or sentence uses "peak" for the beam-centre scalar.
 2. No research label equals a served label. Pinned served labels to avoid: the aspect label at `MeltPool3DCrossSectionLab.tsx:1137`, the sulfur slider label at `:925`, and the tile labels at `IndustrialLPBFDecisionLab.tsx:624-632`. R-UI-7 checks the `labels` map against this list.
-3. Research labels render only inside the Research model panel.
+3. Research labels render only inside the Research model panel, with one Revision 3 exception: relayed research values may render in the research hub's blind report after reveal or score, under the rules of 14.5.
 4. Every field path the response emits has a label (R-UI-7, R-CODE).
 
 ### 7.2 New leaves and wrappers required by Amendment 2
@@ -663,7 +667,8 @@ type OptionProblem = {
   rule: "unknown-key" | "wrong-type" | "not-finite" | "below-min" | "above-max" | "range-inverted"
       | "range-excludes-nominal" | "range-without-nominal" | "mode-field-ignored"
       | "binary-combination" | "preset-alloy-mismatch" | "not-positive" | "too-large"
-      | "alloy-material-mismatch" | "snapshot-hash-mismatch";
+      | "alloy-material-mismatch" | "snapshot-hash-mismatch"
+      | "sender-key-mismatch" | "relay-sender-mismatch" | "relay-options-forbidden" | "relay-required";   // Rev. 3, 14.1
   limit: number | string | null;
   value: string;                 // JSON text of the received value, at most 64 characters
   message: string;               // English, from the template below
@@ -741,6 +746,7 @@ Python (new files):
 | `python/test_lpbf_research_context.py` | R-CTX-1 the 3.8 tuple literals for Ti-6Al-4V and AlSi10Mg at 20 C. R-CTX-2 equality with served internals: `unittest.mock.patch.object(lpbf_thermal_solver, "resolve_conduction_kernel", wraps=...)` during `calculate_meltpool_physics` for five alloys and three kernels, float.hex of K, cp, rho_k and alpha compared with the research context. R-CTX-3 build-job snapshot equals nominal for the four Build Job alloys; a tampered hash gives `PROPERTY_SNAPSHOT_MISMATCH`; a wrong alloy gives `alloy-material-mismatch`. R-CTX-4 SI conversions by float.hex: 800 mm/s to 0.8, 80 um to 8e-05, 20 C to 293.15. |
 | `python/test_lpbf_research_transport.py` (injected deterministic fake evaluator, no physics) | R-TR-1 request-check table: each rule with code, pointer, rule and limit (for example laserPower_W 0 gives `RESEARCH_REQUEST_INVALID`, `/process/laserPower_W`, `not-positive`); booleans refused as numbers. R-TR-2 emissivity 1.2 makes surfaceBalance unavailable with `{pointer "/researchOptions/surfaceBalance/emissivity", rule "above-max", limit 1}` while the other six containers are byte-identical to a run without it. R-TR-3 stage protocol: pending bands; strictly increasing `armsDone`; the complete block equals a `timeBudgetMs: null` run; `researchModels` null while incomplete. R-TR-4 cache: cold equals warm byte for byte; a surface-only option change leaves cavity, link and Marangoni arm keys unchanged; the 1025th insert evicts the oldest; a band loop at the per-module cap completes with strictly increasing `armsDone` (Rev. 1, R14); size eviction with synthetic large entries; transient failures not cached, deterministic failures cached. R-TR-5 (Rev. 1, R11) NaN and infinity injected by the fake evaluator at the first, a middle and the last manifest position of a field give the same band, the same extremes and the same field-specific failures, and never a NaN extreme; values, bands and notes become null with `NONFINITE_RESULT`; a strict parser reads the output. R-TR-6 nominal values identical across stages. R-TR-7 an exception in one arm gives a failed arm with `RESEARCH_EVALUATION_FAILED`; an exception in one module's assembly leaves the other six containers. R-TR-8 a patched on-disk hash gives `RESEARCH_CODE_STALE`. R-TR-9 key sensitivity: every process field, property context, option, follow flag and identity hash changes `requestKey`. R-TR-10 a synthetic oversize block gives `RESEARCH_RESPONSE_TOO_LARGE`. R-TR-11 (Rev. 1, R12; Rev. 2) the CLI output for a fixed request, run with the fake evaluator, a stubbed identity provider (constant research and served hashes), a stubbed property provider (a fixed synthetic property set, so `propertySetSha256` is constant), a fixed injected declared-arm table, a fixed injected label table, an injected `cacheInstanceId` and a cold cache, equals the committed transport fixture `tests/fixtures/lpbf-research-response-v1.json`; only `computeMs` is excluded. The fixture describes transport shape only and does not change when the real evaluator lands. R-TR-12 (Rev. 1, R10) `describe` returns controls, defaults (including followed defaults evaluated in Python), provenance, labels and option problems without evaluating an arm. R-TR-13 (Rev. 1, R8) `RESEARCH_CODE_STALE` sets `recycleWorker` and the next request runs in a fresh worker; a lane timeout reaches the route as exit 124. |
 | `python/test_lpbf_research_status.py` (Rev. 1, R7, R13) | R-STAT: the decided label rule of 13.12 on synthetic provenance tables (Unresolved over User input over Literature estimate; a typed value equal to its sourced default keeps the sourced label; request values excluded; band endpoints labelled by their arm); the inside-range primary sentence is rejected for every extrapolated and outOfRange note; each 13.6 sentence fires on its trigger; status follows the dependency (surface-derived `onsetMismatch` values carry the B2 status inside cavity and link notes); `moduleEvidenceCeiling` is within the host ceiling (`module_contract.within_ceiling`). |
+| `python/test_lpbf_research_relay.py` (Rev. 3, phase B) | R-REL-1 to R-REL-6 of 14.7. |
 | `python/test_persistent_ipc_research_lane.py` | R-IPC with the existing thread-pool factory pattern of `_AffinityLane` tests: run timeout recycles only the research lane; a queued research request is superseded; no prestart; the metadata guard. |
 | `python/test_lpbf_research_manifest.py` | R-MAN: per-module deduplication (a power arm aliases the Marangoni nominal), sourceId distinctness, user endpoint ids and order, `minArmTies`, the per-module cap with an injected table, onset support only in keyholeCavity with the cavity denominator. |
 | `python/test_lpbf_research_codes.py` | R-CODE: every code a research module emits is in the registry; every entry has class, scope and English text without em or en dashes; warnings never appear as `reasonCode`; a pinned precedence table (for example C5 `PECLET_OUTSIDE_NUMERICAL_SCOPE` with C8 `NONFINITE_RESULT` resolves to the C5 code); every emitted field path has a label. |
@@ -766,7 +772,7 @@ Existing suites that must pass without edits: `python/test_lpbf_calibration_froz
 | Phase | Owner | Work | Acceptance |
 |---|---|---|---|
 | A | lead | Re-gate done 2026-10-15 (APPROVE_WITH_CHANGES); the lead checks R1 to R15 against Amendment 3 and Revision 1. | Phase A GO at e6934ffd with residuals fixed in Revision 2; maintainer decisions 1 and 2 recorded (13.12); W-1 deferred to phase C. |
-| B | Opus; starts once the lead has checked R11, R12 and R14 | Isolation and transport core, including `describe`, `handleResearchDispatch`, the stale recycle and the LRU bound: `lpbf_research_models.py`, `lpbf_research_context.py`, `lpbf_research_cache.py`, the registry skeleton of `lpbf_research_codes.py`, the research pin, the `persistent_ipc_service.py` lane edits, the fake-evaluator harness. | R-ISO, R-CTX, R-TR, R-IPC and R-ID pass; P-1 to P-4 pass unchanged; the R-TR-11 fixture is committed; the per-request cost of the code-stale check is recorded. |
+| B | Opus; starts once the lead has checked R11, R12 and R14 | Isolation and transport core, including `describe`, `handleResearchDispatch`, the stale recycle, the LRU bound, and (Rev. 3) the `sender` and `relay` request members with the relay projection of 14.3 on the fake evaluator: `lpbf_research_models.py`, `lpbf_research_context.py`, `lpbf_research_cache.py`, the registry skeleton of `lpbf_research_codes.py`, the research pin, the `persistent_ipc_service.py` lane edits, the fake-evaluator harness. | R-ISO, R-CTX, R-TR, R-IPC and R-ID pass; P-1 to P-4 pass unchanged; the R-TR-11 fixture is committed; the per-request cost of the code-stale check is recorded. |
 | C | Opus, numerics reviewed by Astra | Physics evaluator `lpbf_research_arm.py` and `lpbf_research_manifest.py` per Amendment 2, ported (not imported) from `docs/research/scripts/p8_cavity_kernel.py` and the synthetic script; full codes, labels and difference templates. | `test_lpbf_research_arm.py` replays the Amendment 2 fixture within its stated tolerances, including the 200 W manifest counts of 5.1; R-MAN, R-CODE and R-LINK pass; per-arm timings, manifest sizes and response sizes recorded (P-7, research part); budget and cap confirmed or changed by measurement (D-12). |
 | D | Sonnet | Route, registry operation and regenerated registry, `DISPATCHABLE_SCRIPTS`, `pythonComputationService.solveLpbfResearchModels`, `src/types/lpbfResearchModels.ts` with its guard. | Transport and schema TS tests, persistent-ipc-auth, route-authority, module-registry, `test_persistent_ipc_security.py`, `npm run lint`. |
 | E | Sonnet; Opus reviews the state machine | `ResearchModelPanel.tsx`, `useLpbfResearchModelStore.ts`, the two host mounts, the served-signature ref. | Panel and isolation tests; `npm run check:bundle`; a browser check of both panels under `npm run dev` (run, pending, complete, cancel, stale on input change; served tiles, verdict and exports unchanged), screenshots in the report. |
@@ -784,6 +790,7 @@ Still open:
 | Id | Owner | Open point |
 |---|---|---|
 | W-1 | maintainer, phase C | Deferred to phase C (lead decision at Phase A GO, e6934ffd): approval of every user-facing English string drafted here (13.4, 13.6, 13.15, 9.2, section 8, 4.7 and 9.3); tests pin the approved text. |
+| X-3 | Opus architect with the hub owner (hub R12(b)) | The hub's 7.6 adapter, class table and freeze checks move to the `blind-freeze-v1` relay projection and the sender rules of section 14; the hub's batch and blind-tab cost limits follow 14.4. |
 | X-2 | Astra (spec only) | P8 spec Amendment 2 B3 (line 526) still says the fixture records "O1/O2/O3 source-convention arms"; after Amendment 3 C1, O2 is a geometric diagnostic outside the arm envelope. This contract does not edit the spec. |
 | D-12 | Opus, phase C | Default band budget (1500 ms), route timeout (30000 ms), per-module cap (80) and LRU byte bound (128 MiB), confirmed by measured timings that include the ad-hoc path and the null-budget fallback at the cap. |
 | X-1 | SOL integration owner, lead | The solidification plan side of R3 (bump table, swap rule, MD4, SOL-C channel). This contract's side is the statement in 1.5. |
@@ -1117,3 +1124,95 @@ Rules:
 2. The field-shape assumption and its locator appear in every cavity and link note whose conditional model uses the Gaussian-to-point dispatch, whether `nearOnset` is true or false (Rev. 2; Amendment 3 C2). W-1 draft of that assumption: "At or below onset the link uses the finite Gaussian field; above onset it uses a surface point plus line. The two fields differ, so the linked depth can change at P* because of field shape, not because of a cavity (P8 spec Amendment 3 C2)."
 3. When `nearOnset` is true, or the arm crosses onset within its band, the linked and conditional depths and `controllingLeg` also carry the warning `FIELD_SHAPE_STEP_NEAR_ONSET`, and the visible note leads its limitations with (W-1 draft): "Near onset the linked depth is dominated by the change of field shape ({fieldShapeShareOfExcess} of the excess over the Gaussian floor); controlling-leg support does not show that a cavity caused the increase."
 4. Neither text is dropped when another primary sentence wins (13.6). The `nearOnset` trigger (share based) and the share computation are Astra's physics, declared in the P8 spec; the fixture pins the values.
+
+## 14. Revision 3 (research hub senders and blind relay, 2026-10-15)
+
+Request: hub gate `../Metalliksa-1/.orchestra/reports/hub_spec_gate_verdict_2026-10-15.md`, R12(a) item 3 (new senders, a 1.5 exception for a hash-bound relay into the blind freeze, rendering outside the panel). Decision: admit the research hub's blind-test tab and its batch client as research senders, under the rules below. Isolation keeps its substance: research runs only in the research lane on a request a person started; no served code calls, imports or reads research; the blind freeze job receives research values as data with a hash, not through a channel.
+
+### 14.1 Admitted senders (closed list)
+
+| `sender` | Started by | `supersedeKey` | Allowed | Refused |
+|---|---|---|---|---|
+| `research-panel` (default) | **Run research models** in the Research model panel | `p8-research:melt-pool` or `p8-research:build-job` | every stage; `researchOptions` | `relay` |
+| `blind-freeze` | the hub's blind-test tab, after the user ticks the research option and presses Freeze | `p8-research:blind:<first 16 hex of previewSha256>` | `describe`, `nominal`, `band`; `relay` (required on `band`) | `researchOptions` |
+| `batch-client` | a person running `scripts/research-route-batch.ts` | `p8-research:batch:<runId, 8 to 32 characters [a-z0-9]>` | every stage; `relay` optional; `researchOptions` only without `relay` | `researchOptions` together with `relay` |
+
+1. `sender` is declarative. It separates supersede keys, applies the cost rules of 14.4 and labels server log lines; it is not an authentication or permission mechanism. The route stays a local route behind the server's existing bearer-token check when one is configured.
+2. Request checks (request level, `RESEARCH_REQUEST_INVALID`, 9.3): `sender-key-mismatch` when `supersedeKey` lacks the sender's prefix; `relay-sender-mismatch` for `relay` with `research-panel`; `relay-options-forbidden` for `relay` with `researchOptions`; `relay-required` for a `blind-freeze` band request without `relay`.
+3. No served module, worker job or internal caller is a sender. R-ISO-4 (14.7) checks that no Python file outside the research modules and the two allowlist files names the route or its script, and the phase D sender test checks the same for TypeScript.
+
+### 14.2 The relay exception to 1.5
+
+1. Data path: the route answers a person's client (blind tab or batch client); the client puts each condition's `relay.subsetJson` string and `relay.subsetSha256` into the hub's freeze request (worker job `user-blind-freeze`, or the hub CLI `freeze --research-responses <dir>` reading batch-client files).
+2. The freeze job never calls the route, never imports an `lpbf_research_*` module and never computes research. R-ISO-1 is unchanged and applies to the hub's adapter; a hub test that needs research modules (for example to check its class table against `lpbf_research_codes.py`) is named `test_lpbf_research_*`, which R-ISO-1 already admits.
+3. The freeze job computes its served arms independently: no relayed value enters a served call, a served cache key or the served part of the predictor identity. The hub's tests assert served-arm bytes equal with and without a relay (the hub's analogue of P-5).
+4. Relayed values are client-asserted. The user controls the machine and can alter a relayed string before the freeze. The binding below detects transport corruption and cross-condition mixing; it does not prove origin. Origin is shown only by recomputation (14.3 item 6). Without it the hub labels the research values "research unverified (client-asserted)" (W-1 draft).
+5. Research values reach the freeze only as `relay.subsetJson`; never as the full block, through the panel store or through browser storage.
+
+### 14.3 Identity and hash binding
+
+1. Every complete response (nominal or complete band) carries `digests`: `researchModelsSha256` and `labelsSha256`, the sha256 of the canonical JSON of `researchModels` and of `labels` (sorted keys, separators `(",", ":")`, `ensure_ascii=True`, `allow_nan=False`, UTF-8). They are deterministic per `requestKey` (3.5 rule 8).
+2. A complete band response to a request with `relay` also carries `relay: {kind: "blind-freeze-v1", subsetJson, subsetSha256}`. Nominal, describe and incomplete responses never carry it.
+3. `subsetJson` is a string: the canonical JSON of item 1, pure ASCII, of the closed projection `BLIND_RELAY_V1` built in Python from the complete block. Clients relay the string byte for byte and never parse and re-serialize it: a JSON string survives transport exactly, whereas a parsed object would lose the integer versus float distinction in JavaScript and change the digest. `subsetSha256` is the sha256 of the bytes of `subsetJson`.
+4. The projection, a closed key set defined once as the constant `BLIND_RELAY_V1` in `python/lpbf_research_codes.py` (`relayPathsSha256` is the sha256 of its canonical path list):
+
+   | Member | Content |
+   |---|---|
+   | `relaySchemaVersion`, `relayPathsSha256` | `"blind-freeze-v1"` and the path-list hash |
+   | `binding` | `previewSha256`, `conditionOrdinal` from the request |
+   | `request` | the canonical process subset (raw request values and their SI values), `propertyContext`, `sender` |
+   | `requestKey`, `identity`, `digests` | as 3.5 and item 1 |
+   | `scored` | `meltDepthLink.fields.linkedMeltDepth_um`, the full `ResearchField` with its band; the band's `manifest` is replaced by `manifestSha256` (sha256 of the canonical descriptor list) and `manifestLength`; extremes keep `minArmId`, `maxArmId`, ties and their display labels (13.5 item 1) |
+   | `context` | `meltDepthLink.fields`: `conditionalMeltDepth_um`, `conductionDepth_um`, `controllingLeg`, `linkDispatch`, `conductionStatus`, `floorFieldModelId`, `floorExtractorId`, `cavityLedgerRatio`; `keyholeCavity.fields`: `cavityDepth_um` (with its band, manifest hashed as above), `onsetPower_W`, `powerOverOnset`, `peclet`, `onsetEvent` |
+   | `support` | `keyholeCavity.band.onsetSupport`, `keyholeCavity.band.statusSupport`, `meltDepthLink.band.statusSupport` |
+   | `notes` | for keyholeCavity and meltDepthLink: `status`, `worstArmStatus`, the primary `sentence`, `assumptions`, `knownContradictions[].id`, `reasons[]`, `onsetMismatch`, and for meltDepthLink `fieldShapeStep` and the nominal `FieldShapeShare` (13.15) |
+   | `statements` | for keyholeCavity and meltDepthLink: `moduleMaturity`, `moduleEvidenceCeiling`, `validationStatus`, `validationStatusLocator`, `experimentalValidation`, `uiSentence` |
+   | `labels` | the `labels` entries of every included path |
+
+   Every included leaf keeps all its `ResearchField` members (`value`, `unit`, `reasonCode`, `warnings`, `sourceEvidenceKind`, `leafRole`, `weakestInputs`, `labelSources`, `dependsOn`, `validationStatus`, `validationStatusLocator`).
+5. Size: `subsetJson` is at most 12,000 characters. Above it the response is the C2 envelope `RESEARCH_RESPONSE_TOO_LARGE` with `cause: "relay"`. Phase C records actual sizes for the declared manifests (D-12) and the cap is confirmed or raised there, never silently.
+6. Determinism and recomputation. The subset excludes every volatile member (`computeMs`, `cache`, `clientRequestId`, `stage`, `progress`, `timeBudgetMs`, `supersedeKey`). For the same request (process subset, property context, binding, sender) and the same identity, `subsetJson` is byte-identical whether computed cold or warm, in chunks or in one null-budget request. A verifier with the same research identity and served fingerprint can resend the request and compare `subsetSha256`. On the same platform class a mismatch means the relayed values were altered or produced by other code. Across platforms the verifier reports the largest relative difference of the numeric leaves instead of a verdict, because floating-point libraries can move last bits.
+7. Checks the freeze makes (implemented by the hub; listed so the binding is complete): sha256 of `subsetJson` equals `subsetSha256`; `relaySchemaVersion` and `relayPathsSha256` are known; `binding.previewSha256` is the freeze's preview hash and `binding.conditionOrdinal` is that condition; the `request` process values and property context equal the condition's frozen inputs; `identity.researchImplementationSha256` equals the committed research pin `python/lpbf_research_identity.expected` read as bytes; `identity.servedImplementationFingerprint` equals the live served fingerprint; one identity across all conditions; then every `subsetSha256` is bound into the prediction hash before any target arrives.
+8. `requestKey` and caches: binding and sender are not compute inputs, so they change neither `requestKey` nor any arm or aggregate cache key; a relay request reuses arms already computed for the same inputs.
+
+### 14.4 Cost limits for relays and batches
+
+1. One request in flight per sender instance: the blind tab and the batch client await each response before the next request, as the panel does (4.3). Distinct supersedeKey prefixes keep senders from superseding each other. The lane serves requests in arrival order, so senders interleave chunk by chunk and a batch delays a panel request by at most one chunk (its budget plus one arm).
+2. Band requests use the 1500 ms budget. The null-budget fallback (3.5 rule 6) runs at most once per condition, and only after a `cacheInstanceId` change or stalled progress.
+3. At most 48 conditions per blind relay (one freeze). The batch client handles at most 48 request bodies per run by default; `--max-requests N` raises this to at most 256 and prints the estimated time before starting.
+4. Payload: at most 12,000 characters of `subsetJson` per condition, so a 48-condition relay needs at most 576,000 characters, below the worker RPC line cap of 1,000,000 characters with room for the inputs file. The hub checks the total of its own freeze request.
+5. Time: before the research step both senders show the estimate (conditions times the measured per-condition time from P-7) and offer Cancel. A cancelled or failed condition makes the relay incomplete, and the hub refuses a partial relay.
+6. Timeouts (3.1): `queue` and `reply` may be retried once; `run` and `adhoc` are final for that condition, because a retry would hit the same limit.
+7. Cache: a batch can evict the panel's cached arms from the 1024-entry LRU; the panel then recomputes. No sender changes the LRU bounds.
+
+### 14.5 Rendering outside the panel
+
+1. Relayed values render only in the hub's blind report and bundle, and only after reveal or score (the hub's state gate); never in served tiles, the Build Job verdict, or the qualification, run-report and evidence exports.
+2. Everything rendered comes from `subsetJson`: labels, statements, sentences, source support and band text. The hub authors no research string or label.
+3. The display keeps the module statements (Research, Screening only, the `validationStatus` with its locator, No experimental validation), the source-support column (13.8 item 3), the B3 band caption (4.7) and the field-shape disclosure (13.15), under the heading (W-1 draft) "Research model (not the served predictor)".
+4. Without recomputation the hub adds "research unverified (client-asserted)" (14.2 item 4).
+
+### 14.6 Unchanged
+
+R-ISO-1, R-ISO-3, P-1 to P-8, the frozen scope of section 10, the served route, every served caller of 1.3 and the research lane are unchanged. No served module becomes a sender, no route is added, and the request schema gains only the two optional members `sender` and `relay`.
+
+### 14.7 Tests
+
+Phase B (implementing from `14e13ea8`) adds, in `python/test_lpbf_research_relay.py`, with the fake evaluator and the stubbed identity, property set, arm table and labels of R-TR-11:
+
+1. R-REL-1 request checks: the `sender` enum and its default; supersedeKey prefixes per sender (`sender-key-mismatch`); the closed `relay` member (`kind` enum, 64-hex `previewSha256`, integer `conditionOrdinal` 0 to 1023); `relay-sender-mismatch`; `relay-options-forbidden`; `relay-required`. R-TR-1's unknown-key rule still refuses every other member.
+2. R-REL-2 `digests` on complete responses only, equal to the sha256 of the canonical encoding; `relay` only on complete band responses of relay requests.
+3. R-REL-3 `subsetJson` is pure ASCII canonical JSON whose key set equals `BLIND_RELAY_V1`, checked recursively; `subsetSha256` matches; `relayPathsSha256` matches the committed path list.
+4. R-REL-4 determinism: `subsetJson` byte-identical cold versus warm, chunked versus null budget, and for requests that differ only in `clientRequestId`, `supersedeKey` or `timeBudgetMs`; different when the binding changes; `requestKey` and arm cache keys unchanged by binding and sender.
+5. R-REL-5 size: a synthetic subset above 12,000 characters gives `RESEARCH_RESPONSE_TOO_LARGE` with cause `relay`.
+6. R-REL-6 transport: the response parsed and re-serialized with different float formatting, as a JavaScript client would, leaves `subsetJson` and its digest unchanged.
+7. R-ISO-4, added to `python/test_lpbf_research_isolation.py`: no Python file outside the research modules, `persistent_ipc_service.py`, `module_registry.py` and `test_lpbf_research_*` contains the route path `/api/python/lpbf-research-models` or the name `lpbf_research_models`.
+8. Fixture `tests/fixtures/lpbf-research-relay-v1.json`: one relay response under the R-TR-11 stubs, committed beside the R-TR-11 fixture.
+
+Phase B's existing tests stay valid: R-TR-1 gains `sender` and `relay` in its known-key table; the R-TR-11 request carries neither, and its fixture gains only the `digests` member, regenerated once in the phase B commit that adds it.
+
+Later phases:
+
+1. Phase D (Sonnet): a TypeScript sender test (the route path literal appears only in `src/services/pythonComputationService.ts`, `scripts/research-route-batch.ts`, `routes/physics.ts`, the generated registry and tests); the service passes `relay.subsetJson` through as a string, never parsed and re-serialized; batch-client tests for sequential requests, the 48 default cap, the 256 ceiling of `--max-requests`, the printed estimate and the retry rule of 14.4 item 6.
+2. Phase E (Sonnet): a blind-sender request never supersedes a panel request, and the panel's state and results are unaffected by relay traffic.
+3. Hub phases (hub owner, X-3): the freeze checks of 14.3 item 7, served-arm byte equality with and without a relay, the rendering rules of 14.5, and the 576,000-character budget check of 14.4 item 4.
