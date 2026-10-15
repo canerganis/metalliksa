@@ -265,7 +265,7 @@ class SolverOutputTest(unittest.TestCase):
         self.assertIs(model_block["illustrativeOnly"], True)
         self.assertIn("Metall. Mater. Trans. B 29 (1998) 661-672", model_block["sourceLabel"])
         self.assertIn("thesis p. 86", model_block["validityDomain"]["source"])
-        self.assertEqual(res["engine"], "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0")
+        self.assertEqual(res["engine"], "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1")
         self.assertEqual(kin.provenance("aisi4140")["kineticsModelVersion"], "li1998-additivity-v1")
 
     def test_not_fully_austenitic_start_is_unavailable(self):
@@ -317,9 +317,9 @@ class SolverOutputTest(unittest.TestCase):
             with self.subTest(**kwargs):
                 with self.assertRaises(input_validation.ValidationError):
                     kin.solve_phase_transformation_kinetics("AISI 4140", **kwargs)
-        # a non-steel ignores the grain size (echo only), as before
-        res = kin.solve_phase_transformation_kinetics("Inconel 718", grain_size_um=-5.0)
-        self.assertEqual(res["inputParameters"]["priorGrainSize_um"], -5.0)
+        # Echoed non-steel inputs must also be physical.
+        with self.assertRaises(input_validation.ValidationError):
+            kin.solve_phase_transformation_kinetics("Inconel 718", grain_size_um=-5.0)
 
     def test_solver_equals_independent_oracle(self):
         for name, args in (("AISI 4140", (10.0, 25.0, 860.0)), ("AISI 4340", (0.3, 40.0, 900.0)),
@@ -384,7 +384,7 @@ class LswOracleTest(unittest.TestCase):
                 "block-note": lambda d: d["kineticsModel"]["lswPrecipitateCoarsening"].update(note="K_LSW uses"),
                 "block-codes": lambda d: d["kineticsModel"]["lswPrecipitateCoarsening"].update(reasonCodes=[]),
                 "block-reason": lambda d: d["kineticsModel"]["lswPrecipitateCoarsening"].update(
-                    reason=None if aging_c > 725.0 else "x"),
+                    reason="x"),
                 "nan": lambda d: d.update(computeTimeMs=float("nan")),  # only the non-finite scan sees this key
             }
             for label, mutate in mutants.items():
@@ -429,10 +429,10 @@ class LswOracleTest(unittest.TestCase):
                                               old="a", new="b"), doc))
 
     def test_aging_input_rule(self):
-        refused = (float("nan"), float("inf"), float("-inf"), -273.15, -1e300, None, True, "720", [1.0])
+        refused = (float("nan"), float("inf"), float("-inf"), -273.15, -1e300, None, True, "720", [1.0], 10**400)
         for value in refused:
             self.assertEqual(kdc.aging_input_reason(value, 8.0), "nonphysical-input", repr(value))
-        for value in (float("nan"), float("-inf"), -1e-300, -1, None, False, "8"):
+        for value in (float("nan"), float("-inf"), -1e-300, -1, None, False, "8", 10**400):
             self.assertEqual(kdc.aging_input_reason(720.0, value), "nonphysical-input", repr(value))
         for temp, hours in ((-273.1499, 0), (0, 0.0), (720.0, 8), (1e300, 1e300)):
             self.assertIsNone(kdc.aging_input_reason(temp, hours))

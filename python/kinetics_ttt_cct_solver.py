@@ -40,7 +40,7 @@ import physical_constants
 R_GAS = physical_constants.GAS_CONSTANT_R.value  # J/(mol*K), exact
 ZERO_C_K = physical_constants.ZERO_CELSIUS_K.value
 
-ENGINE = "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0"
+ENGINE = "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1"
 LI_MODEL_VERSION = "li1998-additivity-v1"
 
 # predictedHardness_HV: ASTM E140 Table 1 HRC -> HV (hardness_conversion_e140), which applies
@@ -104,7 +104,6 @@ STATUS_UNAVAILABLE_STEEL_ONLY = "unavailable-kinetics-model-steel-only"
 STATUS_UNAVAILABLE_OUTSIDE_RANGE = "unavailable-composition-outside-li-model-range"
 STATUS_UNAVAILABLE_PLACEHOLDER = "unavailable-registry-placeholder"
 STATUS_REGISTRY_VALUE = "registry-screening-value"
-STATUS_LSW_ABOVE_SOLVUS = "unavailable-aging-temperature-at-or-above-solvus"
 STATUS_LSW_NOT_MODELLED = "unavailable-not-modelled"
 STATUS_START_LI = "li1998-additivity-first-diffusional-start"
 STATUS_START_ATHERMAL = "athermal-martensite-no-diffusional-start-above-ms"
@@ -128,8 +127,6 @@ REASON_NONPHYSICAL_INPUT = "nonphysical-input"
 # law alone cannot represent nucleation, growth, dissolution or a changing population) and no sourced constants
 # (the shared gamma, equilibrium concentration, molar volume and D0, and the 280 MPa / 9 nm strengthening curve).
 LSW_REASON_CODES = (REASON_MISSING_SOURCE_BOUND_MODEL, REASON_MISSING_SOURCE_CONSTANT)
-# Aging temperature at or above the registry Ae3 (steels: Ae1) keeps its more specific status and adds the domain code.
-LSW_ABOVE_SOLVUS_REASON_CODES = (REASON_OUTSIDE_SOURCE_MODEL_DOMAIN,) + LSW_REASON_CODES
 # Aging inputs (SPEC section 6.3): a temperature must be above absolute zero (-273.15 C itself is rejected), a time
 # must be finite and not negative. The bound is the smallest float above -273.15 C, so ``T_K > 0`` holds exactly.
 AGING_TEMP_LOWER_BOUND_C = math.nextafter(-ZERO_C_K, math.inf)
@@ -185,8 +182,17 @@ def checked_aging_inputs(aging_temp_c, aging_time_h):
     time raises ValidationError, whose ``detail["reasonCode"]`` is ``nonphysical-input``. Nothing is clamped.
     """
     try:
-        temp = input_validation.require_range("agingTemp_C", aging_temp_c, AGING_TEMP_LOWER_BOUND_C, None, "degC")
-        time_h = input_validation.require_positive("agingTime_h", aging_time_h, allow_zero=True)
+        try:
+            temp = input_validation.require_finite("agingTemp_C", aging_temp_c)
+        except OverflowError as exc:
+            raise input_validation.ValidationError(input_validation.NON_FINITE, "agingTemp_C", "must be finite") from exc
+        if temp <= -ZERO_C_K:
+            raise input_validation.ValidationError(input_validation.OUT_OF_RANGE, "agingTemp_C",
+                                                  "must be > -273.15 degC", {"value": temp})
+        try:
+            time_h = input_validation.require_positive("agingTime_h", aging_time_h, allow_zero=True)
+        except OverflowError as exc:
+            raise input_validation.ValidationError(input_validation.NON_FINITE, "agingTime_h", "must be finite") from exc
     except input_validation.ValidationError as err:
         err.detail["reasonCode"] = REASON_NONPHYSICAL_INPUT
         raise
@@ -531,11 +537,13 @@ def solve_phase_transformation_kinetics(alloy_name="AISI 4140", cooling_rate_c_s
         aust = input_validation.require_range("austTemp_C", aust_temp_c, *AUST_TEMP_BOUNDS_C, "degC")
         li = LiModel(comp, astm_grain_size_number(grain))
     else:
-        # No model runs; the rate is only echoed, but it must be a number (NON_FINITE envelope, not a crash).
-        user_cr = input_validation.require_finite("coolingRate_C_s", cooling_rate_c_s)
-        # SOL-K: the other echoed inputs must be numbers too, so a NaN never reaches the JSON as a bare token.
-        input_validation.require_finite("grainSize_um", grain_size_um)
-        input_validation.require_finite("austTemp_C", aust_temp_c)
+        # Unmodelled-alloy echoes must still be physical, without imposing Li model bounds.
+        user_cr = input_validation.require_positive("coolingRate_C_s", cooling_rate_c_s)
+        input_validation.require_positive("grainSize_um", grain_size_um)
+        aust_echo = input_validation.require_finite("austTemp_C", aust_temp_c)
+        if aust_echo < -ZERO_C_K:
+            raise input_validation.ValidationError(input_validation.OUT_OF_RANGE, "austTemp_C",
+                                                  "must be >= -273.15 degC", {"value": aust_echo})
     # SOL-K: aging inputs are validated for every alloy, before any arithmetic on them (SPEC section 6.3).
     checked_aging_inputs(aging_temp_c, aging_time_h)  # echoed unchanged below; nothing is converted or clamped
 
@@ -606,17 +614,9 @@ def solve_phase_transformation_kinetics(alloy_name="AISI 4140", cooling_rate_c_s
     # strengthening curve, are not evaluated: neither has a source-bound model or sourced constants, and one
     # asymptotic coarsening law cannot represent nucleation, growth from supersaturation, dissolution or a changing
     # population. The rows keep the aging-time grid; every value is null with a status and reason codes.
-    # Above the registry solvus/transus (Ae3_C; for steels also Ae1_C) the row keeps its more specific status.
-    lsw_limit = None
-    if aging_temp_c >= ae3:
-        lsw_limit = ("Ae3 (solvus/transus)", ae3)
-    elif steel and aging_temp_c >= ae1:
-        lsw_limit = ("Ae1", ae1)
-    lsw_reason = None if lsw_limit is None else (
-        f"aging temperature {aging_temp_c:g} C is at or above the registry {lsw_limit[0]} of "
-        f"{lsw_limit[1]:g} C: no precipitate population, so no coarsening or strengthening is reported")
-    lsw_status = STATUS_LSW_NOT_MODELLED if lsw_limit is None else STATUS_LSW_ABOVE_SOLVUS
-    lsw_reason_codes = LSW_REASON_CODES if lsw_limit is None else LSW_ABOVE_SOLVUS_REASON_CODES
+    lsw_reason = None
+    lsw_status = STATUS_LSW_NOT_MODELLED
+    lsw_reason_codes = LSW_REASON_CODES
 
     lsw_coarsening_profile = [{
         "agingTime_h": t_h,

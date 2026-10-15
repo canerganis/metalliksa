@@ -450,7 +450,10 @@ class StepBGoldenTest(unittest.TestCase):
             rejected(case, lambda d: d["inputParameters"].update(agingTemp_C=-273.15))
             rejected(case, lambda d: d["inputParameters"].update(agingTemp_C=float("nan")))
             rejected(case, lambda d: d["inputParameters"].update(agingTime_h=-1.0))
-        rejected("in718_lpbf_quench", lambda d: d["inputParameters"].update(agingTemp_C=1100.0))
+        # A registry transition temperature does not define a precipitate solvus (SOLK-1).
+        hot = json.loads(json.dumps(docs["in718_lpbf_quench"]))
+        hot["inputParameters"]["agingTemp_C"] = 1100.0
+        self.assertEqual(golden.step_b_document_violations(solver, hot), [])
 
         # HV rows of a row whose HRC is now null: the old value must be the old formula of an old HRC band
         steel_doc, in718_doc = docs["aisi4140_ui_defaults"], docs["in718_lpbf_quench"]

@@ -313,9 +313,9 @@ test("fx-kinetics: floor line only when at least one point is on the floor; LSW 
   assert.equal(kineticsModelBanner(model, { pointCount: null, floorHitCount: null }).floorLine, null);
   const unavailable = kineticsLswAvailability(
     [{ meanRadius_nm: null }, { meanRadius_nm: Number.NaN }],
-    { status: "unavailable-aging-temperature-at-or-above-solvus", reason: "aging temperature 720 C is at or above the registry Ae3" }
+    { status: "unavailable-not-modelled", reason: null }
   );
-  assert.deepEqual(unavailable, { available: false, reason: "aging temperature 720 C is at or above the registry Ae3." });
+  assert.deepEqual(unavailable, { available: false, reason: "Unavailable: not modelled." });
   // SOL-K: the solver returns null rows with a status and reason codes for every alloy (Ti-6Al-4V at 720 C used to
   // return 5.03 nm / 209.3 MPa); the helper shows the existing note of the status, no sentence is added for a code
   const nullRow = {
@@ -336,8 +336,8 @@ test("fx-kinetics: floor line only when at least one point is on the floor; LSW 
   assert.equal(kineticsLswAvailability([nullRow], { status: "unavailable-not-modelled" }).available, false);
   assert.equal(kineticsLswAvailability([{ meanRadius_nm: 2.5 }], null).available, true);
   assert.equal(
-    kineticsLswAvailability(null, { status: "unavailable-aging-temperature-at-or-above-solvus" }).reason,
-    "Unavailable: the aging temperature is at or above the registry solvus (steels: Ae1); no precipitate population."
+    kineticsLswAvailability(null, { status: "unavailable-not-modelled" }).reason,
+    "Unavailable: not modelled."
   );
   // the verdict sentence follows the Li verdict and never claims martensite for a diffusional start
   assert.match(kineticsVerdictSentence("No diffusional start above Ms (Li 1998 additivity): martensite from Ms", 100, true),

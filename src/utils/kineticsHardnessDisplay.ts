@@ -35,8 +35,6 @@ export const KINETICS_STATUS_NOTES: Readonly<Record<string, string>> = {
   "unavailable-fractions-not-computed":
     "Unavailable: phase fractions and hardness are not computed (the Li model needs equilibrium ferrite/pearlite amounts from a thermodynamic model that is not implemented).",
   "unavailable-not-modelled": "Unavailable: not modelled.",
-  "unavailable-aging-temperature-at-or-above-solvus":
-    "Unavailable: the aging temperature is at or above the registry solvus (steels: Ae1); no precipitate population.",
   "generic-constants-illustrative":
     "Generic constants shared by every alloy (only the activation energy is per alloy); illustrative.",
   "registry-screening-value": "Registry screening value (unsourced); not a measured or computed temperature.",

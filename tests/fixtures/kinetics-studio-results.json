@@ -1,7 +1,7 @@
 {
  "aisi4140": {
   "success": true,
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "alloy": "AISI 4140",
   "alloyMetadata": {
    "type": "Low-Alloy Steel",
@@ -1682,7 +1682,7 @@
  },
  "aisi4340": {
   "success": true,
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "alloy": "AISI 4340",
   "alloyMetadata": {
    "type": "High-Strength Ni-Cr-Mo Steel",
@@ -3364,7 +3364,7 @@
  },
  "aisid2": {
   "success": true,
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "alloy": "AISI D2",
   "alloyMetadata": {
    "type": "Cold-Work High-Carbon High-Cr Tool Steel",
@@ -3797,7 +3797,7 @@
  },
  "in718": {
   "success": true,
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "alloy": "Inconel 718",
   "alloyMetadata": {
    "type": "Precipitation-Hardenable Ni-Fe Superalloy",
@@ -4225,7 +4225,7 @@
  },
  "ti6al4v": {
   "success": true,
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "alloy": "Ti-6Al-4V",
   "alloyMetadata": {
    "type": "Alpha-Beta Titanium Alloy",
@@ -4646,7 +4646,7 @@
  },
  "al7075": {
   "success": true,
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "alloy": "Al 7075",
   "alloyMetadata": {
    "type": "Precipitation-Hardenable Al-Zn-Mg-Cu Alloy",
@@ -5070,7 +5070,7 @@
  },
  "aisi4340_aging720": {
   "success": true,
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "alloy": "AISI 4340",
   "alloyMetadata": {
    "type": "High-Strength Ni-Cr-Mo Steel",
@@ -6550,9 +6550,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -6562,9 +6561,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -6574,9 +6572,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -6586,9 +6583,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -6598,9 +6594,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -6610,9 +6605,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -6622,9 +6616,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -6634,9 +6627,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -6646,9 +6638,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -6658,9 +6649,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -6694,11 +6684,10 @@
    "note": "Li et al. (1998) isothermal start/finish law with Grange Ae3/Ae1, Li Bs and Kung-Rayment Ms; CCT starts from the additivity rule applied to each phase's 1 % start curve independently (no phase interaction, no carbon partitioning). Unvalidated screening model: phase fractions and hardness are not computed.",
    "placeholderParameters": [],
    "lswPrecipitateCoarsening": {
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "note": null,
-    "reason": "aging temperature 720 C is at or above the registry Ae1 of 710 C: no precipitate population, so no coarsening or strengthening is reported",
+    "reason": null,
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -6763,7 +6752,7 @@
  },
  "al7075_aging720": {
   "success": true,
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "alloy": "Al 7075",
   "alloyMetadata": {
    "type": "Precipitation-Hardenable Al-Zn-Mg-Cu Alloy",
@@ -7019,9 +7008,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -7031,9 +7019,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -7043,9 +7030,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -7055,9 +7041,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -7067,9 +7052,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -7079,9 +7063,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -7091,9 +7074,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -7103,9 +7085,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -7115,9 +7096,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -7127,9 +7107,8 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]
@@ -7166,11 +7145,10 @@
     "Ms_C"
    ],
    "lswPrecipitateCoarsening": {
-    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "status": "unavailable-not-modelled",
     "note": null,
-    "reason": "aging temperature 720 C is at or above the registry Ae3 (solvus/transus) of 480 C: no precipitate population, so no coarsening or strengthening is reported",
+    "reason": null,
     "reasonCodes": [
-     "outside-source-model-domain",
      "missing-source-bound-model",
      "missing-source-constant"
     ]

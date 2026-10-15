@@ -99,7 +99,7 @@
  },
  "aisi4140_in_map_30_hypothetical": {
   "success": true,
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "alloy": "AISI 4140",
   "alloyMetadata": {
    "type": "Low-Alloy Steel",

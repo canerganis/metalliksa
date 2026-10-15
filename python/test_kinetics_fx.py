@@ -35,7 +35,7 @@ import kinetics_documented_changes as kdc  # noqa: E402 (tools/ module; the inde
 
 STUDIO_FIXTURE = HERE.parent / "tests" / "fixtures" / "kinetics-studio-results.json"
 # Studio defaults (src/components/PhaseKineticsTTTCCTStudio.tsx ALLOY_OPTIONS): alloy -> (austenitising C, aging C),
-# 10 C/s, grain 25 um, aging 8 h. The last two reproduce the former 720 C aging default (LSW above the solvus).
+# 10 C/s, grain 25 um, aging 8 h. The last two reproduce the former 720 C aging default.
 STUDIO_CASES = {
     "aisi4140": ("AISI 4140", 860.0, 720.0), "aisi4340": ("AISI 4340", 845.0, 650.0),
     "aisid2": ("AISI D2", 1020.0, 720.0), "in718": ("Inconel 718", 980.0, 720.0),
@@ -77,9 +77,7 @@ def string_values(doc):
 
 ALL_ALLOYS = STEELS + NON_STEELS
 NOT_MODELLED = "unavailable-not-modelled"
-ABOVE_SOLVUS = "unavailable-aging-temperature-at-or-above-solvus"
 LSW_CODES = ["missing-source-bound-model", "missing-source-constant"]
-LSW_ABOVE_CODES = ["outside-source-model-domain"] + LSW_CODES
 LSW_TIMES = [0.1, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 24.0, 48.0, 100.0]
 # Values the generic LSW law and the 280 MPa / 9 nm curve served for Ti-6Al-4V at 720 C before SOL-K (the defect the
 # spec names), first row (0.1 h).
@@ -113,21 +111,18 @@ class LswUnavailableTest(unittest.TestCase):
                     res = solve(name, aging_c=aging_c)
                     rows = res["lswPrecipitateCoarsening"]
                     self.assertEqual([r["agingTime_h"] for r in rows], LSW_TIMES)
-                    meta = alloy_registry.resolve_alloy(name, alloy_registry.DOMAIN_KINETICS)
-                    ae3, ae1 = (meta.value(k, alloy_registry.DOMAIN_KINETICS) for k in ("Ae3_C", "Ae1_C"))
-                    above = aging_c >= ae3 or (name in STEELS and aging_c >= ae1)
                     for row in rows:
                         self.assertEqual(list(row), ["agingTime_h", "meanRadius_nm", "precipitationHardening_MPa",
                                                      "strengtheningMechanism", "status", "reasonCodes"])
                         self.assertEqual((row["meanRadius_nm"], row["precipitationHardening_MPa"],
                                           row["strengtheningMechanism"]), (None, None, None))
-                        self.assertEqual(row["status"], ABOVE_SOLVUS if above else NOT_MODELLED)
-                        self.assertEqual(row["reasonCodes"], LSW_ABOVE_CODES if above else LSW_CODES)
+                        self.assertEqual(row["status"], NOT_MODELLED)
+                        self.assertEqual(row["reasonCodes"], LSW_CODES)
                     block = res["kineticsModel"]["lswPrecipitateCoarsening"]
-                    self.assertEqual(block["status"], ABOVE_SOLVUS if above else NOT_MODELLED)
-                    self.assertEqual(block["reasonCodes"], LSW_ABOVE_CODES if above else LSW_CODES)
+                    self.assertEqual(block["status"], NOT_MODELLED)
+                    self.assertEqual(block["reasonCodes"], LSW_CODES)
                     self.assertIsNone(block["note"])
-                    self.assertEqual(block["reason"] is not None, above)
+                    self.assertIsNone(block["reason"])
                     # independent rule of the oracle (tools/kinetics_documented_changes) agrees on the whole document
                     self.assertEqual(kdc.document_violations(json.loads(json.dumps(res))), [])
 
@@ -139,6 +134,16 @@ class LswUnavailableTest(unittest.TestCase):
             self.assertEqual(codes, set(LSW_CODES))
             for code in codes:
                 self.assertRegex(code, r"^[a-z]+(-[a-z]+)+$")
+
+    def test_reason_codes_belong_to_quantity_envelope_registry(self):
+        try:
+            import quantity_envelope
+        except ModuleNotFoundError as exc:
+            if exc.name != "quantity_envelope":
+                raise
+            self.skipTest("BR-7: Phase 0 quantity_envelope is not in this branch; required after batch merge")
+        codes = {value for name, value in vars(kin).items() if name.startswith("REASON_")}
+        self.assertLessEqual(codes, set(quantity_envelope.REASON_CODES))
 
     def test_nothing_about_the_old_curve_is_left_in_the_solver(self):
         # removed, not hidden: no generic LSW constant and no strengthening constant in the solver source
@@ -162,9 +167,9 @@ class AgingInputTest(unittest.TestCase):
     """SOL-K input checks (SPEC_solidification section 6.3): nonphysical aging inputs are refused before arithmetic."""
 
     BAD_TEMPS = (float("nan"), float("inf"), float("-inf"), -273.15, -273.16, -300.0, -1e308, None, True, False, "720",
-                 [720.0], {"C": 720.0})
+                 [720.0], {"C": 720.0}, 10**400)
     GOOD_TEMPS = (math.nextafter(-273.15, math.inf), -273.1499, -200.0, 0.0, 25.0, 720, 720.0, 5000.0, 1e300)
-    BAD_TIMES = (float("nan"), float("inf"), float("-inf"), -1e-9, -1.0, -1e308, None, True, "8", [8.0])
+    BAD_TIMES = (float("nan"), float("inf"), float("-inf"), -1e-9, -1.0, -1e308, None, True, "8", [8.0], 10**400)
     GOOD_TIMES = (0.0, 1e-9, 8, 8.0, 1e9)
     CASES = ("AISI 4140", "AISI D2", "Inconel 718", "Ti-6Al-4V", "Al 7075")  # modelled steel, outside range, non-steels
 
@@ -246,6 +251,30 @@ class AgingInputTest(unittest.TestCase):
                         err = self._refused(alloy_name=name, **{key: bad})
                         self.assertEqual((err.code, err.field), (input_validation.NON_FINITE, field))
 
+    def test_unmodelled_echoes_are_physical_and_oracle_rejects_mutations(self):
+        for name in ("Inconel 718", "AISI D2", "Ti-6Al-4V"):
+            base = solve(name, aust=-273.15)
+            self.assertEqual(kdc.document_violations(base), [])
+            for field, key, output_key, bad_values in (
+                ("austTemp_C", "aust_temp_c", "austSolutionTemp_C", (-273.16, -1000.0)),
+                ("grainSize_um", "grain_size_um", "priorGrainSize_um", (0, -1)),
+                ("coolingRate_C_s", "cooling_rate_c_s", "selectedCoolingRate_C_s", (0, -1)),
+            ):
+                for value in bad_values:
+                    with self.subTest(alloy=name, field=field, value=value):
+                        err = self._refused(alloy_name=name, **{key: value})
+                        self.assertEqual(err.field, field)
+                        mutant = json.loads(json.dumps(base))
+                        mutant["inputParameters"][output_key] = value
+                        self.assertTrue(kdc.document_violations(mutant))
+
+    def test_temperature_bound_message_is_clean(self):
+        for name in self.CASES:
+            err = self._refused(alloy_name=name, aging_temp_c=-273.15)
+            self.assertEqual(err.message, "must be > -273.15 degC")
+        err = self._refused(alloy_name="Ti-6Al-4V", aust_temp_c=-273.16)
+        self.assertEqual(err.message, "must be >= -273.15 degC")
+
     def test_cli_refuses_nonphysical_aging_with_exit_2_and_strict_json(self):
         def strict(text):
             def refuse(token):
@@ -253,7 +282,9 @@ class AgingInputTest(unittest.TestCase):
             return json.loads(text, parse_constant=refuse)
 
         # `NaN` is a bare token that Python's json parser accepts on stdin
-        for raw in ('{"alloy": "Ti-6Al-4V", "agingTemp_C": NaN}', '{"alloy": "Ti-6Al-4V", "agingTemp_C": -273.15}',
+        for raw in (json.dumps({"alloy": "Ti-6Al-4V", "agingTemp_C": 10**400}),
+                    json.dumps({"alloy": "AISI 4140", "agingTime_h": 10**400}),
+                    '{"alloy": "Ti-6Al-4V", "agingTemp_C": NaN}', '{"alloy": "Ti-6Al-4V", "agingTemp_C": -273.15}',
                     '{"alloy": "Inconel 718", "agingTime_h": -1}', '{"alloy": "AISI 4140", "agingTemp_C": Infinity}'):
             with self.subTest(raw=raw):
                 proc = subprocess.run([sys.executable, "-B", "kinetics_ttt_cct_solver.py"], capture_output=True,
@@ -269,28 +300,29 @@ class AgingInputTest(unittest.TestCase):
 
 
 # Digests of the Li (1998) TTT/CCT output and everything else outside the LSW rows, taken from the solver at
-# fbf68b4c (before SOL-K) and checked equal after it: sha256 of json.dumps(document without computeTimeMs,
+# fbf68b4c (before SOL-K) and checked equal after it: sha256 of json.dumps(document without engine, computeTimeMs,
 # lswPrecipitateCoarsening and kineticsModel.lswPrecipitateCoarsening, ensure_ascii=False), key order included.
+# SOLK-3: engine is excluded; these pins were derived before gate edits after verifying all 18 original pins.
 # Case i: 0 = defaults, 1 = (cooling 0.3, grain 40, aust 900, aging 4 h, 650 C), 2 = (cooling 2000).
 LI_OUTSIDE_LSW_SHA256 = {
-    ("AISI 4140", 0): "9851220a3b70cf22669c8d7b0d6c57d154b950e9561861f9b88528c5c181e687",
-    ("AISI 4140", 1): "8336b5466673bed173255ecc285fa2c497fb3fa69ce5c6bfc32cfd41cefdd3c2",
-    ("AISI 4140", 2): "82ee69e5c5dc2887a439d342e52e30693d762bd8e12d27fc8135d28ab3c4c414",
-    ("AISI 4340", 0): "99e555a8a90f4c7426bed15c075de56397d1a544bb1566f54afce0a93946b0ba",
-    ("AISI 4340", 1): "64ab85ff7d21aec6dbafc2b3957ce579adc699e9d1d5a59e4fad35d59a150661",
-    ("AISI 4340", 2): "5e76cbba83e1fd4271ad3b4fa92e60c001b27de66273a9e31afcdc87e53fadad",
-    ("AISI D2", 0): "73277bcb4524e6159b0319671971ce10edaf66d4344116ae89316fda504ce19f",
-    ("AISI D2", 1): "da942a78997b573160571b96e36d48d6d832a258fd660f19159d3fc4ba9a3481",
-    ("AISI D2", 2): "0c26de2ece4a3713de725ab918e10009454c4f033fb9033ce35b9ce4d2942842",
-    ("Inconel 718", 0): "b9ad0b804330c2e230649807a6853c24c0af3209d631b6af9ca44eb6ea4560e2",
-    ("Inconel 718", 1): "9bbec141e02591544cbc45dc2e4ca18fdf0680f703d3a24279791971f8e263d6",
-    ("Inconel 718", 2): "e7f94c93cc6e673fd63a1f6dada89ca6469556b515f08af83df170a7d83efe58",
-    ("Ti-6Al-4V", 0): "7e79cdfad533bdbe2df222c31bdc6db53229261ee6a3843b0cca37144576573d",
-    ("Ti-6Al-4V", 1): "6446ab3096aa8e75b51fb1cc8557bfedc63f3f4279f1af96c658ff3f10948182",
-    ("Ti-6Al-4V", 2): "a3da0546962f01331f28104cb8166c2714215371b4bcc520068b88d577e4830b",
-    ("Al 7075", 0): "9a0c2bf36dfaf7f20b5b0ce21f9739e7c6dce5b8e59fd2c1463137f27a7fa7fa",
-    ("Al 7075", 1): "de354ede095b6f8d00956e9fd8884898cad796deeb2c7c4f75b0093aa4fa6b14",
-    ("Al 7075", 2): "bd678817c7b083d13e704e74120130cea2d19ca4ffd4f2138e23cd29b2b1a481",
+    ("AISI 4140", 0): "a003777f07a271f7d8757d8c0a43f3cbb6989f9e11fcdca837cf675298b4f674",
+    ("AISI 4140", 1): "b03fe22bba70128d84070d4281ddadf175719490d60cd2eb35913276ac0f34b4",
+    ("AISI 4140", 2): "71c83e2376bf92549d0c1dfd29eb8b725a2a77cda9e2a333578346667eb9087e",
+    ("AISI 4340", 0): "d8ced403d26a33d42445406416782d25ca279eb511716642e41e1a093081b1b0",
+    ("AISI 4340", 1): "c536c94d68cccf17139bd4479aa68e819fa9686b3dba3fe8db61c89d3bf5df80",
+    ("AISI 4340", 2): "7e1f4d469a32ba995ec6c8ddbdf53ce371983344a49ee033213626d4a7ca9d1f",
+    ("AISI D2", 0): "fa1804e263a381ee3272c3303726d6d011d0fb7d47792aac8278ed617648cc73",
+    ("AISI D2", 1): "db2e9bbacb9d6c256fa5f72553165951942f7e7fb51fb0ff25eeed5cf4fbcebf",
+    ("AISI D2", 2): "0ad0768207ad55fb876d8f5a70297530feb61f183ba803e14a237b5c05ce16fd",
+    ("Inconel 718", 0): "9393004f32db83189dfdb5b72fcd3b24e3b3b23b1cbb476b8b1b4deb79affdb0",
+    ("Inconel 718", 1): "53dea575e3c35d773db57169848daefaa965b3e3420d740503d1098b014cebcd",
+    ("Inconel 718", 2): "d2b57ff53f0c12634e2090c2a3ee046acb74a80f508e0a81ad7f9ed515b1bb88",
+    ("Ti-6Al-4V", 0): "dfa25530521e1d015df36eebd615b43d8f47f5d48c39fb618170e37a4d8a7893",
+    ("Ti-6Al-4V", 1): "321a86fbe20aefc4b1a9f1b53ca91ea657d30c6195da4878e2c8730e59b5fbc7",
+    ("Ti-6Al-4V", 2): "6ee6e28578488dda65bda352f97db242ae2e3aad8a90fe2e2cb6d39dff55873b",
+    ("Al 7075", 0): "aacebcd15f7d8d03c1bbd094d16ba7388742ef8b5af729cf5a0f52653056b138",
+    ("Al 7075", 1): "e9be4c68613acc7f72a9e5ae798765cb8660f0385a44f8fb705008e9ef30c906",
+    ("Al 7075", 2): "3789118c2c2a3ab8d9353579c1e816022079b004ec0b991204a3727e3a2b07f2",
 }
 
 
@@ -301,6 +333,7 @@ class LiOutputUnchangedBySolKTest(unittest.TestCase):
     def outside_lsw_sha256(result):
         doc = json.loads(json.dumps(result))
         doc.pop("computeTimeMs", None)
+        doc.pop("engine")
         doc.pop("lswPrecipitateCoarsening")
         doc["kineticsModel"].pop("lswPrecipitateCoarsening")
         return hashlib.sha256(json.dumps(doc, ensure_ascii=False).encode("utf-8")).hexdigest()
@@ -477,46 +510,18 @@ class NoFloorTest(unittest.TestCase):
                 self.assertEqual(row["transformedStart_status"], "li1998-additivity-first-diffusional-start")
 
 
-class LswAboveSolvusTest(unittest.TestCase):
-    """fx-kinetics review S2: at or above the registry Ae3 (steels: Ae1) the rows keep their more specific status.
-
-    SOL-K: every row is unavailable anyway; only the status and the reason codes tell the two cases apart.
-    """
-
-    LIMIT = {"AISI 4140": 725.0, "AISI 4340": 710.0, "AISI D2": 800.0,  # Ae1 of the steels
-             "Inconel 718": 1020.0, "Ti-6Al-4V": 995.0, "Al 7075": 480.0}  # Ae3 of the non-steels
-
-    def test_al7075_studio_default_720_c_is_unavailable(self):
-        res = solve("Al 7075")  # 720 C, above its 480 C solvus (and above its liquidus)
-        for row in res["lswPrecipitateCoarsening"]:
-            self.assertEqual((row["meanRadius_nm"], row["precipitationHardening_MPa"], row["strengtheningMechanism"]),
-                             (None, None, None))
-            self.assertEqual(row["status"], ABOVE_SOLVUS)
-            self.assertEqual(row["reasonCodes"], LSW_ABOVE_CODES)
-        block = res["kineticsModel"]["lswPrecipitateCoarsening"]
-        self.assertEqual(block["status"], ABOVE_SOLVUS)
-        self.assertIn("720 C is at or above the registry Ae3 (solvus/transus) of 480 C", block["reason"])
-        self.assertNotIn("1884", json.dumps(res))  # the old 1.88 um "Orowan" value
-
-    def test_boundary_is_at_or_above_the_registry_temperature(self):
-        for name, limit in self.LIMIT.items():
-            below = solve(name, aging_c=limit - 0.1)["lswPrecipitateCoarsening"]
-            at = solve(name, aging_c=limit)["lswPrecipitateCoarsening"]
-            self.assertTrue(all(r["status"] == NOT_MODELLED for r in below), name)
-            self.assertTrue(all(r["status"] == ABOVE_SOLVUS for r in at), name)
-            self.assertTrue(all(r["meanRadius_nm"] is None for r in below + at), name)
-
-    def test_steels_use_ae1_and_non_steels_only_ae3(self):
-        # 4340 (Ae1 710 C) is at the old 720 C default: above its limit; Ti-6Al-4V 720 C is above the Ae1 of its
-        # registry row (700 C, a steel concept that is withheld) but below its 995 C transus: not above the limit.
-        self.assertEqual(solve("AISI 4340")["lswPrecipitateCoarsening"][0]["status"], ABOVE_SOLVUS)
-        self.assertIn("Ae1", solve("AISI 4340")["kineticsModel"]["lswPrecipitateCoarsening"]["reason"])
-        self.assertEqual(solve("Ti-6Al-4V")["lswPrecipitateCoarsening"][0]["status"], NOT_MODELLED)
-        self.assertEqual(solve("AISI 4140", aging_c=600.0)["lswPrecipitateCoarsening"][0]["status"], NOT_MODELLED)
-
-    def test_below_the_limit_the_block_has_no_reason_sentence_and_no_note(self):
-        block = solve("AISI 4140", aging_c=600.0)["kineticsModel"]["lswPrecipitateCoarsening"]
-        self.assertEqual(block, {"status": NOT_MODELLED, "note": None, "reason": None, "reasonCodes": LSW_CODES})
+class LswRegistryTemperatureTest(unittest.TestCase):
+    def test_registry_transition_temperatures_never_decide_lsw_availability(self):
+        for name, limit in {"AISI 4140": 725.0, "AISI 4340": 710.0, "AISI D2": 800.0,
+                            "Inconel 718": 1020.0, "Ti-6Al-4V": 995.0, "Al 7075": 480.0}.items():
+            for temp in (limit - 0.1, limit, limit + 0.1):
+                with self.subTest(alloy=name, temp=temp):
+                    result = solve(name, aging_c=temp)
+                    self.assertEqual(result["kineticsModel"]["lswPrecipitateCoarsening"],
+                                     {"status": NOT_MODELLED, "note": None, "reason": None, "reasonCodes": LSW_CODES})
+                    for row in result["lswPrecipitateCoarsening"]:
+                        self.assertEqual(row["status"], NOT_MODELLED)
+                        self.assertEqual(row["reasonCodes"], LSW_CODES)
 
 
 class SteelTextTest(unittest.TestCase):

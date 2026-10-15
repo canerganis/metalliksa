@@ -1042,7 +1042,7 @@
   {
    "key": "engine",
    "kind": "changed",
-   "new": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+   "new": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
    "old": "MetalliX-Python-HPC-JMAK-Kinetics-v3.10"
   },
   {
@@ -3465,7 +3465,7 @@
   }
  ],
  "exitCode": 0,
- "gitHead": "fbf68b4c066e1088cc6a5f003f878ea8b1707824",
+ "gitHead": "d38ea7d4cbd1615753a63144ed47d6f25f2252ed",
  "input": {
   "agingTemp_C": 550.0,
   "agingTime_h": 4.0,
@@ -3507,7 +3507,7 @@
  "schema": "phase6a-step-b-golden-1",
  "solver": "kinetics_ttt_cct_solver",
  "solverFile": "python/kinetics_ttt_cct_solver.py",
- "solverSha256": "9ccf6cd2fad88240ff838b2616f1afa92d11cbd96e27b4d9cf44c4af0a442e8f",
+ "solverSha256": "4ced538cfe1bb8543a3916cb449f2d79631680cf817ebf677fc2f03640770116",
  "solverSha256Normalization": "CRLF->LF (git blob form)",
  "solverSource": "worktree",
  "stdout": {
@@ -3771,7 +3771,7 @@
    "Ms_C": 800.0,
    "Ms_C_status": "registry-screening-value"
   },
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "inputParameters": {
    "agingTemp_C": 550.0,
    "agingTime_h": 4.0,
