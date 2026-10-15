@@ -1238,3 +1238,39 @@ type ResearchInputEntry = { provenance: ResearchInputProvenance; derivation: Res
 3. Fixture mapping (`FIXTURE_TO_RUNTIME`, R-MAP-1): each fixture input record splits into the 17 base keys (`provenance`) and the three extra keys (`derivation`); an absent extra key maps to `[]` or null. A fixture record with any other key fails R-MAP-1.
 4. The output-leaf member `weakestInputs` on derived `ResearchField`s (6.2, from the fixture's `valueProvenance`) is a different field and stays where it is.
 5. Tests: R-MAP-1 asserts that the split leaves exactly 17 keys in every `provenance`, nested records included. Phase B's transport fixtures carry no input records, so no phase B test changes. The solidification lane keeps its 17-key parser unchanged and adds no P8 keys.
+
+## 16. Revision 5 (D-12 limits after phase C, 2026-10-15)
+
+Input: `docs/research/REPORT_p8_phase_c_2026-10-15.md` on `feat/p8-research-impl` (research pin `7bd877e1`, served fingerprint `36cd9d4a` unchanged). Measured: relay projection 135,286 (Ti-6Al-4V) and 153,045 (AlSi10Mg) characters against the 12,000 cap; complete responses 3.32 and 3.99 MB at the default manifests and 9.9 to 10.3 MB at 80 arms per module, against the 4 MiB cap; null-budget cold band 8.9 to 9.9 s at the defaults and about 31 s at the cap, against the 30 s route timeout; budgeted chunks complete at every size (chunk p95 under 2 s, max 3.3 s). This revision supersedes the affected values of 3.1, 3.5 rules 5 and 6, 3.7 item 5, 14.3 items 4 and 5 and 14.4 item 4. Isolation (sections 1 and 14.2) and the hash binding (14.3 items 1 to 3 and 6 to 8) are unchanged.
+
+### 16.1 Relay projection: compact `blind-freeze-v2`
+
+The projection keeps identity, binding, numbers, codes and ids; prose is bound by digest instead of copied. `relay.kind` and `relaySchemaVersion` become `"blind-freeze-v2"`; `blind-freeze-v1` is withdrawn before any use.
+
+| Member | Content |
+|---|---|
+| `relaySchemaVersion`, `relayPathsSha256`, `binding`, `request`, `requestKey`, `identity`, `digests` | as in 14.3 item 4; `digests.researchModelsSha256` and `labelsSha256` bind the full block, so everything left out stays bound |
+| `scored` | `linkedMeltDepth_um`: `value`, `unit`, `reasonCode`, `warnings`, `sourceEvidenceKind`, `weakestInputs`; band `completeness`, `min`, `nominal`, `max`, `successfulArms`, `totalArms`, `minArmId`, `maxArmId`, `minArmTies`, `maxArmTies`, `failedArms` (ids and codes), `manifestSha256`, `manifestLength` |
+| `context` | value, `reasonCode` and `sourceEvidenceKind` of `conditionalMeltDepth_um`, `conductionDepth_um`, `cavityDepth_um` (with the same band numbers as `scored`), `onsetPower_W`, `powerOverOnset`; the values of `controllingLeg`, `linkDispatch`, `conductionStatus`, `onsetEvent` |
+| `support` | `keyholeCavity.band.onsetSupport` counts and the two `statusSupport` lists |
+| `notes` | for keyholeCavity and meltDepthLink: `status`, `worstArmStatus`, the primary sentence id, `reasons[].code`, `knownContradictions[].id`, `onsetMismatch.comparison`, `fieldShapeShare.nearOnset` and the `FIELD_SHAPE_STEP_NEAR_ONSET` flag |
+| `statements` | per module: `moduleMaturity`, `moduleEvidenceCeiling`, `experimentalValidation`, and a `validationStatus` code (`not-experimentally-validated` or `falsified-surface-closure`) in place of its text |
+
+1. Cap: 16,000 characters of `subsetJson`; phase C re-measures and records the sizes. Above the cap the response stays the C2 refusal; nothing is omitted beyond this table.
+2. Rendering (amends 14.5 item 2): the hub renders numbers, codes and ids from `subsetJson`, and the matching text (labels, sentences, status texts, captions) from the `describe` stage of the same research identity, which returns the closed text tables `labels`, `sentences` and `statusTexts` with their sha256. The hub checks that `labelsSha256` and the identity match, and still authors no research text.
+3. Payload (amends 14.4 item 4): 48 conditions at 16,000 characters need at most 768,000 characters, below the worker RPC line cap of 1,000,000; the hub keeps its total check.
+4. Recomputation (14.3 item 6) compares `subsetSha256` and, for full detail, `digests.researchModelsSha256`. The batch client also writes each full response file, so a later verifier can inspect everything the digest binds.
+
+### 16.2 Bands within the route timeout
+
+1. Budgeted chunks are the only normal band path. Every measured chunk ended within 3.3 s, inside the 30 s route timeout, at the default manifests and at the 80-arm cap, so the 80-arm cap stays.
+2. The null-budget request is reserved for the ad-hoc path (no persistent cache: `channel` is the ad-hoc fallback, or `cacheInstanceId` changes). `handleResearchDispatch` gives a request with `timeBudgetMs: null` a route timeout of 120 s; every budgeted request keeps 30 s. This leaves margin over the measured 31 s cold run at the cap; phase G repeats the measurement on the ad-hoc path.
+3. Complete-response cap: raised from 4 MiB to 16 MiB, below `MAX_IPC_RESPONSE_BYTES` (64 MiB). The cap run measured 10.3 MB, and the AlSi10Mg default (3.99 MB) sat too close to the old cap. The research route travels over IPC, not the worker RPC line, so the 1,000,000-character worker limit does not apply to it.
+4. Cancel (amends 4.4 item 2): a budgeted chunk ends within its budget plus one arm (measured max 3.3 s); a null-budget ad-hoc request can run up to 120 s, and its result is discarded after Cancel.
+
+### 16.3 Code changes phase C must take
+
+1. `lpbf_research_codes.py`: `BLIND_RELAY_V2` replaces `BLIND_RELAY_V1` (table 16.1) with a new `relayPathsSha256` and the `validationStatus` codes; relay cap 16,000; `describe` returns the `sentences` and `statusTexts` tables with their sha256.
+2. `lpbf_research_models.py`: emit `blind-freeze-v2`; refuse `relay.kind` `"blind-freeze-v1"` with `RESEARCH_REQUEST_INVALID`; complete-response cap 16 MiB.
+3. Route and transport (phase D, recorded now): `handleResearchDispatch` uses 120 s for `timeBudgetMs: null` and 30 s otherwise; the client sends a null budget only on the ad-hoc path.
+4. Tests: R-REL-3 and R-REL-5 move to the v2 key set and the 16,000 cap; R-REL-1 refuses v1; the relay fixture is regenerated; R-TR-10 uses the 16 MiB cap; a D-12 record checks `subsetJson` under 16,000 characters at both default manifests and the complete response under 16 MiB at the 80-arm cap.
