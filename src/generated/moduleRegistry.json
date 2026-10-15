@@ -310,6 +310,23 @@
           "input": [],
           "undeclaredInput": [],
           "output": null
+        },
+        {
+          "id": "lpbf-research-models",
+          "method": "POST",
+          "route": "/api/python/lpbf-research-models",
+          "authority": {
+            "kind": "python-ipc",
+            "script": "python/lpbf_research_models.py",
+            "workerMethod": null,
+            "timeoutMs": 30000,
+            "gpu": "none",
+            "warm": false,
+            "exceptionReason": null
+          },
+          "input": [],
+          "undeclaredInput": [],
+          "output": null
         }
       ],
       "validityDomain": null,

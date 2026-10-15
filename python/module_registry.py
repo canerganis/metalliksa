@@ -121,6 +121,7 @@ def load_seed() -> List[Dict[str, str]]:
 # domains and source refs stay undeclared until a module is contracted.
 
 _PHYSICS_TIMEOUT_MS = 25000      # routes/physics.ts handlePythonDispatch default
+_RESEARCH_TIMEOUT_MS = 30000     # routes/physics.ts RESEARCH_ROUTE_TIMEOUT_MS (P8 research route, handleResearchDispatch)
 _CHARACTERIZATION_TIMEOUT_MS = 15000  # server/processOrchestrator.ts runPythonScript default
 _WORKER_TIMEOUT_MS = 20000       # server/lpbfWorkerBridge.ts requestTimeoutMs default
 
@@ -178,6 +179,8 @@ LEGACY_OPERATIONS: Dict[str, Tuple[Operation, ...]] = {
             _py("stl_slicer_build_time_solver", _PHYSICS_TIMEOUT_MS, warm=True)),
         _op("lpbf-source-catalog", "GET", "/api/lpbf/sources", _NODE),
         _op("lpbf-run-archive", "GET", "/api/lpbf/runs", _NODE),
+        _op("lpbf-research-models", "POST", "/api/python/lpbf-research-models",
+            _py("lpbf_research_models", _RESEARCH_TIMEOUT_MS, warm=False)),
     ),
     "experimental-validation": (
         _op("lpbf-source-measurements", "GET", "/api/lpbf/sources/:datasetId/measurements", _NODE),

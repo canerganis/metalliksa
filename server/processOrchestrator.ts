@@ -190,6 +190,7 @@ export const DISPATCHABLE_SCRIPTS: ReadonlySet<string> = new Set([
   "lpbf_process_window",
   "lpbf_gr_solidification",
   "lpbf_machine_calibrated_meltpool",
+  "lpbf_research_models",
   "lpbf_thermal_solver",
   "stl_slicer_build_time_solver",
   "xrd_peak_deconvolution",
