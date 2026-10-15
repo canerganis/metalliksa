@@ -190,12 +190,12 @@ Four tiers, one authority (Python in the existing LPBF worker). Root below: `WT 
 | `python/lpbf_blind_research.py` (Part S, not shipped in Part P) | The research request builder and the closed P8 adapter of 15.3, in one research module hashed into the research member of the predictor identity (3.6), never into the served-closure pin, so a phase 6 edit cannot move that pin (R13). Imports no `lpbf_research_*` module (contract guard R-ISO-1). Protocol 1 v1 has no research module at all; the arm is `RESEARCH_NOT_REQUESTED` (7.6). |
 | `python/lpbf_user_blind_inputs.py` | Metadata schema and validation, inputs CSV parsing (dialects, closed alias table, header whitelist checked before any data row, caps, base64 decode, UTF-8), structure checks, input-only exclusions (runner `parse_input_rows` rules), beam conversion, grades, block issues, design checks, preview. Must not import the targets parser. |
 | `python/lpbf_user_blind_targets.py` | Targets CSV parsing, exact key join, `depth_status` rules, repeated-input check, commitment check. |
-| `python/lpbf_user_blind_store.py` | Store root, layout, exclusive create (`open(mode="x")`), sha256 sidecars, read-only bit after write, content-addressed uploads, staging and rename (the commit point), ledger with sequence and previous-entry hash, OS-held store lock with its recorded lock domain (Part P, R17), start-of-mutation reconciliation (3.5), caps, listing of incomplete staging dirs, the reveal-or-score state gate shared by the artifact branch, the bundle job and the CLI, `scorer_source_hashes(paths)` (renamed from `source_identity` so it is not confused with `lpbf_source_identity`; hashes files by path through `lpbf_source_identity.canonical_source_bytes`, so LF and CRLF checkouts give the same hash, without importing them; Part P, R14), read-only tuple readers for the calibration stores (6.4 item 7). |
+| `python/lpbf_user_blind_store.py` | Store root, layout, exclusive create (`open(mode="x")`) for uploads and staging files, directory rename as the only commit point of every record (3.5 item 2), sha256 sidecars, read-only bit after write, content-addressed uploads, staging and rename (the commit point), ledger with sequence and previous-entry hash, OS-held store lock with its recorded lock domain (Part P, R17), start-of-mutation reconciliation (3.5), caps, listing of incomplete staging dirs, the reveal-or-score state gate shared by the artifact branch, the bundle job and the CLI, `scorer_source_hashes(paths)` (renamed from `source_identity` so it is not confused with `lpbf_source_identity`; hashes files by path through `lpbf_source_identity.canonical_source_bytes`, so LF and CRLF checkouts give the same hash, without importing them; Part P, R14), read-only tuple readers for the calibration stores (6.4 item 7). |
 | `python/lpbf_user_blind_freeze.py` | Freeze: re-run preview, re-check required acknowledgements and overlap, identity checks, per-condition arm predictions, freeze record, receipt. Imports inputs, served arms, stats (design checks only) and store. Must not import `lpbf_user_blind_targets` or `lpbf_user_blind_score` (AST test), and asserts before its commit point that neither module is in `sys.modules` (Part P, ENG-17); the scorer identity is computed by `scorer_source_hashes`, which reads bytes and imports nothing. |
 | `python/lpbf_user_blind_score.py` | Score: verify freeze, join targets, reduce, statistics per arm, coverage and common subset, qualifiers, fragile labels, blindness rule, scorer identity, report. |
 | `python/lpbf_user_blind.py` | Façade for the worker: `USER_BLIND_RPC_TYPES` and `USER_BLIND_JOB_TYPES` (3.2.1), `validate_request(raw)` per type (closed keys, Phase 6a validation envelope so the route answers 422), `stage_request(p)`, `run_job(input)` (silent child, fixed error codes), `rpc(raw)` for the estimate RPC (preview, list, get), `enforce_user_blind_job_result(result, params)`, `filter_blind_log(text)`, `blind_document(result, name)` for the artifact branch, label constants. Lazy imports per job type keep the freeze path free of the targets parser. |
 | `python/lpbf_spent_ledger.py` | Loader and checks for `data/benchmark/spent-ledger-v1.json`; used by the descriptive tool and by the blind test exposure check. |
-| `python/tools/lpbf_user_blind.py` | Offline CLI for air-gapped labs on the same library: `templates [--from-plan plan.json]`, `preview`, `freeze`, `reveal`, `score`, `list`, `show`, `bundle`, `verify`, `export-protocol [--check]`, `pin-served-closure [--check]`, and in revision 3 `share`, `share-verify`, `share-import` (Mode A), `sealed-precheck`, `commit`, `check-predictions`, `release` (Mode B, user side). No network. The CLI goes through the same store functions and the same state gate as the worker: `show` prints predicted values and `bundle` writes a tar only when a reveal record or a score exists for the freeze, or when `--reveal "<phrase>"` is given, which writes `reveal-<n>.json` and the `revealed` ledger event first; otherwise both refuse with `REVEAL_REQUIRED`. `list` and `verify` print receipts, hashes, statuses and check results only, never a predicted or measured value. Run it in the same environment as the worker (both Windows or both WSL), because an `msvcrt` lock and an `flock` on a `/mnt` path do not exclude each other. |
+| `python/tools/lpbf_user_blind.py` | Offline CLI for air-gapped labs on the same library: `templates [--from-plan plan.json]`, `preview`, `freeze`, `reveal`, `score`, `list`, `show`, `bundle`, `verify`, `export-protocol [--check]`, `pin-served-closure [--check]`, and in revision 3 `share`, `share-verify`, `share-import` (Mode A), `sealed-precheck`, `commit`, `check-predictions`, `release` (Mode B, user side). No network. The CLI goes through the same store functions and the same state gate as the worker: `show` prints predicted values and `bundle` writes a tar only when a reveal record or a score exists for the freeze, or when `--reveal "<phrase>"` is given, which commits `reveal-<n>/` and then appends the `revealed` ledger event; otherwise both refuse with `REVEAL_REQUIRED`. `list` and `verify` print receipts, hashes, statuses and check results only, never a predicted or measured value. Run it in the same environment as the worker (both Windows or both WSL), because an `msvcrt` lock and an `flock` on a `/mnt` path do not exclude each other. |
 | `python/tools/lpbf_spent_descriptive.py` | Offline producer of the descriptive record (section 8). |
 | `python/lpbf_blind_share.py` (revision 3) | Mode A (14.3): deterministic share tar, consent, licence and attribution checks, ledger excerpt with redacted links; `share_verify(tar)` and `share_import(tar)` with the checks of 14.3.4, closed member names and caps (9.16), writes only under the shared-results root, drafts the spent ledger entry. Imports the store, the scorer (re-score) and `lpbf_served_arms` (re-predict); never a research module. |
 | `python/lpbf_sealed_submission.py` (revision 3) | Mode B (14.4): commitment builder and checks (user side); the maintainer's sealed store (layout of 3.5, same lock, ledger and commit-point rules); the state machine of 14.4.3; import, run amendment builder (closed key set of MELT Amendment 6 item 14.4), freeze (served arms through `lpbf_served_arms`, the MELT runner's prediction file imported by hash, research subsets from route responses), publish, receive-targets, intake, tier events, score (`lpbf_blind_stats` under the sealed rule record, compared with the MELT runner's verdict file), result and record entry, `verify`. |
@@ -212,7 +212,7 @@ RPC.
 1. Estimate RPC (`lpbf_worker_rpc._estimate`): when `payload.jobType` is in `USER_BLIND_RPC_TYPES`
    (`user-blind-preview`, `user-blind-list`, `user-blind-get`, 3.2.1) call `lpbf_user_blind.rpc(payload)` and return
    the document. These calls write nothing (no store file, no `.lpbf-jobs` folder, no sqlite row, no queue slot), call
-   no thermal solver and read only committed store state (renamed freeze directories, exclusive-created records,
+   no thermal solver and read only committed store state (renamed record directories,
    complete ledger lines), so a freeze child writing at the same moment is never seen half done. Target cost: preview
    under 300 ms at the condition cap, list and get under 100 ms at the store cap (measured in phase 1; the RPC loop is
    single threaded, so a slow call would stall status polls). They are answered while a queued job runs, so loading
@@ -266,7 +266,8 @@ RPC.
    `capture()` refuses blind job types explicitly ("blind tests are not archivable"), so the run archive and portable
    bundles never copy them.
 7. `artifact()` branch for blind jobs: names are a closed set (`blind-receipt.json`, `blind-freeze.json`,
-   `blind-report.json`, `blind-bundle.tar`; revision 3 adds `blind-share.tar`, served only when a score exists,
+   `blind-report.json`, `blind-bundle.tar`, `blind-comparison.csv` (Part P, R21; served only when its report exists);
+   revision 3 adds `blind-share.tar`, served only when a score exists,
    `sealed-commitment.json`, `sealed-commitment-public.json`, `sealed-release.json` and `sealed-score-local.json`). The file is resolved in the blind store from the job result's validated
    `freezeKey` and attempt number (never from the client), checked against the size and sha256 the store sidecar and
    the job result declare, and state gated through the store's reveal-or-score gate: `blind-freeze.json` and
@@ -316,7 +317,7 @@ honesty block of 2.1.
 | `user-blind-freeze` | queued | `{jobType, schema, metadata, inputsCsvBase64, inputsFileName, previewSha256, overlapSha256, acknowledgements}` (`overlapSha256` copied from the reviewed preview; no `research` member in protocol 1, 7.6; Part S adds one in protocol 2, 15.3) | receipt (4.5 item 3) |
 | `user-blind-reveal` | queued | `{jobType, schema, freezeKey, confirmation}` (exact phrase) | `{freezeKey, revealN, ledgerSeq, documents}` |
 | `user-blind-score` | queued | `{jobType, schema, freezeKey, targetsCsvBase64, targetsFileName, declarations {viewedPredictionsBeforeFinalisingTargets}, acceptCommitmentMismatch}` | `{freezeKey, attempt, alreadyScored, statuses, documents}` |
-| `user-blind-bundle` | queued | `{jobType, schema, freezeKey, revealConfirmation?: exact phrase}` | `{freezeKey, bundleN, sha256, size, documents}`. Refused at submit and again in the child with `REVEAL_REQUIRED` unless a reveal record or a score exists; with `revealConfirmation` the child writes `reveal-<n>.json` and the `revealed` event before the tar |
+| `user-blind-bundle` | queued | `{jobType, schema, freezeKey, revealConfirmation?: exact phrase}` | `{freezeKey, bundleN, sha256, size, documents}`. Refused at submit and again in the child with `REVEAL_REQUIRED` unless a reveal record or a score exists; with `revealConfirmation` the child commits `reveal-<n>/` and appends the `revealed` event before it commits the bundle directory |
 | `user-blind-open` | queued, deduplicated | `{jobType, schema, freezeKey, name (closed set of 3.2 item 7), attempt?: int >= 1}` | `{freezeKey, name, attempt, sha256, size}`; writes nothing; same state gate |
 | `user-blind-share` (revision 3) | queued | `{jobType, schema, freezeKey, consent {includeTargets}, licence, publishAllowed, attribution?, evidenceManifest?}` | `{freezeKey, shareN, shareId, sha256, size, documents}`; refused with `SHARE_NO_SCORE` unless a score exists (14.3) |
 | `user-sealed-precheck` (revision 3) | estimate RPC | `{jobType, schema, metadata, inputsCsvBase64, inputsFileName, targetsCsvBase64, targetsFileName, evidenceManifest?}` | structure checks of inputs and targets (4.2, 4.4), `targetsSha256` computed in Python, plausibility flags for the user only (14.7.2), counts and codes, never a value; writes nothing; no solver call |
@@ -435,28 +436,36 @@ Python and Python enforces the per-file caps.
 (3.3) and never reads the store itself. Docker: `/data/user-blind`.
 
 ```
-<root>/store.json                      schema, storeId, createdAt
+<root>/store.json                      schema, storeId, createdAt, lockDomain (windows | posix; 3.5 item 1)
 <root>/store.lock                      OS-held lock (msvcrt or flock), released by the OS when the holder dies
 <root>/ledger.jsonl                    {seq, at, event, freezeKey, jobId, hashes, prevEntryHash, entryHash}
 <root>/uploads/<sha256>.metadata.json  canonical metadata bytes
 <root>/uploads/<sha256>.inputs.csv     raw inputs bytes
 <root>/uploads/<sha256>.targets.csv    raw targets bytes (exist only after a score submit)
 <root>/index/conditions.jsonl          {freezeKey, alloy, tuples [P_W, v_mm_s, d_1e2_um]} for overlap checks (derived data)
-<root>/freezes/<freezeKey>/freeze.json (+ .sha256)
-<root>/freezes/<freezeKey>/reveal-<n>.json (+ .sha256)
-<root>/freezes/<freezeKey>/score-<n>.json (+ .sha256)
-<root>/freezes/<freezeKey>/bundles/bundle-<n>.tar (+ .sha256)
-<root>/.staging/<random>/              freeze staging; renamed into place; leftovers listed as incomplete, never used
+<root>/freezes/<freezeKey>/freeze.json (+ .sha256)                  committed by renaming a staging directory to freezes/<freezeKey>/
+<root>/freezes/<freezeKey>/reveal-<n>/reveal.json (+ .sha256)        committed by renaming a staging directory to reveal-<n>/
+<root>/freezes/<freezeKey>/score-<n>/score.json (+ .sha256)          committed by renaming a staging directory to score-<n>/
+<root>/freezes/<freezeKey>/bundles/bundle-<n>/bundle.tar (+ .sha256) committed by renaming a staging directory to bundle-<n>/
+<root>/freezes/<freezeKey>/shares/share-<n>/share.tar (+ .sha256)    Part S; committed the same way
+<root>/.staging/<random>/              staging for every record; renamed into place; leftovers listed as incomplete, never used
 ```
 
-Revision 3 adds to the user's store `freezes/<freezeKey>/shares/share-<n>.tar (+ .sha256)` (Mode A) and
-`commitments/<commitmentId>/` with `commitment.json`, `commitment-public.json` (confidential variant),
-`predictions-check-<n>.json`, `release-<n>.json` and `sealed-score-local.json`, each with a sidecar (Mode B, user side).
+Naming rule (Part P, R17). Every record is committed only as a directory holding the record and its sidecar, by one
+rename (3.5 item 2); no record file is ever created in place. Where this spec uses the short names `reveal-<n>.json`,
+`score-<n>.json`, `bundle-<n>.tar` or `share-<n>.tar`, or the artifact names of 3.2 item 7, it means the record inside
+its committed directory (`reveal-<n>/reveal.json` and so on). Inside an exported tar, members keep the short flat names
+(`reveal-1.json`, `score-1.json`), each copied from its committed directory.
+
+Revision 3 adds to the user's store `freezes/<freezeKey>/shares/share-<n>/` (Mode A) and, for Mode B on the user side,
+`commitments/<commitmentId>/` (committed as one directory holding `commitment.json`, `commitment-public.json` for the
+confidential variant, and their sidecars) with the record directories `predictions-check-<n>/`, `release-<n>/` and
+`sealed-score-local/`, each holding its record and sidecar, all under the naming rule above.
 The maintainer's tools use two further roots, never the maintainer's own blind store: `METALLIKSA_SHARED_ROOT` (default
 `<repo>/.runtime/shared-results/`: one directory per imported share, plus `index/seen-tuples.jsonl`) and
 `METALLIKSA_SEALED_ROOT` (default `<repo>/.runtime/sealed-submissions/`: `store.json`, `store.lock`, `ledger.jsonl` and
-`submissions/<commitmentId>/` with the files of 14.4.2). Both sit under the ignored `.runtime`, follow the lock,
-exclusive-create, sidecar, ledger and reconciliation rules above, and are written only by the CLI (no worker job, so no
+`submissions/<commitmentId>/` with the files of 14.4.2, each record committed as its own directory). Both sit under the
+ignored `.runtime`, follow the lock, directory-commit, sidecar, ledger and reconciliation rules above, and are written only by the CLI (no worker job, so no
 WSL forwarding is needed).
 
 Ledger events: `frozen`, `revealed`, `score-refused` (the code and the sha256 of the refused targets file, never a
@@ -498,7 +507,7 @@ mutation is written to survive a kill at each step:
    tampering and is reported by `list`, `get` and `verify` as `ledger-dangling`, never used for overlap or state.
    Readers on the estimate RPC see committed records only and tolerate a missing trailing event.
 5. Tests kill every mutation type (freeze, reveal, score, bundle, and in Part S share, commit and release) at each step (after the staging write, after the lock, after the
-   rename or exclusive create, during the ledger append, after the ledger append, during the index append) through a
+   directory rename, during the ledger append, after the ledger append, during the index append) through a
    test-only fault hook (a module-level no-op function the test replaces in the spawned child, never an environment
    switch in production code), then run the next mutation and assert: no manual action needed, the record is either
    fully committed or absent, every committed record has exactly one ledger event, no dangling event, and the index
@@ -601,9 +610,13 @@ silent value. Every field has a help disclosure that says what it is and how it 
 Help text of `predictionsViewedBeforeFreeze` names every place a served depth is visible, so "no" is an informed
 answer: the Build Job result, the process window, the thermal route (melt-pool cross-section lab), the Dataset
 Comparison lab including the new spent-set descriptive panel (section 8), the Melt Pool vs Measurements lab, the
-machine-calibration block, the experiment plan panel, the Research model panel of the P8 contract (Melt Pool lab and
-Build Job Decision lab; revision 3), and any CLI that prints a served or research depth. A test pins that the help
-data lists each of these surfaces.
+machine-calibration block, the Research model panel of the P8 contract (Melt Pool lab and Build Job Decision lab;
+revision 3), and any CLI that prints a served or research depth. A test pins that the help data lists each of these
+surfaces. The experiment plan panel is not on the list: it shows no depth (Part P, R21), only an information score, the
+kernel disagreement (`sdLnW`, `sdLnD`, their combination) and the calibration interval width
+(`python/lpbf_next_experiment.py:392-394`, `src/components/LpbfExperimentPlanPanel.tsx:87-101`). Decision: these
+dimensionless spreads do not count as viewing predictions, because they carry no depth value and cannot steer a
+measurement toward one; the help says so in one sentence.
 
 Acknowledgements are not metadata. They are a top-level field of the freeze request (5 step 5, 3.2.1):
 `acknowledgements {predeterminedInconclusive?, powderLayerDescriptive?, exposedDescriptive?, publishedConditionOverlap?,
@@ -737,10 +750,13 @@ least 12 conditions to be scored, which the preview says.
    `ledgerSeq`, `ledgerEntryHash`, `predictionsWithheld: true`, `anchorAdvice` ("share freezeSha256 with
    someone outside this computer, or commit it to a repository, before you measure or upload measurements; this app
    cannot prove the order of events by itself"), honesty. No predicted value anywhere.
-4. Reveal record (`lpbf-user-blind-reveal-1`): `{revealedAt, scoreAttemptsBefore, via (reveal, bundle, cli),
-   jobId or null}`, written exclusive before the freeze document becomes servable; its creation is the commit point and
-   the `revealed` ledger event follows it (3.5).
-5. Report (`lpbf-user-blind-report-1`, `score-<n>.json` plus sidecar, served through the artifact branch):
+4. Reveal record (`lpbf-user-blind-reveal-1`, `reveal-<n>/reveal.json` plus sidecar): `{revealedAt,
+   scoreAttemptsBefore, via (reveal, bundle, cli), jobId or null}`, committed as the directory `reveal-<n>/` before the
+   freeze document becomes servable; that rename is the commit point and the `revealed` ledger event follows it (3.5).
+5. Report (`lpbf-user-blind-report-1`, `score-<n>/score.json` plus sidecar, committed as the directory `score-<n>/`,
+   served through the artifact branch). `reportSha256` is the sha256 of the exact bytes of `score-<n>/score.json`, the
+   value its sidecar holds; it is not a field inside the report (a document cannot carry its own hash), and
+   `user-blind-get`, the job result and the comparison CSV preamble carry it (Part P, R21). Fields:
    `freezeKey`, `freezeSha256`, `targetsSha256`, `commitment {declared, matched}`, `attempt {n, earlierTargetsSha256[]}`,
    `blindness {status, reasons[], revealEvents[], overlap[], exposuresAfterCommitment[]}`, `predictor {atFreeze,
    atScore, changedSinceFreeze}`, `scorer {atFreeze, atScore, changedSinceFreeze}`, `divergences [{id, sentence}]`
@@ -757,7 +773,9 @@ least 12 conditions to be scored, which the preview says.
    {inputs[], targets [{key, status}]}`, `exclusions {sections, tracks, conditions}` (each `k of n frozen`),
    `notFormed {tracks, conditions}`, honesty.
 6. Comparison CSV (`blind_comparison_v1.csv`, Part P, R21), exported from a report only (it holds predictions, so it
-   follows the reveal-or-score gate), written by Python from the report, never recomputed in TypeScript. Preamble lines,
+   follows the reveal-or-score gate). Python writes it, in the score child next to the report, as
+   `score-<n>/comparison.csv` with its own sidecar, and the artifact branch serves it as `blind-comparison.csv`;
+   TypeScript only downloads it and never builds or recomputes its text. Preamble lines,
    each starting `# `: the banner of 2.2, the honesty literals, the report title, `freezeKey`, `reportSha256`, the
    blindness status and its sentence, the status and sentence of every arm, the labels, the ids and sentences of the
    divergences that applied, and `rel is a fraction (pred - obs) / obs; positive means the model is deeper`. Then one
@@ -766,7 +784,10 @@ least 12 conditions to be scored, which the preview says.
    `band_nominal_um`, `band_max_um` (blank for served arms, and blank for research arms while they are not requested),
    `consistency_status`, `source_evidence_kind`, `excluded_status`, `labels` (joined by ` | `). Units are in the column
    names; fractions, not percent; `+inf` is written as `inf` with `ape_fraction` and a `failed` status; text cells pass
-   through `blindCsvTextCell` (3.4 item 4). A cross-language test pins the header.
+   through `blind_csv_text_cell` in `lpbf_user_blind.py`, the Python twin of `blindCsvTextCell` (3.4 item 4: a text cell
+   starting with `=`, `+`, `-`, `@`, tab or carriage return gets a leading apostrophe; numbers are never prefixed), with
+   its own Python test and a cross-language test that runs both functions on the same fixture cells and requires equal
+   output. A test pins the header and preamble.
 
 ### 4.6 Protocol record
 
@@ -899,8 +920,8 @@ queued job). Browser checks are convenience only. Request shapes are the closed 
 7. Receipt (browser). Shown, stored (summary only) and downloadable as JSON. The UI asks the user to anchor
    `freezeSha256` outside this computer if they need provable order.
 8. Optional reveal: `{jobType: "user-blind-reveal", schema, freezeKey, confirmation: "reveal predictions and end blind
-   status"}` (exact phrase, typed in a `role="dialog"` confirmation). Python writes `reveal-<n>.json` exclusive (the
-   commit point) and then appends ledger `revealed`, before the artifact branch will serve `blind-freeze.json`. A
+   status"}` (exact phrase, typed in a `role="dialog"` confirmation). Python commits the directory `reveal-<n>/` with
+   the record and its sidecar (the rename is the commit point, 3.5 item 2) and then appends ledger `revealed`, before the artifact branch will serve `blind-freeze.json`. A
    bundle request with `revealConfirmation` and the CLI `show` or `bundle` with `--reveal` take the same path first.
    Every later report on this freeze, and on any later test with overlapping conditions, is not blind unless the
    commitment exception of 6.4 applies.
@@ -934,7 +955,7 @@ in both phases; targets absent from the server until a freeze exists; the freeze
 no predicted value in any preview, receipt, list, get or job result, nor in `progress.log`, the sqlite `log` and `error`
 columns or `GET /api/lpbf/jobs/:id` (silent child, log filter, sentinel test); the frozen document and every bundle are
 not servable or writable before a reveal or a score, through the worker or the CLI; frozen values never recomputed;
-exclusive-create records with sidecars and crash-safe commit points; attempt, reveal and overlap history in every
+records committed together with their sidecars by one directory rename, and crash-safe commit points; attempt, reveal and overlap history in every
 report; label fields both Python and TypeScript refuse to change.
 
 Not enforceable, and said in the UI and the guide: order is recorded on a local clock; the served predictor is public
@@ -1296,21 +1317,33 @@ the entries that applied to the block. Adding an entry is a protocol change (new
    SPENT|EXPOSED|EXPOSED-LOW|CLEAN|UNUSABLE, spentBy [{event, record, date}], sameExperimentsAs, loader, tableSha256,
    curveAxis speed|power, locator, licence, attribution, licenceFile, transcription table|digitized-figure|
    derived-from-raw-images, inputsInferred [{input, method, locator}] or [], usedInServedDevelopment bool}` (Part P:
-   licence fields HUB-LP-16, transcription kind and inferred inputs R18, served-development flag HUB-LP-15). The ledger
+   licence fields HUB-LP-16, transcription kind and inferred inputs R18, served-development flag HUB-LP-15). Fit of a
+   Bitharas record (R18): it does not fit `lpbf-spent-ledger-1`, whose `beam` is a single object and whose `observable`
+   is one of three depth kinds, while the Bitharas runs come in two beam groups (99 and 84 um, inferred) and carry
+   conditional or missing observables (native transmission signals, no released depth). A Bitharas SPENT record
+   therefore enters only with `lpbf-spent-ledger-2`, a reviewed schema change committed together with that record (Haiku
+   drafts, Opus reviews): `beams [{runGroup, value_um, definition, status, sensitivity_um, locator}]` in place of `beam`
+   (v1 entries are read as a one-element list), the observable `vapour-transmission-profile`, and `observableStatus
+   available | conditional | missing`. By schema rule, an entry whose observable is not a depth kind, or whose
+   `observableStatus` is not `available`, never gets a curve, a deviation or a model-map cell from the producer. The ledger
    loader refuses an entry without `licence`, `attribution` and `licenceFile` (a path to a committed licence or
    attribution file, or `none` with a reason the producer then refuses to admit). Haiku transcribes, Opus reviews
    against BOARD and LOG.
 2. The producer admits only `SPENT` entries. A forbidden-id test keeps out `bitharas`, `leis`, `hyer`, `aboulkhair`,
    `ruckh`, `gong`, `ullah`, `wimmer`, `huang`, `ku-leuven-in718`, `hann`, `nist-mds2-2923-in718` and `cmu`.
 3. Zhao (EXPOSED) enters only through a separate maintainer-approved ledger commit that records this panel as its
-   spending event (Q3). Bitharas (Part P, R18) is admitted only through its own gated SPENT record from
-   `docs/research/SPEC_bitharas_descriptive_2026-10-15.md` (`research/bitharas-descriptive` `45598c42`), with
-   `inputsInferred` filled and transcription `derived-from-raw-images`; until that record is committed, `bitharas` stays
-   on the forbidden list. That spec and this one define "served" and the panel path differently and disagree on percent
-   differences (that spec allows no percent, log or accuracy figure for its set; 8.3 item 3 shows signed percent for
-   depth sets). Until the lead names one owner for the served definition and the panel path (R18, an open lead item),
-   the rule here is: a Bitharas entry never gets a curve, a percent difference or a model map cell from this producer;
-   it shows its own record's content under that spec's rules only. The NIST mds2-2923 IN625 regime ledger (70 units) enters only after a
+   spending event (Q3). Lead ruling (2026-10-15, R18): this spec owns the served definition
+   (`lpbf_served_arms.served_arm`, 3.1) and the descriptive panel path for user and spent-set comparisons. The Bitharas
+   spec (`docs/research/SPEC_bitharas_descriptive_2026-10-15.md`, `research/bitharas-descriptive` `45598c42`) supplies
+   data records only and defers panel wiring to this spec. Its 5.2 proposed served call (`calculate_meltpool_physics`
+   with `heat_source='eagar-tsai'` and `prop_overrides=None`) is not implemented: this spec's `served_arm` overrides it,
+   and any served value shown beside Bitharas data comes from `served_arm`. Reconciled rule (decided): a Bitharas entry
+   gets no curve, no percent difference and no model-map cell; the panel shows its record (inputs with their inference
+   status, eligibility and reasons, and native signals only where that spec's own prerequisites pass) and any
+   `served_arm` value only as a separately labelled model diagnostic, never as a difference. This agrees with that
+   spec's ban on percent, log and accuracy figures, while 8.3 item 3 keeps signed percent for depth sets. Bitharas is
+   admitted only through its own gated SPENT record, with `inputsInferred` filled, transcription
+   `derived-from-raw-images` and the v2 ledger schema of item 1; until then `bitharas` stays on the forbidden list. The NIST mds2-2923 IN625 regime ledger (70 units) enters only after a
    `LICENSE-ATTRIBUTION.md` with the NIST statement and locator is committed and reviewed by Opus.
 
 ### 8.2 Sets in v1
@@ -1417,7 +1450,7 @@ Hofmann stays in the existing comparison view.
    carry no cell value and no prediction. Tests seed unique sentinel numbers, both as target values and as predicted
    depths returned, printed, warned and raised by a stubbed solver, and search every output for them (11.1 items 6
    and 7). The ledger never carries values.
-5. Integrity: exclusive create, sidecars, ledger chain, recomputed `freezeKey`, crash-safe commit points with
+5. Integrity: exclusive create of uploads, directory commits of each record with its sidecar, ledger chain, recomputed `freezeKey`, crash-safe commit points with
    reconciliation (3.5), sha256 check of every served document in the worker and again in the browser where a secure
    context allows it (3.4 item 5). Local tamper evidence only.
 6. Privacy: data stays under the blind root (gitignored, dockerignored, a volume in Docker); no outbound call (so air-gap
@@ -1530,7 +1563,7 @@ acceptance lines below means this: a fresh Opus gate for Opus-authored code, the
 | `src/components/3d-distortion-lab/LpbfDatasetComparisonLab.tsx` | lazy mount of the descriptive panel | Sonnet |
 | `python/module_contracts_dataset_view.py`, `python/test_module_contract_dataset_view.py` | second browser-local operation and refs | Sonnet |
 | `src/generated/moduleRegistry.json`, `moduleRegistry.ts`, `moduleRegistryCore.ts`, `docs/modules/lpbf-dataset-comparison.md` | regenerated only | Haiku runs the emitter |
-| `src/components/LpbfExperimentPlanPanel.tsx` | phase 4: `Download blind-test templates from this plan`, behind a notice (Part P, R21): `This plan shows the app's predicted depths for these conditions. If you have looked at them, answer yes to "predictions viewed" and the test will not be blind. If you import measurements of these conditions for machine calibration, the test will not be blind either. To keep it blind, download the templates without opening the plan's predictions.` The button writes inputs templates only, never predicted values. | Sonnet, Opus review |
+| `src/components/LpbfExperimentPlanPanel.tsx` | phase 4: a `Download blind-test templates from this plan` button beside the existing downloads, with a notice (Part P, R21): `This plan shows a score, the disagreement between the app's kernels and an interval width for each track, not a predicted depth, so viewing it does not count as viewing predictions. For a blind test, use these templates, not measurement_template.csv: importing these tracks' measurements for machine calibration with the commands below makes any blind test on them not blind.` The button writes the blind inputs template from the plan's tracks (track ids, power, speed, spot) and the metadata template, never a score or spread. | Sonnet, Opus review |
 | `python/tools/lpbf_benchmark_score.py`, `src/data/lpbfLeaderboard.ts`, `src/components/LpbfLeaderboardPanel.tsx`, `tests/lpbf-leaderboard.test.tsx`, `docs/LPBF_BENCHMARK.md` | Rev. 4 (ENG-20): no change to `lpbf_benchmark_score.py` or the leaderboard schema; the sealed table reads `sealed-submissions-v1.json` through its own loader in `src/data/lpbfSealed.ts`, shown in `LpbfLeaderboardPanel.tsx` after the screening tables with the caveat, title and verdict mapping of 15.7; the four committed v1 records keep loading; tests for no PASS or FAIL token and no rank control | Sonnet, Opus review |
 | `src/services/lpbfUserBlindClient.ts`, `src/data/lpbfUserBlind.ts` | Part S (after OD1): research relay and `extractBlindResearchSubset` (3.4 item 9, 15.3) | Sonnet, Opus review |
 | `data/benchmark/spent-ledger-v1.json` | revision 3: entry kind `shared-result` (14.3.5), added only by maintainer commits | Haiku drafts the schema change, Opus reviews |
@@ -1591,7 +1624,8 @@ contract (`lpbf_research_*`, `routes/physics.ts`, `python/persistent_ipc_service
    (R20); the `INPUTS_TARGET_COLUMN` message names the matched token (U11); every refusal at preview and submit arrives
    as a `BlindRefusal` envelope mapped to 422, never as a 400 with exception text (R15); row numbers count the header as
    row 1 (U9).
-5. `test_lpbf_user_blind_store.py` and `test_lpbf_user_blind_crash.py`: exclusive create refuses overwrite; sidecar
+5. `test_lpbf_user_blind_store.py` and `test_lpbf_user_blind_crash.py`: a commit onto an existing record directory refuses (no overwrite); no record file
+   is ever written outside a staging directory; sidecar
    verification; ledger chain verify and one-byte tamper detection; the OS lock is released when its holder is killed
    (a child holding it is killed, the parent then takes it at once); staging leftovers listed as incomplete and never
    used; read-only, full and shared-host refusals; content-addressed upload reuse; reconciliation adds a missing event,
@@ -1625,10 +1659,12 @@ contract (`lpbf_research_*`, `routes/physics.ts`, `python/persistent_ipc_service
    logs, ledger or job results, including when a targets cell holds a malformed number built around a sentinel (for
    example `12.5x7` or `1,234.5`) at submit, which must give `NUMBER_INVALID` or `BLIND_SUBMIT_INTERNAL` with no cell
    text in the 422 or 400 body (Part P, R15); the child asserts `lpbf_user_blind_targets` and `lpbf_user_blind_score`
-   are absent from `sys.modules` before the freeze commit point (ENG-17); the comparison CSV of 4.5 item 6 has the
-   pinned header and preamble and is refused before a reveal or score (R21). Bundle and CLI gate: a bundle request and CLI `show` and `bundle` before a reveal or
-   score refuse with `REVEAL_REQUIRED` and write nothing; with the reveal phrase they write `reveal-<n>.json` and the
-   `revealed` event before the tar or the printout (ledger order checked), and the next report is not blind.
+   are absent from `sys.modules` before the freeze commit point (ENG-17); the comparison CSV of 4.5 item 6 is written by
+   the score child with the pinned header and preamble, carries `reportSha256` equal to the report's sidecar, neutralises
+   text cells through `blind_csv_text_cell` (its twin test against `blindCsvTextCell` passes), and is refused before a
+   report exists (R21). Bundle and CLI gate: a bundle request and CLI `show` and `bundle` before a reveal or
+   score refuse with `REVEAL_REQUIRED` and write nothing; with the reveal phrase they commit `reveal-<n>/` and then the
+   `revealed` event before the bundle directory or the printout (ledger order checked), and the next report is not blind.
 7. `test_lpbf_worker_blind_jobs.py` and `test_lpbf_worker_dispatch.py` additions: closed payload validation of every
    type in 3.2.1 at submit and on the estimate RPC (validation envelope, no job row), for `POST /api/lpbf/jobs` and the
    repeat path; blind mutations never deduplicated, `user-blind-open` deduplicated; list and get on the estimate RPC
@@ -1716,7 +1752,8 @@ contract (`lpbf_research_*`, `routes/physics.ts`, `python/persistent_ipc_service
    the store never persists CSV text. Part P additions: the targets header check runs before the browser hash and the
    `Do not open and save this file again` notice is shown (R20); the header separator sniff and unit reading match the
    Python rules on the same fixtures (R20); a `blind-refusal` reply surfaces its code and message and never an
-   exception text (R15); the comparison CSV header and preamble equal the pinned list (R21).
+   exception text (R15); the export button downloads `blind-comparison.csv` through the artifact route with the sha256
+   check and builds no CSV text of its own; the plan-panel template button writes no score or spread (R21).
 2. `tests/lpbf-user-blind-panel.test.tsx` (`renderToStaticMarkup`, fixture titled `Synthetic fixture, not measured
    data`): each step; the parsed inputs screen with a converted unit and the `unit not stated` label (R20); preview with
    best reachable status and acknowledgements; receipt with no depth number; report with served met, research
@@ -1770,8 +1807,8 @@ and golden vectors (may start now, gate verdict "Phases that may start"); the st
 commits; freeze and score; the façade, enforcer, `BlindRefusal` and submit mapping; the worker branches; then, after
 the contract amendment, the research module of Part S. Critical path for Part P: Part P lead check, phase 1 core
 (stats, store, freeze, score), phase 2 worker with R16 and R17 in its acceptance, phase 3 UI, phase 4 strengthening.
-Phase 5 runs beside phases 2 to 4 once R18 (served-definition owner named by the lead), R23 (8.2 datum), HUB-LP-15 and
-HUB-LP-16 are in the text. Phases 6 and 8 are off the Part P path.
+Phase 5 runs beside phases 2 to 4: its text preconditions are in place (R18 ruled by the lead in 8.1 item 3, R23 datum
+in 8.2, HUB-LP-15 and HUB-LP-16 in 8.1); Astra's 8.2 Totis reason sentence is needed before the record is generated. Phases 6 and 8 are off the Part P path.
 
 ### Phase 0, design gate and spikes (Opus; Astra; Haiku)
 
@@ -2021,13 +2058,14 @@ in 15.10, and where the two differ, section 15 applies.
 
 14.3.1 Export (user's app). Precondition: the freeze has at least one score (`SHARE_NO_SCORE` otherwise). Queued job
 `user-blind-share` (3.2.1) or CLI `share`. The dialog lists every file that will be written and what it holds, asks for
-consent per part and for a licence, then writes `freezes/<freezeKey>/shares/share-<n>.tar` (the deterministic tar of
-phase 4: sorted names, mtime 0, uid and gid 0, mode 0644), served as `blind-share.tar`. Contents (schemas in 4.8):
+consent per part and for a licence, then commits `freezes/<freezeKey>/shares/share-<n>/` holding `share.tar` (the
+deterministic tar of phase 4: sorted names, mtime 0, uid and gid 0, mode 0644) and its sidecar, by one directory rename
+(3.5 naming rule), served as `blind-share.tar`. Contents (schemas in 4.8):
 
 1. `share-manifest.json`, `metadata.json` (canonical) and `inputs.csv` (raw bytes; sha256 equal to the freeze
    `inputsSha256`);
-2. `freeze.json`, every `reveal-*.json` and every `score-*.json` with their sidecars: every attempt, so a favourable
-   attempt cannot be shared alone;
+2. `freeze.json`, every `reveal-<n>.json` and every `score-<n>.json` with their sidecars, as flat tar members copied
+   from their committed directories (3.5 naming rule): every attempt, so a favourable attempt cannot be shared alone;
 3. `ledger-excerpt.jsonl` (14.3.2) and `research-requests.json` (the research request bodies of 4.5 item 1, inputs
    only);
 4. `targets-<n>.csv` for every attempt, only with `consent.includeTargets: true`; [Rev. 4: see 15.5 items 1 to 3:
@@ -2123,7 +2161,7 @@ their commit points as in 3.5. The user's store mirrors the user-side states.
 | `submitted` | the user opens a pull request or issue with the commitment in the submissions repository, outside the app; GitHub server time of creation | `imported`, `refused-at-import`, `withdrawn` |
 | `imported` | `import` passes every check of 14.4.4 [`imported`, with the submission anchor typed by the maintainer] | `amended`, `withdrawn` |
 | `amended` | `run-amendment.json` is written and committed to the submissions repository [`amended`] | `frozen`, `withdrawn` |
-| `frozen` | `predictions.json` is written exclusive [`frozen`] | `published` |
+| `frozen` | `predictions.json` and its sidecar are committed as one record directory (3.5 naming rule) [`frozen`] | `published` |
 | `published` | the merge that adds the exact `predictions.json` bytes to the submissions repository is recorded with its server time [`published`] | `released`, `expired-unreleased`, `withdrawn-after-predictions` |
 | `released` | a release attempt is accepted: the targets bytes hash to `targetsSha256` and the release time is later than the publication time [`targets-received`] | `intake-checked`, `void-targets-invalid` |
 | `intake-checked` | plausibility flags and evidence re-hashes are written [`intake-checked`] | `tier-decided` |
@@ -2805,7 +2843,7 @@ Divergence moved from 7.7 with the relay (protocol 2 only; integrity statement p
 | R15 refusals reach 422, closed table, no target leak | 3.2 items 2 and 10, 4.2 item 5, 4.4 item 3, 5 step 10, 6.1 rows, 10.2, 11.1 items 4 and 6, 11.2 item 1 |
 | R16 WSL forwarding | 3.3, 10.2, 11.2 item 4, phase 2 acceptance |
 | R17 lock domain and crash consistency | 3.1, 3.5 items 1, 2 and 5, 5 steps 6 and 11, 6.1 `STORE_LOCK_DOMAIN`, 11.1 item 5, phases 1 and 2 |
-| R18 Bitharas contradictions | 8.1 items 1 and 3 (ledger fields, gated SPENT record only, interim rule); owner of the served definition and panel path is a lead item |
+| R18 Bitharas contradictions | 8.1 item 3 (lead ruling: this spec owns the served definition and the panel path; the Bitharas spec supplies records only; its 5.2 served call is overridden; reconciled rule: no curve, no percent difference, no model-map cell), 8.1 item 1 (the record needs ledger schema v2 with `beams []`, the transmission observable and `observableStatus`) |
 | R19 `Measured (user-supplied)` | 7.5, 14.6, 11.1 item 12, 11.2 item 2; Q15 |
 | R20 intake | 3.4 item 8, 4.1 `reduction`, 4.2 items 4 and 5, 4.5 item 1, 5 steps 2 to 4, 6.1, 11.1 item 4, 11.2 items 1, 2 and 6 |
 | R21 plan panel notice and comparison CSV | 10.2 plan panel row, 4.5 item 6, 11.1 item 6, 11.2 items 1 and 6 |
