@@ -476,13 +476,13 @@ Background work: none; resources: none.
 - `src/components/MaterialsDatabaseView.tsx:230-245#setShowFilters(!showFilters)`
 - `src/components/MaterialsDatabaseView.tsx:250-264#Sort:`
 - `src/components/MaterialsDatabaseView.tsx:336-346#Maximum Density (ρ)`
-- `src/components/MaterialsDatabaseView.tsx:151-151#Chemical compositions, tensile`
-- `src/components/MaterialsDatabaseView.tsx:57-57#compareList`
+- `src/components/MaterialsDatabaseView.tsx:153-153#Chemical compositions, tensile`
+- `src/components/MaterialsDatabaseView.tsx:58-58#compareList`
 - `src/components/MaterialsDatabaseView.tsx:113-118#compareList.length < 4`
 - `src/components/MaterialsDatabaseView.tsx:373-377#MaterialsPropertyHeatmapD3`
-- `src/components/MaterialsDatabaseView.tsx:403-403#setSelectedMaterial(mat)`
-- `src/components/MaterialsDatabaseView.tsx:484-484#createPipelinePayloadFromMaterialSpec`
-- `src/components/MaterialsDatabaseView.tsx:200-200#setIsCompareOpen(true)`
+- `src/components/MaterialsDatabaseView.tsx:405-405#setSelectedMaterial(mat)`
+- `src/components/MaterialsDatabaseView.tsx:486-486#createPipelinePayloadFromMaterialSpec`
+- `src/components/MaterialsDatabaseView.tsx:202-202#setIsCompareOpen(true)`
 - `src/components/MaterialsDatabaseView.tsx:674-695#setIsCompareOpen(false)`
 - `src/components/MaterialsPropertyHeatmapD3.tsx::MaterialsPropertyHeatmapD3`
 - `src/components/MaterialsPropertyHeatmapD3.tsx::HEATMAP_PROPERTIES`
