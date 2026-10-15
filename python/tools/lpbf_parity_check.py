@@ -54,6 +54,13 @@ observation key), comma-separated or repeated:
   effectiveMode, experimentalValidation, experimentalComparison, unresolvedPhysics,
   opticalOperatorMatched, each with or without .key., and the G9 observation
   in625.validateScreeningAdmission) never drift in ANY case, whatever the allowlist.
+- Error rule (solidification integration contract Revision 1, 6.1, F10): a value that turns into
+  an error never passes, under any entry (whole case, glob or exact), in the three shapes the
+  harness writes: a value becoming {"error": ...} at its key (observe_value); a new key whose
+  value is {"error": ...} (G11 meltpool.{i}, whose success keys vanish); a key ending in
+  ".error" that appears or changes (G16). A recorded error that changes to another error, and a
+  removed observation (<missing>, a deliberate deletion), pass only by an entry naming that
+  exact key.
 - With --allow-environment-mismatch a drift run ends DIAGNOSTIC (exit 3), never PASS.
 
 --record refuses to overwrite an existing golden without --force, and refuses to
@@ -1638,6 +1645,40 @@ def parse_expect_drift(values: Optional[List[str]]) -> List[DriftEntry]:
     return entries
 
 
+# Error rule (solidification integration contract Revision 1, 6.1; F10). The harness records a failed call in three
+# shapes: observe_value stores {"error": text} under the observation's own key; G11 writes meltpool.{i} =
+# {"error": text} while that payload's success keys vanish; G16 writes the plain text under "<prefix>.error". Under
+# every --expect-drift entry, whole case, glob or exact, a value that turns into an error never passes.
+_ABSENT = object()
+
+
+def is_error_observation(value: Any) -> bool:
+    """The observe_value / G11 error shape: a dict carrying an "error" member."""
+    return isinstance(value, dict) and "error" in value
+
+
+def is_error_key(key: str) -> bool:
+    """The G16 error shape: the text of a failed sub-run under "<prefix>.error"."""
+    return key == "error" or key.endswith(".error")
+
+
+def error_rule_problem(key: str, before: Any, after: Any) -> Optional[str]:
+    """Why a diff of ``key`` (before -> after, _ABSENT for a missing side) is an error observation that may never
+    pass under --expect-drift, or None. A removal (after _ABSENT) is not an error; it needs an exact entry."""
+    if after is _ABSENT:
+        return None
+    if is_error_key(key):
+        verb = "new observation" if before is _ABSENT else "changed"
+        return f"{verb} {key}: an error observation (G16 shape) never passes under --expect-drift"
+    if is_error_observation(after):
+        if before is _ABSENT:
+            return (f"new observation {key}: an error observation (G11 shape, the run's success keys vanish) "
+                    "never passes under --expect-drift")
+        if not is_error_observation(before):
+            return f"changed {key}: the value became an error observation, which never passes under --expect-drift"
+    return None
+
+
 def _protected_reason(case_id: str, key: str, entries: List[DriftEntry]) -> Optional[str]:
     if key in REFERENCE_IDENTITY_FLAGS:
         if not any(e.pattern == key for e in entries):
@@ -1757,7 +1798,9 @@ def evaluate_drift(case: Case, outcome: Dict[str, Any], entries: List[DriftEntry
     Returns {"status": PASS|DRIFT|FAIL, "problems": [...], "drift": [records]}. Without an
     entry for the case this is the plain check. With entries, only observation diffs that an
     entry matches and that are not protected may drift; implementation, pin and golden
-    problems always fail; an entry that matches no drifted observation is stale.
+    problems always fail; an entry that matches no drifted observation is stale. The error
+    rule (error_rule_problem) comes first and no entry overrides it; a removed observation and
+    a recorded error that changes pass only by an entry naming that exact key.
     """
     mine = [entry for entry in entries if entry.case_id == case.id]
     if not mine:
@@ -1769,6 +1812,20 @@ def evaluate_drift(case: Case, outcome: Dict[str, Any], entries: List[DriftEntry
     problems = list(outcome["implementationProblems"])
     allowed: List[str] = []
     for key in diff_keys(golden["observations"], outcome["observations"]):
+        before = golden["observations"].get(key, _ABSENT)
+        after = outcome["observations"].get(key, _ABSENT)
+        error_problem = error_rule_problem(key, before, after)
+        if error_problem is not None:
+            problems.append(error_problem)
+            continue
+        exact = any(entry.pattern == key for entry in mine)
+        if after is _ABSENT and not exact:
+            problems.append(f"removed {key}: a removal is allowed only by an entry naming this exact key")
+            continue
+        if is_error_observation(before) and is_error_observation(after) and not exact:
+            problems.append(f"changed {key}: a recorded error that changes is allowed only by an entry naming "
+                            "this exact key")
+            continue
         if key not in golden["observations"]:
             # A first appearance (the golden never recorded this key) is not a drift of a recorded value. An
             # ordinary key is allowed by any matching entry (a new artifact frame under a glob); a key of a
@@ -1893,7 +1950,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                         help="check: planned-drift allowlist; only these cases (or, with :KEY_GLOB, only "
                              "these observations) may differ from their goldens, reported as DRIFT with "
                              "before -> after values; any other diff fails, identity digests and "
-                             "reference-case numerics stay protected, and an entry without drift fails; "
+                             "reference-case numerics stay protected, a value that turns into an error "
+                             "never passes, removals need exact keys, and an entry without drift fails; "
                              "g1/g2/g4 accept only CASE:KEY_GLOB entries")
     args = parser.parse_args(argv)
     if args.expect_drift and not args.check:
