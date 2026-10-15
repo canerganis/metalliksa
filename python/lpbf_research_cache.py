@@ -42,6 +42,8 @@ RESEARCH_SOURCE_FILES = (
     "lpbf_research_context.py",
     "lpbf_research_cache.py",
     "lpbf_research_codes.py",
+    "lpbf_research_manifest.py",
+    "lpbf_research_arm.py",
 )
 
 # Contract 3.6 and 13.13: two complete requests at the 80-arm cap of 5 banded modules plus aggregates

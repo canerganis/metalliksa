@@ -17,9 +17,8 @@ binding change neither requestKey nor any cache key.
 It holds no module-level state: the IPC worker executes it in a fresh namespace per request, and every per-process
 state (cache, identity, priority) lives in lpbf_research_cache. Heavy work runs only under __main__.
 
-The physics evaluator is an injected engine (ResearchEngine below). Phase C supplies it from lpbf_research_manifest
-and lpbf_research_arm; until then the production default has none and every nominal, band or describe request
-answers RESEARCH_EVALUATION_FAILED (request scope). Transport tests inject a deterministic fake engine
+The physics evaluator is an injected engine (ResearchEngine below). The production default is supplied by lpbf_research_manifest
+and lpbf_research_arm. Transport tests inject a deterministic fake engine
 (python/test_lpbf_research_harness.py).
 
 Research only: no served module may import this file, and it never calls calculate_meltpool_physics (R-ISO-1).
@@ -129,7 +128,7 @@ class ResearchEngine(Protocol):
 
 @dataclass(frozen=True)
 class Dependencies:
-    engine: Any                         # ResearchEngine or None (phase B production: no physics evaluator)
+    engine: Any                         # ResearchEngine; tests may inject None to exercise the unavailable-engine guard
     properties: Any                     # lpbf_research_context.PropertyProvider
     identity: Any                       # .identity() -> {research, served}; .check() -> {"stale": bool, ...}
     cache: Any                          # lpbf_research_cache.ResearchLRU
@@ -140,8 +139,9 @@ class Dependencies:
 
 
 def default_dependencies() -> Dependencies:
+    from lpbf_research_arm import Engine
     return Dependencies(
-        engine=None,
+        engine=Engine(),
         properties=research_context.served_property_provider(),
         identity=research_cache.IDENTITY,
         cache=research_cache.CACHE,
@@ -815,7 +815,8 @@ class _Protocol:
         if state != "pending":
             agg_key = research_cache.canonical_sha256({
                 "kind": "aggregate", "prefix": self.prefix(plan.module), "module": plan.module,
-                "bandMethod": BAND_METHOD_ID, "state": state, "arms": [[a, k] for a, k in plan.arm_keys]})
+                "bandMethod": BAND_METHOD_ID, "state": state, "arms": [[a, k] for a, k in plan.arm_keys],
+                "manifest": [arm.get("descriptor") for arm in manifest["arms"]]})
             cached = self.deps.cache.get(agg_key)
             if cached is not None:
                 return cached
@@ -891,6 +892,9 @@ def _labels(block: Mapping | None, table: Mapping[str, str]) -> dict:
         fields = (block.get(module) or {}).get("fields")
         if isinstance(fields, Mapping):
             paths.extend(f"{module}.{name}" for name in fields)
+            for name in fields:
+                prefix = f"{module}.{name}."
+                paths.extend(path for path in table if path.startswith(prefix))
     return {path: table[path] for path in sorted(paths) if path in table}
 
 
@@ -1017,6 +1021,12 @@ def blind_relay_subset(request: Mapping, context, request_key: str, identity: Ma
         values = {}
         for path in spec[section]:
             value = _path_value(block, path)
+            # Numeric bands refer to their container's one manifest (A1/5.3).
+            # Materialize that reference only for the relay's hash projection.
+            if section in ("scored", "context") and isinstance(value, Mapping) and isinstance(value.get("band"), Mapping):
+                manifest = _path_value(block, path.split(".")[0] + ".band.manifest")
+                if "manifest" not in value["band"] and isinstance(manifest, list):
+                    value = {**value, "band": {**value["band"], "manifest": manifest}}
             values[path] = _hash_manifests(value) if section in ("scored", "context") else value
             if section in ("scored", "context"):
                 module, _fields, name = path.split(".")

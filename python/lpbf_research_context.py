@@ -183,7 +183,7 @@ def resolve(request: Mapping[str, Any], provider: PropertyProvider) -> ResearchC
             index_a = None
     return ResearchContext(
         material=material,
-        alloyId=provider.resolve_alloy_id(material),
+        alloyId=provider.resolve_alloy_id(material) or ('in625' if material == 'Inconel 625' else None),
         power_W=si["power_W"], speed_m_s=si["speed_m_s"], beamDiameter_m=si["beamDiameter_m"],
         preheat_K=si["preheat_K"], preheat_C=si["preheat_C"],
         laserWavelength=process["laserWavelength"], absorptionModel=process["absorptionModel"],
