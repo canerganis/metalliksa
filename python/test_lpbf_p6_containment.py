@@ -196,61 +196,59 @@ class NoClippingNoConstantRecoil(unittest.TestCase):
 
 
 class NoFallbackGNoFloorsNoIncline(unittest.TestCase):
+    # SOL-A1 (2026-10-15, solidification integration contract 4.3 item 8): the front is one null container for every
+    # alloy (no admitted liquidus parent); the keyhole leg keeps keyhole-field-inconsistent. The P6 sampler properties
+    # (no tail-length fallback, no floors, no incline multiplier, one-sided surface derivative) stay pinned on
+    # map_solidification_front, which SOL-C serves again.
+    @staticmethod
+    def _codes(kinetics, name="thermalGradient"):
+        return [item["code"] for item in kinetics["quantities"][name]["reasons"]]
+
     def test_keyhole_leg_depth_gives_null_with_reason(self):
         r = run(SOURCED, 400.0, 500.0)
         g = r["meltPoolGeometry"]
         self.assertGreater(g["keyholeVaporCavityDepth_um"], 0.0)
         k = r["solidificationKinetics"]
-        self.assertIsNone(k["gradientSource"])
-        self.assertIs(k["usedFieldMap"], False)
-        self.assertIn("Fabbro keyhole leg", k["unavailableReason"])
-        for key in ("thermalGradient_G_K_m", "thermalGradient_G_K_um", "solidificationRate_R_m_s",
-                    "solidificationRate_R_mm_s", "coolingRate_K_s", "coolingRate_log10", "g_over_r_ratio",
-                    "microstructureMorphology", "primaryDendriteArmSpacing_PDAS_um",
-                    "secondaryDendriteArmSpacing_SDAS_um", "phaseTransformation", "thermalGradientTail_G_K_m"):
-            self.assertIsNone(k[key], key)
+        for name, q in k["quantities"].items():
+            self.assertIsNone(q["value"], name)
+        for name in ("thermalGradient", "normalSpeed", "coolingRate", "gOverR", "pdas", "sdas"):
+            self.assertIn("keyhole-field-inconsistent", self._codes(k, name), name)
+            self.assertIn("missing-source-constant", self._codes(k, name), name)
         self.assertNotIn("solidificationCosTheta", k)
 
-    def test_conduction_case_is_the_conduction_field_interface(self):
+    def test_conduction_case_is_null_with_the_liquidus_parent(self):
         r = run(SOURCED, 100.0, 1200.0)
         self.assertEqual(r["meltPoolGeometry"]["keyholeVaporCavityDepth_um"], 0.0)
         k = r["solidificationKinetics"]
-        self.assertEqual(k["gradientSource"], "conduction-field-interface")
-        self.assertIs(k["usedFieldMap"], True)
-        self.assertIsNone(k["unavailableReason"])
-        self.assertIn("rear liquidus", k["interface"])
-        self.assertGreater(k["thermalGradient_G_K_m"], 0.0)
-        self.assertAlmostEqual(k["coolingRate_log10"], math.log10(k["coolingRate_K_s"]), delta=0.01)
+        self.assertEqual(self._codes(k), ["missing-source-constant"])
+        self.assertIsNone(k["quantities"]["thermalGradient"]["value"])
+        # SYNTH types the liquidus 1300 C over the served 316L value, so the parent is a userInput.
+        self.assertEqual(k["quantities"]["thermalGradient"]["reasons"][0]["parent"],
+                         {"input": "liquidus_K", "kind": "userInput"})
 
     def test_cold_field_is_null_not_tail_length(self):
-        out = sf.evaluate_solidification(lambda x, y, z: 0.0, T_liq=1300.0, v_scan=1.0, x_rear=2e-4,
-                                         search_depth=2e-4, r_beam=4e-5, sdas_B1=40.0, material_name="x",
-                                         t_surface=2000.0, T_sol=1250.0, x_front=8e-5, cos_theta=1.0, pdas_A1=75.0)
-        self.assertIsNone(out["thermalGradient_G_K_m"])
-        self.assertIsNone(out["gradientSource"])
-        self.assertIn("fewer than 3", out["unavailableReason"])
-        self.assertNotEqual(out["gradientSource"], "tail-length-fallback")
+        self.assertIsNone(sf.map_solidification_front(lambda x, y, z: 0.0, 1300.0, 1.0, 2e-4, 2e-4, h_m=1e-6))
         r = run(UNSOURCED, 5.0, 3000.0)
         self.assertEqual(r["meltPoolGeometry"]["extentStatus"], "heuristic-width-fallback")
-        self.assertIsNone(r["solidificationKinetics"]["thermalGradient_G_K_m"])
-        self.assertIn("fewer than 3", r["solidificationKinetics"]["unavailableReason"])
+        self.assertIsNone(r["solidificationKinetics"]["quantities"]["thermalGradient"]["value"])
+        self.assertNotIn("tail-length-fallback", str(r["solidificationKinetics"]))
 
     def test_no_floor_on_r_cooling_or_g_over_r(self):
         # Analytic liquidus plane with a weak +x gradient: n_x = b / sqrt(a^2 + b^2) = 5e-5, so R = v n_x = 5e-5 m/s,
-        # below the former 1e-4 m/s floor; cooling = G R = 1e7 * 5e-5 = 500 K/s; G/R = 2e11.
+        # below the former 1e-4 m/s floor; cooling = G R = 1e7 * 5e-5 = 500 K/s; G/R = 2e11 (on the sampler).
         a, b = 1.0e7, 500.0
 
         def plane(x, y, z):
             return 1300.0 + 1.0 - a * z + b * x
 
-        out = sf.evaluate_solidification(plane, T_liq=1300.0, v_scan=1.0, x_rear=20e-6, search_depth=8e-6,
-                                         r_beam=4.8e-6, sdas_B1=40.0, material_name="x")
+        mapped = sf.map_solidification_front(plane, 1300.0, 1.0, 20e-6, 8e-6, h_m=1.2e-7)
         nx = b / math.hypot(a, b)
-        self.assertAlmostEqual(out["solidificationRate_R_m_s"], nx, delta=1e-9)
-        self.assertLess(out["solidificationRate_R_m_s"], 1.0e-4)
-        self.assertAlmostEqual(out["thermalGradient_G_K_m"], math.hypot(a, b), delta=1.0)
-        self.assertAlmostEqual(out["coolingRate_K_s"], math.hypot(a, b) * nx, delta=1e-3)
-        self.assertAlmostEqual(out["g_over_r_ratio"], math.hypot(a, b) / nx, delta=1e3)
+        self.assertAlmostEqual(mapped["R_median_m_s"], nx, delta=1e-9)
+        self.assertLess(mapped["R_median_m_s"], 1.0e-4)
+        self.assertAlmostEqual(mapped["G_median_K_m"], math.hypot(a, b), delta=1.0)
+        self.assertAlmostEqual(mapped["coolingRate_median_K_s"], math.hypot(a, b) * nx, delta=1e-3)
+        for sample in mapped["samples"]:
+            self.assertAlmostEqual(sample["g_over_r"], math.hypot(a, b) / nx, delta=1e3)
 
     def test_incline_does_not_multiply_r(self):
         base = run(SOURCED, 100.0, 1200.0)["solidificationKinetics"]

@@ -63,7 +63,10 @@ class RosenthalExponentLA2(unittest.TestCase):
         self.assertEqual(g["extentStatus"], "computed")
         # P1 (2026-10-11): no latent factor on the Rosenthal field, 68.3 -> 75.4 um.
         self.assertAlmostEqual(g["width_um"], 60.3, delta=0.2)  # P7b (2026-10-14): A 0.32, melting-point k / cp (P1: 75.4)
-        self.assertGreater(r["solidificationKinetics"]["coolingRate_K_s"], 1.0e5)
+        # SOL-A1 (2026-10-15): no admitted liquidus parent, so the front cooling rate is null with the liquidus reason.
+        cooling = r["solidificationKinetics"]["quantities"]["coolingRate"]
+        self.assertIsNone(cooling["value"])
+        self.assertEqual(cooling["reasons"][0]["code"], "missing-source-constant")
 
 
 class PeakTemperatureLabelD1(unittest.TestCase):

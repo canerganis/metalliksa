@@ -76,7 +76,8 @@ class FrontSamplingKS1(unittest.TestCase):
 
 class CitationsKS8(unittest.TestCase):
     def test_dois_are_the_crossref_resolving_ones(self):
-        self.assertEqual(sf.HUNT_DOI, "10.1016/0025-5416(84)90201-5")
+        # SOL-A1 (2026-10-15, SPEC A3.A3): no Hunt DOI on a null front block; the front module carries none.
+        self.assertFalse(hasattr(sf, "HUNT_DOI"))
         self.assertEqual(_MICROSTRUCTURE_DOI, {
             "pdas": "10.1007/BF02648950",
             "sdas": "10.1016/0025-5416(85)90319-2",

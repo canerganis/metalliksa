@@ -11,8 +11,8 @@ Simulates:
    (P6 containment 2026-10-11: no wall closure), an onset status string is served instead
 5. Comprehensive defect analytics: Lack of Fusion (LoF), Keyhole Porosity, Plateau-Rayleigh Balling
    (powder denudation width is served null: uncited heuristic, G1 audit B05)
-6. Solidification kinetics on the conduction-field interface: G, R, cooling rate G*R, Hunt morphology, PDAS & SDAS,
-   null with a reason where the served depth comes from the Fabbro keyhole leg or the interface is not sampled
+6. Solidification front container (SOL-A1, 2026-10-15): G, R, cooling rate, G/R, PDAS, SDAS, morphology and the
+   transformation note are null with reason codes for every alloy until an admitted liquidus parent exists
 7. Full 2D Power-Velocity (P-V) Process Window map generation
 """
 
@@ -34,7 +34,7 @@ from four_alloy_materials import (ABSORPTIVITY_BASIS_UNSOURCED, ABSORPTIVITY_IND
                                   melt_point_properties, resolve_alloy_id, thermal_props)
 from in625_thermal_material import LATENT_HEAT_J_KG as IN625_LATENT_HEAT_J_KG
 from goldak_solver import GoldakField, MODEL_ID as GOLDAK_MODEL_ID, seed_goldak_axes
-from solidification_front import MODEL_ID as SOLIDIFICATION_MODEL_ID, evaluate_solidification
+from solidification_front import evaluate_solidification
 from marangoni_screening import (BAND_BASIS as MARANGONI_BAND_BASIS, MODEL_ID as MARANGONI_MODEL_ID,
                                  SURFACE_VELOCITY_DOI as MARANGONI_SURFACE_VELOCITY_DOI,
                                  marangoni_flow_direction, marangoni_screening)
@@ -1190,9 +1190,11 @@ def calculate_meltpool_physics(
 
     # C) Powder denudation width: served null (uncited heuristic, G1 audit B05; P6 containment).
 
-    # 10. Solidification kinetics on the conduction-field interface (rear liquidus, G = |∇T|, R = v n_x); null with a
-    # reason where the served depth comes from the Fabbro keyhole leg or fewer than 3 samples exist (P6).
-    sol = evaluate_solidification(
+    # 10. Solidification front (SOL-A1, 2026-10-15; solidification integration contract 4.2, 4.3 item 8, 7.1): one
+    # quantity container. No served liquidus is an admitted parent, so every front quantity is null with reason codes
+    # (missing-source-constant naming the liquidus input; keyhole-field-inconsistent on the Fabbro keyhole leg). The
+    # container is written to the result only; nothing here feeds W, D, the regime, the verdict or the process window.
+    solidification_kinetics = evaluate_solidification(
         T_field,
         T_liq=T_liq,
         v_scan=v_scan,
@@ -1201,20 +1203,11 @@ def calculate_meltpool_physics(
         r_beam=r_beam,
         material_name=material_name,
         depth_from_keyhole_leg=bool(fabbro["depth_m"] > d_iso),
+        authority_liquidus_C=base["liquidus_C"],
     )
-    # P7a: pdas_A1 and sdas_B1 of the property set are no longer passed (unused since P7a; the keys stay in the
-    # authority so no material hash moves). PDAS is the sourced Ni-Nb band or null; SDAS is null (no sourced B1).
 
     def _opt(value, digits):
         return None if value is None else round(float(value), digits)
-
-    thermal_gradient_G_K_m = sol["thermalGradient_G_K_m"]
-    solidification_rate_R_m_s = sol["solidificationRate_R_m_s"]
-    cooling_rate_K_s = sol["coolingRate_K_s"]
-    g_over_r = sol["g_over_r_ratio"]
-    morphology = sol["microstructureMorphology"]
-    pdas_um = sol["primaryDendriteArmSpacing_PDAS_um"]
-    sdas_um = sol["secondaryDendriteArmSpacing_SDAS_um"]
 
     # 11. Residual stress and distortion: unavailable since P7a (2026-10-11, G1 audit B08/B09). The former
     # 0.72 E alpha dT / (1 - nu) and the index (layer / 40 um) / 420 MPa were unsourced; Mercelis and Kruth 2006 Sec. 2
@@ -1560,35 +1553,9 @@ def calculate_meltpool_physics(
             "distortionIndexBasis": DISTORTION_INDEX_BASIS,
             "stressUnavailableReason": STRESS_UNAVAILABLE_REASON,
         },
-        "solidificationKinetics": {
-            "modelId": SOLIDIFICATION_MODEL_ID,
-            "gradientSource": sol.get("gradientSource"),
-            "usedFieldMap": bool(sol.get("usedFieldMap")),
-            "interface": sol.get("interface"),
-            "unavailableReason": sol.get("unavailableReason"),
-            "thermalGradient_G_K_m": _opt(thermal_gradient_G_K_m, 0),
-            "thermalGradient_G_K_um": None if thermal_gradient_G_K_m is None else round(thermal_gradient_G_K_m * 1e-6, 3),
-            "thermalGradientTail_G_K_m": _opt(sol.get("G_tail_K_m"), 0),
-            "solidificationRate_R_m_s": _opt(solidification_rate_R_m_s, 3),
-            "solidificationRate_R_mm_s": None if solidification_rate_R_m_s is None else round(solidification_rate_R_m_s * 1e3, 1),
-            "coolingRate_K_s": _opt(cooling_rate_K_s, 0),
-            "coolingRate_log10": None if cooling_rate_K_s is None else round(math.log10(cooling_rate_K_s), 2),
-            "g_over_r_ratio": _opt(g_over_r, 0),
-            "microstructureMorphology": morphology,
-            "primaryDendriteArmSpacing_PDAS_um": _opt(pdas_um, 2),
-            "pdasBand_um": sol.get("pdasBand_um"),
-            "pdasBasis": sol.get("pdasBasis"),
-            "pdasOutOfRange": sol.get("pdasOutOfRange"),
-            "pdasUnavailableReason": sol.get("pdasUnavailableReason"),
-            "secondaryDendriteArmSpacing_SDAS_um": _opt(sdas_um, 2),
-            "sdasUnavailableReason": sol.get("sdasUnavailableReason"),
-            "phaseTransformation": sol.get("phaseTransformation"),
-            "frontPointCount": sol.get("frontPointCount"),
-            "tail": sol.get("tail"),
-            "bottom": sol.get("bottom"),
-            "doi": sol.get("doi"),
-            "disclaimer": sol.get("disclaimer"),
-        },
+        # SOL-A1: the front container of solidification_front.evaluate_solidification (its modelId is
+        # solidification_front.MODEL_ID), full precision, no flat numeric keys, codes only (contract 4.1 item 6).
+        "solidificationKinetics": solidification_kinetics,
         "geometricContours": {
             "topDownXY": top_down_contour,
             "longitudinalXZ": longitudinal_contour,
