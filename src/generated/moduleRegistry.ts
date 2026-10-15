@@ -25,6 +25,14 @@ export interface ContractAuthority {
   readonly kind: AuthorityKind; readonly script: string | null; readonly workerMethod: string | null;
   readonly timeoutMs: number | null; readonly gpu: GpuMode; readonly warm: boolean; readonly exceptionReason: string | null;
 }
+export interface ContractQuantityDeclaration {
+  readonly path: string; readonly definition: string; readonly unit: string;
+  readonly statuses: readonly string[]; readonly sourceEvidenceKinds: readonly string[];
+  readonly reasonCodes: readonly string[]; readonly fractionBasis: string | null; readonly leafRole: string;
+}
+export interface ContractObservationDeclaration {
+  readonly path: string; readonly observable: string; readonly sourceEvidenceKinds: readonly string[];
+}
 export interface ContractOperation {
   readonly id: string; readonly method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | null; readonly route: string | null;
   readonly authority: ContractAuthority;
@@ -35,6 +43,8 @@ export interface ContractOperation {
     readonly transportValues: Readonly<Record<string, readonly string[]>>;
     readonly transportObjects: Readonly<Record<string, Readonly<Record<string, readonly string[]>>>>;
   } | null;
+  readonly quantities: readonly ContractQuantityDeclaration[];
+  readonly observations: readonly ContractObservationDeclaration[];
 }
 export interface ContractValidityDomain {
   readonly ranges: readonly { readonly key: string; readonly min: number; readonly max: number; readonly unit: string }[];
@@ -160,7 +170,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-estimate",
@@ -177,7 +189,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-job-submit",
@@ -194,7 +208,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-job-repeat",
@@ -211,7 +227,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-job-status",
@@ -228,7 +246,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-job-cancel",
@@ -245,7 +265,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-job-artifact",
@@ -262,7 +284,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-thermal-solver",
@@ -279,7 +303,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-calibrated-meltpool",
@@ -296,7 +322,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-machine-calibrated-meltpool",
@@ -313,7 +341,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-machine-calibration-status",
@@ -330,7 +360,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "stl-slicer-build-time",
@@ -347,7 +379,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-source-catalog",
@@ -364,7 +398,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "lpbf-run-archive",
@@ -381,7 +417,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -485,7 +523,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "process-window",
@@ -532,7 +572,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -664,7 +706,9 @@ export const MODULE_REGISTRY = {
               ]
             },
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "gr-solidification",
@@ -717,7 +761,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -809,7 +855,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -1133,7 +1181,9 @@ export const MODULE_REGISTRY = {
               ]
             },
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -1236,7 +1286,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -1334,7 +1386,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -1428,7 +1482,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "filter-by-category",
@@ -1484,7 +1540,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "filter-by-min-yield-strength",
@@ -1527,7 +1585,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "filter-by-min-modulus",
@@ -1570,7 +1630,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "filter-by-max-density",
@@ -1613,7 +1675,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "reset-property-range-filters",
@@ -1642,7 +1706,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "toggle-property-filter-panel",
@@ -1666,7 +1732,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "switch-view-mode",
@@ -1712,7 +1780,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "sort-catalog",
@@ -1781,7 +1851,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "select-material-record",
@@ -1807,7 +1879,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "toggle-comparison-record",
@@ -1833,7 +1907,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "open-comparison-drawer",
@@ -1857,7 +1933,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "close-comparison-drawer",
@@ -1881,7 +1959,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "copy-selected-record",
@@ -1906,7 +1986,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "export-catalog-json",
@@ -1930,7 +2012,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "open-transfer-picker",
@@ -1954,7 +2038,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "dispatch-material-to-module",
@@ -2000,7 +2086,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "render-heatmap",
@@ -2028,7 +2116,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "set-heatmap-mode",
@@ -2074,7 +2164,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "set-heatmap-property",
@@ -2125,7 +2217,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "set-heatmap-element",
@@ -2185,7 +2279,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "sort-heatmap-alloys",
@@ -2233,7 +2329,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "set-heatmap-palette",
@@ -2282,7 +2380,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "select-heatmap-element-from-axis",
@@ -2309,7 +2409,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "select-heatmap-property-from-axis",
@@ -2336,7 +2438,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "select-composition-cell",
@@ -2364,7 +2468,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "select-binned-bucket",
@@ -2390,7 +2496,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "select-scatter-point",
@@ -2416,7 +2524,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "inspect-composition-cell",
@@ -2452,7 +2562,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "inspect-binned-cell",
@@ -2484,7 +2596,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "clear-heatmap-tooltip",
@@ -2508,7 +2622,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "export-heatmap-svg",
@@ -2535,7 +2651,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -2673,7 +2791,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "calphad-minimize",
@@ -2955,7 +3075,9 @@ export const MODULE_REGISTRY = {
                 ]
               }
             }
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "client-screening",
@@ -3068,7 +3190,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -3171,7 +3295,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "research-registry-save",
@@ -3188,7 +3314,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "research-search",
@@ -3205,7 +3333,9 @@ export const MODULE_REGISTRY = {
           },
           "input": [],
           "undeclaredInput": [],
-          "output": null
+          "output": null,
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -3300,7 +3430,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "navigate-to-measurement-entry",
@@ -3326,7 +3458,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "navigate-to-research-registry",
@@ -3352,7 +3486,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "export-evidence-package",
@@ -3388,7 +3524,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -3506,7 +3644,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "navigate-to-research-registry",
@@ -3532,7 +3672,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         },
         {
           "id": "export-evidence-package",
@@ -3568,7 +3710,9 @@ export const MODULE_REGISTRY = {
             "statusKey": null,
             "transportValues": {},
             "transportObjects": {}
-          }
+          },
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,

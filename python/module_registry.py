@@ -2,7 +2,8 @@
 
 Holds one ``ModuleContract`` per product module and emits the committed
 frontend artifacts ``src/generated/moduleRegistry.json`` and
-``src/generated/moduleRegistry.ts``.
+``src/generated/moduleRegistry.ts``, plus the quantity envelope vocabularies
+(python/quantity_envelope.py) as ``src/generated/quantityEnvelope.ts``.
 
 Migration step 0 generated one ``legacy`` contract per navigation module from
 ``python/module_registry_seed.json``. Since Phase 7 slice 1 the registry is the
@@ -43,6 +44,7 @@ from module_contracts_database import build_database_contract
 from module_contracts_calphad import build_calphad_contract
 from module_contracts_evidence import build_experimental_data_contract, build_traceability_contract
 from module_contracts_lpbf_secondary import build_lpbf_optimizer_contract, build_solidification_microstructure_contract
+import quantity_envelope
 
 PYTHON_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PYTHON_DIR.parent
@@ -50,6 +52,8 @@ SEED_PATH = PYTHON_DIR / "module_registry_seed.json"
 APP_TSX = REPO_ROOT / "src" / "App.tsx"
 GENERATED_JSON = REPO_ROOT / "src" / "generated" / "moduleRegistry.json"
 GENERATED_TS = REPO_ROOT / "src" / "generated" / "moduleRegistry.ts"
+# Quantity envelope vocabularies (contract 4.1 item 3), sentence templates included.
+GENERATED_ENVELOPE_TS = REPO_ROOT / "src" / "generated" / "quantityEnvelope.ts"
 # Small eager slice (navigation + badge data). The full GENERATED_TS is imported lazily by the
 # app (src/modules/registry.ts loadModuleContractDetails) to keep the entry chunk small.
 GENERATED_CORE_TS = REPO_ROOT / "src" / "generated" / "moduleRegistryCore.ts"
@@ -689,6 +693,14 @@ def render_ts(document: dict) -> str:
         "  readonly kind: AuthorityKind; readonly script: string | null; readonly workerMethod: string | null;",
         "  readonly timeoutMs: number | null; readonly gpu: GpuMode; readonly warm: boolean; readonly exceptionReason: string | null;",
         "}",
+        "export interface ContractQuantityDeclaration {",
+        "  readonly path: string; readonly definition: string; readonly unit: string;",
+        "  readonly statuses: readonly string[]; readonly sourceEvidenceKinds: readonly string[];",
+        "  readonly reasonCodes: readonly string[]; readonly fractionBasis: string | null; readonly leafRole: string;",
+        "}",
+        "export interface ContractObservationDeclaration {",
+        "  readonly path: string; readonly observable: string; readonly sourceEvidenceKinds: readonly string[];",
+        "}",
         "export interface ContractOperation {",
         f"  readonly id: string; readonly method: {_union(HTTP_METHODS)} | null; readonly route: string | null;",
         "  readonly authority: ContractAuthority;",
@@ -699,6 +711,8 @@ def render_ts(document: dict) -> str:
         "    readonly transportValues: Readonly<Record<string, readonly string[]>>;",
         "    readonly transportObjects: Readonly<Record<string, Readonly<Record<string, readonly string[]>>>>;",
         "  } | null;",
+        "  readonly quantities: readonly ContractQuantityDeclaration[];",
+        "  readonly observations: readonly ContractObservationDeclaration[];",
         "}",
         "export interface ContractValidityDomain {",
         "  readonly ranges: readonly { readonly key: string; readonly min: number; readonly max: number; readonly unit: string }[];",
@@ -806,6 +820,20 @@ def render_module_doc(contract: ModuleContract) -> str:
                 lines += ["", f"`{key}` is an object-valued transport inventory, not evidence or a full metadata schema:"]
                 for path, values in members:
                     lines += [f"- `{path}`: " + ", ".join(f"`{v}`" for v in values) + "."]
+        if op.quantities:
+            lines += ["", f"Envelope quantities (`{quantity_envelope.ENVELOPE_SCHEMA}`; each container states the "
+                          f"module ceiling {quantity_envelope.MODULE_EVIDENCE_CEILING}; per-value source labels are "
+                          "not module evidence):"]
+            for q in op.quantities:
+                lines += [f"- `{q.path}`: {q.definition} ({q.unit}); statuses "
+                          + ", ".join(f"`{s}`" for s in q.statuses) + "; source labels "
+                          + (", ".join(q.source_evidence_kinds) or "none") + "; reasons "
+                          + (", ".join(f"`{c}`" for c in q.reason_codes) or "none")
+                          + (f"; fraction basis {q.fraction_basis}" if q.fraction_basis else "") + "."]
+        if op.observations:
+            lines += ["", "Observation records (transcribed source observations, not results):"]
+            for o in op.observations:
+                lines += [f"- `{o.path}`: {o.observable}; " + ", ".join(o.source_evidence_kinds) + "."]
     e = c.evidence
     oracle = (f"present, `{c.tests.oracle.ref}`" if c.tests.oracle.status == "present"
               else f"pending (ceiling capped at {PENDING_ORACLE_CEILING})")
@@ -918,11 +946,47 @@ def render_core_ts(document: dict) -> str:
     return "\n".join(lines)
 
 
+def render_envelope_ts(document: dict) -> str:
+    """src/generated/quantityEnvelope.ts: the closed envelope vocabularies; src/data/quantityEnvelope.ts parses."""
+    body = json.dumps(document, indent=2, ensure_ascii=False)
+    lines = [
+        "// GENERATED by python/module_registry.py from python/quantity_envelope.py. Do not edit by hand.",
+        "// Regenerate: python -m module_contract emit (from python/) or python scripts/emit-module-registry.py",
+        "// Quantity envelope v1 vocabularies (solidification integration contract, section 4). Every English",
+        "// sentence and label here is a draft pending the maintainer's wording round (MD2).",
+        "",
+        f"export const QUANTITY_ENVELOPE = {body} as const;",
+        "",
+        "export type QuantityEnvelopeVocabulary = typeof QUANTITY_ENVELOPE;",
+        "export type QuantityStatus = (typeof QUANTITY_ENVELOPE.statuses)[number];",
+        "export type ReasonCode = (typeof QUANTITY_ENVELOPE.reasonCodes)[number];",
+        "export type QuantityDefinitionId = keyof typeof QUANTITY_ENVELOPE.quantityDefinitions;",
+        "export type QuantityUnit = (typeof QUANTITY_ENVELOPE.units)[number];",
+        "export type UncertaintyKind = (typeof QUANTITY_ENVELOPE.uncertaintyKinds)[number];",
+        "export type FractionBasis = (typeof QUANTITY_ENVELOPE.fractionBases)[number];",
+        "export type NumericalState = (typeof QUANTITY_ENVELOPE.numericalStates)[number];",
+        "export type ReadLevel = (typeof QUANTITY_ENVELOPE.readLevels)[number];",
+        "export type SourceEvidenceKind = (typeof QUANTITY_ENVELOPE.sourceEvidenceKinds)[number];",
+        "export type QuantitySourceEvidenceKind = (typeof QUANTITY_ENVELOPE.quantitySourceEvidenceKinds)[number];",
+        "export type ObservationSourceEvidenceKind = (typeof QUANTITY_ENVELOPE.observationSourceEvidenceKinds)[number];",
+        "export type LeafRole = (typeof QUANTITY_ENVELOPE.leafRoles)[number];",
+        "export type InputKind = (typeof QUANTITY_ENVELOPE.inputKinds)[number];",
+        "export type InputStatus = (typeof QUANTITY_ENVELOPE.inputStatuses)[number];",
+        "export type InputPhase = (typeof QUANTITY_ENVELOPE.inputPhases)[number];",
+        "export type FollowState = (typeof QUANTITY_ENVELOPE.followStates)[number];",
+        "export type Comparability = (typeof QUANTITY_ENVELOPE.comparability)[number];",
+        "export type ModuleMaturityEcho = (typeof QUANTITY_ENVELOPE.moduleMaturities)[number];",
+        "",
+    ]
+    return "\n".join(lines)
+
+
 def rendered_outputs() -> Dict[Path, str]:
     contracts = build_registry()
     document = registry_document(contracts)
     outputs = {GENERATED_JSON: render_json(document), GENERATED_TS: render_ts(document),
-               GENERATED_CORE_TS: render_core_ts(document)}
+               GENERATED_CORE_TS: render_core_ts(document),
+               GENERATED_ENVELOPE_TS: render_envelope_ts(quantity_envelope.typescript_document())}
     for contract in contracts:
         if contract.migration_state == "contracted":
             outputs[REPO_ROOT / module_doc_path(contract.id)] = render_module_doc(contract)
