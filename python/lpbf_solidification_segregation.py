@@ -622,7 +622,8 @@ def _segregation_envelope(result: Dict[str, Any]) -> Dict[str, Any]:
             row = point.get(kind) or {}
             name = point["label"] + ("Binary" if kind == "binaryUpperBound" else "Ternary")
             if row.get("fGammaLavesConstituent") is None:
-                quantities[name] = unavailable("scheil-phase-inventory", [reason("missing-source-bound-model")])
+                quantities[name] = unavailable("scheil-phase-inventory", [reason("missing-source-bound-model")],
+                                               depends_on=("composition", "sourceCoefficients"))
                 continue
             inventory = {"gammaLavesConstituent": row["fGammaLavesConstituent"]}
             if row.get("fGammaNbCConstituent") is not None:
@@ -636,7 +637,8 @@ def _segregation_envelope(result: Dict[str, Any]) -> Dict[str, Any]:
     if not quantities:
         quantities["phaseInventory"] = unavailable("scheil-phase-inventory", result.get("reasons") or
                                                    [reason("missing-source-bound-model")],
-                                                   status=result.get("status", "unavailable"))
+                                                   status=result.get("status", "unavailable"),
+                                                   depends_on=("composition", "sourceCoefficients"))
     observations = {}
     if result.get("alloyId") == "in625":
         observations["edsNbMassFraction"] = observation(
@@ -1032,7 +1034,7 @@ def _rapid_point(nb: float, c_max: Optional[float], cset) -> Dict[str, Any]:
 
 def _rapid_solidification(alloy_id: str, microstructure: Optional[Mapping[str, Any]]) -> Dict[str, Any]:
     base = _rapid_base()
-    from quantity_envelope import container, reason, reason_text, unavailable
+    from quantity_envelope import container, input_record, reason, reason_text, unavailable
     quantities = microstructure.get("quantities", {}) if isinstance(microstructure, Mapping) else {}
     normal_speed = quantities.get("normalSpeed", {})
     status = normal_speed.get("status")
@@ -1040,7 +1042,11 @@ def _rapid_solidification(alloy_id: str, microstructure: Optional[Mapping[str, A
     if status not in ("computed", "partial") or not (isinstance(r, (int, float)) and not isinstance(r, bool)
                                                     and math.isfinite(r) and r > 0):
         return {**base, "status": "unavailable", "reason": reason_text("parent-unavailable"), "R_m_s": None,
-                **container({"fraction": unavailable("laves-trapped-scheil-fraction", [reason("parent-unavailable")])})}
+                **container({"fraction": unavailable("laves-trapped-scheil-fraction", [reason("parent-unavailable")],
+                            depends_on=("interfaceSample",))}, input_provenance={"interfaceSample":
+                            input_record("declaredAssumption", "request:interface-sample",
+                            status="outOfRange", declaration_locator="python/lpbf_solidification_segregation.py#_rapid_solidification",
+                            scope="missing-admitted-normal-speed")})}
     cset, band, c_max = _rapid_inputs(alloy_id)
     k_e = _value(cset, "k_gamma_Nb")
     by_vd = []

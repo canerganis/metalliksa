@@ -154,8 +154,12 @@ def laves_trapping(alloy_id: str, r_points: Mapping[str, Optional[float]]) -> Di
 
 
 def _dependent_block(definition: str, name: str, code: str) -> Dict[str, Any]:
-    from quantity_envelope import container, reason, unavailable
-    return {"status": "unavailable", **container({name: unavailable(definition, [reason(code)])})}
+    from quantity_envelope import container, input_record, reason, unavailable
+    inputs = {"frontAdmission": input_record("declaredAssumption", "thermal.solidificationKinetics",
+              status="outOfRange", declaration_locator="python/lpbf_gr_solidification.py#couple_thermal_block",
+              scope="unadmitted-front-parent")}
+    return {"status": "unavailable", **container({name: unavailable(definition, [reason(code)],
+            depends_on=("frontAdmission",))}, input_provenance=inputs)}
 
 
 def _unavailable_body(status: str, reason: str) -> Dict[str, Any]:

@@ -333,10 +333,20 @@
     "quantityDefinition": "front-morphology",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "liquidus_K"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
      {
       "code": "missing-source-bound-model",
       "params": {},
@@ -371,10 +381,20 @@
     "quantityDefinition": "solid-state-transformation",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "liquidus_K"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
      {
       "code": "missing-thermal-history",
       "params": {},
@@ -801,10 +821,25 @@
     "quantityDefinition": "front-morphology",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "liquidus_K"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "keyhole-field-inconsistent",
+      "params": {},
+      "parent": null
+     },
      {
       "code": "missing-source-bound-model",
       "params": {},
@@ -839,10 +874,25 @@
     "quantityDefinition": "solid-state-transformation",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "liquidus_K"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "keyhole-field-inconsistent",
+      "params": {},
+      "parent": null
+     },
      {
       "code": "missing-thermal-history",
       "params": {},
@@ -1239,10 +1289,20 @@
     "quantityDefinition": "front-morphology",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "liquidus_K"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
      {
       "code": "missing-source-bound-model",
       "params": {},
@@ -1277,10 +1337,20 @@
     "quantityDefinition": "solid-state-transformation",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "liquidus_K"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
      {
       "code": "missing-thermal-history",
       "params": {},
@@ -1677,10 +1747,20 @@
     "quantityDefinition": "front-morphology",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "liquidus_K"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
      {
       "code": "missing-source-bound-model",
       "params": {},
@@ -1715,10 +1795,20 @@
     "quantityDefinition": "solid-state-transformation",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "liquidus_K"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
      {
       "code": "missing-thermal-history",
       "params": {},
@@ -1793,7 +1883,9 @@
     "quantityDefinition": "liquidus-front-thermal-gradient",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "frontRequest"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
@@ -1831,7 +1923,9 @@
     "quantityDefinition": "liquidus-front-normal-speed",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "frontRequest"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
@@ -1869,7 +1963,9 @@
     "quantityDefinition": "liquidus-front-cooling-rate",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "frontRequest"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
@@ -1907,7 +2003,9 @@
     "quantityDefinition": "liquidus-front-g-over-r",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "frontRequest"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
@@ -1945,7 +2043,9 @@
     "quantityDefinition": "pdas-model-alternatives",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "frontRequest"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
@@ -1983,7 +2083,9 @@
     "quantityDefinition": "sdas",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "frontRequest"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
@@ -2021,7 +2123,9 @@
     "quantityDefinition": "front-morphology",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "frontRequest"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
@@ -2059,7 +2163,9 @@
     "quantityDefinition": "solid-state-transformation",
     "leafRole": "derived",
     "sourceEvidenceKind": null,
-    "dependsOn": [],
+    "dependsOn": [
+     "frontRequest"
+    ],
     "weakestInputs": [],
     "labelSources": [],
     "reasons": [
@@ -2089,6 +2195,27 @@
      "model": null,
      "parent": null
     }
+   }
+  },
+  "inputProvenance": {
+   "frontRequest": {
+    "kind": "declaredAssumption",
+    "label": "declared assumption (no source)",
+    "sourceId": "request:front-admission",
+    "sourceLocator": null,
+    "declarationLocator": "python/lpbf_solidification_microstructure.py",
+    "source": null,
+    "scope": "unadmitted-front-request",
+    "status": "outOfRange",
+    "sourceEvidenceKind": "Unresolved",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
    }
   },
   "status": "unavailable",

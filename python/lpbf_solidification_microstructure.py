@@ -14,11 +14,19 @@ _BUILD_JOB_PROJECTION_NOTE = "thermal.solidificationKinetics"
 _SCREENING_PROJECTION_NOTE = _BUILD_JOB_PROJECTION_NOTE
 
 
+def _refused_front(code: str) -> Dict[str, Any]:
+    from quantity_envelope import container, input_record, reason, unavailable
+    from solidification_front import FRONT_QUANTITIES
+    inputs = {"frontRequest": input_record("declaredAssumption", "request:front-admission",
+              status="outOfRange", declaration_locator="python/lpbf_solidification_microstructure.py",
+              scope="unadmitted-front-request")}
+    return container({name: unavailable(definition, [reason(code)], depends_on=("frontRequest",))
+                      for name, (definition, _) in FRONT_QUANTITIES.items()}, input_provenance=inputs)
+
+
 def project_build_job_microstructure(thermal: Dict[str, Any], *, note: str = _BUILD_JOB_PROJECTION_NOTE) -> Dict[str, Any]:
     """Copy the admitted front container, without a second estimate or legacy-key fallback."""
     import copy
-    from quantity_envelope import container, reason, unavailable
-    from solidification_front import FRONT_QUANTITIES
 
     kin = thermal.get("solidificationKinetics") if isinstance(thermal, dict) else None
     if isinstance(kin, dict) and isinstance(kin.get("quantities"), dict):
@@ -26,8 +34,7 @@ def project_build_job_microstructure(thermal: Dict[str, Any], *, note: str = _BU
                                                          "moduleMaturity", "quantities", "inputProvenance",
                                                          "modelId", "alloyId") if key in kin})
     else:
-        block = container({name: unavailable(definition, [reason("parent-unavailable")])
-                           for name, (definition, _) in FRONT_QUANTITIES.items()})
+        block = _refused_front("parent-unavailable")
     states = [q.get("status") for q in block["quantities"].values()]
     block["status"] = ("computed" if all(s == "computed" for s in states) else
                        "partial" if any(s in ("computed", "partial") for s in states) else "unavailable")
@@ -58,12 +65,9 @@ _SCREENING_INPUTS = (
 
 
 def _unavailable_screening(reason: str, heat_source: Any = None) -> Dict[str, Any]:
-    from quantity_envelope import reason as envelope_reason, unavailable
-    from solidification_front import FRONT_QUANTITIES
     block = project_build_job_microstructure({})
     block.update(source="none", heatSourceModel=heat_source if isinstance(heat_source, str) else None)
-    block["quantities"] = {name: unavailable(definition, [envelope_reason("nonphysical-input")])
-                           for name, (definition, _) in FRONT_QUANTITIES.items()}
+    block.update(_refused_front("nonphysical-input"))
     return block
 
 
@@ -138,10 +142,7 @@ def compute_solidification_microstructure(
     cfd_result: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     """Refuse the retired CFD numerical path, including an explicitly empty CFD payload."""
-    from quantity_envelope import reason, unavailable
-    from solidification_front import FRONT_QUANTITIES
     block = project_build_job_microstructure({})
     block["source"] = "none"
-    block["quantities"] = {name: unavailable(definition, [reason("quarantined-legacy-path")])
-                           for name, (definition, _) in FRONT_QUANTITIES.items()}
+    block.update(_refused_front("quarantined-legacy-path"))
     return block

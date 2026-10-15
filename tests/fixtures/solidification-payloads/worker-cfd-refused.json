@@ -1,11 +1,34 @@
 {
+  "inputProvenance": {
+    "frontRequest": {
+      "declarationLocator": "python/lpbf_solidification_microstructure.py",
+      "defaultKind": null,
+      "defaultValue": null,
+      "dependsOn": [],
+      "followState": null,
+      "followsInput": null,
+      "kind": "declaredAssumption",
+      "label": "declared assumption (no source)",
+      "phase": null,
+      "referenceTemperature_K": null,
+      "scope": "unadmitted-front-request",
+      "source": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceId": "request:front-admission",
+      "sourceLocator": null,
+      "sourceRange_K": null,
+      "status": "outOfRange"
+    }
+  },
   "moduleEvidenceCeiling": "screening-only",
   "moduleMaturity": "Research",
   "normalizedEnthalpy": null,
   "quantities": {
     "coolingRate": {
       "assumptions": [],
-      "dependsOn": [],
+      "dependsOn": [
+        "frontRequest"
+      ],
       "fractionBasis": null,
       "identity": {
         "input": null,
@@ -43,7 +66,9 @@
     },
     "gOverR": {
       "assumptions": [],
-      "dependsOn": [],
+      "dependsOn": [
+        "frontRequest"
+      ],
       "fractionBasis": null,
       "identity": {
         "input": null,
@@ -81,7 +106,9 @@
     },
     "morphology": {
       "assumptions": [],
-      "dependsOn": [],
+      "dependsOn": [
+        "frontRequest"
+      ],
       "fractionBasis": null,
       "identity": {
         "input": null,
@@ -119,7 +146,9 @@
     },
     "normalSpeed": {
       "assumptions": [],
-      "dependsOn": [],
+      "dependsOn": [
+        "frontRequest"
+      ],
       "fractionBasis": null,
       "identity": {
         "input": null,
@@ -157,7 +186,9 @@
     },
     "pdas": {
       "assumptions": [],
-      "dependsOn": [],
+      "dependsOn": [
+        "frontRequest"
+      ],
       "fractionBasis": null,
       "identity": {
         "input": null,
@@ -195,7 +226,9 @@
     },
     "sdas": {
       "assumptions": [],
-      "dependsOn": [],
+      "dependsOn": [
+        "frontRequest"
+      ],
       "fractionBasis": null,
       "identity": {
         "input": null,
@@ -233,7 +266,9 @@
     },
     "solidStateTransformation": {
       "assumptions": [],
-      "dependsOn": [],
+      "dependsOn": [
+        "frontRequest"
+      ],
       "fractionBasis": null,
       "identity": {
         "input": null,
@@ -271,7 +306,9 @@
     },
     "thermalGradient": {
       "assumptions": [],
-      "dependsOn": [],
+      "dependsOn": [
+        "frontRequest"
+      ],
       "fractionBasis": null,
       "identity": {
         "input": null,

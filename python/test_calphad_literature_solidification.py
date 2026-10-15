@@ -9,6 +9,7 @@ from pathlib import Path
 
 import calphad_solver
 import lpbf_solidification_segregation as seg
+from quantity_envelope import envelope_problems
 
 HERE = Path(__file__).resolve().parent
 # With pycalphad installed (default runtime since the MatCalc TDBs), the subprocess runs a real IN718/IN625
@@ -33,9 +34,11 @@ class LiteratureSolidificationTests(unittest.TestCase):
     def test_block_matches_segregation_estimate_for_in718(self):
         b = calphad_solver.literature_solidification_block("in718")
         est = seg.segregation_estimate("in718")
-        self.assertEqual(b["status"], "available")
+        self.assertEqual(b["status"], "computed")
         self.assertFalse(b["isCalphad"])
-        self.assertEqual(b["evidenceLabel"], est["evidenceLabel"])
+        self.assertEqual(b["quantities"], est["quantities"])
+        self.assertEqual(envelope_problems(b), [])
+        self.assertNotIn("evidenceLabel", b)
         self.assertIn("weld", b["source"])
         self.assertIn("not LPBF", b["source"])
         ks = {k["id"]: k for k in b["kValues"]}
@@ -55,7 +58,9 @@ class LiteratureSolidificationTests(unittest.TestCase):
         ks = {k["id"]: k for k in b["kValues"]}
         self.assertEqual(set(ks), {"k_gamma_Nb", "k_gamma_Nb_slopes"})
         self.assertIn("Cieslak", ks["k_gamma_Nb"]["citation"])
-        self.assertEqual(b["evidenceLabel"], est["evidenceLabel"])
+        self.assertEqual(b["quantities"], est["quantities"])
+        self.assertEqual(envelope_problems(b), [])
+        self.assertNotIn("evidenceLabel", b)
         self.assertEqual(b["kSensitivity"], est["kSensitivity"])
 
     def test_other_ids_are_refused(self):
@@ -70,7 +75,7 @@ class LiteratureSolidificationTests(unittest.TestCase):
         self.assertNotIn("literatureSolidification", base)
         lit = with_lit.pop("literatureSolidification")
         self.assertEqual(lit["alloyId"], "in718")
-        self.assertTrue(lit["evidenceLabel"].startswith("Literature estimate (screening)"))
+        self.assertTrue(all(q["sourceEvidenceKind"] == "Unresolved" for q in lit["quantities"].values()))
         self.assertTrue(lit["source"])
         # every CALPHAD field is identical with and without the literature block
         for key in ("provenance",):

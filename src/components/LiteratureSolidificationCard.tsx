@@ -1,3 +1,5 @@
+import { checkedQuantityContainer } from "../data/quantityEnvelope";
+import { SolidificationQuantities } from "./SolidificationQuantities";
 import React from "react";
 
 // Read-only literature solidification estimate for IN718 / IN625, shown under an unavailable CALPHAD result or
@@ -34,7 +36,6 @@ export interface LiteratureSolidificationLike {
   status?: string;
   reason?: string | null;
   alloyId?: string | null;
-  evidenceLabel?: string | null;
   source?: string | null;
   primarySource?: SourceRef | null;
   secondarySource?: SourceRef | null;
@@ -71,7 +72,10 @@ export const LiteratureSolidificationCard: React.FC<{ literature: unknown; along
   const headingId = React.useId();
   if (!literature || typeof literature !== "object" || Array.isArray(literature)) return null;
   const s = literature as LiteratureSolidificationLike;
-  const available = s.status === "available";
+  let available = s.status === "computed";
+  if (available) {
+    try { checkedQuantityContainer(s); } catch { available = false; }
+  }
   const band = Array.isArray(s.band) ? s.band : [];
   const v = s.validity ?? null;
   return (
@@ -95,11 +99,7 @@ export const LiteratureSolidificationCard: React.FC<{ literature: unknown; along
         <p className="text-[11px] text-slate-400" data-lit-note="unavailable">Unavailable — {s.reason ?? "no literature block"}</p>
       ) : (
         <>
-          {s.evidenceLabel && (
-            <p className="inline-block rounded border border-amber-400/60 px-2 py-0.5 text-[10px] text-amber-200" data-lit-label>
-              {s.evidenceLabel}
-            </p>
-          )}
+          <SolidificationQuantities container={s} frontOnly={false} />
           {s.source && <p className="text-[10px] text-slate-400" data-lit-source>Source: {s.source}</p>}
           <ul className="space-y-0.5 text-[11px]" data-lit-k>
             {(s.kValues ?? []).map((k, i) => (

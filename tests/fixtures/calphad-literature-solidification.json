@@ -12,7 +12,14 @@
     "pseudoTernaryAtCmax": {
      "C_wt": 0.1,
      "reason": "not modelled: no carbon constants for alloy 625 in C88 or D96 (binary gamma-Nb Scheil only)",
-     "status": "not-modelled"
+     "reasons": [
+      {
+       "code": "missing-source-bound-model",
+       "params": {},
+       "parent": null
+      }
+     ],
+     "status": "unavailable"
     }
    },
    {
@@ -25,7 +32,14 @@
     "pseudoTernaryAtCmax": {
      "C_wt": 0.1,
      "reason": "not modelled: no carbon constants for alloy 625 in C88 or D96 (binary gamma-Nb Scheil only)",
-     "status": "not-modelled"
+     "reasons": [
+      {
+       "code": "missing-source-bound-model",
+       "params": {},
+       "parent": null
+      }
+     ],
+     "status": "unavailable"
     }
    },
    {
@@ -38,12 +52,58 @@
     "pseudoTernaryAtCmax": {
      "C_wt": 0.1,
      "reason": "not modelled: no carbon constants for alloy 625 in C88 or D96 (binary gamma-Nb Scheil only)",
-     "status": "not-modelled"
+     "reasons": [
+      {
+       "code": "missing-source-bound-model",
+       "params": {},
+       "parent": null
+      }
+     ],
+     "status": "unavailable"
     }
    }
   ],
   "bandNote": "terminal eutectic-type constituent fraction from D96 Eq. 5 (binary gamma-Nb Scheil, C = 0) over the specification Nb band with k_Nb from C88; fraction of the liquid, which both sources compare with measured volume %. Carbon is not modelled for alloy 625.",
-  "evidenceLabel": "Literature estimate (screening): binary gamma-Nb Scheil, k_Nb from Cieslak et al. 1988 (low-Fe alloy 625, GTA welds and DTA), C_e from DuPont 1996 (taken from Alloy 718 data); not CALPHAD; LPBF is outside the source regime",
+  "inputProvenance": {
+   "composition": {
+    "declarationLocator": "python/alloy_registry.py",
+    "defaultKind": null,
+    "defaultValue": null,
+    "dependsOn": [],
+    "followState": null,
+    "followsInput": null,
+    "kind": "declaredAssumption",
+    "label": "declared assumption (no source)",
+    "phase": null,
+    "referenceTemperature_K": null,
+    "scope": "nominal-specification-screen",
+    "source": null,
+    "sourceEvidenceKind": "Unresolved",
+    "sourceId": "alloy-registry:composition",
+    "sourceLocator": null,
+    "sourceRange_K": null,
+    "status": "inRange"
+   },
+   "sourceCoefficients": {
+    "declarationLocator": null,
+    "defaultKind": null,
+    "defaultValue": null,
+    "dependsOn": [],
+    "followState": null,
+    "followsInput": null,
+    "kind": "sourceDefault",
+    "label": "sourced default",
+    "phase": null,
+    "referenceTemperature_K": null,
+    "scope": "source-alloy-process",
+    "source": null,
+    "sourceEvidenceKind": "Literature estimate",
+    "sourceId": "segregation:source-constants",
+    "sourceLocator": "python/lpbf_solidification_segregation.py#CONSTANTS",
+    "sourceRange_K": null,
+    "status": "inRange"
+   }
+  },
   "isCalphad": false,
   "kSensitivity": {
    "c88TableVII": {
@@ -106,13 +166,307 @@
     "verified": true
    }
   ],
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "observations": {
+   "edsNbMassFraction": {
+    "comparability": "context-only",
+    "materialScope": "IN625 source batch",
+    "observable": "Nb mass fraction along the as-built EDS line scan",
+    "processScope": "EOS M270 195 W 800 mm/s",
+    "recordKind": "source-observation",
+    "sourceEvidenceKind": "Measured",
+    "sources": [
+     {
+      "id": "Z18",
+      "locator": "Results Figs. 3 and 4",
+      "readLevel": "primary-read"
+     }
+    ],
+    "unit": "1",
+    "value": {
+     "max": 0.0584,
+     "min": 0.0281
+    }
+   }
+  },
   "primarySource": {
    "citation": "M.J. Cieslak, T.J. Headley, T. Kollie, A.D. Romig Jr., 'A melting and solidification study of alloy 625', Metall. Trans. A 19A (1988) 2319-2331",
    "note": "full text read for this module; factorial Nb/C/Si heats of alloy 625 with Fe about 2.2-2.6 wt% (Table I), GTA welds and DTA",
    "read": true,
    "url": "https://doi.org/10.1007/BF02645056"
   },
+  "quantities": {
+   "maxBinary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": "microconstituent",
+    "identity": {
+     "input": null,
+     "model": "cieslak1988-dupont1996-binary-gamma-nb-scheil-v1",
+     "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [],
+    "sourceEvidenceKind": "Unresolved",
+    "sources": [
+     {
+      "id": "C88-D96",
+      "locator": "constant and band locators in this result",
+      "readLevel": "primary-read"
+     }
+    ],
+    "status": "computed",
+    "uncertainty": {
+     "construction": "not-quantified",
+     "kind": "not-quantified"
+    },
+    "unit": "1",
+    "validity": null,
+    "value": {
+     "gammaLavesConstituent": 0.0453
+    },
+    "weakestInputs": [
+     "composition"
+    ]
+   },
+   "maxTernary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": null,
+     "parent": null
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "sourceEvidenceKind": null,
+    "sources": [],
+    "status": "unavailable",
+    "uncertainty": null,
+    "unit": "1",
+    "validity": null,
+    "value": null,
+    "weakestInputs": []
+   },
+   "minBinary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": "microconstituent",
+    "identity": {
+     "input": null,
+     "model": "cieslak1988-dupont1996-binary-gamma-nb-scheil-v1",
+     "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [],
+    "sourceEvidenceKind": "Unresolved",
+    "sources": [
+     {
+      "id": "C88-D96",
+      "locator": "constant and band locators in this result",
+      "readLevel": "primary-read"
+     }
+    ],
+    "status": "computed",
+    "uncertainty": {
+     "construction": "not-quantified",
+     "kind": "not-quantified"
+    },
+    "unit": "1",
+    "validity": null,
+    "value": {
+     "gammaLavesConstituent": 0.0258
+    },
+    "weakestInputs": [
+     "composition"
+    ]
+   },
+   "minTernary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": null,
+     "parent": null
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "sourceEvidenceKind": null,
+    "sources": [],
+    "status": "unavailable",
+    "uncertainty": null,
+    "unit": "1",
+    "validity": null,
+    "value": null,
+    "weakestInputs": []
+   },
+   "nominalBinary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": "microconstituent",
+    "identity": {
+     "input": null,
+     "model": "cieslak1988-dupont1996-binary-gamma-nb-scheil-v1",
+     "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [],
+    "sourceEvidenceKind": "Unresolved",
+    "sources": [
+     {
+      "id": "C88-D96",
+      "locator": "constant and band locators in this result",
+      "readLevel": "primary-read"
+     }
+    ],
+    "status": "computed",
+    "uncertainty": {
+     "construction": "not-quantified",
+     "kind": "not-quantified"
+    },
+    "unit": "1",
+    "validity": null,
+    "value": {
+     "gammaLavesConstituent": 0.0349
+    },
+    "weakestInputs": [
+     "composition"
+    ]
+   },
+   "nominalTernary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": null,
+     "parent": null
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "sourceEvidenceKind": null,
+    "sources": [],
+    "status": "unavailable",
+    "uncertainty": null,
+    "unit": "1",
+    "validity": null,
+    "value": null,
+    "weakestInputs": []
+   }
+  },
   "quantity": "fGammaLavesConstituent is the fraction of the liquid that remains when the binary Scheil liquid reaches C_e = 18.9 wt% Nb (D96 Eq. 5); D96 treats it as the gamma/Laves eutectic-type constituent (eutectic gamma included) and compares it with volume %. It is not a phase fraction of Laves, and its phase identity is not established (see validity.phaseIdentityNote).",
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
   "rapidSolidificationNote": "The k values below are equilibrium (weld/DTA) partition coefficients, so the fractions are upper bounds. A rapid-solidification estimate with solute trapping k(V) exists in the segregation block of a build job (LPBF Distortion Lab); it is not computed here.",
   "secondarySource": {
    "citation": "J.N. DuPont, 'Solidification of an Alloy 625 Weld Overlay', Metall. Mater. Trans. A 27A (1996) 3612-3620",
@@ -121,7 +475,7 @@
    "url": "https://www.osti.gov/biblio/413291"
   },
   "source": "Literature (weld and DTA studies: gas tungsten arc / GMAW welds and DTA samples), not LPBF; the numbers come from python/lpbf_solidification_segregation.py and are not a CALPHAD result",
-  "status": "available",
+  "status": "computed",
   "upperBoundNote": "Upper bound with respect to effects that are not modelled and that all reduce the terminal constituent: solid-state back-diffusion of Nb, solute trapping at high solidification rate, dendrite-tip undercooling, and Nb tied up as NbC by carbon (no carbon model for alloy 625). It is not a bound with respect to k_Nb or C_e. Against the C88 low-Fe measurements the estimate is high (see sourceAgreementNote), but that is one set of four heats at DTA cooling, not a guarantee.",
   "validity": {
    "ceTransferNote": "C_e = 18.9 wt% Nb is not measured on alloy 625: D96 (Section IV-C) builds it from Alloy 718 data (gamma 9.3 wt% Nb in the gamma/Laves eutectic, Table V) and the Fe-diluted overlay Laves (22.1 wt% Nb, Table III). C88 gives no eutectic composition; its Laves in low-Fe alloy 625 holds less Nb (16.8-19.2 wt%, Table V), so C_e for low-Fe IN625 may be lower, which would raise the computed fraction.",
@@ -249,7 +603,46 @@
    }
   ],
   "bandNote": "gamma/Laves constituent fraction at C = 0 (binary; model upper bound over C only) and at the specification maximum C with the pseudo-ternary model; fractions are of the liquid, which D98 compares with measured volume %",
-  "evidenceLabel": "Literature estimate (screening): Scheil-type pseudo-ternary gamma-Nb-C model, constants from DuPont, Robino & Marder 1998 (GTA welds of experimental alloys); not CALPHAD; LPBF is outside the source regime",
+  "inputProvenance": {
+   "composition": {
+    "declarationLocator": "python/alloy_registry.py",
+    "defaultKind": null,
+    "defaultValue": null,
+    "dependsOn": [],
+    "followState": null,
+    "followsInput": null,
+    "kind": "declaredAssumption",
+    "label": "declared assumption (no source)",
+    "phase": null,
+    "referenceTemperature_K": null,
+    "scope": "nominal-specification-screen",
+    "source": null,
+    "sourceEvidenceKind": "Unresolved",
+    "sourceId": "alloy-registry:composition",
+    "sourceLocator": null,
+    "sourceRange_K": null,
+    "status": "inRange"
+   },
+   "sourceCoefficients": {
+    "declarationLocator": null,
+    "defaultKind": null,
+    "defaultValue": null,
+    "dependsOn": [],
+    "followState": null,
+    "followsInput": null,
+    "kind": "sourceDefault",
+    "label": "sourced default",
+    "phase": null,
+    "referenceTemperature_K": null,
+    "scope": "source-alloy-process",
+    "source": null,
+    "sourceEvidenceKind": "Literature estimate",
+    "sourceId": "segregation:source-constants",
+    "sourceLocator": "python/lpbf_solidification_segregation.py#CONSTANTS",
+    "sourceRange_K": null,
+    "status": "inRange"
+   }
+  },
   "isCalphad": false,
   "kSensitivity": null,
   "kValues": [
@@ -270,17 +663,314 @@
     "verified": true
    }
   ],
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "observations": {},
   "primarySource": {
    "citation": "J.N. DuPont, C.V. Robino, A.R. Marder, 'Modeling solute redistribution and microstructural development in fusion welds of Nb-bearing superalloys', Acta Materialia 46 (1998) 4781-4790, doi:10.1016/S1359-6454(98)00123-2",
    "note": "full text (journal article) read for this module; Table 2 gives the solidification constants used here. Its Section 3.2 (negligible Nb diffusion / infinitely fast C diffusion, Eqs. 13-21) is the same model as the equations implemented here (D97 Eqs. 1-8)",
    "read": true,
    "url": "https://doi.org/10.1016/S1359-6454(98)00123-2"
   },
+  "quantities": {
+   "maxBinary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": "microconstituent",
+    "identity": {
+     "input": null,
+     "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+     "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [],
+    "sourceEvidenceKind": "Unresolved",
+    "sources": [
+     {
+      "id": "D98",
+      "locator": "constant and band locators in this result",
+      "readLevel": "primary-read"
+     }
+    ],
+    "status": "computed",
+    "uncertainty": {
+     "construction": "not-quantified",
+     "kind": "not-quantified"
+    },
+    "unit": "1",
+    "validity": null,
+    "value": {
+     "gammaLavesConstituent": 0.0736
+    },
+    "weakestInputs": [
+     "composition"
+    ]
+   },
+   "maxTernary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": "microconstituent",
+    "identity": {
+     "input": null,
+     "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+     "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [],
+    "sourceEvidenceKind": "Unresolved",
+    "sources": [
+     {
+      "id": "D98",
+      "locator": "constant and band locators in this result",
+      "readLevel": "primary-read"
+     }
+    ],
+    "status": "computed",
+    "uncertainty": {
+     "construction": "not-quantified",
+     "kind": "not-quantified"
+    },
+    "unit": "1",
+    "validity": null,
+    "value": {
+     "gammaLavesConstituent": 0.0372,
+     "gammaNbCConstituent": 0.0747
+    },
+    "weakestInputs": [
+     "composition"
+    ]
+   },
+   "minBinary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": "microconstituent",
+    "identity": {
+     "input": null,
+     "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+     "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [],
+    "sourceEvidenceKind": "Unresolved",
+    "sources": [
+     {
+      "id": "D98",
+      "locator": "constant and band locators in this result",
+      "readLevel": "primary-read"
+     }
+    ],
+    "status": "computed",
+    "uncertainty": {
+     "construction": "not-quantified",
+     "kind": "not-quantified"
+    },
+    "unit": "1",
+    "validity": null,
+    "value": {
+     "gammaLavesConstituent": 0.0564
+    },
+    "weakestInputs": [
+     "composition"
+    ]
+   },
+   "minTernary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": "microconstituent",
+    "identity": {
+     "input": null,
+     "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+     "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [],
+    "sourceEvidenceKind": "Unresolved",
+    "sources": [
+     {
+      "id": "D98",
+      "locator": "constant and band locators in this result",
+      "readLevel": "primary-read"
+     }
+    ],
+    "status": "computed",
+    "uncertainty": {
+     "construction": "not-quantified",
+     "kind": "not-quantified"
+    },
+    "unit": "1",
+    "validity": null,
+    "value": {
+     "gammaLavesConstituent": 0.0198,
+     "gammaNbCConstituent": 0.0692
+    },
+    "weakestInputs": [
+     "composition"
+    ]
+   },
+   "nominalBinary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": "microconstituent",
+    "identity": {
+     "input": null,
+     "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+     "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [],
+    "sourceEvidenceKind": "Unresolved",
+    "sources": [
+     {
+      "id": "D98",
+      "locator": "constant and band locators in this result",
+      "readLevel": "primary-read"
+     }
+    ],
+    "status": "computed",
+    "uncertainty": {
+     "construction": "not-quantified",
+     "kind": "not-quantified"
+    },
+    "unit": "1",
+    "validity": null,
+    "value": {
+     "gammaLavesConstituent": 0.0647
+    },
+    "weakestInputs": [
+     "composition"
+    ]
+   },
+   "nominalTernary": {
+    "assumptions": [],
+    "dependsOn": [
+     "composition",
+     "sourceCoefficients"
+    ],
+    "fractionBasis": "microconstituent",
+    "identity": {
+     "input": null,
+     "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+     "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+    },
+    "labelSources": [],
+    "leafRole": "derived",
+    "numericalStatus": {
+     "residuals": {},
+     "settings": {},
+     "state": "not-assessed"
+    },
+    "physicalValidation": {
+     "experimentalValidation": false,
+     "productionReady": false,
+     "status": "unvalidated"
+    },
+    "quantityDefinition": "scheil-phase-inventory",
+    "reasons": [],
+    "sourceEvidenceKind": "Unresolved",
+    "sources": [
+     {
+      "id": "D98",
+      "locator": "constant and band locators in this result",
+      "readLevel": "primary-read"
+     }
+    ],
+    "status": "computed",
+    "uncertainty": {
+     "construction": "not-quantified",
+     "kind": "not-quantified"
+    },
+    "unit": "1",
+    "validity": null,
+    "value": {
+     "gammaLavesConstituent": 0.0282,
+     "gammaNbCConstituent": 0.072
+    },
+    "weakestInputs": [
+     "composition"
+    ]
+   }
+  },
   "quantity": "fGammaLavesConstituent and fGammaNbCConstituent are fractions of the gamma/Laves and gamma/NbC eutectic-type constituents (remaining liquid that transforms, eutectic gamma included; D97 terminology), not phase fractions of Laves or NbC.",
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
   "rapidSolidificationNote": "The k values below are equilibrium (weld/DTA) partition coefficients, so the fractions are upper bounds. A rapid-solidification estimate with solute trapping k(V) exists in the segregation block of a build job (LPBF Distortion Lab); it is not computed here.",
   "secondarySource": null,
   "source": "Literature (weld and DTA studies: gas tungsten arc / GMAW welds and DTA samples), not LPBF; the numbers come from python/lpbf_solidification_segregation.py and are not a CALPHAD result",
-  "status": "available",
+  "status": "computed",
   "upperBoundNote": "Upper bound with respect to effects that are not modelled and that all reduce segregation: solid-state back-diffusion of Nb, solute trapping at high solidification rate and dendrite-tip undercooling. It is not a bound with respect to the choice of k_Nb (see validity), and it is not an upper bound on measured Laves content (see sourceAgreementNote).",
   "validity": {
    "kTransferNote": "D98 reports k_Nb = 0.45 for its Ni base alloys (Fe about 11 wt%) and 0.25 for its Fe base alloys (Fe about 45 wt%) and attributes the drop to Fe. The source gives no k_Nb(Fe) relation here, so no interpolation is made; the Fe-base result is shown as a bracketing sensitivity.",

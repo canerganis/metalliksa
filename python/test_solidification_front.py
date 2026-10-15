@@ -195,7 +195,8 @@ class AliasesAndInputs(unittest.TestCase):
         out = sf.evaluate_solidification(_plain_field, T_liq=1336.0, v_scan=0.8, x_rear=1e-4, search_depth=8e-5,
                                          r_beam=4e-5, material_name="inconel")
         self.assertIsNone(out["alloyId"])
-        self.assertNotIn("inputProvenance", out)
+        self.assertEqual(set(out["inputProvenance"]), {"alloyIdentity"})
+        self.assertEqual(out["inputProvenance"]["alloyIdentity"]["sourceEvidenceKind"], "Unresolved")
         self.assertEqual(qe.envelope_problems(out), [])
         for name, q in out["quantities"].items():
             self.assertIsNone(q["value"], name)

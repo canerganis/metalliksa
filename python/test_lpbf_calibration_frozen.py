@@ -54,10 +54,13 @@ BASE_REF = BASE_REF_CANDIDATES[0]
 # digests change); re-pinned at the SOL-A1 blanket-null front bump (2026-10-15, 1f8ad2b2: solidificationKinetics is the
 # null quantity container with reason codes; putting the previous front block back into the new output reproduces the
 # previous three digests exactly, so nothing else moved).
+# SOL-A1 envelope repair (2026-10-15, dc6f5fdd): morphology and transformation gain their blocking liquidus
+# dependencies/reasons. Replacing only solidificationKinetics with the 5aca4599 producer output reproduces
+# the three preceding HTTP digests exactly; every other field is byte-identical.
 HTTP_GOLDEN = {
-    "eagar-tsai": "4ded683781e5032b25947141751d74d8193d103b1db990409966d01038effc4b",
-    "goldak": "e9ae172573f73cce2f6dfd69bbe58a9dec11a410e4f02c18bc2ba2dd344651f7",
-    "rosenthal": "719cec4f80229644d7529170529e2e0d269f946e67631d3ac060d8c75f4201bf",
+    "eagar-tsai": "9f56b27ab0e79dbb5168ac727dbf5274bc512d990e3696f73ebd0a4997a8cda3",
+    "goldak": "73eee9c2688aaca880dec2efbcfcaf25a1e6e0c90e71a712e147db469cd0117c",
+    "rosenthal": "50ca3ad79b006cb4410390ea6ee80a6be7f714f6f63a6353cc53a03c4e632b1d",
 }
 HTTP_INPUT = {"material": "316L Stainless Steel", "laserPower_W": 200, "scanSpeed_mm_s": 900, "beamDiameter_um": 80,
               "preheatTemp_C": 20, "layerThickness_um": 30, "hatchSpacing_um": 100}

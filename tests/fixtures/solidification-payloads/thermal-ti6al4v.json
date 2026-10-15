@@ -147,7 +147,9 @@
     },
     "morphology": {
       "assumptions": [],
-      "dependsOn": [],
+      "dependsOn": [
+        "liquidus_K"
+      ],
       "fractionBasis": null,
       "identity": {
         "input": null,
@@ -168,6 +170,14 @@
       },
       "quantityDefinition": "front-morphology",
       "reasons": [
+        {
+          "code": "missing-source-constant",
+          "params": {},
+          "parent": {
+            "input": "liquidus_K",
+            "kind": "declaredAssumption"
+          }
+        },
         {
           "code": "missing-source-bound-model",
           "params": {},
@@ -349,7 +359,9 @@
     },
     "solidStateTransformation": {
       "assumptions": [],
-      "dependsOn": [],
+      "dependsOn": [
+        "liquidus_K"
+      ],
       "fractionBasis": null,
       "identity": {
         "input": null,
@@ -370,6 +382,14 @@
       },
       "quantityDefinition": "solid-state-transformation",
       "reasons": [
+        {
+          "code": "missing-source-constant",
+          "params": {},
+          "parent": {
+            "input": "liquidus_K",
+            "kind": "declaredAssumption"
+          }
+        },
         {
           "code": "missing-thermal-history",
           "params": {},

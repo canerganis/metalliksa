@@ -448,7 +448,9 @@
         },
         "morphology": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -469,6 +471,14 @@
           },
           "quantityDefinition": "front-morphology",
           "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
             {
               "code": "missing-source-bound-model",
               "params": {},
@@ -645,7 +655,9 @@
         },
         "solidStateTransformation": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -666,6 +678,14 @@
           },
           "quantityDefinition": "solid-state-transformation",
           "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
             {
               "code": "missing-thermal-history",
               "params": {},
@@ -748,7 +768,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -796,7 +816,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -845,7 +865,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -893,7 +913,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -942,7 +962,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -990,7 +1010,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -1059,6 +1079,27 @@
         ]
       },
       "extrapolationNote": "Extrapolation: the eutectic-fraction formulas (D96 Eq. 5; D97/D98 pseudo-ternary) were calibrated on GTA welds and DTA samples with the equilibrium k. Here k_Nb is replaced by k(R) and held constant over the whole solidification at the single build-job R, so the numbers show the direction and rough size of the trapping effect, not a validated LPBF fraction.",
+      "inputProvenance": {
+        "interfaceSample": {
+          "declarationLocator": "python/lpbf_solidification_segregation.py#_rapid_solidification",
+          "defaultKind": null,
+          "defaultValue": null,
+          "dependsOn": [],
+          "followState": null,
+          "followsInput": null,
+          "kind": "declaredAssumption",
+          "label": "declared assumption (no source)",
+          "phase": null,
+          "referenceTemperature_K": null,
+          "scope": "missing-admitted-normal-speed",
+          "source": null,
+          "sourceEvidenceKind": "Unresolved",
+          "sourceId": "request:interface-sample",
+          "sourceLocator": null,
+          "sourceRange_K": null,
+          "status": "outOfRange"
+        }
+      },
       "kTransferNote": "V_D was fitted with k_e = 0.48 (G17, G18); this module applies it with its own equilibrium k_Nb (D98 0.45 for IN718, C88 0.51 for IN625). No source gives V_D for these k_e or for multicomponent IN718/IN625.",
       "model": {
         "equation": "k(V) = (k_e + V/V_D) / (1 + V/V_D)",
@@ -1079,7 +1120,9 @@
       "quantities": {
         "fraction": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "interfaceSample"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -1783,7 +1826,9 @@
         },
         "morphology": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -1804,6 +1849,14 @@
           },
           "quantityDefinition": "front-morphology",
           "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
             {
               "code": "missing-source-bound-model",
               "params": {},
@@ -1980,7 +2033,9 @@
         },
         "solidStateTransformation": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -2001,6 +2056,14 @@
           },
           "quantityDefinition": "solid-state-transformation",
           "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
             {
               "code": "missing-thermal-history",
               "params": {},
@@ -2083,7 +2146,7 @@
         "identity": {
           "input": null,
           "model": "cieslak1988-dupont1996-binary-gamma-nb-scheil-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -2123,7 +2186,10 @@
       },
       "maxTernary": {
         "assumptions": [],
-        "dependsOn": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
         "fractionBasis": null,
         "identity": {
           "input": null,
@@ -2169,7 +2235,7 @@
         "identity": {
           "input": null,
           "model": "cieslak1988-dupont1996-binary-gamma-nb-scheil-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -2209,7 +2275,10 @@
       },
       "minTernary": {
         "assumptions": [],
-        "dependsOn": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
         "fractionBasis": null,
         "identity": {
           "input": null,
@@ -2255,7 +2324,7 @@
         "identity": {
           "input": null,
           "model": "cieslak1988-dupont1996-binary-gamma-nb-scheil-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -2295,7 +2364,10 @@
       },
       "nominalTernary": {
         "assumptions": [],
-        "dependsOn": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
         "fractionBasis": null,
         "identity": {
           "input": null,
@@ -2361,6 +2433,27 @@
         ]
       },
       "extrapolationNote": "Extrapolation: the eutectic-fraction formulas (D96 Eq. 5; D97/D98 pseudo-ternary) were calibrated on GTA welds and DTA samples with the equilibrium k. Here k_Nb is replaced by k(R) and held constant over the whole solidification at the single build-job R, so the numbers show the direction and rough size of the trapping effect, not a validated LPBF fraction.",
+      "inputProvenance": {
+        "interfaceSample": {
+          "declarationLocator": "python/lpbf_solidification_segregation.py#_rapid_solidification",
+          "defaultKind": null,
+          "defaultValue": null,
+          "dependsOn": [],
+          "followState": null,
+          "followsInput": null,
+          "kind": "declaredAssumption",
+          "label": "declared assumption (no source)",
+          "phase": null,
+          "referenceTemperature_K": null,
+          "scope": "missing-admitted-normal-speed",
+          "source": null,
+          "sourceEvidenceKind": "Unresolved",
+          "sourceId": "request:interface-sample",
+          "sourceLocator": null,
+          "sourceRange_K": null,
+          "status": "outOfRange"
+        }
+      },
       "kTransferNote": "V_D was fitted with k_e = 0.48 (G17, G18); this module applies it with its own equilibrium k_Nb (D98 0.45 for IN718, C88 0.51 for IN625). No source gives V_D for these k_e or for multicomponent IN718/IN625.",
       "model": {
         "equation": "k(V) = (k_e + V/V_D) / (1 + V/V_D)",
@@ -2381,7 +2474,9 @@
       "quantities": {
         "fraction": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "interfaceSample"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -3044,7 +3139,9 @@
         },
         "morphology": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -3065,6 +3162,14 @@
           },
           "quantityDefinition": "front-morphology",
           "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
             {
               "code": "missing-source-bound-model",
               "params": {},
@@ -3241,7 +3346,9 @@
         },
         "solidStateTransformation": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -3262,6 +3369,14 @@
           },
           "quantityDefinition": "solid-state-transformation",
           "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
             {
               "code": "missing-thermal-history",
               "params": {},
@@ -3344,7 +3459,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -3392,7 +3507,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -3441,7 +3556,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -3489,7 +3604,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -3538,7 +3653,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -3586,7 +3701,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -3655,6 +3770,27 @@
         ]
       },
       "extrapolationNote": "Extrapolation: the eutectic-fraction formulas (D96 Eq. 5; D97/D98 pseudo-ternary) were calibrated on GTA welds and DTA samples with the equilibrium k. Here k_Nb is replaced by k(R) and held constant over the whole solidification at the single build-job R, so the numbers show the direction and rough size of the trapping effect, not a validated LPBF fraction.",
+      "inputProvenance": {
+        "interfaceSample": {
+          "declarationLocator": "python/lpbf_solidification_segregation.py#_rapid_solidification",
+          "defaultKind": null,
+          "defaultValue": null,
+          "dependsOn": [],
+          "followState": null,
+          "followsInput": null,
+          "kind": "declaredAssumption",
+          "label": "declared assumption (no source)",
+          "phase": null,
+          "referenceTemperature_K": null,
+          "scope": "missing-admitted-normal-speed",
+          "source": null,
+          "sourceEvidenceKind": "Unresolved",
+          "sourceId": "request:interface-sample",
+          "sourceLocator": null,
+          "sourceRange_K": null,
+          "status": "outOfRange"
+        }
+      },
       "kTransferNote": "V_D was fitted with k_e = 0.48 (G17, G18); this module applies it with its own equilibrium k_Nb (D98 0.45 for IN718, C88 0.51 for IN625). No source gives V_D for these k_e or for multicomponent IN718/IN625.",
       "model": {
         "equation": "k(V) = (k_e + V/V_D) / (1 + V/V_D)",
@@ -3675,7 +3811,9 @@
       "quantities": {
         "fraction": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "interfaceSample"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -4258,7 +4396,9 @@
         },
         "morphology": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -4279,6 +4419,19 @@
           },
           "quantityDefinition": "front-morphology",
           "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "keyhole-field-inconsistent",
+              "params": {},
+              "parent": null
+            },
             {
               "code": "missing-source-bound-model",
               "params": {},
@@ -4470,7 +4623,9 @@
         },
         "solidStateTransformation": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -4491,6 +4646,19 @@
           },
           "quantityDefinition": "solid-state-transformation",
           "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
+            {
+              "code": "keyhole-field-inconsistent",
+              "params": {},
+              "parent": null
+            },
             {
               "code": "missing-thermal-history",
               "params": {},
@@ -4578,7 +4746,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -4626,7 +4794,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -4675,7 +4843,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -4723,7 +4891,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -4772,7 +4940,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -4820,7 +4988,7 @@
         "identity": {
           "input": null,
           "model": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
-          "parent": "inputs:composition=alloy-registry:composition;sourceCoefficients=segregation:source-constants"
+          "parent": "parents-v2:[\"object\",[[\"composition\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/alloy_registry.py\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declared assumption (no source)\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal-specification-screen\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"alloy-registry:composition\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"sourceCoefficients\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"source-alloy-process\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"segregation:source-constants\"],[\"sourceLocator\",\"python/lpbf_solidification_segregation.py#CONSTANTS\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
         },
         "labelSources": [],
         "leafRole": "derived",
@@ -4889,6 +5057,27 @@
         ]
       },
       "extrapolationNote": "Extrapolation: the eutectic-fraction formulas (D96 Eq. 5; D97/D98 pseudo-ternary) were calibrated on GTA welds and DTA samples with the equilibrium k. Here k_Nb is replaced by k(R) and held constant over the whole solidification at the single build-job R, so the numbers show the direction and rough size of the trapping effect, not a validated LPBF fraction.",
+      "inputProvenance": {
+        "interfaceSample": {
+          "declarationLocator": "python/lpbf_solidification_segregation.py#_rapid_solidification",
+          "defaultKind": null,
+          "defaultValue": null,
+          "dependsOn": [],
+          "followState": null,
+          "followsInput": null,
+          "kind": "declaredAssumption",
+          "label": "declared assumption (no source)",
+          "phase": null,
+          "referenceTemperature_K": null,
+          "scope": "missing-admitted-normal-speed",
+          "source": null,
+          "sourceEvidenceKind": "Unresolved",
+          "sourceId": "request:interface-sample",
+          "sourceLocator": null,
+          "sourceRange_K": null,
+          "status": "outOfRange"
+        }
+      },
       "kTransferNote": "V_D was fitted with k_e = 0.48 (G17, G18); this module applies it with its own equilibrium k_Nb (D98 0.45 for IN718, C88 0.51 for IN625). No source gives V_D for these k_e or for multicomponent IN718/IN625.",
       "model": {
         "equation": "k(V) = (k_e + V/V_D) / (1 + V/V_D)",
@@ -4909,7 +5098,9 @@
       "quantities": {
         "fraction": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "interfaceSample"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -5082,7 +5273,10 @@
     "quantities": {
       "phaseInventory": {
         "assumptions": [],
-        "dependsOn": [],
+        "dependsOn": [
+          "composition",
+          "sourceCoefficients"
+        ],
         "fractionBasis": null,
         "identity": {
           "input": null,

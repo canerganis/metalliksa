@@ -226,12 +226,35 @@
   "mode": "point",
   "point": {
     "cet": {
+      "inputProvenance": {
+        "frontAdmission": {
+          "declarationLocator": "python/lpbf_gr_solidification.py#couple_thermal_block",
+          "defaultKind": null,
+          "defaultValue": null,
+          "dependsOn": [],
+          "followState": null,
+          "followsInput": null,
+          "kind": "declaredAssumption",
+          "label": "declared assumption (no source)",
+          "phase": null,
+          "referenceTemperature_K": null,
+          "scope": "unadmitted-front-parent",
+          "source": null,
+          "sourceEvidenceKind": "Unresolved",
+          "sourceId": "thermal.solidificationKinetics",
+          "sourceLocator": null,
+          "sourceRange_K": null,
+          "status": "outOfRange"
+        }
+      },
       "moduleEvidenceCeiling": "screening-only",
       "moduleMaturity": "Research",
       "quantities": {
         "class": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "frontAdmission"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -422,7 +445,9 @@
         },
         "morphology": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -443,6 +468,14 @@
           },
           "quantityDefinition": "front-morphology",
           "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
             {
               "code": "missing-source-bound-model",
               "params": {},
@@ -619,7 +652,9 @@
         },
         "solidStateTransformation": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "liquidus_K"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,
@@ -640,6 +675,14 @@
           },
           "quantityDefinition": "solid-state-transformation",
           "reasons": [
+            {
+              "code": "missing-source-constant",
+              "params": {},
+              "parent": {
+                "input": "liquidus_K",
+                "kind": "declaredAssumption"
+              }
+            },
             {
               "code": "missing-thermal-history",
               "params": {},
@@ -711,12 +754,35 @@
       "status": "unavailable"
     },
     "laves": {
+      "inputProvenance": {
+        "frontAdmission": {
+          "declarationLocator": "python/lpbf_gr_solidification.py#couple_thermal_block",
+          "defaultKind": null,
+          "defaultValue": null,
+          "dependsOn": [],
+          "followState": null,
+          "followsInput": null,
+          "kind": "declaredAssumption",
+          "label": "declared assumption (no source)",
+          "phase": null,
+          "referenceTemperature_K": null,
+          "scope": "unadmitted-front-parent",
+          "source": null,
+          "sourceEvidenceKind": "Unresolved",
+          "sourceId": "thermal.solidificationKinetics",
+          "sourceLocator": null,
+          "sourceRange_K": null,
+          "status": "outOfRange"
+        }
+      },
       "moduleEvidenceCeiling": "screening-only",
       "moduleMaturity": "Research",
       "quantities": {
         "fraction": {
           "assumptions": [],
-          "dependsOn": [],
+          "dependsOn": [
+            "frontAdmission"
+          ],
           "fractionBasis": null,
           "identity": {
             "input": null,

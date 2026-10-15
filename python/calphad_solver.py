@@ -2404,7 +2404,7 @@ def literature_solidification_block(alloy_id: Any) -> Optional[Dict[str, Any]]:
         return None
     import lpbf_solidification_segregation as seg
     block = seg.segregation_estimate(aid)
-    if block.get("status") != "available":
+    if block.get("status") != "computed":
         return {"status": "unavailable", "alloyId": aid, "isCalphad": False, "reason": block.get("reason")}
     k_values = []
     for key, c in (block.get("constants") or {}).items():
@@ -2413,10 +2413,11 @@ def literature_solidification_block(alloy_id: Any) -> Optional[Dict[str, Any]]:
                              "citation": c.get("sourceCitation"), "locator": c.get("locator"),
                              "verified": c.get("verified")})
     return {
-        "status": "available",
+        **{key: block[key] for key in ("quantityEnvelopeSchema", "moduleEvidenceCeiling", "moduleMaturity",
+                                       "quantities", "inputProvenance", "observations") if key in block},
+        "status": "computed",
         "alloyId": aid,
         "isCalphad": False,
-        "evidenceLabel": block["evidenceLabel"],
         "source": LITERATURE_SOLIDIFICATION_SOURCE,
         "primarySource": block.get("source"),
         "secondarySource": block.get("secondarySource"),

@@ -398,9 +398,9 @@ def _front_quantities(blocking: Sequence[Dict[str, Any]], depends_on: Sequence[s
             ("thermalGradient", "normalSpeed"))
     quantities["sdas"] = _null_quantity("sdas", list(blocking) + parents("coolingRate") + model_reasons["sdas"],
                                         ("coolingRate",))
-    quantities["morphology"] = _null_quantity("morphology", model_reasons["morphology"])
+    quantities["morphology"] = _null_quantity("morphology", list(blocking) + model_reasons["morphology"], depends_on)
     quantities["solidStateTransformation"] = _null_quantity("solidStateTransformation",
-                                                            model_reasons["solidStateTransformation"])
+                                                            list(blocking) + model_reasons["solidStateTransformation"], depends_on)
     return quantities
 
 
@@ -443,7 +443,10 @@ def evaluate_solidification(
     if alloy_id is None:
         refused = [_reason("unknown-alloy-alias")]
         model_reasons = {"sdas": [], "morphology": refused, "solidStateTransformation": refused}
-        return _container(None, _front_quantities(refused, (), model_reasons), None)
+        return _container(None, _front_quantities(refused, ("alloyIdentity",), model_reasons),
+                          {"alloyIdentity": _input_record("declaredAssumption", "request:unknown-alloy",
+                           declaration_locator="python/solidification_front.py#canonical_alloy_id", scope="unresolved-alloy-identity",
+                           source_evidence_kind="Unresolved", default_value=None, default_kind=None)})
 
     liquidus = _liquidus_input(alloy_id, T_liq, authority_liquidus_C)
     blocking = [_reason("missing-source-constant", parent={"input": LIQUIDUS_INPUT, "kind": liquidus["kind"]})]

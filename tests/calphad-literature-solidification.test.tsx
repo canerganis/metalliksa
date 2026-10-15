@@ -25,7 +25,9 @@ test("IN718: heading, label, k with citation and locator, band, upper bound, val
   const t = text(markup);
   assert.match(markup, /data-testid="calphad-literature-solidification"/);
   assert.ok(t.includes("Literature solidification estimate (not CALPHAD)"), t);
-  assert.ok(t.includes(b.evidenceLabel), t);
+  assert.match(markup, /data-solidification-envelope/);
+  assert.match(t, /Unresolved: composition/);
+  assert.ok(!Object.hasOwn(b, "evidenceLabel"));
   assert.ok(t.includes(b.source), t);
   assert.ok(t.includes("γ Nb = 0.45") && t.includes("γ C = 0.21"), t);
   for (const k of b.kValues) {
@@ -47,7 +49,9 @@ test("IN625: Cieslak k values, no carbon column values, k sensitivity", () => {
   const b = BLOCKS.in625;
   const markup = render("in625");
   const t = text(markup);
-  assert.ok(t.includes(b.evidenceLabel), t);
+  assert.match(markup, /data-solidification-envelope/);
+  assert.match(t, /Unresolved: composition/);
+  assert.ok(!Object.hasOwn(b, "evidenceLabel"));
   assert.ok(t.includes("γ Nb = 0.51") && t.includes("γ Nb (liquidus/solidus slopes) = 0.54"), t);
   assert.ok(t.includes("Cieslak") && t.includes("Table VIII") && t.includes("Table VII"), t);
   assert.match(markup, /data-lit-k-sensitivity/);
@@ -61,6 +65,20 @@ test("no block, wrong shape or unavailable status: nothing invented", () => {
   const m = renderToStaticMarkup(<LiteratureSolidificationCard literature={{ status: "unavailable", reason: "x" }} />);
   assert.match(m, /data-lit-note="unavailable"/);
   assert.ok(!/data-lit-band/.test(m));
+});
+
+test("legacy and corrupted evidence blocks never render numerical literature results", () => {
+  const legacy = { ...BLOCKS.in718, status: "available" };
+  const corrupted = structuredClone(BLOCKS.in718);
+  corrupted.quantities.nominalBinary.sourceEvidenceKind = "Measured";
+  for (const block of [legacy, corrupted]) {
+    const markup = renderToStaticMarkup(<LiteratureSolidificationCard literature={block} />);
+    assert.match(markup, /data-lit-note="unavailable"/);
+    assert.doesNotMatch(markup, /data-lit-band-row|data-solidification-envelope/);
+  }
+  const staleLabel = renderToStaticMarkup(<LiteratureSolidificationCard literature={{ ...BLOCKS.in718, evidenceLabel: "Measured" }} />);
+  assert.match(staleLabel, /data-solidification-envelope/);
+  assert.doesNotMatch(staleLabel, /data-lit-label|Measured/);
 });
 
 test("alloy id mapping: only IN718 and IN625; 316L and others undefined", () => {
