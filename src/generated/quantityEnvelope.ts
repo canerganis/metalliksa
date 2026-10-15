@@ -485,6 +485,45 @@ export const QUANTITY_ENVELOPE = {
     "process"
   ],
   "processPhase": "process",
+  "requestProcessInputs": [
+    "P",
+    "v",
+    "d",
+    "T0",
+    "power_W",
+    "speed_m_s",
+    "speed_mm_s",
+    "beamDiameter_um",
+    "beamDiameter_m",
+    "preheat_C",
+    "preheat_K",
+    "preheatTemp_C",
+    "h",
+    "t",
+    "hatch_um",
+    "layer_um",
+    "hatchSpacing_um",
+    "layerThickness_um",
+    "scanStrategy",
+    "heatSource",
+    "solver",
+    "solverSettings",
+    "nx",
+    "ny",
+    "nz",
+    "dt_s",
+    "timeStep_s",
+    "maxDt_s",
+    "gridSpacing_um",
+    "gridSpacing_m",
+    "quadratureOrder",
+    "maxSteps",
+    "maxIterations",
+    "tolerance",
+    "integrationTolerance",
+    "sampleCount",
+    "seed"
+  ],
   "followStates": [
     "following",
     "user-fixed"
@@ -552,7 +591,8 @@ export const QUANTITY_ENVELOPE = {
   ],
   "containerOptionalKeys": [
     "observations",
-    "inputProvenance"
+    "inputProvenance",
+    "default"
   ],
   "canonicalAlloyIds": [
     "ti6al4v",

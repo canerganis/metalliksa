@@ -21,6 +21,7 @@ Placement rules (contract 4.1):
 from __future__ import annotations
 
 import copy
+import json
 import math
 import re
 import string
@@ -35,7 +36,7 @@ MODULE_EVIDENCE_CEILING = "screening-only"
 MODULE_MATURITIES: Tuple[str, ...] = ("Research", "Preview")
 CONTAINER_REQUIRED_KEYS: Tuple[str, ...] = ("quantityEnvelopeSchema", "moduleEvidenceCeiling", "moduleMaturity",
                                             "quantities")
-CONTAINER_OPTIONAL_KEYS: Tuple[str, ...] = ("observations", "inputProvenance")
+CONTAINER_OPTIONAL_KEYS: Tuple[str, ...] = ("observations", "inputProvenance", "default")
 CONTAINER_ONLY_KEYS: Tuple[str, ...] = ("quantityEnvelopeSchema", "moduleEvidenceCeiling", "moduleMaturity")
 
 QUANTITY_STATUSES: Tuple[str, ...] = ("computed", "partial", "unavailable", "failed", "not-requested")
@@ -182,6 +183,13 @@ INPUT_STATUSES: Tuple[str, ...] = ("inRange", "extrapolated", "outOfRange")
 INPUT_PHASES: Tuple[str, ...] = ("solid", "liquid", "solid-liquid-mean", "vapour", "process")
 # Request process values (P, v, d, T0) are recorded with phase "process"; they never decide a label (4.3 item 3).
 PROCESS_PHASE = "process"
+# Fixed request echoes, never physical coefficients. Their phase cannot decide the label.
+REQUEST_PROCESS_INPUTS = ("P", "v", "d", "T0", "power_W", "speed_m_s", "speed_mm_s", "beamDiameter_um",
+                          "beamDiameter_m", "preheat_C", "preheat_K", "preheatTemp_C", "h", "t", "hatch_um",
+                          "layer_um", "hatchSpacing_um", "layerThickness_um", "scanStrategy", "heatSource",
+                          "solver", "solverSettings", "nx", "ny", "nz", "dt_s", "timeStep_s", "maxDt_s",
+                          "gridSpacing_um", "gridSpacing_m", "quadratureOrder", "maxSteps", "maxIterations",
+                          "tolerance", "integrationTolerance", "sampleCount", "seed")
 FOLLOW_STATES: Tuple[str, ...] = ("following", "user-fixed")
 INPUT_RECORD_KEYS: Tuple[str, ...] = ("kind", "label", "sourceId", "sourceLocator", "declarationLocator", "source",
                                       "scope", "status", "sourceEvidenceKind", "defaultValue", "defaultKind",
@@ -272,14 +280,12 @@ def ledger_class_stem(class_text: str) -> str:
     if not isinstance(class_text, str) or not class_text.strip():
         raise EnvelopeError("ledger class must be a non-empty string")
     clause = class_text.split(";", 1)[0].strip()
-    candidate = clause
-    while True:
-        if candidate in LEDGER_CLASS_MAPPING:
-            return candidate
-        head, separator, rest = candidate.partition("-")
-        if not separator or not rest:
-            raise EnvelopeError(f"unknown ledger admission class {class_text!r}")
-        candidate = rest
+    if clause in LEDGER_CLASS_MAPPING:
+        return clause
+    prefix, _, stem = clause.partition("-")
+    if prefix in ("proposed", "admitted") and stem in LEDGER_CLASS_MAPPING:
+        return stem
+    raise EnvelopeError(f"unknown ledger admission class {class_text!r}")
 
 
 def ledger_class_mapping(class_text: str) -> Dict[str, Any]:
@@ -390,14 +396,19 @@ def typed_input(default: Mapping[str, Any], typed_value: float, default_value: f
     kind = default.get("kind")
     default_kind = {"legacyEstimate": None, "userInput": default.get("defaultKind")}.get(kind, kind)
     follows = default.get("followsInput") if kind == "followsInput" else None
-    return input_record("userInput", source_id, status="inRange", scope=scope, default_value=default_value,
+    # The 17-key P8 record has no current-value field: bind the actual typed SI value in sourceId.
+    return input_record("userInput", f"{source_id}:value:{float(typed_value).hex()}",
+                        status="inRange", scope=scope, default_value=default_value,
                         default_kind=default_kind, follows_input=follows, phase=default.get("phase"),
                         reference_temperature_K=default.get("referenceTemperature_K"),
                         source_range_K=default.get("sourceRange_K"))
 
 
 def _is_number(value: Any) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+    try:
+        return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+    except OverflowError:
+        return False
 
 
 def _text(value: Any) -> bool:
@@ -439,7 +450,7 @@ def input_record_problems(record: Any, where: str) -> List[str]:
     evidence = record["sourceEvidenceKind"]
     if evidence == "Measured":
         problems.append(f"{where}: an input used to compute a value never reads Measured (contract 4.3 item 4)")
-    elif evidence not in LABEL_RANK:
+    elif not isinstance(evidence, str) or evidence not in LABEL_RANK:
         problems.append(f"{where}: sourceEvidenceKind must be one of {QUANTITY_SOURCE_EVIDENCE_KINDS}")
     else:
         ceiling = INPUT_KIND_EVIDENCE[kind]
@@ -460,6 +471,8 @@ def input_record_problems(record: Any, where: str) -> List[str]:
         problems.append(f"{where}: defaultKind must be an input kind or null")
     if default_kind == "legacyEstimate":
         problems.append(f"{where}: a legacy estimate is never a default")
+    if default_kind == "sourcedAlternative":
+        problems.append(f"{where}: a sourcedAlternative is never a defaultKind")
     follows, state = record["followsInput"], record["followState"]
     if kind == "followsInput":
         if not _text(follows) or state != "following":
@@ -476,6 +489,8 @@ def input_record_problems(record: Any, where: str) -> List[str]:
         problems.append(f"{where}: dependsOn must be a list of unique names")
     if record["phase"] is not None and record["phase"] not in INPUT_PHASES:
         problems.append(f"{where}: phase must be one of {INPUT_PHASES} or null")
+    if record["phase"] == PROCESS_PHASE and kind != "userInput":
+        problems.append(f"{where}: only userInput may carry phase process")
     if record["referenceTemperature_K"] is not None and not _is_number(record["referenceTemperature_K"]):
         problems.append(f"{where}: referenceTemperature_K must be a finite number or null")
     source_range = record["sourceRange_K"]
@@ -499,7 +514,7 @@ def _determining(depends_on: Sequence[str], inputs: Mapping[str, Any],
                 continue
             sibling = quantities[name]
             nested = sibling.get("dependsOn", []) if isinstance(sibling, dict) else []
-            for inner in _determining(nested if isinstance(nested, list) else [], inputs, quantities,
+            for inner in _determining(nested if _str_list(nested) else [], inputs, quantities,
                                       seen | {name}):
                 if inner not in names:
                     names.append(inner)
@@ -510,11 +525,11 @@ def _determining(depends_on: Sequence[str], inputs: Mapping[str, Any],
 
 def _input_label(name: str, inputs: Mapping[str, Any], seen: frozenset) -> Tuple[Optional[str], List[str]]:
     """(label, locators) of one input record; label None when the record is a request process value."""
+    if name in REQUEST_PROCESS_INPUTS:
+        return None, []
     record = inputs.get(name)
     if not isinstance(record, dict) or name in seen:
         return "Unresolved", []  # missing record or a cycle: never upgraded
-    if record.get("phase") == PROCESS_PHASE:
-        return None, []
     kind = record.get("kind")
     own = record.get("sourceEvidenceKind")
     locators: List[str] = []
@@ -529,14 +544,16 @@ def _input_label(name: str, inputs: Mapping[str, Any], seen: frozenset) -> Tuple
     elif kind == "userInput":
         label = "User input"
     elif kind == "followsInput":
-        rule = INPUT_KIND_EVIDENCE.get(record.get("defaultKind")) or "Unresolved"
+        rule_kind = record.get("defaultKind")
+        rule = (INPUT_KIND_EVIDENCE.get(rule_kind) if isinstance(rule_kind, str) else None) or "Unresolved"
         label = rule
         if rule == "Literature estimate":
             if _text(record.get("sourceLocator")):
                 locators = [record["sourceLocator"]]
             else:
                 label = "Unresolved"
-        followed = [record.get("followsInput")] + list(record.get("dependsOn") or [])
+        deps = record.get("dependsOn")
+        followed = [record.get("followsInput")] + (deps if _str_list(deps) else [])
         for other in followed:
             if not isinstance(other, str):
                 continue
@@ -547,7 +564,7 @@ def _input_label(name: str, inputs: Mapping[str, Any], seen: frozenset) -> Tuple
                 label = other_label
             locators += [loc for loc in other_locators if loc not in locators]
     elif kind == "derived":
-        deps = [dep for dep in (record.get("dependsOn") or []) if isinstance(dep, str)]
+        deps = record.get("dependsOn") if _str_list(record.get("dependsOn")) else []
         labels = [(dep,) + _input_label(dep, inputs, seen | {name}) for dep in deps]
         labels = [item for item in labels if item[1] is not None]
         if labels:
@@ -562,11 +579,33 @@ def _input_label(name: str, inputs: Mapping[str, Any], seen: frozenset) -> Tuple
     else:
         label = "Unresolved"
     # A record never reads stronger than its own label; Measured or an unknown label on an input is refused.
-    if own not in LABEL_RANK:
+    if not isinstance(own, str) or own not in LABEL_RANK:
         label = "Unresolved"
     elif LABEL_RANK[own] < LABEL_RANK[label]:
         label = own
     return label, (locators if label == "Literature estimate" else [])
+
+
+def _weakest_roots(name: str, inputs: Mapping[str, Any], label: str, seen: frozenset = frozenset()) -> List[str]:
+    """Trace weak labels to their root inputs; an unsourced rule remains its own root."""
+    record = inputs.get(name)
+    if not isinstance(record, dict) or name in seen:
+        return [name]
+    kind = record.get("kind")
+    if kind not in ("followsInput", "derived"):
+        return [name]
+    if kind == "followsInput" and record.get("defaultKind") in UNSOURCED_INPUT_KINDS:
+        return [name]
+    deps = record.get("dependsOn") if _str_list(record.get("dependsOn")) else []
+    if kind == "followsInput" and isinstance(record.get("followsInput"), str):
+        deps = [record["followsInput"]] + deps
+    roots = []
+    for dep in deps:
+        if _input_label(dep, inputs, seen | {name})[0] == label:
+            for root in _weakest_roots(dep, inputs, label, seen | {name}):
+                if root not in roots:
+                    roots.append(root)
+    return roots or [name]
 
 
 def source_label(inputs: Mapping[str, Any], depends_on: Sequence[str],
@@ -575,7 +614,7 @@ def source_label(inputs: Mapping[str, Any], depends_on: Sequence[str],
 
     Any declaredAssumption or legacyEstimate input (directly, through a followed rule or a derivation) gives
     Unresolved naming those inputs; otherwise any userInput gives User input naming them; otherwise Literature
-    estimate with labelSources. Request process values (phase "process") are excluded. With no determining input
+    estimate with labelSources. Fixed request process names are excluded, regardless of phase. With no determining input
     left the result is Unresolved with no named input: a label is never upgraded by emptiness (envelope_problems
     reports that case for a non-null value). Missing records read Unresolved.
 
@@ -595,24 +634,57 @@ def source_label(inputs: Mapping[str, Any], depends_on: Sequence[str],
             sources += [loc for loc in locators if loc not in sources]
     return {
         "sourceEvidenceKind": weakest,
-        "weakestInputs": [name for name, label, _ in labelled if label == weakest and weakest != "Literature estimate"],
+        "weakestInputs": list(dict.fromkeys(root for name, label, _ in labelled
+                                            if label == weakest and weakest != "Literature estimate"
+                                            for root in _weakest_roots(name, inputs, weakest))),
         "labelSources": sources,
         "determiningInputs": [name for name, _, _ in labelled],
     }
 
 
+def _content_key(value: Any) -> str:
+    """Collision-free content digest, with SI numbers encoded as binary64 float.hex on both runtimes."""
+    def encode(item):
+        if isinstance(item, bool) or item is None or isinstance(item, str):
+            return item
+        if isinstance(item, (int, float)):
+            return ["number", float(item).hex()] if _is_number(item) else ["invalid", "number"]
+        if isinstance(item, list):
+            return ["list", [encode(v) for v in item]]
+        if isinstance(item, dict):
+            return ["object", [[k, encode(v)] for k, v in sorted(item.items())]]
+        return ["invalid", type(item).__name__]
+    return json.dumps(encode(value), ensure_ascii=False, separators=(",", ":"))
+
+
 def parent_key(inputs: Mapping[str, Any], depends_on: Sequence[str],
                quantities: Optional[Mapping[str, Any]] = None) -> str:
-    """Currentness key of a value: its resolved input names with their record sourceIds (sorted).
+    """Bind complete input records plus each transitive sibling's identity and full-precision value.
 
-    A changed record (a new endpoint, class or user value with its own sourceId) changes the key, so an output
-    computed against the old parent is stale even when the numbers agree (SPEC A2.4)."""
-    parts = []
-    for name in sorted(_determining(depends_on, inputs, quantities)):
-        record = inputs.get(name)
-        source_id = record.get("sourceId") if isinstance(record, dict) else None
-        parts.append(f"{name}={source_id if isinstance(source_id, str) else '<missing>'}")
-    return "inputs:" + ";".join(parts)
+    The content digest is stored directly, without a lossy hash. Reused sourceIds cannot hide changed provenance.
+    """
+    parts = {}
+    def visit(names, seen):
+        for name in names:
+            if not isinstance(name, str) or name in seen:
+                continue
+            if name in inputs:
+                record = inputs[name]
+                parts[name] = {"input": record}
+                if isinstance(record, dict):
+                    deps = record.get("dependsOn") if _str_list(record.get("dependsOn")) else []
+                    if isinstance(record.get("followsInput"), str):
+                        deps = deps + [record["followsInput"]]
+                    visit(deps, seen | {name})
+            elif quantities is not None and isinstance(quantities.get(name), dict):
+                sibling = quantities[name]
+                parts[name] = {"identity": sibling.get("identity"), "value": sibling.get("value")}
+                deps = sibling.get("dependsOn")
+                visit(deps if _str_list(deps) else [], seen | {name})
+            else:
+                parts[name] = None
+    visit(depends_on, frozenset())
+    return "parents-v2:" + _content_key(parts)
 
 
 # --- Quantity, observation and container builders ---------------------------------------------------------------
@@ -703,7 +775,7 @@ def observation(observable: str, value: Any, unit: str, source_evidence_kind: st
 
 def container(quantities: Mapping[str, Any], *, module_maturity: str = "Research",
               input_provenance: Optional[Mapping[str, Any]] = None,
-              observations: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
+              observations: Optional[Mapping[str, Any]] = None, default: Optional[bool] = None) -> Dict[str, Any]:
     """Container keys (4.2, 4.1 item 7). Only an object holding a quantities map carries them."""
     out: Dict[str, Any] = {"quantityEnvelopeSchema": ENVELOPE_SCHEMA, "moduleEvidenceCeiling": MODULE_EVIDENCE_CEILING,
                            "moduleMaturity": module_maturity, "quantities": dict(quantities)}
@@ -711,6 +783,8 @@ def container(quantities: Mapping[str, Any], *, module_maturity: str = "Research
         out["observations"] = dict(observations)
     if input_provenance is not None:
         out["inputProvenance"] = dict(input_provenance)
+    if default is not None:
+        out["default"] = default
     return out
 
 
@@ -780,7 +854,7 @@ def _reason_problems(reasons: Any, where: str, inputs: Mapping[str, Any],
             problems.append(f"{at} must be {{code, params, parent}} (no text from producers)")
             continue
         code, params, parent = item["code"], item["params"], item["parent"]
-        if code not in REASON_TEMPLATES:
+        if not isinstance(code, str) or code not in REASON_TEMPLATES:
             problems.append(f"{at}: unknown reason code {code!r}")
             continue
         if not isinstance(params, dict) or not all(isinstance(key, str) and _KEY.match(key) for key in params):
@@ -795,6 +869,8 @@ def _reason_problems(reasons: Any, where: str, inputs: Mapping[str, Any],
         if parent is not None:
             if not isinstance(parent, dict) or set(parent) != {"input", "kind"}:
                 problems.append(f"{at}.parent must be null or {{input, kind}}")
+            elif not _text(parent["input"]):
+                problems.append(f"{at}.parent.input must be a non-empty string")
             elif parent["input"] in inputs and isinstance(inputs[parent["input"]], dict):
                 if parent["kind"] != inputs[parent["input"]].get("kind"):
                     problems.append(f"{at}.parent kind {parent['kind']!r} differs from the input record "
@@ -826,7 +902,7 @@ def quantity_problems(q: Any, where: str, inputs: Mapping[str, Any],
     status, value = q["status"], q["value"]
     if status not in QUANTITY_STATUSES:
         return problems + [f"{where}.status must be one of {QUANTITY_STATUSES}"]
-    definition = QUANTITY_DEFINITIONS.get(q["quantityDefinition"])
+    definition = QUANTITY_DEFINITIONS.get(q["quantityDefinition"]) if isinstance(q["quantityDefinition"], str) else None
     if definition is None:
         return problems + [f"{where}.quantityDefinition {q['quantityDefinition']!r} is not a registered definition"]
     if q["unit"] != definition["unit"]:
@@ -834,6 +910,8 @@ def quantity_problems(q: Any, where: str, inputs: Mapping[str, Any],
     role = q["leafRole"]
     if role not in LEAF_ROLES:
         problems.append(f"{where}.leafRole must be one of {LEAF_ROLES}")
+    elif role not in LABELLED_ROLES:
+        problems.append(f"{where}: a registered quantity definition requires a labelled role")
     has_value = value is not None
     if status in VALUE_STATUSES and not has_value:
         problems.append(f"{where}: status {status} needs a value")
@@ -857,6 +935,13 @@ def quantity_problems(q: Any, where: str, inputs: Mapping[str, Any],
                             "quantities of this container")
     if not has_value and evidence is not None:
         problems.append(f"{where}: a null value carries no source label")
+    if not has_value:
+        if q["uncertainty"] is not None:
+            problems.append(f"{where}: a null value carries no uncertainty")
+        if isinstance(q["identity"], dict) and q["identity"].get("parent") is not None:
+            problems.append(f"{where}: a null value carries no parent identity")
+        if not q["dependsOn"]:
+            problems.append(f"{where}: a null quantity must name its blocking input or sibling in dependsOn")
     if evidence is None and (q["weakestInputs"] or q["labelSources"]):
         problems.append(f"{where}: weakestInputs and labelSources stay empty without a source label")
     if role in UNLABELLED_ROLES and evidence is not None:
@@ -999,6 +1084,10 @@ def container_problems(c: Any, where: str, module_maturity: Optional[str] = None
         if not (isinstance(name, str) and _KEY.match(name)):
             problems.append(f"{where}.inputProvenance key {name!r} must be a plain name")
         problems += input_record_problems(record, f"{where}.inputProvenance.{name}")
+        if isinstance(record, dict) and record.get("kind") == "sourcedAlternative" and c.get("default") is not False:
+            problems.append(f"{where}: sourcedAlternative requires container default: false")
+    if "default" in c and not isinstance(c["default"], bool):
+        problems.append(f"{where}.default must be a boolean")
     overlap = sorted(set(inputs) & set(quantities))
     if overlap:
         problems.append(f"{where}: names {overlap} are both an input and a quantity")
@@ -1165,6 +1254,7 @@ def typescript_document() -> Dict[str, Any]:
         "inputStatuses": list(INPUT_STATUSES),
         "inputPhases": list(INPUT_PHASES),
         "processPhase": PROCESS_PHASE,
+        "requestProcessInputs": list(REQUEST_PROCESS_INPUTS),
         "followStates": list(FOLLOW_STATES),
         "inputRecordKeys": list(INPUT_RECORD_KEYS),
         "quantityKeys": list(QUANTITY_KEYS),

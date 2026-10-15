@@ -99,7 +99,7 @@ def blanket_null_front() -> Dict[str, Any]:
         blocked, qe.reason("parent-unavailable", parent=qe.reason_parent("thermalGradient", inputs, quantities)),
         qe.reason("parent-unavailable", parent=qe.reason_parent("normalSpeed", inputs, quantities))],
         depends_on=["thermalGradient", "normalSpeed"])
-    quantities["morphology"] = qe.unavailable("front-morphology", [qe.reason("missing-source-bound-model")])
+    quantities["morphology"] = qe.unavailable("front-morphology", [blocked], depends_on=["liquidus_K"])
     return qe.container(quantities, input_provenance=inputs)
 
 
@@ -158,12 +158,27 @@ def label_cases() -> Dict[str, Any]:
             source_evidence_kind="Unresolved", scope="Pure-Al fusion proxy"), "k": sourced_k}, ["Lf", "k"]),
         ("missing-record-is-unresolved", {"k": sourced_k}, ["k", "Tl"]),
     ]
+    # Hand-pinned expectations: never derive the oracle from the rule being tested.
+    expected_cases = [
+        ("Literature estimate", [], ["Case source for k", "Case source for cp"]),
+        ("User input", ["cp"], []),
+        ("Unresolved", ["k"], []),
+        ("Unresolved", ["k"], []),
+        ("Literature estimate", [], ["Case source for k"]),
+        ("Unresolved", [], []),
+        ("Unresolved", ["L"], []),
+        ("User input", ["Tref"], []),
+        ("Unresolved", ["cp"], []),
+        ("Literature estimate", [], ["Case source for k", "Case source for cp"]),
+        ("User input", ["k"], []),
+        ("Literature estimate", [], ["Case source for Tl"]),
+        ("Unresolved", ["Lf"], []),
+        ("Unresolved", ["Tl"], []),
+    ]
     out = []
-    for name, inputs, depends_on in cases:
-        expected = qe.source_label(inputs, depends_on)
+    for (name, inputs, depends_on), (kind, weakest, sources) in zip(cases, expected_cases, strict=True):
         out.append({"name": name, "inputs": inputs, "dependsOn": depends_on,
-                    "expected": {key: expected[key] for key in ("sourceEvidenceKind", "weakestInputs",
-                                                                "labelSources")}})
+                    "expected": {"sourceEvidenceKind": kind, "weakestInputs": weakest, "labelSources": sources}})
     return {"rule": "decisions 1 and 2 (2026-10-15); contract 4.3; P8 13.12", "cases": out}
 
 

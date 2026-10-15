@@ -280,14 +280,19 @@
       "quantityDefinition": "front-morphology",
       "leafRole": "derived",
       "sourceEvidenceKind": null,
-      "dependsOn": [],
+      "dependsOn": [
+        "liquidus_K"
+      ],
       "weakestInputs": [],
       "labelSources": [],
       "reasons": [
         {
-          "code": "missing-source-bound-model",
+          "code": "missing-source-constant",
           "params": {},
-          "parent": null
+          "parent": {
+            "input": "liquidus_K",
+            "kind": "declaredAssumption"
+          }
         }
       ],
       "numericalStatus": {

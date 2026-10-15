@@ -104,6 +104,7 @@ export interface Observation {
 }
 
 export interface QuantityContainer {
+  readonly default?: boolean;
   readonly quantityEnvelopeSchema: typeof QUANTITY_ENVELOPE.schema;
   readonly moduleEvidenceCeiling: typeof QUANTITY_ENVELOPE.moduleEvidenceCeiling;
   readonly moduleMaturity: ModuleMaturityEcho;
@@ -205,6 +206,7 @@ export function valueProvenanceProblems(raw: unknown, where = "input"): string[]
     problems.push(`${where}: defaultKind must be an input kind or null`);
   }
   if (raw.defaultKind === "legacyEstimate") problems.push(`${where}: a legacy estimate is never a default`);
+  if (raw.defaultKind === "sourcedAlternative") problems.push(`${where}: a sourcedAlternative is never a defaultKind`);
   const follows = raw.followsInput;
   const state = raw.followState;
   if (inputKind === "followsInput") {
@@ -219,6 +221,7 @@ export function valueProvenanceProblems(raw: unknown, where = "input"): string[]
     problems.push(`${where}: dependsOn must be a list of unique names`);
   }
   if (raw.phase !== null && !has(V.inputPhases, raw.phase)) problems.push(`${where}: phase must be one of ${V.inputPhases.join(", ")} or null`);
+  if (raw.phase === V.processPhase && kind !== "userInput") problems.push(`${where}: only userInput may carry phase process`);
   if (raw.referenceTemperature_K !== null && !isNumber(raw.referenceTemperature_K)) {
     problems.push(`${where}: referenceTemperature_K must be a finite number or null`);
   }
@@ -261,9 +264,9 @@ function determining(dependsOn: readonly string[], inputs: Records, quantities: 
 }
 
 function inputLabel(name: string, inputs: Records, seen: ReadonlySet<string>): [Label | null, string[]] {
+  if (has(V.requestProcessInputs, name)) return [null, []];
   const record = Object.hasOwn(inputs, name) ? inputs[name] : undefined;
   if (!isObject(record) || seen.has(name)) return ["Unresolved", []];
-  if (record.phase === V.processPhase) return [null, []];
   const kind = record.kind;
   let label: Label;
   let locators: string[] = [];
@@ -317,6 +320,23 @@ function inputLabel(name: string, inputs: Records, seen: ReadonlySet<string>): [
   return [label, label === "Literature estimate" ? locators : []];
 }
 
+function weakestRoots(name: string, inputs: Records, label: Label, seen: ReadonlySet<string> = new Set()): string[] {
+  const record = inputs[name];
+  if (!isObject(record) || seen.has(name)) return [name];
+  if (record.kind !== "followsInput" && record.kind !== "derived") return [name];
+  if (record.kind === "followsInput" && has(V.unsourcedInputKinds, record.defaultKind)) return [name];
+  const deps = isStrList(record.dependsOn) ? record.dependsOn : [];
+  const followed = record.kind === "followsInput" && typeof record.followsInput === "string" ? [record.followsInput, ...deps] : deps;
+  const roots: string[] = [];
+  const next = new Set([...seen, name]);
+  for (const dep of followed) {
+    if (inputLabel(dep, inputs, next)[0] === label) {
+      for (const root of weakestRoots(dep, inputs, label, next)) if (!roots.includes(root)) roots.push(root);
+    }
+  }
+  return roots.length ? roots : [name];
+}
+
 /** The decided label rule over a value's determining inputs (mirrors quantity_envelope.source_label). */
 export function sourceLabel(inputs: Records, dependsOn: readonly string[], quantities?: Records): SourceLabelResult {
   const labelled: [string, Label, string[]][] = [];
@@ -332,20 +352,61 @@ export function sourceLabel(inputs: Records, dependsOn: readonly string[], quant
   }
   return {
     sourceEvidenceKind: weakest,
-    weakestInputs: weakest === "Literature estimate" ? [] : labelled.filter((item) => item[1] === weakest).map((item) => item[0]),
+    weakestInputs: weakest === "Literature estimate" ? [] : [...new Set(labelled.filter((item) => item[1] === weakest)
+      .flatMap((item) => weakestRoots(item[0], inputs, weakest)))],
     labelSources: sources,
     determiningInputs: labelled.map((item) => item[0]),
   };
 }
 
-/** Currentness key: the resolved input names with their record sourceIds (mirrors quantity_envelope.parent_key). */
+/** Python's binary64 float.hex, including signed zero and subnormals. */
+function floatHex(value: number): string {
+  if (!Number.isFinite(value)) return String(value).toLowerCase();
+  const bits = new DataView(new ArrayBuffer(8));
+  bits.setFloat64(0, value);
+  const high = bits.getUint32(0), low = bits.getUint32(4);
+  const negative = (high >>> 31) ? "-" : "";
+  const exponent = (high >>> 20) & 0x7ff;
+  const fraction = (high & 0xfffff).toString(16).padStart(5, "0") + low.toString(16).padStart(8, "0");
+  if (exponent === 0 && (high & 0xfffff) === 0 && low === 0) return `${negative}0x0.0p+0`;
+  const power = exponent === 0 ? -1022 : exponent - 1023;
+  return `${negative}0x${exponent === 0 ? "0" : "1"}.${fraction}p${power >= 0 ? "+" : ""}${power}`;
+}
+
+function contentKey(value: unknown): string {
+  const encode = (item: unknown): unknown => {
+    if (item === null || typeof item === "boolean" || typeof item === "string") return item;
+    if (typeof item === "number") return ["number", floatHex(item)];
+    if (Array.isArray(item)) return ["list", item.map(encode)];
+    if (isObject(item)) return ["object", Object.keys(item).sort().map(key => [key, encode(item[key])])];
+    return ["invalid", typeof item];
+  };
+  return JSON.stringify(encode(value));
+}
+
+/** Exact content digest of complete inputs and transitive sibling identities/values; no lossy hash. */
 export function parentKey(inputs: Records, dependsOn: readonly string[], quantities?: Records): string {
-  const parts = [...determining(dependsOn, inputs, quantities)].sort().map((name) => {
-    const record = Object.hasOwn(inputs, name) ? inputs[name] : undefined;
-    const sourceId = isObject(record) && typeof record.sourceId === "string" ? record.sourceId : "<missing>";
-    return `${name}=${sourceId}`;
-  });
-  return `inputs:${parts.join(";")}`;
+  const parts: Json = {};
+  const visit = (names: readonly string[], seen: ReadonlySet<string>): void => {
+    for (const name of names) {
+      if (seen.has(name)) continue;
+      const next = new Set([...seen, name]);
+      if (Object.hasOwn(inputs, name)) {
+        const record = inputs[name];
+        parts[name] = { input: record };
+        if (isObject(record)) {
+          const deps = isStrList(record.dependsOn) ? record.dependsOn : [];
+          visit(typeof record.followsInput === "string" ? [...deps, record.followsInput] : deps, next);
+        }
+      } else if (quantities && isObject(quantities[name])) {
+        const sibling = quantities[name];
+        parts[name] = { identity: sibling.identity ?? null, value: sibling.value ?? null };
+        visit(isStrList(sibling.dependsOn) ? sibling.dependsOn : [], next);
+      } else parts[name] = null;
+    }
+  };
+  visit(dependsOn, new Set());
+  return `parents-v2:${contentKey(parts)}`;
 }
 
 // --- Quantity, observation and container --------------------------------------------------------------------------
@@ -464,6 +525,7 @@ export function quantityProblems(raw: unknown, where: string, inputs: Records, q
   if (raw.unit !== definition.unit) problems.push(`${where}.unit must be ${definition.unit} for ${id}`);
   const role = raw.leafRole;
   if (!has(V.leafRoles, role)) problems.push(`${where}.leafRole must be one of ${V.leafRoles.join(", ")}`);
+  else if (!has(V.labelledRoles, role)) problems.push(`${where}: a registered quantity definition requires a labelled role`);
   const hasValue = value !== null;
   if (has(V.valueStatuses, status) && !hasValue) problems.push(`${where}: status ${String(status)} needs a value`);
   if (!has(V.valueStatuses, status) && hasValue) problems.push(`${where}: status ${String(status)} must carry value null`);
@@ -482,6 +544,11 @@ export function quantityProblems(raw: unknown, where: string, inputs: Records, q
     if (unknown.length) problems.push(`${where}.dependsOn names ${unknown.join(", ")}, which are neither input records nor sibling quantities of this container`);
   }
   if (!hasValue && evidence !== null) problems.push(`${where}: a null value carries no source label`);
+  if (!hasValue) {
+    if (raw.uncertainty !== null) problems.push(`${where}: a null value carries no uncertainty`);
+    if (isObject(raw.identity) && raw.identity.parent !== null) problems.push(`${where}: a null value carries no parent identity`);
+    if (!dependsOn?.length) problems.push(`${where}: a null quantity must name its blocking input or sibling in dependsOn`);
+  }
   if (evidence === null && (weakest.length || labelSources.length)) problems.push(`${where}: weakestInputs and labelSources stay empty without a source label`);
   if (has(V.unlabelledRoles, role) && evidence !== null) problems.push(`${where}: a ${String(role)} leaf carries no source label`);
   if (role === "requestInput" && evidence !== null && evidence !== "User input") problems.push(`${where}: a request echo reads User input or null`);
@@ -628,7 +695,11 @@ export function containerProblems(raw: unknown, where = "container", options: Co
   for (const [name, record] of Object.entries(inputs)) {
     if (!KEY.test(name)) problems.push(`${where}.inputProvenance key ${name} must be a plain name`);
     problems.push(...valueProvenanceProblems(record, `${where}.inputProvenance.${name}`));
+    if (isObject(record) && record.kind === "sourcedAlternative" && raw.default !== false) {
+      problems.push(`${where}: sourcedAlternative requires container default: false`);
+    }
   }
+  if (Object.hasOwn(raw, "default") && typeof raw.default !== "boolean") problems.push(`${where}.default must be a boolean`);
   const overlap = Object.keys(inputs).filter((name) => Object.hasOwn(quantities, name)).sort();
   if (overlap.length) problems.push(`${where}: names ${overlap.join(", ")} are both an input and a quantity`);
   let observations: Json = {};

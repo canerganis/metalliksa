@@ -124,6 +124,55 @@ test('F16 negative mutations: each one is rejected on its own', () => {
       identity: { input: null, model: null, parent: null } });
   }), "parent quantity thermalGradient is null");
   rejects(mutate(d => { d.quantities.thermalGradient.value = 0; }), 'must be positive');
+  rejects(mutate(d => { Object.assign(d.inputProvenance.liquidus_K,
+    { kind: 'legacyEstimate', sourceEvidenceKind: 'Unresolved', phase: 'process' }); }), 'only userInput');
+  for (const leafRole of ['convention', 'requestInput', 'softwareLimit', 'indexConvention']) {
+    rejects(mutate(d => { Object.assign(d.quantities.thermalGradient,
+      { leafRole, sourceEvidenceKind: null, weakestInputs: [], labelSources: [] }); }), 'requires a labelled role');
+  }
+  for (const field of ['value', 'model', 'both']) {
+    rejects(mutate(d => {
+      if (field !== 'model') d.quantities.thermalGradient.value = 1.2e7;
+      if (field !== 'value') d.quantities.thermalGradient.identity.model = 'changed-model';
+    }), 'stale-parent');
+  }
+  for (const [field, value] of Object.entries({ kind: 'sourceModelAssumption', scope: 'changed scope', status: 'outOfRange',
+    sourceLocator: 'changed source', defaultKind: 'sourceModelAssumption', defaultValue: 26 })) {
+    rejects(mutate(d => { d.inputProvenance.conductivity_W_mK[field] = value; }), 'stale-parent');
+  }
+});
+
+test('process exclusion uses fixed request names; only userInput permits process phase', () => {
+  const { cases } = fixture('label-cases.json');
+  const sourced = cases[0].inputs.k;
+  const user = cases.find((item: Json) => item.name === 'one-user-input').inputs.cp;
+  const inputs = { k: sourced, power_W: { ...user, phase: null } };
+  assert.equal(sourceLabel(inputs, Object.keys(inputs)).sourceEvidenceKind, 'Literature estimate');
+  for (const name of QUANTITY_ENVELOPE.requestProcessInputs) {
+    for (const phase of [null, 'solid', 'process']) {
+      assert.equal(sourceLabel({ k: sourced, [name]: { ...user, phase } }, ['k', name]).sourceEvidenceKind, 'Literature estimate');
+    }
+  }
+  const assumption = cases.find((item: Json) => item.name === 'unresolved-takes-precedence').inputs.k;
+  const emissivity = { ...assumption, phase: 'process' };
+  const label = sourceLabel({ emissivity }, ['emissivity']);
+  assert.equal(sourceLabelText(label.sourceEvidenceKind, label.weakestInputs), 'Unresolved: emissivity');
+  for (const kind of QUANTITY_ENVELOPE.inputKinds) {
+    const record = { ...sourced, kind, phase: 'process' };
+    if (kind === 'userInput') checkedValueProvenance({ ...record, sourceEvidenceKind: 'User input' });
+    else assert.throws(() => checkedValueProvenance(record), /only userInput/);
+  }
+});
+
+test('sourcedAlternative requires an explicitly non-default sensitivity container', () => {
+  const base = fixture('synthetic-admitted-liquidus.json');
+  const record = { ...base.inputProvenance.conductivity_W_mK, kind: 'sourcedAlternative', defaultKind: null };
+  const doc = { ...base, quantities: {}, inputProvenance: { alternative: record } };
+  for (const flag of [undefined, true, 0, 'false']) {
+    rejects({ ...doc, default: flag }, 'container default: false');
+  }
+  checkedQuantityContainer({ ...doc, default: false });
+  assert.throws(() => checkedValueProvenance({ ...record, defaultKind: 'sourcedAlternative' }), /never a defaultKind/);
 });
 
 test('the blanket-null front (SOL-A1 shape) is accepted and its parent chain is enforced', () => {
@@ -142,6 +191,9 @@ test('the blanket-null front (SOL-A1 shape) is accepted and its parent chain is 
   rejects(mutate(d => { d.quantities.normalSpeed.reasons[0].text = 'A producer sentence.'; }), 'no text from producers');
   rejects(mutate(d => { d.quantities.pdas.sources = [{ id: 'hunt-lu', locator: 'Hunt-Lu 1996', readLevel: 'secondary-read' }]; }), 'no source claim');
   rejects(mutate(d => { d.quantities.morphology.status = 'computed'; d.quantities.morphology.value = 'cellular'; }), 'no admitted category');
+  rejects(mutate(d => { d.quantities.thermalGradient.uncertainty = { kind: 'not-quantified', construction: null }; }), 'no uncertainty');
+  rejects(mutate(d => { d.quantities.thermalGradient.identity.parent = 'stale'; }), 'no parent identity');
+  rejects(mutate(d => { d.quantities.thermalGradient.dependsOn = []; }), 'blocking input or sibling');
 });
 
 test('observations may read Measured; declarations bound statuses, labels and reason codes', () => {

@@ -505,7 +505,7 @@
       "expected": {
         "sourceEvidenceKind": "User input",
         "weakestInputs": [
-          "mu"
+          "Tref"
         ],
         "labelSources": []
       }
@@ -580,7 +580,7 @@
       "expected": {
         "sourceEvidenceKind": "Unresolved",
         "weakestInputs": [
-          "alpha"
+          "cp"
         ],
         "labelSources": []
       }
@@ -646,7 +646,7 @@
         "k": {
           "kind": "userInput",
           "label": "user input",
-          "sourceId": "case:user:k",
+          "sourceId": "case:user:k:value:0x1.9000000000001p+4",
           "sourceLocator": null,
           "declarationLocator": null,
           "source": null,

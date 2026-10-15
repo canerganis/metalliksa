@@ -178,8 +178,11 @@ class OperationAndContractTests(unittest.TestCase):
         self.assertIn("`front.observations.dscEndpoints`: DSC operational temperatures", text)
 
     def test_envelope_payload_check_uses_the_operation_declarations(self):
+        inputs = {"liquidus_K": qe.input_record("declaredAssumption", "test:liquidus", status="inRange",
+                                               declaration_locator="Synthetic contract test")}
         payload = {"front": qe.container({"thermalGradient": qe.unavailable(
-            "liquidus-front-thermal-gradient", [qe.reason("missing-source-constant")])})}
+            "liquidus-front-thermal-gradient", [qe.reason("missing-source-constant",
+                parent=qe.reason_parent("liquidus_K", inputs))], depends_on=["liquidus_K"])}, input_provenance=inputs)}
         operation = _operation((_quantity(),))
         self.assertEqual(qe.envelope_problems(payload, operation), [])
         payload["front"]["quantities"]["thermalGradient"]["reasons"][0]["code"] = "solver-error"

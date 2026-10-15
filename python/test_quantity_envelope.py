@@ -148,10 +148,53 @@ class LabelRuleTests(unittest.TestCase):
         self.assertEqual(fixtures.stale(), [])
 
     def test_label_cases_follow_the_decided_rule(self):
+        expected = {
+            "all-sourced": ("Literature estimate", [], ["Case source for k", "Case source for cp"]),
+            "one-user-input": ("User input", ["cp"], []),
+            "unresolved-takes-precedence": ("Unresolved", ["k"], []),
+            "legacy-estimate": ("Unresolved", ["k"], []),
+            "process-values-excluded": ("Literature estimate", [], ["Case source for k"]),
+            "process-only-never-upgraded": ("Unresolved", [], []),
+            "follows-declared-rule": ("Unresolved", ["L"], []),
+            "follows-sourced-rule-of-user-input": ("User input", ["Tref"], []),
+            "derived-from-weakest": ("Unresolved", ["cp"], []),
+            "typed-equal-to-default-keeps-source": ("Literature estimate", [], ["Case source for k", "Case source for cp"]),
+            "typed-different-is-user-input": ("User input", ["k"], []),
+            "transfer-reads-literature-never-measured": ("Literature estimate", [], ["Case source for Tl"]),
+            "record-downgrade-is-kept": ("Unresolved", ["Lf"], []),
+            "missing-record-is-unresolved": ("Unresolved", ["Tl"], []),
+        }
+        self.assertEqual(set(expected), {case["name"] for case in _fixture("label-cases.json")["cases"]})
         for case in _fixture("label-cases.json")["cases"]:
             with self.subTest(case=case["name"]):
                 result = qe.source_label(case["inputs"], case["dependsOn"])
-                self.assertEqual({key: result[key] for key in case["expected"]}, case["expected"])
+                pinned = dict(zip(("sourceEvidenceKind", "weakestInputs", "labelSources"), expected[case["name"]]))
+                self.assertEqual(case["expected"], pinned)
+                self.assertEqual({key: result[key] for key in pinned}, pinned)
+
+    def test_process_exclusion_is_by_name_and_process_phase_is_user_only(self):
+        inputs = {"k": fixtures._sourced("k"), "power_W": fixtures._user("power_W")}
+        self.assertEqual(qe.source_label(inputs, list(inputs))["sourceEvidenceKind"], "Literature estimate")
+        for name in qe.REQUEST_PROCESS_INPUTS:
+            for phase in (None, "solid", "process"):
+                inputs = {"k": fixtures._sourced("k"), name: {**fixtures._user(name), "phase": phase}}
+                self.assertEqual(qe.source_label(inputs, list(inputs))["sourceEvidenceKind"], "Literature estimate")
+        # P8 AlSi10Mg _assumption(..., "process") must remain unresolved even though invalid.
+        emissivity = {**fixtures._declared("emissivity"), "phase": "process"}
+        label = qe.source_label({"emissivity": emissivity}, ["emissivity"])
+        self.assertEqual((label["sourceEvidenceKind"], label["weakestInputs"]), ("Unresolved", ["emissivity"]))
+        self.assertEqual(qe.SOURCE_LABEL_DISPLAY[label["sourceEvidenceKind"]].format(names=", ".join(label["weakestInputs"])),
+                         "Unresolved: emissivity")
+        for kind in qe.INPUT_KINDS:
+            record = {**fixtures._sourced("k"), "kind": kind, "phase": "process"}
+            problems = qe.input_record_problems(record, "k")
+            self.assertEqual(any("only userInput" in p for p in problems), kind != "userInput", kind)
+
+    def test_reused_source_id_still_binds_the_actual_typed_value(self):
+        default = fixtures._sourced("k")
+        a = qe.typed_input(default, 26.0, 25.0, source_id="reused")
+        b = qe.typed_input(default, 27.0, 25.0, source_id="reused")
+        self.assertNotEqual(qe.parent_key({"k": a}, ["k"]), qe.parent_key({"k": b}, ["k"]))
 
     def test_unresolved_takes_precedence_and_names_only_its_inputs(self):
         inputs = {"k": fixtures._declared("k"), "cp": fixtures._user("cp"), "rho": fixtures._sourced("rho")}
@@ -215,6 +258,9 @@ class LedgerMappingTests(unittest.TestCase):
         for unknown in ("proposed-something-else", "", "measured-endpoint"):
             with self.assertRaises(qe.EnvelopeError):
                 qe.ledger_class_stem(unknown)
+        for prefix in ("rejected", "quarantined", "foo", "rejected-admitted"):
+            with self.assertRaises(qe.EnvelopeError):
+                qe.ledger_class_stem(prefix + "-fixed-front-literature-model")
 
     def test_transfers_never_read_as_measured(self):
         for record_id in ("MP02", "MP03"):
@@ -292,6 +338,57 @@ class SyntheticAdmittedLiquidusTests(unittest.TestCase):
         self.assertEqual(self.doc["moduleEvidenceCeiling"], "screening-only")
         self.assertEqual(self.doc["inputProvenance"]["liquidus_K"]["kind"], "alloyTransfer")
         self.assertEqual(self.doc["inputProvenance"]["liquidus_K"]["status"], "extrapolated")
+
+    def test_gate_label_and_parent_bypasses_are_rejected(self):
+        self.assertRejected(lambda d: d["inputProvenance"]["liquidus_K"].update(
+            kind="legacyEstimate", sourceEvidenceKind="Unresolved", phase="process"), "only userInput")
+        for role in ("convention", "requestInput", "softwareLimit", "indexConvention"):
+            self.assertRejected(lambda d: d["quantities"]["thermalGradient"].update(
+                leafRole=role, sourceEvidenceKind=None, weakestInputs=[], labelSources=[]), "requires a labelled role")
+        for field, value in (("value", 1.2e7), ("identity", {"input": "new", "model": "new-model", "parent": "new"})):
+            self.assertRejected(lambda d: d["quantities"]["thermalGradient"].update({field: value}), "stale-parent")
+        self.assertRejected(lambda d: d["quantities"]["thermalGradient"].update(
+            value=1.2e7, identity={**d["quantities"]["thermalGradient"]["identity"], "model": "changed-model"}), "stale-parent")
+
+    def test_reused_source_id_cannot_hide_source_record_changes(self):
+        for field, value in (("kind", "sourceModelAssumption"), ("scope", "changed scope"),
+                             ("status", "outOfRange"), ("sourceLocator", "changed source"),
+                             ("defaultKind", "sourceModelAssumption"), ("defaultValue", 26.0)):
+            self.assertRejected(lambda d: d["inputProvenance"]["conductivity_W_mK"].update({field: value}), "stale-parent")
+
+    def test_sourced_alternative_is_sensitivity_only(self):
+        doc = qe.container({}, input_provenance={"Tl": qe.input_record(
+            "sourcedAlternative", "alternative", status="inRange", source_locator="located alternative")})
+        for flag in (None, True, 0, "false"):
+            if flag is not None:
+                doc["default"] = flag
+            self.assertTrue(any("container default: false" in p for p in qe.envelope_problems(doc)))
+        doc["default"] = False
+        self.assertEqual(qe.envelope_problems(doc), [])
+        self.assertTrue(qe.input_record_problems({**fixtures._sourced("k"), "defaultKind": "sourcedAlternative"}, "k"))
+
+    def test_unhashable_fields_report_problems_instead_of_crashing(self):
+        for bad in ([], {}):
+            for field in self.doc["inputProvenance"]["conductivity_W_mK"]:
+                doc = copy.deepcopy(self.doc)
+                doc["inputProvenance"]["conductivity_W_mK"][field] = bad
+                # Empty dependsOn is valid; all other malformed scalar fields must be problems.
+                problems = qe.envelope_problems(doc)
+                if field != "dependsOn" or bad != []:
+                    self.assertTrue(problems, (field, bad))
+            for field in self.doc["quantities"]["thermalGradient"]:
+                doc = copy.deepcopy(self.doc)
+                doc["quantities"]["thermalGradient"][field] = bad
+                problems = qe.envelope_problems(doc)
+                self.assertIsInstance(problems, list)
+                if field in ("quantityDefinition", "sourceEvidenceKind", "status", "leafRole", "unit"):
+                    self.assertTrue(problems, (field, bad))
+            doc = copy.deepcopy(self.doc)
+            doc["quantities"]["thermalGradient"].update(status="partial", reasons=[{"code": bad, "params": {}, "parent": None}])
+            self.assertTrue(qe.envelope_problems(doc))
+            doc["quantities"]["thermalGradient"]["reasons"][0].update(
+                code="parent-unavailable", parent={"input": bad, "kind": "derived"})
+            self.assertTrue(qe.envelope_problems(doc))
 
     def test_non_null_unavailable_and_null_computed_are_rejected(self):
         self.assertRejected(lambda d: d["quantities"]["thermalGradient"].update(status="unavailable"),
@@ -402,6 +499,14 @@ class BlanketNullFrontTests(unittest.TestCase):
             first = doc["quantities"][name]["reasons"][0]
             self.assertEqual((first["code"], first["parent"]),
                              ("missing-source-constant", {"input": "liquidus_K", "kind": "declaredAssumption"}))
+
+    def test_null_values_drop_uncertainty_and_parent_identity_and_name_the_blocker(self):
+        for field, value, fragment in (("uncertainty", {"kind": "not-quantified", "construction": None}, "no uncertainty"),
+                                       ("identity", {"input": None, "model": None, "parent": "stale"}, "no parent identity"),
+                                       ("dependsOn", [], "blocking input or sibling")):
+            doc = _fixture("blanket-null-front.json")
+            doc["quantities"]["thermalGradient"][field] = value
+            self.assertTrue(any(fragment in p for p in qe.envelope_problems(doc)))
 
     def test_a_dependent_must_name_each_null_parent_and_the_parent_kind_must_match(self):
         doc = _fixture("blanket-null-front.json")
