@@ -58,6 +58,8 @@ class CodeContract(ResearchTestCase):
         for module in models.CONTAINERS:
             self.assertEqual(set(block[module]['fields']),set(manifest.FIELD_LIST[module]))
             self.assertEqual(block[module]['moduleEvidenceCeiling'],'screening-only')
+            from module_contract import within_ceiling, PENDING_ORACLE_CEILING
+            self.assertTrue(within_ceiling(block[module]['moduleEvidenceCeiling'],PENDING_ORACLE_CEILING))
             for key in block[module]['fields']:self.assertIn(module+'.'+key,response['labels'])
         for descriptor in block['keyholeCavity']['band']['manifest']:
             for change in descriptor['changes']:
