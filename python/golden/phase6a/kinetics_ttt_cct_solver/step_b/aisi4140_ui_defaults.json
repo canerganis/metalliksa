@@ -1308,7 +1308,7 @@
   {
    "key": "kineticsModel.lswPrecipitateCoarsening.note",
    "kind": "added",
-   "new": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
+   "new": null,
    "old": null
   },
   {
@@ -1318,9 +1318,21 @@
    "old": null
   },
   {
+   "key": "kineticsModel.lswPrecipitateCoarsening.reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "kineticsModel.lswPrecipitateCoarsening.reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
+  },
+  {
    "key": "kineticsModel.lswPrecipitateCoarsening.status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
@@ -1444,253 +1456,363 @@
    "old": null
   },
   {
-   "abs": 0.9300000000000002,
    "key": "lswPrecipitateCoarsening[0].meanRadius_nm",
-   "kind": "numeric",
-   "new": 2.43,
-   "old": 1.5,
-   "rel": 0.6200000000000001
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
   },
   {
-   "abs": 31.200000000000003,
    "key": "lswPrecipitateCoarsening[0].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 145.5,
-   "old": 114.3,
-   "rel": 0.2729658792650919
+   "kind": "changed",
+   "new": null,
+   "old": 114.3
+  },
+  {
+   "key": "lswPrecipitateCoarsening[0].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[0].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[0].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 2.38,
-   "key": "lswPrecipitateCoarsening[1].meanRadius_nm",
-   "kind": "numeric",
-   "new": 3.88,
-   "old": 1.5,
-   "rel": 1.5866666666666667
+   "key": "lswPrecipitateCoarsening[0].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 69.50000000000001,
+   "key": "lswPrecipitateCoarsening[1].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[1].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 183.8,
-   "old": 114.3,
-   "rel": 0.6080489938757657
+   "kind": "changed",
+   "new": null,
+   "old": 114.3
+  },
+  {
+   "key": "lswPrecipitateCoarsening[1].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[1].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[1].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 3.34,
-   "key": "lswPrecipitateCoarsening[2].meanRadius_nm",
-   "kind": "numeric",
-   "new": 4.84,
-   "old": 1.5,
-   "rel": 2.2266666666666666
+   "key": "lswPrecipitateCoarsening[1].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 91.00000000000001,
+   "key": "lswPrecipitateCoarsening[2].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[2].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 205.3,
-   "old": 114.3,
-   "rel": 0.7961504811898514
+   "kind": "changed",
+   "new": null,
+   "old": 114.3
+  },
+  {
+   "key": "lswPrecipitateCoarsening[2].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[2].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[2].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 4.56,
-   "key": "lswPrecipitateCoarsening[3].meanRadius_nm",
-   "kind": "numeric",
-   "new": 6.06,
-   "old": 1.5,
-   "rel": 3.0399999999999996
+   "key": "lswPrecipitateCoarsening[2].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 115.50000000000001,
+   "key": "lswPrecipitateCoarsening[3].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[3].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 229.8,
-   "old": 114.3,
-   "rel": 1.010498687664042
+   "kind": "changed",
+   "new": null,
+   "old": 114.3
+  },
+  {
+   "key": "lswPrecipitateCoarsening[3].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[3].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[3].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 6.12,
-   "key": "lswPrecipitateCoarsening[4].meanRadius_nm",
-   "kind": "numeric",
-   "new": 7.62,
-   "old": 1.5,
-   "rel": 4.08
+   "key": "lswPrecipitateCoarsening[3].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 143.39999999999998,
+   "key": "lswPrecipitateCoarsening[4].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[4].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 257.7,
-   "old": 114.3,
-   "rel": 1.2545931758530182
+   "kind": "changed",
+   "new": null,
+   "old": 114.3
+  },
+  {
+   "key": "lswPrecipitateCoarsening[4].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[4].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[4].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 8.09,
-   "key": "lswPrecipitateCoarsening[5].meanRadius_nm",
-   "kind": "numeric",
-   "new": 9.59,
-   "old": 1.5,
-   "rel": 5.3933333333333335
+   "key": "lswPrecipitateCoarsening[4].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 148.4,
+   "key": "lswPrecipitateCoarsening[5].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[5].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 262.8,
-   "old": 114.4,
-   "rel": 1.2972027972027973
+   "kind": "changed",
+   "new": null,
+   "old": 114.4
+  },
+  {
+   "key": "lswPrecipitateCoarsening[5].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[5].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[5].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[5].strengtheningMechanism",
    "kind": "changed",
-   "new": "Orowan Dislocation Looping (Over-aged)",
+   "new": null,
    "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 10.57,
    "key": "lswPrecipitateCoarsening[6].meanRadius_nm",
-   "kind": "numeric",
-   "new": 12.07,
-   "old": 1.5,
-   "rel": 7.046666666666667
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
   },
   {
-   "abs": 94.29999999999998,
    "key": "lswPrecipitateCoarsening[6].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 208.7,
-   "old": 114.4,
-   "rel": 0.8243006993006992
+   "kind": "changed",
+   "new": null,
+   "old": 114.4
+  },
+  {
+   "key": "lswPrecipitateCoarsening[6].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[6].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[6].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[6].strengtheningMechanism",
    "kind": "changed",
-   "new": "Orowan Dislocation Looping (Over-aged)",
+   "new": null,
    "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 12.32,
    "key": "lswPrecipitateCoarsening[7].meanRadius_nm",
-   "kind": "numeric",
-   "new": 13.82,
-   "old": 1.5,
-   "rel": 8.213333333333333
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
   },
   {
-   "abs": 67.9,
    "key": "lswPrecipitateCoarsening[7].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 182.4,
-   "old": 114.5,
-   "rel": 0.5930131004366813
+   "kind": "changed",
+   "new": null,
+   "old": 114.5
+  },
+  {
+   "key": "lswPrecipitateCoarsening[7].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[7].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[7].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[7].strengtheningMechanism",
    "kind": "changed",
-   "new": "Orowan Dislocation Looping (Over-aged)",
+   "new": null,
    "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 15.9,
    "key": "lswPrecipitateCoarsening[8].meanRadius_nm",
-   "kind": "numeric",
-   "new": 17.41,
-   "old": 1.51,
-   "rel": 10.529801324503312
+   "kind": "changed",
+   "new": null,
+   "old": 1.51
   },
   {
-   "abs": 30.200000000000017,
    "key": "lswPrecipitateCoarsening[8].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 144.8,
-   "old": 114.6,
-   "rel": 0.2635253054101223
+   "kind": "changed",
+   "new": null,
+   "old": 114.6
+  },
+  {
+   "key": "lswPrecipitateCoarsening[8].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[8].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[8].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[8].strengtheningMechanism",
    "kind": "changed",
-   "new": "Orowan Dislocation Looping (Over-aged)",
+   "new": null,
    "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 20.71,
    "key": "lswPrecipitateCoarsening[9].meanRadius_nm",
-   "kind": "numeric",
-   "new": 22.23,
-   "old": 1.52,
-   "rel": 13.625
+   "kind": "changed",
+   "new": null,
+   "old": 1.52
   },
   {
-   "abs": -1.5999999999999943,
    "key": "lswPrecipitateCoarsening[9].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 113.4,
-   "old": 115.0,
-   "rel": -0.01391304347826082
+   "kind": "changed",
+   "new": null,
+   "old": 115.0
+  },
+  {
+   "key": "lswPrecipitateCoarsening[9].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[9].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[9].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[9].strengtheningMechanism",
    "kind": "changed",
-   "new": "Orowan Dislocation Looping (Over-aged)",
+   "new": null,
    "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
@@ -7597,7 +7719,7 @@
   }
  ],
  "exitCode": 0,
- "gitHead": "a062a46e3b706eb6eb39186a45809d5618ad8fc9",
+ "gitHead": "fbf68b4c066e1088cc6a5f003f878ea8b1707824",
  "input": {
   "agingTemp_C": 720.0,
   "agingTime_h": 8.0,
@@ -7639,7 +7761,7 @@
  "schema": "phase6a-step-b-golden-1",
  "solver": "kinetics_ttt_cct_solver",
  "solverFile": "python/kinetics_ttt_cct_solver.py",
- "solverSha256": "954fa53e7a0e2610f807d2364146e28887910a07eb945dd3a9004875d1f1467d",
+ "solverSha256": "9ccf6cd2fad88240ff838b2616f1afa92d11cbd96e27b4d9cf44c4af0a442e8f",
  "solverSha256Normalization": "CRLF->LF (git blob form)",
  "solverSource": "worktree",
  "stdout": {
@@ -7981,9 +8103,13 @@
     "startCriterion": "1 % reaction (X = 0.01) per phase; each phase's start curve is integrated independently from the austenitizing temperature (no phase interaction)"
    },
    "lswPrecipitateCoarsening": {
-    "note": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
+    "note": null,
     "reason": null,
-    "status": "generic-constants-illustrative"
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled"
    },
    "modelVersion": "li1998-additivity-v1",
    "note": "Li et al. (1998) isothermal start/finish law with Grange Ae3/Ae1, Li Bs and Kung-Rayment Ms; CCT starts from the additivity rule applied to each phase's 1 % start curve independently (no phase interaction, no carbon partitioning). Unvalidated screening model: phase fractions and hardness are not computed.",
@@ -8019,73 +8145,113 @@
   "lswPrecipitateCoarsening": [
    {
     "agingTime_h": 0.1,
-    "meanRadius_nm": 2.43,
-    "precipitationHardening_MPa": 145.5,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 0.5,
-    "meanRadius_nm": 3.88,
-    "precipitationHardening_MPa": 183.8,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 1.0,
-    "meanRadius_nm": 4.84,
-    "precipitationHardening_MPa": 205.3,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 2.0,
-    "meanRadius_nm": 6.06,
-    "precipitationHardening_MPa": 229.8,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 4.0,
-    "meanRadius_nm": 7.62,
-    "precipitationHardening_MPa": 257.7,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 8.0,
-    "meanRadius_nm": 9.59,
-    "precipitationHardening_MPa": 262.8,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 16.0,
-    "meanRadius_nm": 12.07,
-    "precipitationHardening_MPa": 208.7,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 24.0,
-    "meanRadius_nm": 13.82,
-    "precipitationHardening_MPa": 182.4,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 48.0,
-    "meanRadius_nm": 17.41,
-    "precipitationHardening_MPa": 144.8,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 100.0,
-    "meanRadius_nm": 22.23,
-    "precipitationHardening_MPa": 113.4,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    }
   ],
   "success": true,

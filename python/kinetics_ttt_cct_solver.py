@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MetalliX Python steel TTT/CCT kinetics solver (Li et al. 1998 model) with LSW precipitate coarsening.
+MetalliX Python steel TTT/CCT kinetics solver (Li et al. 1998 model).
 
 TTT: the Li, Niebuhr, Meekisho & Atteridge (1998) modification of the Kirkaldy-Venugopalan
 isothermal model for ferrite, pearlite and bainite in low-alloy steels:
@@ -12,7 +12,12 @@ cooling path. Critical temperatures: Ae3/Ae1 by Grange (1961), Bs by Li et al., 
 linear equation as modified by Kung & Rayment (1982). The model is reported only for steels whose
 composition lies inside the range stated by the model's author; everything else is unavailable
 with an explicit status and reason. Phase fractions and hardness are NOT computed (see
-FRACTIONS_REASON). LSW coarsening is unchanged (generic constants, illustrative).
+FRACTIONS_REASON).
+
+Precipitate coarsening and strengthening (SOL-K, SPEC_solidification section 6.3): the generic LSW radius and the
+280 MPa / 9 nm strengthening curve rest on constants without a source and on no alloy-specific model, so the mean
+radius, the strengthening and its mechanism are unavailable (null) for every alloy and every aging input, each row
+with a status and machine-readable reason codes. The aging inputs are still validated before any arithmetic.
 """
 
 import sys
@@ -100,7 +105,7 @@ STATUS_UNAVAILABLE_OUTSIDE_RANGE = "unavailable-composition-outside-li-model-ran
 STATUS_UNAVAILABLE_PLACEHOLDER = "unavailable-registry-placeholder"
 STATUS_REGISTRY_VALUE = "registry-screening-value"
 STATUS_LSW_ABOVE_SOLVUS = "unavailable-aging-temperature-at-or-above-solvus"
-STATUS_LSW_ILLUSTRATIVE = "generic-constants-illustrative"
+STATUS_LSW_NOT_MODELLED = "unavailable-not-modelled"
 STATUS_START_LI = "li1998-additivity-first-diffusional-start"
 STATUS_START_ATHERMAL = "athermal-martensite-no-diffusional-start-above-ms"
 STATUS_START_NOT_AUSTENITIC = "unavailable-austenitizing-at-or-below-ae3"
@@ -113,6 +118,22 @@ STATUS_BS_LI = "computed-li-1998-screening"
 STATUS_MS_KR = "computed-andrews-kung-rayment-1982-screening"
 STATUS_MF_NOT_MODELLED = "unavailable-not-modelled"
 STATUS_TTT_NO_FLOOR = "no-floor-li-1998-law"
+# Reason codes (SPEC_solidification section 2, integration contract 4.5 and 4.6): codes only; the sentence for each
+# code belongs to the maintainer's wording round and the quantity-envelope registry, not to this solver.
+REASON_MISSING_SOURCE_BOUND_MODEL = "missing-source-bound-model"
+REASON_MISSING_SOURCE_CONSTANT = "missing-source-constant"
+REASON_OUTSIDE_SOURCE_MODEL_DOMAIN = "outside-source-model-domain"
+REASON_NONPHYSICAL_INPUT = "nonphysical-input"
+# Precipitate coarsening and strengthening are unavailable for every alloy: no source-bound model (the generic LSW
+# law alone cannot represent nucleation, growth, dissolution or a changing population) and no sourced constants
+# (the shared gamma, equilibrium concentration, molar volume and D0, and the 280 MPa / 9 nm strengthening curve).
+LSW_REASON_CODES = (REASON_MISSING_SOURCE_BOUND_MODEL, REASON_MISSING_SOURCE_CONSTANT)
+# Aging temperature at or above the registry Ae3 (steels: Ae1) keeps its more specific status and adds the domain code.
+LSW_ABOVE_SOLVUS_REASON_CODES = (REASON_OUTSIDE_SOURCE_MODEL_DOMAIN,) + LSW_REASON_CODES
+# Aging inputs (SPEC section 6.3): a temperature must be above absolute zero (-273.15 C itself is rejected), a time
+# must be finite and not negative. The bound is the smallest float above -273.15 C, so ``T_K > 0`` holds exactly.
+AGING_TEMP_LOWER_BOUND_C = math.nextafter(-ZERO_C_K, math.inf)
+LSW_AGING_TIMES_H = (0.1, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 24.0, 48.0, 100.0)
 VALIDATION_STATUS = "unvalidated"
 EVIDENCE_LEVEL = "screening"
 SCOPE = "low-alloy steels inside the composition range stated for the Li (1998) model"
@@ -155,11 +176,21 @@ TTT_NO_FLOOR_NOTE = (
 TTT_UNAVAILABLE_NOTE = "No TTT points: the kinetics model is unavailable for this alloy."
 # Fixed steel text (not a CALPHAD result).
 STEEL_EQUILIBRIUM_PHASES = "Ferrite + Cementite / Equilibrium intermetallics"
-LSW_NOTE = (
-    "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the "
-    "activation energy is per alloy; one molar volume serves both the matrix concentration and the "
-    "precipitate); the strengthening column is an unsourced screening curve."
-)
+
+
+def checked_aging_inputs(aging_temp_c, aging_time_h):
+    """Validate the aging inputs before any arithmetic on them; returns (temperature C, time h) as floats.
+
+    A non-number, NaN, an infinity, a temperature at or below absolute zero (-273.15 C included) or a negative
+    time raises ValidationError, whose ``detail["reasonCode"]`` is ``nonphysical-input``. Nothing is clamped.
+    """
+    try:
+        temp = input_validation.require_range("agingTemp_C", aging_temp_c, AGING_TEMP_LOWER_BOUND_C, None, "degC")
+        time_h = input_validation.require_positive("agingTime_h", aging_time_h, allow_zero=True)
+    except input_validation.ValidationError as err:
+        err.detail["reasonCode"] = REASON_NONPHYSICAL_INPUT
+        raise
+    return temp, time_h
 
 
 def is_steel_alloy(alloy):
@@ -458,7 +489,8 @@ def solve_phase_transformation_kinetics(alloy_name="AISI 4140", cooling_rate_c_s
                                         grain_size_um=25.0, aust_temp_c=860.0,
                                         aging_time_h=8.0, aging_temp_c=720.0):
     """
-    TTT curves (Li 1998), CCT starts by the additivity rule, critical temperatures and LSW coarsening.
+    TTT curves (Li 1998), CCT starts by the additivity rule and critical temperatures; the precipitate coarsening
+    and strengthening rows are unavailable for every alloy (SOL-K, see the module docstring).
 
     The Li model is reported only for a steel (registry descriptor type) whose registry composition lies inside
     the range of [Li96] p. 86; otherwise every TTT/CCT output is None with an explicit status and reason (see
@@ -501,6 +533,11 @@ def solve_phase_transformation_kinetics(alloy_name="AISI 4140", cooling_rate_c_s
     else:
         # No model runs; the rate is only echoed, but it must be a number (NON_FINITE envelope, not a crash).
         user_cr = input_validation.require_finite("coolingRate_C_s", cooling_rate_c_s)
+        # SOL-K: the other echoed inputs must be numbers too, so a NaN never reaches the JSON as a bare token.
+        input_validation.require_finite("grainSize_um", grain_size_um)
+        input_validation.require_finite("austTemp_C", aust_temp_c)
+    # SOL-K: aging inputs are validated for every alloy, before any arithmetic on them (SPEC section 6.3).
+    checked_aging_inputs(aging_temp_c, aging_time_h)  # echoed unchanged below; nothing is converted or clamped
 
     # 1. TTT curves
     if modelled:
@@ -564,27 +601,12 @@ def solve_phase_transformation_kinetics(alloy_name="AISI 4140", cooling_rate_c_s
         for cr in CCT_COOLING_RATES:
             cct_map.append(_unavailable_cct_row(cr, unavailable_status, unavailable_reason, registry_id))
 
-    # 3. LIFSHITZ-SLYOZOV-WAGNER (LSW) PRECIPITATE COARSENING (unchanged; generic constants)
-    # r^3(t) - r_0^3 = K_LSW * t
-    # K_LSW = (8 * gamma * D * C_e * Vm^2) / (9 * R * T)   [Lifshitz & Slyozov 1961, Wagner 1961]
-    # Units (SI): gamma J/m^2, D m^2/s, Vm m^3/mol, R*T J/mol and C_e the equilibrium solute
-    # concentration in mol/m^3 give K in m^3/s. The solver holds C_e as a mole fraction x_e, so
-    # C_e = x_e / Vm. gamma, x_e, Vm and D0 are generic constants shared by every alloy (only Q is per alloy).
-    aging_t_k = aging_temp_c + ZERO_C_K
-    q_precip = alloy["Q_diff_kJ_mol"] * 1000.0
-    gamma_interface = 0.045   # J/m^2
-    x_e = 0.02                # mole fraction of the rate-limiting solute in equilibrium
-    v_molar = 1.1e-5          # m^3/mol
-    c_e_mol_m3 = x_e / v_molar
-    d_diff = 1.2e-4 * math.exp(-q_precip / (R_GAS * aging_t_k))
-    k_lsw = (8.0 * gamma_interface * d_diff * c_e_mol_m3 * (v_molar ** 2)) / (9.0 * R_GAS * aging_t_k)  # m^3/s
-    k_lsw_nm3_h = k_lsw * (1e9 ** 3) * 3600.0  # nm^3/h
-
-    r0_nm = 1.5  # Initial nucleus radius
-    aging_time_steps = [0.1, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 24.0, 48.0, 100.0]
-    lsw_coarsening_profile = []
-
-    # Above the registry solvus/transus (Ae3_C; for steels also Ae1_C) there is no precipitate population.
+    # 3. PRECIPITATE COARSENING AND STRENGTHENING: unavailable for every alloy (SOL-K, SPEC section 6.3).
+    # The generic Lifshitz-Slyozov-Wagner law with constants shared by every alloy, and the 280 MPa / 9 nm
+    # strengthening curve, are not evaluated: neither has a source-bound model or sourced constants, and one
+    # asymptotic coarsening law cannot represent nucleation, growth from supersaturation, dissolution or a changing
+    # population. The rows keep the aging-time grid; every value is null with a status and reason codes.
+    # Above the registry solvus/transus (Ae3_C; for steels also Ae1_C) the row keeps its more specific status.
     lsw_limit = None
     if aging_temp_c >= ae3:
         lsw_limit = ("Ae3 (solvus/transus)", ae3)
@@ -593,33 +615,17 @@ def solve_phase_transformation_kinetics(alloy_name="AISI 4140", cooling_rate_c_s
     lsw_reason = None if lsw_limit is None else (
         f"aging temperature {aging_temp_c:g} C is at or above the registry {lsw_limit[0]} of "
         f"{lsw_limit[1]:g} C: no precipitate population, so no coarsening or strengthening is reported")
+    lsw_status = STATUS_LSW_NOT_MODELLED if lsw_limit is None else STATUS_LSW_ABOVE_SOLVUS
+    lsw_reason_codes = LSW_REASON_CODES if lsw_limit is None else LSW_ABOVE_SOLVUS_REASON_CODES
 
-    for t_h in aging_time_steps:
-        if lsw_limit is not None:
-            lsw_coarsening_profile.append({
-                "agingTime_h": t_h,
-                "meanRadius_nm": None,
-                "precipitationHardening_MPa": None,
-                "strengtheningMechanism": None,
-                "status": STATUS_LSW_ABOVE_SOLVUS
-            })
-            continue
-        r_cube = (r0_nm ** 3) + k_lsw_nm3_h * t_h
-        r_mean_nm = r_cube ** (1.0 / 3.0)
-        r_crit_nm = 9.0
-        if r_mean_nm <= r_crit_nm:
-            orowan_boost_mpa = 280.0 * math.sqrt(r_mean_nm / r_crit_nm)
-            regime = "Weak-Pair / Strong-Pair Cutting"
-        else:
-            orowan_boost_mpa = 280.0 * (r_crit_nm / r_mean_nm)
-            regime = "Orowan Dislocation Looping (Over-aged)"
-        lsw_coarsening_profile.append({
-            "agingTime_h": t_h,
-            "meanRadius_nm": round(r_mean_nm, 2),
-            "precipitationHardening_MPa": round(orowan_boost_mpa, 1),
-            "strengtheningMechanism": regime,
-            "status": STATUS_LSW_ILLUSTRATIVE
-        })
+    lsw_coarsening_profile = [{
+        "agingTime_h": t_h,
+        "meanRadius_nm": None,
+        "precipitationHardening_MPa": None,
+        "strengtheningMechanism": None,
+        "status": lsw_status,
+        "reasonCodes": list(lsw_reason_codes),
+    } for t_h in LSW_AGING_TIMES_H]
 
     # 4. CALPHAD (equilibrium text) vs KINETICS at the selected cooling rate
     if modelled:
@@ -738,9 +744,10 @@ def solve_phase_transformation_kinetics(alloy_name="AISI 4140", cooling_rate_c_s
         "note": model_note,
         "placeholderParameters": placeholders,
         "lswPrecipitateCoarsening": {
-            "status": STATUS_LSW_ABOVE_SOLVUS if lsw_limit else STATUS_LSW_ILLUSTRATIVE,
-            "note": LSW_NOTE,
+            "status": lsw_status,
+            "note": None,
             "reason": lsw_reason,
+            "reasonCodes": list(lsw_reason_codes),
         },
         "modelVersion": LI_MODEL_VERSION,
         "sourceLabel": SOURCE_LABEL,
@@ -797,7 +804,7 @@ if __name__ == "__main__":
             "status": "ready",
             "engine": "MetalliX Python steel TTT/CCT kinetics solver (Li 1998 model, additivity rule)",
             "capabilities": ["Li 1998 TTT C-curves (1%, 50%, 99%) for low-alloy steels", "Additivity-rule CCT starts",
-                             "Grange Ae3/Ae1, Li Bs, Kung-Rayment Ms", "LSW Precipitate Coarsening"]
+                             "Grange Ae3/Ae1, Li Bs, Kung-Rayment Ms"]
         }))
         sys.exit(0)
 
@@ -817,7 +824,7 @@ if __name__ == "__main__":
 
         result = solve_phase_transformation_kinetics(mat, cr, d_grain, t_aust, time_aging, t_aging)
         result["provenance"] = provenance(resolve_kinetics_alloy(mat)[0])
-        print(json.dumps(result))
+        print(json.dumps(result, allow_nan=False))  # SOL-K: a bare NaN/Infinity token is never emitted
     except input_validation.ValidationError as err:
         print(json.dumps(input_validation.validation_envelope(err)))
         sys.exit(2)

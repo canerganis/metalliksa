@@ -1477,73 +1477,113 @@
   "lswPrecipitateCoarsening": [
    {
     "agingTime_h": 0.1,
-    "meanRadius_nm": 2.43,
-    "precipitationHardening_MPa": 145.5,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 0.5,
-    "meanRadius_nm": 3.88,
-    "precipitationHardening_MPa": 183.8,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 1.0,
-    "meanRadius_nm": 4.84,
-    "precipitationHardening_MPa": 205.3,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 2.0,
-    "meanRadius_nm": 6.06,
-    "precipitationHardening_MPa": 229.8,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 4.0,
-    "meanRadius_nm": 7.62,
-    "precipitationHardening_MPa": 257.7,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 8.0,
-    "meanRadius_nm": 9.59,
-    "precipitationHardening_MPa": 262.8,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 16.0,
-    "meanRadius_nm": 12.07,
-    "precipitationHardening_MPa": 208.7,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 24.0,
-    "meanRadius_nm": 13.82,
-    "precipitationHardening_MPa": 182.4,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 48.0,
-    "meanRadius_nm": 17.41,
-    "precipitationHardening_MPa": 144.8,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 100.0,
-    "meanRadius_nm": 22.23,
-    "precipitationHardening_MPa": 113.4,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    }
   ],
   "calphadVsKineticsGap": {
@@ -1574,9 +1614,13 @@
    "note": "Li et al. (1998) isothermal start/finish law with Grange Ae3/Ae1, Li Bs and Kung-Rayment Ms; CCT starts from the additivity rule applied to each phase's 1 % start curve independently (no phase interaction, no carbon partitioning). Unvalidated screening model: phase fractions and hardness are not computed.",
    "placeholderParameters": [],
    "lswPrecipitateCoarsening": {
-    "status": "generic-constants-illustrative",
-    "note": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
-    "reason": null
+    "status": "unavailable-not-modelled",
+    "note": null,
+    "reason": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    "modelVersion": "li1998-additivity-v1",
    "sourceLabel": "Li, Niebuhr, Meekisho & Atteridge, Metall. Mater. Trans. B 29 (1998) 661-672: equations as printed in M. Li, PhD thesis, Oregon Graduate Institute (1996), Eqs. 3.67 and 3.70-3.77, and in Collins et al., Metals 13 (2023) 1168, Eqs. 1-14; Ae3/Ae1: Grange (1961) as printed in Collins et al. Eqs. 8 and 11; Ms: Andrews linear equation modified by Kung & Rayment (1982), Li (1996) Eq. 3.77; CCT: additivity rule (Scheil 1935).",
@@ -3115,73 +3159,113 @@
   "lswPrecipitateCoarsening": [
    {
     "agingTime_h": 0.1,
-    "meanRadius_nm": 1.51,
-    "precipitationHardening_MPa": 114.6,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 0.5,
-    "meanRadius_nm": 1.54,
-    "precipitationHardening_MPa": 115.7,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 1.0,
-    "meanRadius_nm": 1.57,
-    "precipitationHardening_MPa": 117.0,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 2.0,
-    "meanRadius_nm": 1.64,
-    "precipitationHardening_MPa": 119.4,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 4.0,
-    "meanRadius_nm": 1.75,
-    "precipitationHardening_MPa": 123.6,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 8.0,
-    "meanRadius_nm": 1.95,
-    "precipitationHardening_MPa": 130.3,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 16.0,
-    "meanRadius_nm": 2.25,
-    "precipitationHardening_MPa": 140.0,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 24.0,
-    "meanRadius_nm": 2.49,
-    "precipitationHardening_MPa": 147.3,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 48.0,
-    "meanRadius_nm": 3.02,
-    "precipitationHardening_MPa": 162.1,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 100.0,
-    "meanRadius_nm": 3.77,
-    "precipitationHardening_MPa": 181.2,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    }
   ],
   "calphadVsKineticsGap": {
@@ -3212,9 +3296,13 @@
    "note": "Li et al. (1998) isothermal start/finish law with Grange Ae3/Ae1, Li Bs and Kung-Rayment Ms; CCT starts from the additivity rule applied to each phase's 1 % start curve independently (no phase interaction, no carbon partitioning). Unvalidated screening model: phase fractions and hardness are not computed.",
    "placeholderParameters": [],
    "lswPrecipitateCoarsening": {
-    "status": "generic-constants-illustrative",
-    "note": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
-    "reason": null
+    "status": "unavailable-not-modelled",
+    "note": null,
+    "reason": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    "modelVersion": "li1998-additivity-v1",
    "sourceLabel": "Li, Niebuhr, Meekisho & Atteridge, Metall. Mater. Trans. B 29 (1998) 661-672: equations as printed in M. Li, PhD thesis, Oregon Graduate Institute (1996), Eqs. 3.67 and 3.70-3.77, and in Collins et al., Metals 13 (2023) 1168, Eqs. 1-14; Ae3/Ae1: Grange (1961) as printed in Collins et al. Eqs. 8 and 11; Ms: Andrews linear equation modified by Kung & Rayment (1982), Li (1996) Eq. 3.77; CCT: additivity rule (Scheil 1935).",
@@ -3533,73 +3621,113 @@
   "lswPrecipitateCoarsening": [
    {
     "agingTime_h": 0.1,
-    "meanRadius_nm": 1.5,
-    "precipitationHardening_MPa": 114.3,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 0.5,
-    "meanRadius_nm": 1.5,
-    "precipitationHardening_MPa": 114.4,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 1.0,
-    "meanRadius_nm": 1.5,
-    "precipitationHardening_MPa": 114.4,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 2.0,
-    "meanRadius_nm": 1.51,
-    "precipitationHardening_MPa": 114.6,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 4.0,
-    "meanRadius_nm": 1.51,
-    "precipitationHardening_MPa": 114.8,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 8.0,
-    "meanRadius_nm": 1.53,
-    "precipitationHardening_MPa": 115.3,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 16.0,
-    "meanRadius_nm": 1.55,
-    "precipitationHardening_MPa": 116.3,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 24.0,
-    "meanRadius_nm": 1.58,
-    "precipitationHardening_MPa": 117.2,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 48.0,
-    "meanRadius_nm": 1.65,
-    "precipitationHardening_MPa": 119.8,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 100.0,
-    "meanRadius_nm": 1.78,
-    "precipitationHardening_MPa": 124.6,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    }
   ],
   "calphadVsKineticsGap": {
@@ -3630,9 +3758,13 @@
    "note": "The composition is outside the range stated for the Li (1998) model (M. Li 1996 thesis p. 86), so no TTT/CCT curves, start temperatures, phase fractions or hardness are reported.",
    "placeholderParameters": [],
    "lswPrecipitateCoarsening": {
-    "status": "generic-constants-illustrative",
-    "note": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
-    "reason": null
+    "status": "unavailable-not-modelled",
+    "note": null,
+    "reason": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    "modelVersion": "li1998-additivity-v1",
    "sourceLabel": "Li, Niebuhr, Meekisho & Atteridge, Metall. Mater. Trans. B 29 (1998) 661-672: equations as printed in M. Li, PhD thesis, Oregon Graduate Institute (1996), Eqs. 3.67 and 3.70-3.77, and in Collins et al., Metals 13 (2023) 1168, Eqs. 1-14; Ae3/Ae1: Grange (1961) as printed in Collins et al. Eqs. 8 and 11; Ms: Andrews linear equation modified by Kung & Rayment (1982), Li (1996) Eq. 3.77; CCT: additivity rule (Scheil 1935).",
@@ -3922,73 +4054,113 @@
   "lswPrecipitateCoarsening": [
    {
     "agingTime_h": 0.1,
-    "meanRadius_nm": 1.51,
-    "precipitationHardening_MPa": 114.6,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 0.5,
-    "meanRadius_nm": 1.53,
-    "precipitationHardening_MPa": 115.6,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 1.0,
-    "meanRadius_nm": 1.57,
-    "precipitationHardening_MPa": 116.8,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 2.0,
-    "meanRadius_nm": 1.63,
-    "precipitationHardening_MPa": 119.1,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 4.0,
-    "meanRadius_nm": 1.74,
-    "precipitationHardening_MPa": 123.1,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 8.0,
-    "meanRadius_nm": 1.93,
-    "precipitationHardening_MPa": 129.5,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 16.0,
-    "meanRadius_nm": 2.22,
-    "precipitationHardening_MPa": 139.0,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 24.0,
-    "meanRadius_nm": 2.45,
-    "precipitationHardening_MPa": 146.1,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 48.0,
-    "meanRadius_nm": 2.96,
-    "precipitationHardening_MPa": 160.7,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 100.0,
-    "meanRadius_nm": 3.7,
-    "precipitationHardening_MPa": 179.5,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    }
   ],
   "calphadVsKineticsGap": {
@@ -4022,9 +4194,13 @@
     "Ms_C"
    ],
    "lswPrecipitateCoarsening": {
-    "status": "generic-constants-illustrative",
-    "note": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
-    "reason": null
+    "status": "unavailable-not-modelled",
+    "note": null,
+    "reason": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    "modelVersion": "li1998-additivity-v1",
    "sourceLabel": "Li, Niebuhr, Meekisho & Atteridge, Metall. Mater. Trans. B 29 (1998) 661-672: equations as printed in M. Li, PhD thesis, Oregon Graduate Institute (1996), Eqs. 3.67 and 3.70-3.77, and in Collins et al., Metals 13 (2023) 1168, Eqs. 1-14; Ae3/Ae1: Grange (1961) as printed in Collins et al. Eqs. 8 and 11; Ms: Andrews linear equation modified by Kung & Rayment (1982), Li (1996) Eq. 3.77; CCT: additivity rule (Scheil 1935).",
@@ -4302,73 +4478,113 @@
   "lswPrecipitateCoarsening": [
    {
     "agingTime_h": 0.1,
-    "meanRadius_nm": 5.03,
-    "precipitationHardening_MPa": 209.3,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 0.5,
-    "meanRadius_nm": 8.54,
-    "precipitationHardening_MPa": 272.7,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 1.0,
-    "meanRadius_nm": 10.75,
-    "precipitationHardening_MPa": 234.5,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 2.0,
-    "meanRadius_nm": 13.53,
-    "precipitationHardening_MPa": 186.2,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 4.0,
-    "meanRadius_nm": 17.05,
-    "precipitationHardening_MPa": 147.8,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 8.0,
-    "meanRadius_nm": 21.47,
-    "precipitationHardening_MPa": 117.4,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 16.0,
-    "meanRadius_nm": 27.05,
-    "precipitationHardening_MPa": 93.1,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 24.0,
-    "meanRadius_nm": 30.97,
-    "precipitationHardening_MPa": 81.4,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 48.0,
-    "meanRadius_nm": 39.02,
-    "precipitationHardening_MPa": 64.6,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 100.0,
-    "meanRadius_nm": 49.83,
-    "precipitationHardening_MPa": 50.6,
-    "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    }
   ],
   "calphadVsKineticsGap": {
@@ -4399,9 +4615,13 @@
    "note": "The Li (1998) TTT/CCT model covers low-alloy steels only; no sourced transformation-kinetics model of this alloy class is implemented, so no TTT/CCT curves, start temperatures, phase fractions or hardness are reported.",
    "placeholderParameters": [],
    "lswPrecipitateCoarsening": {
-    "status": "generic-constants-illustrative",
-    "note": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
-    "reason": null
+    "status": "unavailable-not-modelled",
+    "note": null,
+    "reason": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    "modelVersion": "li1998-additivity-v1",
    "sourceLabel": "Li, Niebuhr, Meekisho & Atteridge, Metall. Mater. Trans. B 29 (1998) 661-672: equations as printed in M. Li, PhD thesis, Oregon Graduate Institute (1996), Eqs. 3.67 and 3.70-3.77, and in Collins et al., Metals 13 (2023) 1168, Eqs. 1-14; Ae3/Ae1: Grange (1961) as printed in Collins et al. Eqs. 8 and 11; Ms: Andrews linear equation modified by Kung & Rayment (1982), Li (1996) Eq. 3.77; CCT: additivity rule (Scheil 1935).",
@@ -4679,73 +4899,113 @@
   "lswPrecipitateCoarsening": [
    {
     "agingTime_h": 0.1,
-    "meanRadius_nm": 1.5,
-    "precipitationHardening_MPa": 114.3,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 0.5,
-    "meanRadius_nm": 1.5,
-    "precipitationHardening_MPa": 114.3,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 1.0,
-    "meanRadius_nm": 1.5,
-    "precipitationHardening_MPa": 114.3,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 2.0,
-    "meanRadius_nm": 1.5,
-    "precipitationHardening_MPa": 114.4,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 4.0,
-    "meanRadius_nm": 1.5,
-    "precipitationHardening_MPa": 114.4,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 8.0,
-    "meanRadius_nm": 1.51,
-    "precipitationHardening_MPa": 114.6,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 16.0,
-    "meanRadius_nm": 1.51,
-    "precipitationHardening_MPa": 114.9,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 24.0,
-    "meanRadius_nm": 1.52,
-    "precipitationHardening_MPa": 115.1,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 48.0,
-    "meanRadius_nm": 1.54,
-    "precipitationHardening_MPa": 115.9,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 100.0,
-    "meanRadius_nm": 1.59,
-    "precipitationHardening_MPa": 117.6,
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
-    "status": "generic-constants-illustrative"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "strengtheningMechanism": null,
+    "status": "unavailable-not-modelled",
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    }
   ],
   "calphadVsKineticsGap": {
@@ -4779,9 +5039,13 @@
     "Ms_C"
    ],
    "lswPrecipitateCoarsening": {
-    "status": "generic-constants-illustrative",
-    "note": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
-    "reason": null
+    "status": "unavailable-not-modelled",
+    "note": null,
+    "reason": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    "modelVersion": "li1998-additivity-v1",
    "sourceLabel": "Li, Niebuhr, Meekisho & Atteridge, Metall. Mater. Trans. B 29 (1998) 661-672: equations as printed in M. Li, PhD thesis, Oregon Graduate Institute (1996), Eqs. 3.67 and 3.70-3.77, and in Collins et al., Metals 13 (2023) 1168, Eqs. 1-14; Ae3/Ae1: Grange (1961) as printed in Collins et al. Eqs. 8 and 11; Ms: Andrews linear equation modified by Kung & Rayment (1982), Li (1996) Eq. 3.77; CCT: additivity rule (Scheil 1935).",
@@ -6286,70 +6550,120 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 0.5,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 1.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 2.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 4.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 8.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 16.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 24.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 48.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 100.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    }
   ],
   "calphadVsKineticsGap": {
@@ -6381,8 +6695,13 @@
    "placeholderParameters": [],
    "lswPrecipitateCoarsening": {
     "status": "unavailable-aging-temperature-at-or-above-solvus",
-    "note": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
-    "reason": "aging temperature 720 C is at or above the registry Ae1 of 710 C: no precipitate population, so no coarsening or strengthening is reported"
+    "note": null,
+    "reason": "aging temperature 720 C is at or above the registry Ae1 of 710 C: no precipitate population, so no coarsening or strengthening is reported",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    "modelVersion": "li1998-additivity-v1",
    "sourceLabel": "Li, Niebuhr, Meekisho & Atteridge, Metall. Mater. Trans. B 29 (1998) 661-672: equations as printed in M. Li, PhD thesis, Oregon Graduate Institute (1996), Eqs. 3.67 and 3.70-3.77, and in Collins et al., Metals 13 (2023) 1168, Eqs. 1-14; Ae3/Ae1: Grange (1961) as printed in Collins et al. Eqs. 8 and 11; Ms: Andrews linear equation modified by Kung & Rayment (1982), Li (1996) Eq. 3.77; CCT: additivity rule (Scheil 1935).",
@@ -6700,70 +7019,120 @@
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 0.5,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 1.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 2.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 4.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 8.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 16.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 24.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 48.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    {
     "agingTime_h": 100.0,
     "meanRadius_nm": null,
     "precipitationHardening_MPa": null,
     "strengtheningMechanism": null,
-    "status": "unavailable-aging-temperature-at-or-above-solvus"
+    "status": "unavailable-aging-temperature-at-or-above-solvus",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    }
   ],
   "calphadVsKineticsGap": {
@@ -6798,8 +7167,13 @@
    ],
    "lswPrecipitateCoarsening": {
     "status": "unavailable-aging-temperature-at-or-above-solvus",
-    "note": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
-    "reason": "aging temperature 720 C is at or above the registry Ae3 (solvus/transus) of 480 C: no precipitate population, so no coarsening or strengthening is reported"
+    "note": null,
+    "reason": "aging temperature 720 C is at or above the registry Ae3 (solvus/transus) of 480 C: no precipitate population, so no coarsening or strengthening is reported",
+    "reasonCodes": [
+     "outside-source-model-domain",
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    "modelVersion": "li1998-additivity-v1",
    "sourceLabel": "Li, Niebuhr, Meekisho & Atteridge, Metall. Mater. Trans. B 29 (1998) 661-672: equations as printed in M. Li, PhD thesis, Oregon Graduate Institute (1996), Eqs. 3.67 and 3.70-3.77, and in Collins et al., Metals 13 (2023) 1168, Eqs. 1-14; Ae3/Ae1: Grange (1961) as printed in Collins et al. Eqs. 8 and 11; Ms: Andrews linear equation modified by Kung & Rayment (1982), Li (1996) Eq. 3.77; CCT: additivity rule (Scheil 1935).",

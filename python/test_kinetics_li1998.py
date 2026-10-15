@@ -346,5 +346,97 @@ class SolverOutputTest(unittest.TestCase):
         self.assertTrue(kdc.document_violations(bad))
 
 
+class LswOracleTest(unittest.TestCase):
+    """SOL-K: the oracle expects every LSW row unavailable, and its old-value rule reproduces the pinned base golden."""
+
+    @staticmethod
+    def doc(name, aging_c):
+        return json.loads(json.dumps(kin.solve_phase_transformation_kinetics(name, 10.0, 25.0, 860.0, 8.0, aging_c)))
+
+    def test_oracle_accepts_the_unavailable_rows_below_and_above_the_registry_limit(self):
+        for name, aging_c in (("AISI 4140", 600.0), ("AISI 4140", 730.0), ("AISI 4340", 720.0),
+                              ("AISI D2", 300.0), ("Inconel 718", 720.0), ("Ti-6Al-4V", 720.0), ("Al 7075", 120.0),
+                              ("Al 7075", 720.0)):
+            with self.subTest(name=name, aging_c=aging_c):
+                self.assertEqual(kdc.document_violations(self.doc(name, aging_c)), [])
+
+    def test_oracle_rejects_a_returned_size_or_strength_for_any_alloy(self):
+        # the defect: Ti-6Al-4V, whose kinetics model is unavailable, returned 5.03 nm / 209.3 MPa at 720 C
+        for name, aging_c in (("Ti-6Al-4V", 720.0), ("AISI 4140", 600.0), ("Inconel 718", 720.0)):
+            for key, value in (("meanRadius_nm", 5.03), ("precipitationHardening_MPa", 209.3),
+                               ("strengtheningMechanism", "Weak-Pair / Strong-Pair Cutting")):
+                with self.subTest(name=name, key=key):
+                    doc = self.doc(name, aging_c)
+                    doc["lswPrecipitateCoarsening"][0][key] = value
+                    self.assertTrue(kdc.document_violations(doc))
+
+    def test_oracle_rejects_a_wrong_status_reason_code_grid_or_block(self):
+        for aging_c in (600.0, 730.0):  # below and above the Ae1 of AISI 4140 (725 C)
+            base = self.doc("AISI 4140", aging_c)
+            mutants = {
+                "status": lambda d: d["lswPrecipitateCoarsening"][3].update(status="generic-constants-illustrative"),
+                "codes": lambda d: d["lswPrecipitateCoarsening"][3].update(reasonCodes=["missing-source-constant"]),
+                "codes-reordered": lambda d: d["lswPrecipitateCoarsening"][3]["reasonCodes"].reverse(),
+                "no-codes": lambda d: d["lswPrecipitateCoarsening"][3].pop("reasonCodes"),
+                "grid": lambda d: d["lswPrecipitateCoarsening"][3].update(agingTime_h=3.0),
+                "row-dropped": lambda d: d["lswPrecipitateCoarsening"].pop(),
+                "block-status": lambda d: d["kineticsModel"]["lswPrecipitateCoarsening"].update(status="x"),
+                "block-note": lambda d: d["kineticsModel"]["lswPrecipitateCoarsening"].update(note="K_LSW uses"),
+                "block-codes": lambda d: d["kineticsModel"]["lswPrecipitateCoarsening"].update(reasonCodes=[]),
+                "block-reason": lambda d: d["kineticsModel"]["lswPrecipitateCoarsening"].update(
+                    reason=None if aging_c > 725.0 else "x"),
+                "nan": lambda d: d.update(computeTimeMs=float("nan")),  # only the non-finite scan sees this key
+            }
+            for label, mutate in mutants.items():
+                with self.subTest(aging_c=aging_c, mutant=label):
+                    doc = json.loads(json.dumps(base))
+                    mutate(doc)
+                    self.assertEqual(kdc.document_violations(self.doc("AISI 4140", aging_c)), [])
+                    self.assertTrue(kdc.document_violations(doc))
+
+    def test_legacy_formula_reproduces_the_pinned_base_golden_values(self):
+        # the OLD side of every LSW drift row: legacy R, mole fraction as C_e, 1e-3 nm^3/h floor (d33b6f5 goldens)
+        import capture_phase6a_golden as golden
+        for case in ("aisi4140_ui_defaults", "aisi4340_slow_cool", "in718_lpbf_quench", "ti64_beta_quench"):
+            base = golden.load_golden("kinetics_ttt_cct_solver", case)["stdout"]
+            q, aging_c = base["alloyMetadata"]["Q_diff_kJ_mol"], base["inputParameters"]["agingTemp_C"]
+            for row in base["lswPrecipitateCoarsening"]:
+                with self.subTest(case=case, hours=row["agingTime_h"]):
+                    r = kdc.legacy_lsw_radius_nm(q, aging_c, row["agingTime_h"])
+                    self.assertAlmostEqual(row["meanRadius_nm"], r, delta=0.005 + 1e-9)
+                    self.assertAlmostEqual(row["precipitationHardening_MPa"], kdc.lsw_boost_mpa(r), delta=0.05 + 1e-9)
+                    self.assertEqual(row["strengtheningMechanism"], kdc.lsw_regime(r))
+
+    def test_row_rule_accepts_old_value_to_null_and_nothing_else(self):
+        doc = self.doc("Ti-6Al-4V", 550.0)
+        q = doc["alloyMetadata"]["Q_diff_kJ_mol"]
+        r = kdc.legacy_lsw_radius_nm(q, 550.0, 0.1)
+        key = "lswPrecipitateCoarsening[0].meanRadius_nm"
+
+        def row(kind="changed", old=round(r, 2), new=None, k=key):
+            return {"key": k, "kind": kind, "old": old, "new": new}
+
+        self.assertIsNone(kdc.row_violation(row(), doc))
+        self.assertIsNone(kdc.row_violation(row(k="lswPrecipitateCoarsening[0].precipitationHardening_MPa",
+                                                old=round(kdc.lsw_boost_mpa(r), 1)), doc))
+        self.assertIsNone(kdc.row_violation(row(k="lswPrecipitateCoarsening[0].strengtheningMechanism",
+                                                old=kdc.lsw_regime(r)), doc))
+        self.assertTrue(kdc.row_violation(row(new=round(r, 2)), doc))                  # a value is not allowed
+        self.assertTrue(kdc.row_violation(row(kind="numeric", new=5.0), doc))          # nor a numeric change
+        self.assertTrue(kdc.row_violation(row(old=round(r, 2) + 0.1), doc))            # old is not the old formula
+        self.assertTrue(kdc.row_violation(row(kind="removed", old=round(r, 2)), doc))  # nor a removed key
+        self.assertTrue(kdc.row_violation(row(k="lswPrecipitateCoarsening[0].reasonCodes[0]", kind="changed",
+                                              old="a", new="b"), doc))
+
+    def test_aging_input_rule(self):
+        refused = (float("nan"), float("inf"), float("-inf"), -273.15, -1e300, None, True, "720", [1.0])
+        for value in refused:
+            self.assertEqual(kdc.aging_input_reason(value, 8.0), "nonphysical-input", repr(value))
+        for value in (float("nan"), float("-inf"), -1e-300, -1, None, False, "8"):
+            self.assertEqual(kdc.aging_input_reason(720.0, value), "nonphysical-input", repr(value))
+        for temp, hours in ((-273.1499, 0), (0, 0.0), (720.0, 8), (1e300, 1e300)):
+            self.assertIsNone(kdc.aging_input_reason(temp, hours))
+
+
 if __name__ == "__main__":
     unittest.main()
