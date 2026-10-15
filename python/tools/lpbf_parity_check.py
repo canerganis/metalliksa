@@ -1188,24 +1188,40 @@ def case_g12_analytical_modules(ctx: CaseContext) -> Dict[str, Any]:
     observe_value(observations, "marangoni.screening",
                   lambda: [marangoni_screening.marangoni_screening(-3.7e-4, 5e-3, 5.5e-6, 7400.0, 50e-6, t, 1336.0, s)
                            for t in (1500.0, 2500.0) for s in (5.0, 45.0, 80.0)])
-    observe_value(observations, "solidification.hunt",
-                  lambda: [solidification_front.hunt_morphology(x) for x in (1e11, 1e9, 1e8, 1e6, 1e3)])
-    observe_value(observations, "solidification.pdas",
-                  lambda: [solidification_front.hunt_lu_pdas_um(g, r) for g, r in ((1e6, 0.1), (5e7, 0.5), (1e7, 1.0))])
-    observe_value(observations, "solidification.sdas",
-                  lambda: [solidification_front.kirkwood_sdas_um(c, 50.0) for c in (1e3, 1e5, 1e7)])
-    observe_value(observations, "solidification.phaseNote",
-                  lambda: [solidification_front.phase_transformation_note(n, c)
-                           for n in ("Ti-6Al-4V", "Inconel 718", "316L Stainless Steel", "AlSi10Mg")
-                           for c in (1e2, 1e5, 1e7)])
+    # SOL-A1 (2026-10-15, solidification integration contract 6.2 and 6.3): the four legacy helper observations
+    # (solidification.hunt, .pdas, .sdas, .phaseNote) are retired with their helpers, and solidification.evaluate
+    # calls the front without the ignored legacy keywords. solidification.pdasAdmission pins the five named (G, R)
+    # pairs of 6.3 through pdas_band_um for in625, in718 and ti6al4v: only pair 1 lies on the source line G = 1e7 K/m;
+    # pairs 2 and 3 are refused by the line rule alone (x, cooling, Vcs and Vab all pass), 4 is also below Vcs and 5
+    # above Vab, so a mutant that keeps the old x/cooling box and adds only Vcs and Vab gives a band for pairs 2 and 3
+    # and drifts. solidification.defaultBlock is the blanket-null container of the five canonical IDs on this
+    # Eagar-Tsai field at each alloy's served liquidus; solidification.unknownAlias records the refusals as values with
+    # reason codes, never as error observations (an error never passes --expect-drift, 6.1).
+    from lpbf_thermal_solver import THERMOPHYSICAL_DB
+
     field = eagar_tsai_solver.EagarTsaiField(80.0, 76.0, 25.0, 5.5e-6, 40e-6).bind_speed(0.8)
 
-    def evaluate():
+    def front(material_name: str, liquidus_C: float) -> Dict[str, Any]:
         return solidification_front.evaluate_solidification(
-            field.temperature_C, T_liq=1336.0, T_sol=1260.0, t_surface=2400.0, v_scan=0.8,
-            x_rear=-150e-6, x_front=50e-6, search_depth=80e-6, r_beam=40e-6, cos_theta=1.0,
-            pdas_A1=1.0, sdas_B1=50.0, material_name="Inconel 718")
-    observe_value(observations, "solidification.evaluate", evaluate)
+            field.temperature_C, T_liq=liquidus_C, v_scan=0.8, x_rear=-150e-6, search_depth=80e-6, r_beam=40e-6,
+            material_name=material_name, authority_liquidus_C=liquidus_C)
+
+    observe_value(observations, "solidification.evaluate", lambda: front("Inconel 718", 1336.0))
+    pdas_pairs = ((1e7, 0.05), (2e7, 0.01), (5e6, 0.05), (5e7, 0.0012), (1e6, 1.5))
+    observe_value(observations, "solidification.pdasAdmission",
+                  lambda: {alloy: [solidification_front.pdas_band_um(g, r, alloy) for g, r in pdas_pairs]
+                           for alloy in ("in625", "in718", "ti6al4v")})
+    served_names = (("ti6al4v", "Ti-6Al-4V"), ("alsi10mg", "AlSi10Mg"), ("in718", "Inconel 718"),
+                    ("in625", "Inconel 625"), ("ss316l", "316L Stainless Steel"))
+    observe_value(observations, "solidification.defaultBlock",
+                  lambda: {alloy: front(alloy, THERMOPHYSICAL_DB[name]["liquidus_C"]) for alloy, name in served_names})
+    observe_value(observations, "solidification.unknownAlias",
+                  lambda: {"evaluate": front("inconel", 1336.0),
+                           "pdasBandServedName": solidification_front.pdas_band_um(1e7, 0.05, "Inconel 718"),
+                           "canonicalAlloyId": {name: solidification_front.canonical_alloy_id(name)
+                                                for name in ("Inconel 625", "IN625", "Inconel 718", "inconel",
+                                                             "Ti-6Al-4V", "AlSi10Mg", "316L Stainless Steel",
+                                                             "CoCrMo")}})
     # powder_bed_raytracer and warp_thermal_solver import warp at module import; they are
     # GPU-only (design 2.3: GPU numerics are not verifiable here) and are not covered.
 
