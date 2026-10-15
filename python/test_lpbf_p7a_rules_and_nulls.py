@@ -464,7 +464,7 @@ class Ladder(unittest.TestCase):
     def test_assumptions_and_revision(self):
         from lpbf_job_cache import BUILD_JOB_SOLVER_REVISION
         # P7b (2026-10-14): v25.
-        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p7b-sourced-constants-v25")
+        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-sola1-v26")
         job = bj.solve_lpbf_build_job({"alloyId": "in718", "laserPower_W": 285, "scanSpeed_mm_s": 960,
                                        "hatchSpacing_um": 110, "layerThickness_um": 40, "bypassCache": True})
         text = " ".join(job["assumptions"])
@@ -475,8 +475,8 @@ class Ladder(unittest.TestCase):
         self.assertEqual(job["verdict"]["verdictBasis"], "sourced-criteria-only")
         self.assertIn("suggestedPatchAdvisories", job["verdict"])
         micro = job["microstructure"]
-        self.assertIn("pdasBand_um", micro)
-        self.assertIsNone(micro.get("SDAS_um"))
+        self.assertIn("pdas", micro["quantities"])
+        self.assertIsNone(micro["quantities"]["sdas"]["value"])
 
 
 if __name__ == "__main__":

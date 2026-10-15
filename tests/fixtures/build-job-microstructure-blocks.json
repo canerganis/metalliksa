@@ -1,90 +1,2100 @@
 {
  "available_in718_150_1200": {
-  "status": "available",
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "quantities": {
+   "thermalGradient": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K/m",
+    "quantityDefinition": "liquidus-front-thermal-gradient",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "liquidus_K"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "normalSpeed": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m/s",
+    "quantityDefinition": "liquidus-front-normal-speed",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "liquidus_K"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "coolingRate": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K/s",
+    "quantityDefinition": "liquidus-front-cooling-rate",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "gOverR": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K*s/m^2",
+    "quantityDefinition": "liquidus-front-g-over-r",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "pdas": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m",
+    "quantityDefinition": "pdas-model-alternatives",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "sdas": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m",
+    "quantityDefinition": "sdas",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "coolingRate"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "coolingRate",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "morphology": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "front-morphology",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "solidStateTransformation": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "solid-state-transformation",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-thermal-history",
+      "params": {},
+      "parent": null
+     },
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   }
+  },
+  "inputProvenance": {
+   "liquidus_K": {
+    "kind": "declaredAssumption",
+    "label": "declaredAssumption",
+    "sourceId": "served-liquidus:in718",
+    "sourceLocator": null,
+    "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+    "source": null,
+    "scope": "no-provenance-entry",
+    "status": "inRange",
+    "sourceEvidenceKind": "Unresolved",
+    "defaultValue": 1609.15,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   }
+  },
+  "modelId": "solidification-front-v2",
+  "alloyId": "in718",
+  "status": "unavailable",
+  "schema": "lpbf-solidification-microstructure-2",
   "source": "thermal.solidificationKinetics",
-  "modelId": "solidification-front-v1",
-  "gradientSource": "conduction-field-interface",
-  "usedFieldMap": true,
   "regime": "Conduction Mode (Stable)",
-  "normalizedEnthalpy": 14.5,
-  "regimeNote": null,
-  "G_K_m": 32358070.0,
-  "R_m_s": 0.1945,
-  "coolingRate_K_s": 6292600.0,
-  "PDAS_um": null,
-  "pdasBand_um": null,
-  "pdasBasis": "Ni-Nb model alloy band, Ghosh et al. 2017 (Modelling Simul. Mater. Sci. Eng. 25, 065002, doi 10.1088/1361-651X/aa7369) Fig. 6 caption: Eq. 7 Hunt A = 9.56e-4 and Eq. 8 Kurz-Fisher A = 2.6e-3 (m^0.75 s^-0.25 K^0.5), λ1 = A G^-0.5 R^-0.25. The phase-field PDAS values lie near Hunt (p.11); the line of best fit has a slope close to Kurz-Fisher with a constant offset (p.12), so the slope-only member is not served. The system is a dilute binary Ni-Nb model alloy (Table 2), applied to IN625 and IN718 as the closest sourced Ni-Nb system and not a measurement of those alloys; the coefficients are alloy specific. Validity: x = G^-0.5 R^-0.25 in [4e-4, 1.2e-3] and cooling rate 5e4 to 3e6 K/s (Fig. 6 abscissa and operating range, p.11); outside it the band is null (pdasOutOfRange)",
-  "pdasOutOfRange": true,
-  "pdasUnavailableReason": "outside the Ghosh 2017 validity range: x = G^-0.5 R^-0.25 = 2.647e-04 (range 0.0004 to 0.0012) and cooling rate 6.293e+06 K/s (range 50000 to 3e+06); no band is served",
-  "SDAS_um": null,
-  "sdasUnavailableReason": "no sourced SDAS prefactor: Kirkwood 1985 gives the exponent form λ2 ∝ Ṫ^(-1/3) only and the former per-alloy B1 values had no source (P7a)",
-  "morphology": "Columnar dendritic (Hunt G/R screening)",
-  "g_over_r_ratio": 166393021.0,
-  "doi": "10.1016/0025-5416(84)90201-5",
-  "disclaimer": "G,R from the rear liquidus of the loss-free conduction field (conduction-field interface). Hunt G/R bands are not calibrated N0 CET. Does not re-score Build Job. Null with unavailableReason where the interface is not described by that field (P6 containment). Build-job microstructure is a projection of the thermal block's conduction-field G/R; no second estimate."
+  "normalizedEnthalpy": 14.5
  },
  "unavailable_keyhole_leg_in718_285_960": {
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "quantities": {
+   "thermalGradient": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K/m",
+    "quantityDefinition": "liquidus-front-thermal-gradient",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "liquidus_K"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "keyhole-field-inconsistent",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "normalSpeed": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m/s",
+    "quantityDefinition": "liquidus-front-normal-speed",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "liquidus_K"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "keyhole-field-inconsistent",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "coolingRate": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K/s",
+    "quantityDefinition": "liquidus-front-cooling-rate",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "keyhole-field-inconsistent",
+      "params": {},
+      "parent": null
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "gOverR": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K*s/m^2",
+    "quantityDefinition": "liquidus-front-g-over-r",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "keyhole-field-inconsistent",
+      "params": {},
+      "parent": null
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "pdas": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m",
+    "quantityDefinition": "pdas-model-alternatives",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "keyhole-field-inconsistent",
+      "params": {},
+      "parent": null
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "sdas": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m",
+    "quantityDefinition": "sdas",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "coolingRate"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "keyhole-field-inconsistent",
+      "params": {},
+      "parent": null
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "coolingRate",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "morphology": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "front-morphology",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "solidStateTransformation": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "solid-state-transformation",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-thermal-history",
+      "params": {},
+      "parent": null
+     },
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   }
+  },
+  "inputProvenance": {
+   "liquidus_K": {
+    "kind": "declaredAssumption",
+    "label": "declaredAssumption",
+    "sourceId": "served-liquidus:in718",
+    "sourceLocator": null,
+    "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+    "source": null,
+    "scope": "no-provenance-entry",
+    "status": "inRange",
+    "sourceEvidenceKind": "Unresolved",
+    "defaultValue": 1609.15,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   }
+  },
+  "modelId": "solidification-front-v2",
+  "alloyId": "in718",
   "status": "unavailable",
-  "reason": "thermal.solidificationKinetics unavailable: the served depth comes from the Fabbro keyhole leg (e_kh > d_iso): the conduction field does not describe the keyhole interface, so G, R, cooling rate, PDAS, SDAS and morphology are not served (P6 containment)",
-  "G_K_m": null,
-  "R_m_s": null,
-  "coolingRate_K_s": null,
-  "PDAS_um": null,
-  "pdasBand_um": null,
-  "pdasUnavailableReason": "the served depth comes from the Fabbro keyhole leg (e_kh > d_iso): the conduction field does not describe the keyhole interface, so G, R, cooling rate, PDAS, SDAS and morphology are not served (P6 containment)",
-  "SDAS_um": null,
-  "sdasUnavailableReason": "no sourced SDAS prefactor: Kirkwood 1985 gives the exponent form λ2 ∝ Ṫ^(-1/3) only and the former per-alloy B1 values had no source (P7a)",
-  "morphology": null
+  "schema": "lpbf-solidification-microstructure-2",
+  "source": "thermal.solidificationKinetics",
+  "regime": "Keyhole Mode (melt-pool D/W > 0.5 screening onset)",
+  "normalizedEnthalpy": 30.8
  },
  "unavailable_few_samples_in718_10_3000": {
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "quantities": {
+   "thermalGradient": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K/m",
+    "quantityDefinition": "liquidus-front-thermal-gradient",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "liquidus_K"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "normalSpeed": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m/s",
+    "quantityDefinition": "liquidus-front-normal-speed",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "liquidus_K"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "coolingRate": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K/s",
+    "quantityDefinition": "liquidus-front-cooling-rate",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "gOverR": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K*s/m^2",
+    "quantityDefinition": "liquidus-front-g-over-r",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "pdas": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m",
+    "quantityDefinition": "pdas-model-alternatives",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "sdas": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m",
+    "quantityDefinition": "sdas",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "coolingRate"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "coolingRate",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "morphology": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "front-morphology",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "solidStateTransformation": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "solid-state-transformation",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-thermal-history",
+      "params": {},
+      "parent": null
+     },
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   }
+  },
+  "inputProvenance": {
+   "liquidus_K": {
+    "kind": "declaredAssumption",
+    "label": "declaredAssumption",
+    "sourceId": "served-liquidus:in718",
+    "sourceLocator": null,
+    "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+    "source": null,
+    "scope": "no-provenance-entry",
+    "status": "inRange",
+    "sourceEvidenceKind": "Unresolved",
+    "defaultValue": 1609.15,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   }
+  },
+  "modelId": "solidification-front-v2",
+  "alloyId": "in718",
   "status": "unavailable",
-  "reason": "thermal.solidificationKinetics unavailable: fewer than 3 solidifying rear-liquidus samples (n_x > 0) in the conduction field: no interface statistic is served and the former tail-length fallback G = dT/x_rear was removed as uncited (P6 containment)",
-  "G_K_m": null,
-  "R_m_s": null,
-  "coolingRate_K_s": null,
-  "PDAS_um": null,
-  "pdasBand_um": null,
-  "pdasUnavailableReason": "fewer than 3 solidifying rear-liquidus samples (n_x > 0) in the conduction field: no interface statistic is served and the former tail-length fallback G = dT/x_rear was removed as uncited (P6 containment)",
-  "SDAS_um": null,
-  "sdasUnavailableReason": "no sourced SDAS prefactor: Kirkwood 1985 gives the exponent form λ2 ∝ Ṫ^(-1/3) only and the former per-alloy B1 values had no source (P7a)",
-  "morphology": null
+  "schema": "lpbf-solidification-microstructure-2",
+  "source": "thermal.solidificationKinetics",
+  "regime": "Conduction Mode (Stable)",
+  "normalizedEnthalpy": 0.61
  },
  "degenerate_floor_synthetic": {
-  "status": "degenerate-floor",
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "quantities": {
+   "thermalGradient": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K/m",
+    "quantityDefinition": "liquidus-front-thermal-gradient",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "liquidus_K"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "normalSpeed": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m/s",
+    "quantityDefinition": "liquidus-front-normal-speed",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "liquidus_K"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "coolingRate": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K/s",
+    "quantityDefinition": "liquidus-front-cooling-rate",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "gOverR": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K*s/m^2",
+    "quantityDefinition": "liquidus-front-g-over-r",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "pdas": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m",
+    "quantityDefinition": "pdas-model-alternatives",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "thermalGradient",
+     "normalSpeed"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "thermalGradient",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "normalSpeed",
+       "kind": "derived"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "sdas": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m",
+    "quantityDefinition": "sdas",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "coolingRate"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-constant",
+      "params": {},
+      "parent": {
+       "input": "liquidus_K",
+       "kind": "declaredAssumption"
+      }
+     },
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "coolingRate",
+       "kind": "derived"
+      }
+     },
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "morphology": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "front-morphology",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   },
+   "solidStateTransformation": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "solid-state-transformation",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-thermal-history",
+      "params": {},
+      "parent": null
+     },
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "solidification-front-v2",
+     "parent": null
+    }
+   }
+  },
+  "inputProvenance": {
+   "liquidus_K": {
+    "kind": "declaredAssumption",
+    "label": "declaredAssumption",
+    "sourceId": "served-liquidus:in718",
+    "sourceLocator": null,
+    "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+    "source": null,
+    "scope": "no-provenance-entry",
+    "status": "inRange",
+    "sourceEvidenceKind": "Unresolved",
+    "defaultValue": 1609.15,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   }
+  },
+  "modelId": "solidification-front-v2",
+  "alloyId": "in718",
+  "status": "unavailable",
+  "schema": "lpbf-solidification-microstructure-2",
   "source": "thermal.solidificationKinetics",
-  "modelId": "solidification-front-v1",
-  "gradientSource": "conduction-field-interface",
-  "usedFieldMap": true,
   "regime": "Conduction Mode (Stable)",
-  "normalizedEnthalpy": 10.81,
-  "regimeNote": null,
-  "G_K_m": 36575125.0,
-  "R_m_s": 0.0001,
-  "coolingRate_K_s": 1.0,
-  "PDAS_um": null,
-  "pdasBand_um": null,
-  "pdasBasis": "Ni-Nb model alloy band, Ghosh et al. 2017 (Modelling Simul. Mater. Sci. Eng. 25, 065002, doi 10.1088/1361-651X/aa7369) Fig. 6 caption: Eq. 7 Hunt A = 9.56e-4 and Eq. 8 Kurz-Fisher A = 2.6e-3 (m^0.75 s^-0.25 K^0.5), λ1 = A G^-0.5 R^-0.25. The phase-field PDAS values lie near Hunt (p.11); the line of best fit has a slope close to Kurz-Fisher with a constant offset (p.12), so the slope-only member is not served. The system is a dilute binary Ni-Nb model alloy (Table 2), applied to IN625 and IN718 as the closest sourced Ni-Nb system and not a measurement of those alloys; the coefficients are alloy specific. Validity: x = G^-0.5 R^-0.25 in [4e-4, 1.2e-3] and cooling rate 5e4 to 3e6 K/s (Fig. 6 abscissa and operating range, p.11); outside it the band is null (pdasOutOfRange)",
-  "pdasOutOfRange": true,
-  "pdasUnavailableReason": "outside the Ghosh 2017 validity range: x = G^-0.5 R^-0.25 = 2.497e-04 (range 0.0004 to 0.0012) and cooling rate 7.034e+06 K/s (range 50000 to 3e+06); no band is served",
-  "SDAS_um": null,
-  "sdasUnavailableReason": "no sourced SDAS prefactor: Kirkwood 1985 gives the exponent form λ2 ∝ Ṫ^(-1/3) only and the former per-alloy B1 values had no source (P7a)",
-  "morphology": "Columnar dendritic (Hunt G/R screening)",
-  "g_over_r_ratio": 190177678.0,
-  "doi": "10.1016/0025-5416(84)90201-5",
-  "disclaimer": "G,R from the rear liquidus of the loss-free conduction field (conduction-field interface). Hunt G/R bands are not calibrated N0 CET. Does not re-score Build Job. Null with unavailableReason where the interface is not described by that field (P6 containment). Build-job microstructure is a projection of the thermal block's conduction-field G/R; no second estimate. R and the cooling rate sit on the solver clamp floors (see reason): the values above, and the PDAS/SDAS/morphology derived from them, are not a computed result.",
-  "reason": "solidification front degenerate: floor-clamped R/cooling (R <= 1e-4 m/s or cooling <= 1 K/s), not a computed value"
+  "normalizedEnthalpy": 10.81
  },
  "unavailable_no_kinetics": {
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "quantities": {
+   "thermalGradient": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K/m",
+    "quantityDefinition": "liquidus-front-thermal-gradient",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": null,
+     "parent": null
+    }
+   },
+   "normalSpeed": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m/s",
+    "quantityDefinition": "liquidus-front-normal-speed",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": null,
+     "parent": null
+    }
+   },
+   "coolingRate": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K/s",
+    "quantityDefinition": "liquidus-front-cooling-rate",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": null,
+     "parent": null
+    }
+   },
+   "gOverR": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K*s/m^2",
+    "quantityDefinition": "liquidus-front-g-over-r",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": null,
+     "parent": null
+    }
+   },
+   "pdas": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m",
+    "quantityDefinition": "pdas-model-alternatives",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": null,
+     "parent": null
+    }
+   },
+   "sdas": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "m",
+    "quantityDefinition": "sdas",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": null,
+     "parent": null
+    }
+   },
+   "morphology": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "front-morphology",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": null,
+     "parent": null
+    }
+   },
+   "solidStateTransformation": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "solid-state-transformation",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": null
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": null,
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": null,
+     "parent": null
+    }
+   }
+  },
   "status": "unavailable",
-  "reason": "thermal.solidificationKinetics missing or non-finite",
-  "G_K_m": null,
-  "R_m_s": null,
-  "coolingRate_K_s": null,
-  "PDAS_um": null,
-  "pdasBand_um": null,
-  "pdasUnavailableReason": null,
-  "SDAS_um": null,
-  "sdasUnavailableReason": null,
-  "morphology": null
+  "schema": "lpbf-solidification-microstructure-2",
+  "source": "thermal.solidificationKinetics",
+  "regime": null,
+  "normalizedEnthalpy": null
  }
 }

@@ -1,8 +1,4 @@
 import unittest
-from lpbf_solidification_microstructure import (
-    hunt_morphology,
-    morphology_fractions
-)
 from kinetics_ttt_cct_solver import solve_phase_transformation_kinetics
 
 class TestPhase7MicrostructureValidation(unittest.TestCase):
@@ -10,25 +6,16 @@ class TestPhase7MicrostructureValidation(unittest.TestCase):
     # the former test_01 and test_02 on them are removed. PDAS/SDAS on that path are served as None.
     def test_01_cfd_path_serves_no_spacing(self):
         from lpbf_solidification_microstructure import compute_solidification_microstructure
-        cfd = {"solidificationMicrostructure": {"meanG_K_m": 1.0e6, "meanR_m_s": 0.5, "meanCoolingRate_K_s": 5.0e5}}
-        out = compute_solidification_microstructure({}, {}, cfd)
-        self.assertEqual(out["status"], "available")
-        self.assertIsNone(out["PDAS_um"])
-        self.assertIsNone(out["SDAS_um"])
-        self.assertIn("no source", out["spacingUnavailableReason"])
+        out = compute_solidification_microstructure({}, {}, {"solidificationMicrostructure": {"meanG_K_m": 1e6}})
+        self.assertEqual(out["status"], "unavailable")
+        for q in out["quantities"].values():
+            self.assertIsNone(q["value"])
+            self.assertEqual(q["reasons"][0]["code"], "quarantined-legacy-path")
 
     def test_03_hunt_morphology(self):
-        # Columnar: G/R > 1e8 K s/m^2
-        self.assertEqual(hunt_morphology(1e6, 0.005), "columnar")
-        # Equiaxed: G/R < 1e6
-        self.assertEqual(hunt_morphology(1e5, 0.2), "equiaxed")
-        # Mixed: G/R between 1e6 and 1e8
-        self.assertEqual(hunt_morphology(1e6, 0.1), "mixed")
-        
-        fracs = morphology_fractions(1e6, 0.1)
-        self.assertGreater(fracs["columnar"], 0.0)
-        self.assertGreater(fracs["equiaxed"], 0.0)
-        self.assertAlmostEqual(fracs["columnar"] + fracs["equiaxed"] + fracs["mixed"], 1.0)
+        import lpbf_solidification_microstructure as module
+        self.assertFalse(hasattr(module, "hunt_morphology"))
+        self.assertFalse(hasattr(module, "morphology_fractions"))
 
     def test_04_kinetics_lpbf_quench(self):
         # LPBF Cooling Rate (1e6 K/s) for AISI 4140 should suppress diffusion completely.

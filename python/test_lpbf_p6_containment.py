@@ -316,14 +316,16 @@ class BuildJobNullInputs(unittest.TestCase):
     def test_kinetics_and_microstructure_carry_the_thermal_reason(self):
         from lpbf_build_job_solver import build_job_kinetics
         from lpbf_solidification_microstructure import project_build_job_microstructure
-        th = run(UNSOURCED, 400.0, 500.0)
-        self.assertIsNone(th["solidificationKinetics"]["coolingRate_K_s"])
-        micro = project_build_job_microstructure(th)
-        self.assertEqual(micro["status"], "unavailable")
-        self.assertIn("Fabbro keyhole leg", micro["reason"])
-        kin = build_job_kinetics("in718", th)
-        self.assertEqual(kin["status"], "unavailable")
-        self.assertIn("Fabbro keyhole leg", kin["reason"])
+        from lpbf_thermal_solver import calculate_meltpool_physics
+        thermal = calculate_meltpool_physics("in718", 285, 960, 80, 80, 40, 110)
+        front = thermal["solidificationKinetics"]
+        micro = project_build_job_microstructure(thermal)
+        self.assertEqual(micro["quantities"], front["quantities"])
+        codes = {r["code"] for r in micro["quantities"]["thermalGradient"]["reasons"]}
+        self.assertIn("keyhole-field-inconsistent", codes)
+        kinetics = build_job_kinetics("in718", thermal)
+        self.assertEqual(kinetics["reasons"][0]["code"], "missing-thermal-history")
+        self.assertIsNone(kinetics["buildCoolingRate_C_s"])
 
 
 if __name__ == "__main__":

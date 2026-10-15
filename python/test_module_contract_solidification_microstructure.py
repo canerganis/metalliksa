@@ -36,7 +36,7 @@ class SolidificationMicrostructureRegistryContractTests(unittest.TestCase):
         for op in ops.values():
             self.assertIsNone(op.output.status_key)
             self.assertNotIn("evidence", op.output.fields)  # reserved by the SDK; named in the notes
-        self.assertLessEqual({"regime", "PDAS_um", "SDAS_um"}, set(worker.output.fields))
+        self.assertLessEqual({"regime", "quantities", "quantityEnvelopeSchema"}, set(worker.output.fields))
 
     def test_screening_ceiling_and_no_emitted_status(self):
         self.assertEqual(self.contract.evidence.ceiling, "screening-only")
@@ -45,8 +45,8 @@ class SolidificationMicrostructureRegistryContractTests(unittest.TestCase):
         self.assertEqual(self.contract.tests.docs, "docs/modules/solidification-microstructure.md")
         self.assertEqual(contract_from_dict(self.contract.to_dict()), self.contract)
         notes = " ".join(self.contract.legacy_notes)
-        self.assertIn("the SDK reserves that name", notes)
-        self.assertIn("experimentalValidation false", notes)
+        self.assertIn("SDK-reserved", notes)
+        self.assertIn("experimental validation", notes)
 
     def test_every_reference_resolves(self):
         generated = frozenset(mr.module_doc_path(c.id) for c in self.contracts.values()
@@ -55,8 +55,8 @@ class SolidificationMicrostructureRegistryContractTests(unittest.TestCase):
 
     def test_committed_doc_states_inputs_outputs_and_limits(self):
         text = DOC.read_text(encoding="utf-8")
-        for needle in ("`solidification-microstructure`", "`gr-solidification`", "225 cells",
-                       "screening-fallback", "Ceiling: screening-only"):
+        for needle in ("`solidification-microstructure`", "`gr-solidification`", "sourceChecks",
+                       "lpbf-solidification-microstructure-2", "Ceiling: screening-only"):
             self.assertIn(needle, text)
         stray = [ln for ln in text.splitlines() if "\u2014" in ln and not ln.startswith("\u2014 = ")]
         self.assertEqual(stray, [])

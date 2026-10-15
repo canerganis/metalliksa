@@ -77,7 +77,7 @@ import copy
 import math
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
-SCHEMA = "lpbf-solidification-segregation-1"
+SCHEMA = "lpbf-solidification-segregation-2"
 MODEL_ID = "dupont1997-pseudo-ternary-gamma-nb-c-v1"
 
 EVIDENCE_LABEL = (
@@ -430,7 +430,7 @@ def pseudo_ternary_path(c0_nb: float, c0_c: float, cset: Mapping[str, Dict[str, 
                 "fLiquidPrimaryEnd": 1.0, "fGammaNbCConstituent": 0.0, "fGammaLavesConstituent": 1.0, "fEutecticTotal": 1.0,
                 "terminatedBy": "nominal-composition"}
     if c0_c >= a + b * c0_nb:
-        return {"status": "outside-model",
+        return {"status": "unavailable", "reasons": [{"code": "outside-source-model-domain", "params": {}, "parent": None}],
                 "reason": "nominal composition lies in the primary NbC field of the D97 solidification surface"}
 
     def path_nb(clc: float) -> float:  # Eq. 3
@@ -588,27 +588,17 @@ def _validity(alloy_id: str, spec_info: Dict[str, Any], set_id: str) -> Dict[str
 
 
 def _process_coupling(microstructure: Optional[Mapping[str, Any]]) -> Dict[str, Any]:
-    keys = ("G_K_m", "R_m_s", "coolingRate_K_s", "morphology", "PDAS_um")
-    base = {"source": "build job microstructure block (copied, not recomputed)",
-            "usedInCalculation": False,
-            "note": ("G and R are copied for context: the equilibrium-k Scheil-type result depends on composition "
-                     "alone. R is used only by the separate rapidSolidification screening estimate (Aziz k(V)); "
-                     "back-diffusion at this solidification rate is not modelled.")}
-    if not isinstance(microstructure, Mapping):
-        return {"status": "unavailable", "reason": "no microstructure block", **{k: None for k in keys}, **base}
-    status = microstructure.get("status")
-    if status in ("unavailable", "degenerate-floor") or status not in ("available", "screening-fallback"):
-        why = microstructure.get("reason") or f"microstructure status {status!r}"
-        return {"status": "unavailable", "reason": f"microstructure {status}: {why}",
-                **{k: None for k in keys}, **base}
-    out = {"status": status, "reason": microstructure.get("reason") if status == "screening-fallback" else None,
-           **{k: copy.deepcopy(microstructure.get(k)) for k in keys}, **base}
-    return out
+    from lpbf_solidification_microstructure import project_build_job_microstructure
+    block = (copy.deepcopy(dict(microstructure)) if isinstance(microstructure, Mapping)
+             and isinstance(microstructure.get("quantities"), Mapping)
+             else project_build_job_microstructure({}))
+    block.update(usedInCalculation=False, source="thermal.solidificationKinetics")
+    return block
 
 
 def _unavailable(alloy_id: str, reason: str, status: str = "unavailable") -> Dict[str, Any]:
     return {"schema": SCHEMA, "modelId": MODEL_ID, "status": status, "alloyId": alloy_id, "reason": reason,
-            "evidenceLabel": EVIDENCE_LABEL if status == "unavailable" else None}
+            "reasons": [{"code": "not-requested" if status == "not-requested" else "missing-source-bound-model", "params": {}, "parent": None}]}
 
 
 def _constants_view(set_id: str) -> Dict[str, Any]:
@@ -616,11 +606,52 @@ def _constants_view(set_id: str) -> Dict[str, Any]:
             for key, entry in CONSTANTS[set_id].items()}
 
 
-def segregation_estimate(alloy_id: str, microstructure: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
+def _segregation_envelope(result: Dict[str, Any]) -> Dict[str, Any]:
+    """Attach source-labelled inventories without changing the composition-only calculation."""
+    from quantity_envelope import container, input_record, quantity, unavailable, reason, observation, source_ref
+    inputs = {
+        "composition": input_record("declaredAssumption", "alloy-registry:composition", status="inRange",
+                                    declaration_locator="python/alloy_registry.py", scope="nominal-specification-screen"),
+        "sourceCoefficients": input_record("sourceDefault", "segregation:source-constants", status="inRange",
+                                           source_locator="python/lpbf_solidification_segregation.py#CONSTANTS",
+                                           scope="source-alloy-process"),
+    }
+    quantities = {}
+    for point in result.get("band", []):
+        for kind in ("binaryUpperBound", "pseudoTernaryAtCmax"):
+            row = point.get(kind) or {}
+            name = point["label"] + ("Binary" if kind == "binaryUpperBound" else "Ternary")
+            if row.get("fGammaLavesConstituent") is None:
+                quantities[name] = unavailable("scheil-phase-inventory", [reason("missing-source-bound-model")])
+                continue
+            inventory = {"gammaLavesConstituent": row["fGammaLavesConstituent"]}
+            if row.get("fGammaNbCConstituent") is not None:
+                inventory["gammaNbCConstituent"] = row["fGammaNbCConstituent"]
+            quantities[name] = quantity("scheil-phase-inventory", inventory, inputs=inputs,
+                                        depends_on=("composition", "sourceCoefficients"),
+                                        sources=[source_ref("D98" if result["alloyId"] == "in718" else "C88-D96",
+                                                            "constant and band locators in this result", "primary-read")],
+                                        model_identity=result["modelId"], fraction_basis="microconstituent",
+                                        uncertainty={"kind": "not-quantified", "construction": "not-quantified"})
+    if not quantities:
+        quantities["phaseInventory"] = unavailable("scheil-phase-inventory", result.get("reasons") or
+                                                   [reason("missing-source-bound-model")],
+                                                   status=result.get("status", "unavailable"))
+    observations = {}
+    if result.get("alloyId") == "in625":
+        observations["edsNbMassFraction"] = observation(
+            "Nb mass fraction along the as-built EDS line scan", {k: v / 100 for k, v in Z18_EDS_NB.items()}, "1",
+            "Measured", [source_ref("Z18", "Results Figs. 3 and 4", "primary-read")],
+            material_scope="IN625 source batch", process_scope="EOS M270 195 W 800 mm/s", comparability="context-only")
+    result.update(container(quantities, input_provenance=inputs, observations=observations))
+    return result
+
+
+def _segregation_estimate(alloy_id: str, microstructure: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
     """Segregation block for one alloy id. in718: D98 pseudo-ternary; in625: D96 binary Scheil; others n/a."""
     aid = str(alloy_id or "").strip().lower()
     if aid not in NB_ALLOYS:
-        return _unavailable(aid, NOT_APPLICABLE_REASON, status="not-applicable")
+        return _unavailable(aid, NOT_APPLICABLE_REASON, status="not-requested")
     if aid == "in625":
         return _in625_estimate(microstructure)
     set_id = "ni-base"
@@ -636,9 +667,8 @@ def segregation_estimate(alloy_id: str, microstructure: Optional[Mapping[str, An
     return {
         "schema": SCHEMA,
         "modelId": MODEL_ID,
-        "status": "available",
+        "status": "computed",
         "alloyId": aid,
-        "evidenceLabel": EVIDENCE_LABEL,
         "source": SOURCES["D98"],
         "constantSet": set_id,
         "constants": _constants_view(set_id),
@@ -823,7 +853,7 @@ def _in625_estimate(microstructure: Optional[Mapping[str, Any]]) -> Dict[str, An
         points.append({
             "label": lbl, "Nb_wt": nb,
             "binaryUpperBound": {"C_wt": 0.0, "fGammaLavesConstituent": _r(scheil_eutectic_fraction(nb, ce, k_nb))},
-            "pseudoTernaryAtCmax": {"C_wt": spec_info["C_wt"]["max"], "status": "not-modelled",
+            "pseudoTernaryAtCmax": {"C_wt": spec_info["C_wt"]["max"], "status": "unavailable", "reasons": [{"code": "missing-source-bound-model", "params": {}, "parent": None}],
                                     "reason": IN625_NO_CARBON_REASON},
         })
     ratios = _segregation_ratios(band["nominal"], cset)
@@ -840,9 +870,8 @@ def _in625_estimate(microstructure: Optional[Mapping[str, Any]]) -> Dict[str, An
     return {
         "schema": SCHEMA,
         "modelId": IN625_MODEL_ID,
-        "status": "available",
+        "status": "computed",
         "alloyId": "in625",
-        "evidenceLabel": IN625_EVIDENCE_LABEL,
         "source": SOURCES["C88"],
         "secondarySource": SOURCES["D96"],
         "constantSet": IN625_SET,
@@ -965,7 +994,6 @@ def _v_d_view() -> Dict[str, Any]:
 def _rapid_base() -> Dict[str, Any]:
     return {
         "modelId": RAPID_MODEL_ID,
-        "evidenceLabel": RAPID_EVIDENCE_LABEL,
         "model": {"equation": AZIZ_EQUATION, "source": SOURCES["G17"]["citation"],
                   "locator": "G17 Eq. 12 (Section 3.2.4), after Aziz 1982 (G17 ref. 66, not read here)",
                   "originalCitation": SOURCES["A82"]["citation"]},
@@ -1004,14 +1032,15 @@ def _rapid_point(nb: float, c_max: Optional[float], cset) -> Dict[str, Any]:
 
 def _rapid_solidification(alloy_id: str, microstructure: Optional[Mapping[str, Any]]) -> Dict[str, Any]:
     base = _rapid_base()
-    status = microstructure.get("status") if isinstance(microstructure, Mapping) else None
-    r = microstructure.get("R_m_s") if isinstance(microstructure, Mapping) else None
-    if status not in ("available", "screening-fallback"):
-        why = "no microstructure block" if status is None else f"microstructure status {status!r}"
-        return {"status": "unavailable", "reason": f"no usable solidification rate R ({why})", "R_m_s": None, **base}
-    if not (isinstance(r, (int, float)) and not isinstance(r, bool) and math.isfinite(r) and r > 0.0):
-        return {"status": "unavailable", "reason": "microstructure R_m_s missing, non-finite or not positive",
-                "R_m_s": None, **base}
+    from quantity_envelope import container, reason, reason_text, unavailable
+    quantities = microstructure.get("quantities", {}) if isinstance(microstructure, Mapping) else {}
+    normal_speed = quantities.get("normalSpeed", {})
+    status = normal_speed.get("status")
+    r = normal_speed.get("value")
+    if status not in ("computed", "partial") or not (isinstance(r, (int, float)) and not isinstance(r, bool)
+                                                    and math.isfinite(r) and r > 0):
+        return {**base, "status": "unavailable", "reason": reason_text("parent-unavailable"), "R_m_s": None,
+                **container({"fraction": unavailable("laves-trapped-scheil-fraction", [reason("parent-unavailable")])})}
     cset, band, c_max = _rapid_inputs(alloy_id)
     k_e = _value(cset, "k_gamma_Nb")
     by_vd = []
@@ -1032,9 +1061,9 @@ def _rapid_solidification(alloy_id: str, microstructure: Optional[Mapping[str, A
     k_vals = [row["kEff"] for row in by_vd]
     nominal_f = [next(p for p in row["band"] if p["label"] == "nominal")["binary"]["fGammaLavesConstituent"]
                  for row in by_vd]
-    return {
+    result = {
         "status": status,
-        "reason": microstructure.get("reason") if status == "screening-fallback" else None,
+        "reason": None,
         "R_m_s": r,
         "R_source": "build job microstructure block (screening-field mean R, copied)",
         "k_e": k_e,
@@ -1045,6 +1074,20 @@ def _rapid_solidification(alloy_id: str, microstructure: Optional[Mapping[str, A
                      "V_D range; the lower V_D gives the higher k(R) and the smaller fraction"),
         **base,
     }
+    from quantity_envelope import input_record, quantity, source_ref
+    inputs = copy.deepcopy(microstructure.get("inputProvenance") or {})
+    inputs["sourceCoefficients"] = input_record("sourceDefault", "segregation:rapid-source-constants", status="inRange",
+                                                source_locator="python/lpbf_solidification_segregation.py#V_D_VALUES",
+                                                scope="source-alloy-process")
+    qs = {"normalSpeed": copy.deepcopy(normal_speed)}
+    qs["fraction"] = quantity("laves-trapped-scheil-fraction", max(nominal_f), inputs=inputs,
+                              depends_on=("normalSpeed", "sourceCoefficients"), quantities=qs,
+                              sources=[source_ref("G17", "Eq. 12; V_D_VALUES source locators", "primary-read")],
+                              model_identity=RAPID_MODEL_ID, fraction_basis="microconstituent",
+                              uncertainty={"kind": "not-quantified", "construction": "not-quantified"})
+    result.update(container(qs, input_provenance=inputs))
+    return result
+
 
 
 # As-built LPBF IN625 observations (NIST builds: EOS M270, 195 W, 800 mm/s). Measured values are copied with their
@@ -1144,9 +1187,9 @@ def lpbf_observations(alloy_id: str) -> Dict[str, Any]:
                            "are LPBF IN625, G17 is a binary Ni-Nb simulation"),
                 "observations": []}
     return {
-        "status": "available",
+        "status": "computed",
         "alloy": "IN625",
-        "evidenceKind": "Measured (literature, as-built LPBF IN625); simulations listed separately",
+
         "sources": {key: SOURCES[key]["citation"] for key in ("Z18", "L17", "K17", "G18")},
         "build": dict(LPBF_IN625_BUILD),
         "powderNb_wt": dict(LPBF_IN625_POWDER_NB),
@@ -1155,6 +1198,10 @@ def lpbf_observations(alloy_id: str) -> Dict[str, Any]:
         "literatureSimulations": [dict(s) for s in LPBF_IN625_SIMULATIONS],
         "comparison": _in625_lpbf_comparison(),
     }
+
+
+def segregation_estimate(alloy_id: str, microstructure: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
+    return _segregation_envelope(_segregation_estimate(alloy_id, microstructure))
 
 
 def build_job_segregation(alloy_id: str, microstructure: Optional[Mapping[str, Any]]) -> Dict[str, Any]:

@@ -14,7 +14,7 @@ def _rpc_solidification_microstructure(request):
     payload = request["payload"]
     p = payload.get("params", {})
     cfd = payload.get("cfdResult", None)
-    if cfd:
+    if "cfdResult" in payload:
         # Legacy CFD path, only when a cfdResult is supplied (no UI caller does today).
         m = payload.get("material", {})
         return compute_solidification_microstructure(p, m, cfd)

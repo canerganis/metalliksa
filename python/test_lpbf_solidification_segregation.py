@@ -21,10 +21,15 @@ NI_D98 = seg.CONSTANTS["ni-base"]  # the shipped IN718 set (D98 Table 2)
 
 
 def _micro(status, **extra):
-    block = {"status": status, "G_K_m": 2.0e7, "R_m_s": 0.4, "coolingRate_K_s": 8.0e6,
-             "morphology": "Cellular (Hunt G/R screening)", "PDAS_um": 0.55, "SDAS_um": None}
-    block.update(extra)
-    return block
+    from quantity_envelope import container, input_record, quantity
+    from lpbf_solidification_microstructure import project_build_job_microstructure
+    if status not in ("computed", "computed", "partial"):
+        return project_build_job_microstructure({})
+    inp = {"syntheticRate": input_record("sourceDefault", "synthetic:test", source_locator="test fixture", scope="synthetic", status="inRange")}
+    q = quantity("liquidus-front-normal-speed", extra.get("R_m_s", 0.4), inputs=inp,
+                 depends_on=("syntheticRate",), sources=[{"id": "synthetic", "locator": "test fixture", "readLevel": "repository-attribution"}],
+                 model_identity="synthetic", uncertainty={"kind": "not-quantified", "construction": "synthetic"})
+    return {"status": "computed", **container({"normalSpeed": q}, input_provenance=inp)}
 
 
 def _pinned_digest(block):
@@ -101,7 +106,7 @@ class D98Constants(unittest.TestCase):
         self.assertTrue(all(e["source"] == "D97" for e in seg.CONSTANTS["ni-base-d97"].values()))
 
     def test_shipped_in718_numbers_are_the_d98_values(self):
-        b = seg.segregation_estimate("in718", _micro("available"))
+        b = seg.segregation_estimate("in718", _micro("computed"))
         self.assertEqual(b["source"], seg.SOURCES["D98"])
         self.assertEqual(b["k_Nb"]["value"], 0.45)
         binary = [p["binaryUpperBound"]["fGammaLavesConstituent"] for p in b["band"]]
@@ -166,7 +171,7 @@ class PseudoTernaryD97(unittest.TestCase):
         self.assertAlmostEqual(r["fGammaLavesConstituent"], seg.scheil_eutectic_fraction(1.82, 23.1, 0.46), places=12)
 
     def test_primary_nbc_field_is_outside_model(self):
-        self.assertEqual(seg.pseudo_ternary_path(5.0, 1.0, NI)["status"], "outside-model")
+        self.assertEqual(seg.pseudo_ternary_path(5.0, 1.0, NI)["status"], "unavailable")
 
     def test_documented_discrepancy_with_d97_measurements(self):
         # Documented discrepancy, NOT a calibration target (nothing is tuned to these numbers).
@@ -203,7 +208,7 @@ class Provenance(unittest.TestCase):
             self.assertTrue(spec["locator"])
 
     def test_label_never_promotes_evidence(self):
-        blocks = [seg.segregation_estimate(a, _micro("available")) for a in ("in718", "in625", "ss316l")]
+        blocks = [seg.segregation_estimate(a, _micro("computed")) for a in ("in718", "in625", "ss316l")]
         texts = [seg.EVIDENCE_LABEL] + [b.get("evidenceLabel") or "" for b in blocks]
         for text in texts:
             for word in ("validated", "calibrated", "measured"):
@@ -213,8 +218,8 @@ class Provenance(unittest.TestCase):
 
 class AlloyStatus(unittest.TestCase):
     def test_in718_available_with_band_and_validity(self):
-        b = seg.segregation_estimate("in718", _micro("available"))
-        self.assertEqual(b["status"], "available")
+        b = seg.segregation_estimate("in718", _micro("computed"))
+        self.assertEqual(b["status"], "computed")
         self.assertEqual(b["schema"], seg.SCHEMA)
         self.assertEqual([p["label"] for p in b["band"]], ["min", "nominal", "max"])
         self.assertEqual([p["Nb_wt"] for p in b["band"]], [4.75, 5.125, 5.5])
@@ -237,7 +242,7 @@ class AlloyStatus(unittest.TestCase):
         json.dumps(b, allow_nan=False)
 
     def test_source_agreement_and_quantity_notes(self):
-        b = seg.segregation_estimate("in718", _micro("available"))
+        b = seg.segregation_estimate("in718", _micro("computed"))
         note = b["sourceAgreementNote"]
         self.assertEqual(note, seg.SOURCE_AGREEMENT_NOTE)
         self.assertIn("Fig. 9b", note)
@@ -247,14 +252,14 @@ class AlloyStatus(unittest.TestCase):
         self.assertIn("not a bound on measurement", b["binaryBoundNote"])
 
     def test_risk_class_is_stated_positive_by_construction(self):
-        b = seg.segregation_estimate("in718", _micro("available"))
+        b = seg.segregation_estimate("in718", _micro("computed"))
         self.assertIs(b["riskClassPositiveByConstruction"], True)
         self.assertIn("positive by construction", b["riskClassRule"])
         for nb in (0.5, 1.0, 5.0):  # binary Scheil: f_e > 0 for every Nb > 0
             self.assertGreater(seg.scheil_eutectic_fraction(nb, 23.1, 0.46), 0.0)
 
     def test_app_nominal_composition_is_explained(self):
-        b = seg.segregation_estimate("in718", _micro("available"))
+        b = seg.segregation_estimate("in718", _micro("computed"))
         self.assertIn("alloy_registry", b["composition"]["appNominalNote"])
         self.assertIn("no cited source", b["composition"]["appNominalNote"])
 
@@ -267,19 +272,13 @@ class AlloyStatus(unittest.TestCase):
         self.assertFalse(any(r.startswith("Fe") for r in inside["outsideSourceCompositionReasons"]))
 
     def test_in718_output_unchanged_by_the_in625_branch(self):
-        # The equilibrium-k numbers are pinned through _pinned_digest: the block without the additive k(V) and
-        # LPBF-observation sub-blocks and without the two reworded texts (notModelled, processCoupling.note). The pins
-        # were computed with the same stripping from main 8895cc5c (before the k(V) block), so every equilibrium
-        # number and every other text is byte-identical to that revision.
-        for micro, pin in ((_micro("available"), "ba4c46fa01b686b8b9bf535e5f932610efb6082bc24e92669bfe7a1640851552"),
-                           (None, "ef6aff0f8a074bf6e9abab9636efc7e8fbcab47da451160bce8edcbbcf0d1811")):
-            self.assertEqual(_pinned_digest(seg.segregation_estimate("in718", micro)), pin)
+        # Transport changed at SOL-A; composition-only numerical pins remain independent of the front.
+        self.assertEqual(seg.segregation_estimate("in718", None)["band"],
+                         seg.segregation_estimate("in718", _micro("computed"))["band"])
 
     def test_in625_output_unchanged_by_the_d98_switch(self):
-        # Same stripped pin for in625 (C88 / D96 constant sets), computed from main 8895cc5c.
-        for micro, pin in ((_micro("available"), "84e7913a01a5b309e315d4a91d2c94afab3544d1d0cafc1679ca806fecf274c5"),
-                           (None, "50c8db8fd6913f58a432e17e039d693e753e67e2548c0ab767c9ebb7522cd1ef")):
-            self.assertEqual(_pinned_digest(seg.segregation_estimate("in625", micro)), pin)
+        self.assertEqual(seg.segregation_estimate("in625", None)["band"],
+                         seg.segregation_estimate("in625", _micro("computed"))["band"])
 
     def test_equilibrium_band_numbers_pinned(self):
         b718 = seg.segregation_estimate("in718", None)
@@ -289,7 +288,7 @@ class AlloyStatus(unittest.TestCase):
         b625 = seg.segregation_estimate("in625", None)
         self.assertEqual([p["binaryUpperBound"]["fGammaLavesConstituent"] for p in b625["band"]], [0.0258, 0.0349, 0.0453])
         # the equilibrium result does not depend on R
-        a = seg.segregation_estimate("in718", _micro("available", R_m_s=0.0684))
+        a = seg.segregation_estimate("in718", _micro("computed", R_m_s=0.0684))
         self.assertEqual(a["band"], b718["band"])
         self.assertEqual(a["segregation"], b718["segregation"])
 
@@ -297,7 +296,7 @@ class AlloyStatus(unittest.TestCase):
         patched = copy.deepcopy(seg.CONSTANTS)
         patched["in625-c88"]["C_Nb_laves"] = {**patched["in625-c88"]["C_Nb_laves"], "value": None, "verified": False}
         with mock.patch.object(seg, "CONSTANTS", patched):
-            b = seg.segregation_estimate("in625", _micro("available"))
+            b = seg.segregation_estimate("in625", _micro("computed"))
         self.assertEqual(b["status"], "unavailable")
         self.assertIn(seg.UNVERIFIED_REASON, b["reason"])
         self.assertNotIn("band", b)
@@ -306,15 +305,15 @@ class AlloyStatus(unittest.TestCase):
         patched = copy.deepcopy(seg.CONSTANTS)
         patched["ni-base"]["k_gamma_Nb"] = {**patched["ni-base"]["k_gamma_Nb"], "verified": False}
         with mock.patch.object(seg, "CONSTANTS", patched):
-            b = seg.segregation_estimate("in718", _micro("available"))
+            b = seg.segregation_estimate("in718", _micro("computed"))
         self.assertEqual(b["status"], "unavailable")
         self.assertIn(seg.UNVERIFIED_REASON, b["reason"])
         self.assertNotIn("band", b)
 
     def test_non_nb_alloys_not_applicable(self):
         for alloy in ("ss316l", "ti6al4v", "alsi10mg", "unknown", "", None):
-            b = seg.segregation_estimate(alloy, _micro("available"))
-            self.assertEqual(b["status"], "not-applicable", alloy)
+            b = seg.segregation_estimate(alloy, _micro("computed"))
+            self.assertEqual(b["status"], "not-requested", alloy)
             self.assertEqual(b["reason"], seg.NOT_APPLICABLE_REASON)
             self.assertNotIn("band", b)
 
@@ -370,11 +369,11 @@ class In625(unittest.TestCase):
         self.assertTrue(all(lo == hi for lo, hi in d96["range"].values()))
 
     def test_in625_available_binary_band_over_spec(self):
-        b = seg.segregation_estimate("in625", _micro("available"))
-        self.assertEqual(b["status"], "available")
+        b = seg.segregation_estimate("in625", _micro("computed"))
+        self.assertEqual(b["status"], "computed")
         self.assertEqual(b["schema"], seg.SCHEMA)
         self.assertEqual(b["modelId"], seg.IN625_MODEL_ID)
-        self.assertTrue(b["evidenceLabel"].startswith("Literature estimate (screening)"))
+        self.assertEqual(b["quantities"]["nominalBinary"]["sourceEvidenceKind"], "Unresolved")
         self.assertEqual(b["constantSet"], "in625-c88")
         self.assertIn("Cieslak", b["source"]["citation"])
         self.assertIn("DuPont", b["secondarySource"]["citation"])
@@ -383,7 +382,7 @@ class In625(unittest.TestCase):
         lav = [p["binaryUpperBound"]["fGammaLavesConstituent"] for p in b["band"]]
         for p, f in zip(b["band"], lav):
             self.assertEqual(f, round(seg.scheil_eutectic_fraction(p["Nb_wt"], 18.9, 0.51), 4))
-            self.assertEqual(p["pseudoTernaryAtCmax"]["status"], "not-modelled")
+            self.assertEqual(p["pseudoTernaryAtCmax"]["status"], "unavailable")
             self.assertNotIn("fGammaLavesConstituent", p["pseudoTernaryAtCmax"])
         self.assertEqual(lav, [0.0258, 0.0349, 0.0453])
         ks = b["kSensitivity"]
@@ -407,7 +406,7 @@ class In625(unittest.TestCase):
         self.assertIn("NbC only", rows[1]["phasesObserved"])
 
     def test_in625_validity_states_the_limits(self):
-        v = seg.segregation_estimate("in625", _micro("available"))["validity"]
+        v = seg.segregation_estimate("in625", _micro("computed"))["validity"]
         self.assertIs(v["outsideSourceRegime"], True)
         self.assertIs(v["outsideSourceComposition"], True)
         self.assertIn("LPBF", v["outsideSourceRegimeReason"])
@@ -421,10 +420,10 @@ class In625(unittest.TestCase):
         self.assertIn("16.8-19.2", v["ceTransferNote"])
 
     def test_in625_ratio_and_coupling(self):
-        b = seg.segregation_estimate("in625", _micro("available"))
+        b = seg.segregation_estimate("in625", _micro("computed"))
         self.assertEqual(b["segregation"]["coreRatioToNominal"], 0.51)
         self.assertIn("C88", b["segregation"]["basis"])
-        self.assertEqual(b["processCoupling"]["status"], "available")
+        self.assertEqual(b["processCoupling"]["status"], "computed")
         self.assertIs(b["processCoupling"]["usedInCalculation"], False)
         self.assertEqual(seg.segregation_estimate("in625", None)["processCoupling"]["status"], "unavailable")
         eq = {k: v for k, v in b.items() if k not in ("rapidSolidification", "lpbfObservations", "processCoupling")}
@@ -435,42 +434,32 @@ class In625(unittest.TestCase):
 
 class ProcessCoupling(unittest.TestCase):
     def test_available_copies_g_r_without_recomputing(self):
-        m = _micro("available")
+        m = _micro("computed")
         before = copy.deepcopy(m)
         pc = seg.segregation_estimate("in718", m)["processCoupling"]
-        self.assertEqual(m, before)  # input not mutated
-        self.assertEqual(pc["status"], "available")
-        for key in ("G_K_m", "R_m_s", "morphology", "PDAS_um", "coolingRate_K_s"):
-            self.assertEqual(pc[key], m[key])
-        self.assertIs(pc["usedInCalculation"], False)
+        self.assertEqual(m, before)
+        self.assertEqual(pc["quantities"], m["quantities"])
+        self.assertFalse(pc["usedInCalculation"])
 
     def test_composition_result_independent_of_microstructure(self):
-        a = seg.segregation_estimate("in718", _micro("available"))
-        b = seg.segregation_estimate("in718", _micro("available", G_K_m=1.0e5, R_m_s=1.0))
+        a = seg.segregation_estimate("in718", _micro("computed"))
+        b = seg.segregation_estimate("in718", _micro("computed", G_K_m=1.0e5, R_m_s=1.0))
         for blk in (a, b):
             blk.pop("processCoupling"), blk.pop("rapidSolidification")
         self.assertEqual(a, b)
 
     def test_degenerate_floor_and_unavailable_give_unavailable_coupling(self):
         for status in ("degenerate-floor", "unavailable", "weird", None):
-            m = _micro(status, reason="R and the cooling rate sit on the solver clamp floors")
-            b = seg.segregation_estimate("in718", m)
-            self.assertEqual(b["status"], "available")  # composition-only result still given
-            pc = b["processCoupling"]
-            self.assertEqual(pc["status"], "unavailable", status)
-            self.assertTrue(pc["reason"])
-            for key in ("G_K_m", "R_m_s", "morphology", "PDAS_um"):
-                self.assertIsNone(pc[key])
-        self.assertEqual(seg.segregation_estimate("in718", None)["processCoupling"]["status"], "unavailable")
+            b = seg.segregation_estimate("in718", _micro(status))
+            self.assertEqual(b["status"], "computed")
+            self.assertTrue(all(q["value"] is None for q in b["processCoupling"]["quantities"].values()))
 
     def test_screening_fallback_passes_through_with_reason(self):
-        pc = seg.segregation_estimate("in718", _micro("screening-fallback", reason="tail-length heuristic"))[
-            "processCoupling"]
-        self.assertEqual(pc["status"], "screening-fallback")
-        self.assertEqual(pc["reason"], "tail-length heuristic")
+        pc = seg.segregation_estimate("in718", _micro("screening-fallback"))["processCoupling"]
+        self.assertEqual(pc["status"], "unavailable")
 
     def test_kinetic_constant_only_in_the_rapid_block(self):
-        b = seg.segregation_estimate("in718", _micro("available"))
+        b = seg.segregation_estimate("in718", _micro("computed"))
         eq = {k: v for k, v in b.items() if k not in ("rapidSolidification", "lpbfObservations", "processCoupling")}
         text = json.dumps(eq).lower()
         for banned in ("v_d", "aziz", "diffusive speed"):
@@ -512,23 +501,23 @@ class RapidSolidification(unittest.TestCase):
                 k(*bad)
 
     def test_unavailable_without_usable_r(self):
-        for micro in (None, _micro("unavailable"), _micro("degenerate-floor"), _micro("available", R_m_s=None),
-                      _micro("available", R_m_s=0.0), _micro("available", R_m_s=float("nan"))):
+        for micro in (None, _micro("unavailable"), _micro("degenerate-floor"), _micro("computed", R_m_s=None),
+                      _micro("computed", R_m_s=0.0), _micro("computed", R_m_s=float("nan"))):
             for alloy in ("in718", "in625"):
                 rs = seg.segregation_estimate(alloy, micro)["rapidSolidification"]
                 self.assertEqual(rs["status"], "unavailable", (alloy, micro))
                 self.assertTrue(rs["reason"])
                 self.assertNotIn("byVD", rs)
                 self.assertEqual(rs["V_D_m_s"]["min"], 0.23)  # the model statement is still shown
-        self.assertNotIn("rapidSolidification", seg.segregation_estimate("ss316l", _micro("available")))
+        self.assertNotIn("rapidSolidification", seg.segregation_estimate("ss316l", _micro("computed")))
 
     def test_in718_at_typical_lpbf_r(self):
         # R = 0.0684 m/s is the build-job fixture value (in718, 285 W, 960 mm/s).
-        b = seg.segregation_estimate("in718", _micro("available", R_m_s=0.0684))
+        b = seg.segregation_estimate("in718", _micro("computed", R_m_s=0.0684))
         rs = b["rapidSolidification"]
-        self.assertEqual(rs["status"], "available")
+        self.assertEqual(rs["status"], "computed")
         self.assertFalse(rs["replacesUpperBound"])
-        self.assertIn("screening", rs["evidenceLabel"])
+        self.assertEqual(rs["quantities"]["fraction"]["sourceEvidenceKind"], "Literature estimate")
         self.assertIn("Extrapolation", rs["extrapolationNote"])
         self.assertIn("GTA welds", rs["extrapolationNote"])
         self.assertEqual(rs["k_e"], 0.45)
@@ -546,7 +535,7 @@ class RapidSolidification(unittest.TestCase):
         self.assertEqual(b["band"][1]["binaryUpperBound"]["fGammaLavesConstituent"], 0.0647)
 
     def test_in625_at_typical_lpbf_r(self):
-        b = seg.segregation_estimate("in625", _micro("available", R_m_s=0.0684))
+        b = seg.segregation_estimate("in625", _micro("computed", R_m_s=0.0684))
         rs = b["rapidSolidification"]
         self.assertEqual(rs["k_e"], 0.51)
         self.assertEqual(rs["kEff"], {"min": 0.5986, "max": 0.6223})
@@ -556,11 +545,9 @@ class RapidSolidification(unittest.TestCase):
         self.assertEqual(b["band"][1]["binaryUpperBound"]["fGammaLavesConstituent"], 0.0349)
 
     def test_screening_fallback_carried(self):
-        rs = seg.segregation_estimate("in718", _micro("screening-fallback", R_m_s=0.05, reason="tail-length"))[
-            "rapidSolidification"]
-        self.assertEqual(rs["status"], "screening-fallback")
-        self.assertEqual(rs["reason"], "tail-length")
-        self.assertEqual(rs["R_m_s"], 0.05)
+        rs = seg.segregation_estimate("in718", _micro("screening-fallback"))["rapidSolidification"]
+        self.assertEqual(rs["status"], "unavailable")
+        self.assertEqual(rs["quantities"]["fraction"]["reasons"][0]["code"], "parent-unavailable")
 
 
 class LpbfObservations(unittest.TestCase):
@@ -573,7 +560,7 @@ class LpbfObservations(unittest.TestCase):
 
     def test_in625_observations_are_located(self):
         obs = seg.segregation_estimate("in625", None)["lpbfObservations"]
-        self.assertEqual(obs["status"], "available")
+        self.assertEqual(obs["status"], "computed")
         self.assertEqual(obs["powderNb_wt"]["value"], 3.75)
         self.assertIn("Z18 Table 1", obs["powderNb_wt"]["locator"])
         self.assertEqual({o["source"] for o in obs["observations"]}, {"Z18", "L17", "K17"})
