@@ -3420,7 +3420,7 @@
   }
  },
  "to": {
-  "revision": "worktree",
+  "revision": "c6ec6dbf",
   "version": "enthalpy-fv-6",
   "fingerprintSchema": "lpbf-thermal-implementation-manifest-v3-canonical-utf8-crlf",
   "implementationHash": "dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5",

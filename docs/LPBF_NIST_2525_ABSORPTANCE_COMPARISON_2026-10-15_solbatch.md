@@ -4,6 +4,8 @@
 
 Schema `lpbf-nist-2525-absorptance-comparison-1`; implementation fingerprint `dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5`; quick mode: False; fingerprint test passed: True; loader: `lpbf_nist_mds2_2525_absorptance`. Honesty: comparison, not validation; NIST values are measured for the NIST experiment only (polished bare Ti-6Al-4V, ~300 um coupon, argon); application outputs are screening and unvalidated; the ray-tracing sweep over prescribed cavity depth is a sensitivity bracket, not a calibration; nothing was tuned to the data; where the application cannot represent the experiment the record says unavailable and no number is forced. `experimentalValidation` = false, `opticalOperatorMatched` = false, `modelAcceptance` = false, `nistResidual` = null.
 
+Runtime: `C:/Users/can02/AppData/Local/Programs/Python/Python312/python.exe`; Python 3.12.10; warp-lang 1.17.0. Full sweep regenerated with `python/tools/lpbf_nist_2525_absorptance_comparison.py` (no `--quick`), `--generated-at 2026-10-15`; runtime metadata added to this record after generation.
+
 ## Dataset
 
 Asynchronous AM Bench 2022 Challenge Data: Real-time, simultaneous absorptance and high-speed Xray imaging, DOI 10.18434/mds2-2525, version 1.3.2, license https://www.nist.gov/open/license.
@@ -46,19 +48,35 @@ RelativeAbsorption (%) is NIST column 6 ('Percent absorption'; README: input min
 | Quantity | Measured | Model | Difference | Status |
 | --- | ---: | ---: | ---: | --- |
 | pre-keyhole absorptance, Ti-6Al-4V stationary pulse | 32.47 +/- 1.451 % | 32 % | -0.4712 (percentage points (model - measured)) | compared |
+| keyhole-phase absorptance, prescribed-depth sweep | 62.01 +/- 7.091 % | 32 to 91.6 % (sweep) | - | sensitivity-only |
 
 Flat-plate absorptivity of record: 32 % (origin: lpbf_thermal_solver.thermal_props('Ti-6Al-4V')['absorptivity_IR'] (four_alloy_materials)). Model minus measured = -0.4712 percentage points (-1.451 % relative). Note: the secondary inline table has no Ti-6Al-4V entry, so no legacy value competes with the resolved one. Solver role: flat-plate eta_base_flat of calculate_meltpool_physics: the solver's default absorptivity on every machine since the 2026-10-06 tier-2 bump (powder_bed_raytracer's effective absorptivity is used only with an explicit absorption_model='powder-raytrace').
 
 ## Ray-tracing sensitivity sweep (prescribed Gaussian cavity; SENSITIVITY, not calibration)
 
-Unavailable: keyhole ray tracer not importable: ModuleNotFoundError: No module named 'warp'
+Model `prescribed-cavity-ray-optics-v2`, Warp 1.17.0, device cpu, power 101.9 W (measured median), beam radius 61.25 um, base absorption 0.32, 20000 rays, 16 max bounces, seed 0, mesh 96x96 at 4 um (extent 380 um = 6.204 beam radii).
+
+| Depth (um) | Absorbed (%) | Std err (pp) | Escaped (%) | Truncated (%) | Mean segments | At bounce limit (%) |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 | 32 | 0 | 68 | 0 | 2 | 0 |
+| 25 | 32.69 | 0.002055 | 67.31 | 0 | 2 | 0 |
+| 50 | 34.28 | 0.006216 | 65.72 | 0 | 2 | 0 |
+| 100 | 57.32 | 0.05071 | 42.68 | 0 | 2.917 | 0 |
+| 150 | 67.44 | 0.06777 | 32.56 | 0 | 3.475 | 0 |
+| 200 | 73.86 | 0.07106 | 26.14 | 0 | 3.941 | 0 |
+| 300 | 82.53 | 0.06048 | 17.47 | 0 | 4.761 | 0 |
+| 400 | 86.98 | 0.06054 | 13.02 | 0 | 5.476 | 0 |
+| 600 | 91.6 | 0.05489 | 8.398 | 4.008e-06 | 6.743 | 0 |
+
+Flat self-consistency: depth 0 gives 32 % against base 32 % (2.312e-07 pp); normal incidence; empirical law A = a(1 + 0.5(1 - cos)) reduces to a at cos = 1; the 7 deg incidence is not represented.
+
+Bracket: sweep brackets the measured keyhole-phase mean between prescribed depths [[100.0, 150.0]] (sweep range 32 to 91.6 %); information only: the real cavity is neither Gaussian nor static, so a bracketing depth is not a prediction and not a calibration.
 
 ## Unavailable
 
 | Item | Material | Reason |
 | --- | --- | --- |
-| keyhole-phase absorptance, prescribed-depth sweep (measured 62.01 %) | Ti-6Al-4V (NIST SRM 654b) | keyhole ray tracer not importable: ModuleNotFoundError: No module named 'warp' |
-| keyhole-phase absorptance, direct prediction (no prescribed depth) (measured 62.01 %) | Ti-6Al-4V (NIST SRM 654b) | keyhole ray tracer not importable: ModuleNotFoundError: No module named 'warp' |
+| keyhole-phase absorptance, direct prediction (no prescribed depth) (measured 62.01 %) | Ti-6Al-4V (NIST SRM 654b) | the application does not solve the cavity depth (no free surface) and the Ti-6Al-4V X-ray cavity depth is not among the pinned files, so there is no depth to feed the ray tracer |
 | effective absorptivity (flat after P1), Ti-6Al-4V stationary pulse (measured 62.01 %) | Ti-6Al-4V (NIST SRM 654b) | stationary 2 ms pulse is not representable by the moving-source kernels of calculate_meltpool_physics (scan speed must be > 0; a near-zero speed is not a valid substitute and was not run) |
 | Ti-6Al-4V scan (700 mm/s) before/during-keyhole absorptance | Ti-6Al-4V (NIST SRM 654b) | Ti-6Al-4V scan CSV Scan on Bare Metal_Calibrated Absorption Data.csv: file not acquired (NIST download unavailable; no archived copy with the official SHA-256) |
 | NIST published absorptance uncertainty analysis | Ti-6Al-4V (NIST SRM 654b) | Absorption_Uncertainty_Analysis.pdf: file not acquired (NIST download unavailable; no archived copy with the official SHA-256); only the per-sample uncertainty column is used |

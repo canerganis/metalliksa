@@ -27,12 +27,28 @@
     "id": "ti64-spot-keyhole-raytracer-sensitivity",
     "material": "Ti-6Al-4V (NIST SRM 654b)",
     "measured": 62.0075,
+    "measuredStd": 7.09085,
     "measuredUnit": "%",
-    "model": null,
-    "modelId": null,
+    "model": {
+     "depths_um": [
+      0.0,
+      25.0,
+      50.0,
+      100.0,
+      150.0,
+      200.0,
+      300.0,
+      400.0,
+      600.0
+     ],
+     "max_pct": 91.602,
+     "min_pct": 32.0
+    },
+    "modelId": "prescribed-cavity-ray-optics-v2",
+    "modelUnit": "%",
     "quantity": "keyhole-phase absorptance, prescribed-depth sweep",
-    "reason": "keyhole ray tracer not importable: ModuleNotFoundError: No module named 'warp'",
-    "status": "unavailable"
+    "reason": "sweep brackets the measured keyhole-phase mean between prescribed depths [[100.0, 150.0]]; SENSITIVITY over prescribed depth, not calibration",
+    "status": "sensitivity-only"
    },
    {
     "difference": null,
@@ -44,7 +60,7 @@
     "model": null,
     "modelId": null,
     "quantity": "keyhole-phase absorptance, direct prediction (no prescribed depth)",
-    "reason": "keyhole ray tracer not importable: ModuleNotFoundError: No module named 'warp'",
+    "reason": "the application does not solve the cavity depth (no free surface) and the Ti-6Al-4V X-ray cavity depth is not among the pinned files, so there is no depth to feed the ray tracer",
     "status": "unavailable"
    },
    {
@@ -698,8 +714,204 @@
    "value_pct": 32.0
   },
   "keyholeRayTracing": {
-   "reason": "keyhole ray tracer not importable: ModuleNotFoundError: No module named 'warp'",
-   "status": "unavailable"
+   "bracket": {
+    "bracketingDepthIntervals_um": [
+     [
+      100.0,
+      150.0
+     ]
+    ],
+    "measured_pct": 62.0075,
+    "note": "information only: the real cavity is neither Gaussian nor static, so a bracketing depth is not a prediction and not a calibration",
+    "sweepRange_pct": [
+     32.0,
+     91.602
+    ],
+    "verdict": "sweep brackets the measured keyhole-phase mean between prescribed depths [[100.0, 150.0]]"
+   },
+   "device": "cpu",
+   "directPrediction": {
+    "reason": "the application does not solve the cavity depth (no free surface) and the Ti-6Al-4V X-ray cavity depth is not among the pinned files, so there is no depth to feed the ray tracer",
+    "status": "unavailable"
+   },
+   "flatSelfConsistency": {
+    "base_absorption_pct": 32.0,
+    "depth0_absorbed_pct": 32.0,
+    "difference_pp": 2.31242e-07,
+    "note": "normal incidence; empirical law A = a(1 + 0.5(1 - cos)) reduces to a at cos = 1; the 7 deg incidence is not represented"
+   },
+   "limitations": [
+    "Prescribed Gaussian cavity, not a solved free surface",
+    "Empirical angular absorption, not Fresnel optics",
+    "Finite mesh aperture; no material or experimental qualification",
+    "Bounce-limited power remains unresolved"
+   ],
+   "model_id": "prescribed-cavity-ray-optics-v2",
+   "params": {
+    "base_absorption": 0.32,
+    "beam_radius_um": 61.25,
+    "cavityShape": "prescribed Gaussian, sigma = beam radius / 1.5, depth = sweep value",
+    "dx_m": 4e-06,
+    "dy_m": 4e-06,
+    "incidence": "normal (the 7 deg experimental incidence is not represented)",
+    "max_bounces": 16,
+    "meshExtent_in_beam_radii": 6.20408,
+    "meshExtent_um": 380.0,
+    "num_rays": 20000,
+    "nx": 96,
+    "ny": 96,
+    "power_W": 101.869,
+    "seed": 0
+   },
+   "status": "success",
+   "sweep": [
+    {
+     "absorbed_fraction": 0.32,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 2,
+      "mean_path_segments": 2,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.68,
+     "keyhole_depth_um": 0.0,
+     "standard_error": 0.0,
+     "total_absorbed_W": 32.598,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.326927,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 2,
+      "mean_path_segments": 2,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.673073,
+     "keyhole_depth_um": 25.0,
+     "standard_error": 2.05532e-05,
+     "total_absorbed_W": 33.3036,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.342759,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 2,
+      "mean_path_segments": 2,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.657241,
+     "keyhole_depth_um": 50.0,
+     "standard_error": 6.21641e-05,
+     "total_absorbed_W": 34.9164,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.573216,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 3,
+      "mean_path_segments": 2.917,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.426784,
+     "keyhole_depth_um": 100.0,
+     "standard_error": 0.000507113,
+     "total_absorbed_W": 58.3928,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.67437,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 4,
+      "mean_path_segments": 3.475,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.32563,
+     "keyhole_depth_um": 150.0,
+     "standard_error": 0.000677735,
+     "total_absorbed_W": 68.6972,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.738606,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 5,
+      "mean_path_segments": 3.941,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.261394,
+     "keyhole_depth_um": 200.0,
+     "standard_error": 0.000710573,
+     "total_absorbed_W": 75.2408,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.825289,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 7,
+      "mean_path_segments": 4.761,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.174711,
+     "keyhole_depth_um": 300.0,
+     "standard_error": 0.000604773,
+     "total_absorbed_W": 84.0711,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.86983,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 10,
+      "mean_path_segments": 5.476,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.13017,
+     "keyhole_depth_um": 400.0,
+     "standard_error": 0.0006054,
+     "total_absorbed_W": 88.6084,
+     "truncated_fraction": 0.0
+    },
+    {
+     "absorbed_fraction": 0.91602,
+     "bounceStatsSampledRays": {
+      "fraction_at_bounce_limit": 0.0,
+      "max_path_segments": 14,
+      "mean_path_segments": 6.743,
+      "n_rays_sampled": 1000,
+      "scope": "unbiased 1000-ray subset drawn by the UI stream; segments = surface hits plus the final escape segment"
+     },
+     "energy_balance_relative_error": 1.29403e-08,
+     "escaped_fraction": 0.0839799,
+     "keyhole_depth_um": 600.0,
+     "standard_error": 0.000548941,
+     "total_absorbed_W": 93.3137,
+     "truncated_fraction": 4.0084e-08
+    }
+   ],
+   "sweepKind": "SENSITIVITY (not calibration)",
+   "warp_version": "1.17.0"
   },
   "thermalSolverEtaEff": {
    "ti64Scan": {
@@ -713,5 +925,10 @@
   }
  },
  "quick": false,
+ "runtime": {
+  "pythonInterpreter": "C:/Users/can02/AppData/Local/Programs/Python/Python312/python.exe",
+  "pythonVersion": "3.12.10",
+  "warpVersion": "1.17.0"
+ },
  "schema": "lpbf-nist-2525-absorptance-comparison-1"
 }

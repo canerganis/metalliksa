@@ -6,7 +6,7 @@ Status: proposed integration contract, **not implemented**. Companions: [physics
 
 Scope: the Opus gate's required changes 4, 5 and 10, the engineering parts of minor notes 9, 13, 14, 17, 18, 20 and 21 (`.orchestra/reports/solidification_gate_verdict_2026-10-15.md`), the items SPEC Amendment 1 asks of this contract ((a) to (f)), and the plan side of re-gate items RA1 to RA6 plus the engineering W1 minors (`.orchestra/reports/solidification_regate_verdict_2026-10-15.md`; index in section 13). Physics admission rules, coefficients and domains stay in the SPEC and the ledger; this file decides representation, order, identities, consumers, tests and owners. Nothing in this file is evidence about physical accuracy, and no software check named here is a physical test.
 
-Literal marking (RA4): every user-facing English string this plan introduces or moves is listed in 11.2 with an ID `L1` to `L9`; all are drafts pending the maintainer's MD2 round, which happens before SOL-A1 freezes.
+Literal marking (RA4): every user-facing English string this plan introduces or moves is listed in 11.2 with an ID `L1` to `L11`; all are drafts pending the maintainer's MD2 round, which happens before SOL-A1 freezes.
 
 ## 1. Decisions
 
@@ -381,7 +381,7 @@ Owners: Opus for hard integration and guarded work, Sonnet for ordinary code, Ha
 | Phase | Work | Owner | Acceptance checks |
 |---|---|---|---|
 | Doc fixes | RA1 to RA6 plan side (this revision); Astra: A2.4 and ledger wording for RA1, RA7 items; lead check | Opus, Astra, lead | lead checks RA1 to RA7 before Phase 0 code |
-| MD2 round | literal groups L1 to L9 (11.2) | lead, maintainer | approved text before SOL-A1 freezes |
+| MD2 round | literal groups L1 to L11 (11.2) | lead, maintainer | approved text before SOL-A1 freezes |
 | 0.1 | `quantity_envelope.py` with decisions 1 and 2, label rule, ledger mapping, SDK dataclasses, registry emission, generated TS, shared value-provenance parser | Opus | new tests pass; registry check; `npm run lint`; existing contract tests unchanged |
 | 0.2 | parity error rule for the three shapes (guarded) | Opus | unit tests per shape under glob and exact entries; `--check --slow` 25 PASS at `36cd9d4a` |
 | 0.3 to 0.5 | restamp mode; payload fixtures; W/D invariance tool | Sonnet | synthetic tests; deterministic generation; two captures byte-equal |
@@ -435,6 +435,8 @@ Owners: Opus for hard integration and guarded work, Sonnet for ordinary code, Ha
 | L7 | SPEC candidates at SPEC:110, :120, :152 (line numbers at `024e30cd`) | registry |
 | L8 | quantity definition names shown in the UI (4.2) | registry |
 | L9 | container header text ("Screening only", maturity echo) | generated TS |
+| L10 | Evidence remains screening-only and Research. The response-level G/R evidence object is SDK-reserved; per-quantity source labels never imply experimental validation. | Introduced in `b138fad5`; `docs/modules/solidification-microstructure.md`, `src/generated/moduleRegistry.json` (mirrored in generated TS); pending maintainer wording approval |
+| L11 | The worker returns lpbf-solidification-microstructure-2. Quantities are copied from the Python thermal front container with SI values, coded reasons and input provenance; no second estimate or flat-key fallback. | Introduced in `b138fad5`; `docs/modules/solidification-microstructure.md`, `src/generated/moduleRegistry.json` (mirrored in generated TS); pending maintainer wording approval |
 
 ## 12. Coordination with P8, P3 and exposure
 
