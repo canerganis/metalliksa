@@ -33,7 +33,7 @@ def _bom(components: List[Dict[str, Any]], name: str) -> Dict[str, Any]:
         "version": 1,
         "metadata": {
             "timestamp": _now(),
-            "tools": [{"vendor": "MetalliX", "name": "generate_sbom.py", "version": "1.0.0"}],
+            "tools": [{"vendor": "Metalliksa", "name": "generate_sbom.py", "version": "1.0.0"}],
             "component": {
                 "type": "application",
                 "name": name,

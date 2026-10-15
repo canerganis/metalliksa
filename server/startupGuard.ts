@@ -10,6 +10,6 @@ import { startupLayoutError } from './pythonRoot';
 dotenv.config({ quiet: true });
 const layoutError = startupLayoutError(process.cwd(), process.env.NODE_ENV === 'production');
 if (layoutError) {
-  console.error(`[MetalliX-Server] ${layoutError}`);
+  console.error(`[Metalliksa-Server] ${layoutError}`);
   process.exit(1);
 }
