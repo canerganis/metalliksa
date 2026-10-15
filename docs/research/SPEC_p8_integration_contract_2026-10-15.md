@@ -4,7 +4,7 @@ Date: 2026-10-15. Owner: system architect (Opus). Scope: the engineering items 2
 Base: branch `research/p8-research-arm`. Its code is identical to main `835466fa` (the branch adds documents only), so every `file:line` below is a line of `835466fa`.
 Companion: `docs/research/SPEC_p8_research_arm_2026-10-14.md` (base and Amendments 1 to 3; physics owner Astra; Amendment 3 is `78607f3e`). Amendment 2 landed on this branch as `1c76a2fd` while this contract was written; the contract is aligned with it. Amendment 2 (header and B9) assigns to this contract the transport, gating, caching, provenance vocabulary, field names, reason-code serialization and availability enums, and lists eight physics requirements the final schema must carry (0.2). This file does not edit the physics spec. Where this contract still needs a physics decision it says so in section 12; the re-gate reconciles both files.
 
-Status: re-gated 2026-10-15, APPROVE_WITH_CHANGES (`../Metalliksa-1/.orchestra/reports/p8_regate_verdict_2026-10-15.md`). Revision 1 (section 13) applies the architect's share of R1 to R15 and records the maintainer's label decisions. Revision 2 fixes the residuals of the lead check at `e6934ffd` (Phase A GO) in place, marked "Rev. 2". Revision 3 (section 14) admits the research hub's blind-test tab and batch client as research senders with a hash-bound relay into the blind freeze (hub gate R12(a)). Nothing is implemented; no code, pin, golden, allowlist or test changes in these commits.
+Status: re-gated 2026-10-15, APPROVE_WITH_CHANGES (`../Metalliksa-1/.orchestra/reports/p8_regate_verdict_2026-10-15.md`). Revision 1 (section 13) applies the architect's share of R1 to R15 and records the maintainer's label decisions. Revision 2 fixes the residuals of the lead check at `e6934ffd` (Phase A GO) in place, marked "Rev. 2". Revision 3 (section 14) admits the research hub's blind-test tab and batch client as research senders with a hash-bound relay into the blind freeze (hub gate R12(a)). Revision 4 (section 15) keeps the 17-key input provenance record closed and shared with the solidification lane. Nothing is implemented; no code, pin, golden, allowlist or test changes in these commits.
 
 W-1: every English user-facing string in this contract (panel text, labels, help, sentences, captions, n/a texts, option messages, difference statements) is a draft awaiting maintainer approval W-1, except text quoted verbatim from the P8 spec. Tests pin the approved wording, not these drafts.
 
@@ -465,6 +465,7 @@ The rule is the maintainer's decision 2 (13.12): all determining inputs sourced,
 
 ```ts
 // Rev. 1, R6: the closed kind enum is Amendment 3 C7's vocabulary (p8_input_provenance.KINDS).
+// Rev. 4: exactly these 17 keys, closed, shared with the solidification lane; P8-only detail is in ResearchInputDerivation (15).
 type ResearchInputProvenance = {
   kind: "sourceDefault" | "sourceModelAssumption" | "sourcedAlternative" | "alloyTransfer" | "modelConvention"
       | "declaredAssumption" | "legacyEstimate" | "userInput" | "followsInput" | "derived";
@@ -923,7 +924,7 @@ The closed `kind` enum is Amendment 3 C7's vocabulary (6.3). Display and evidenc
 Mapping of the Amendment 3 fixture records:
 
 1. `armResults[].provenance` (one record per arm) becomes the new descriptor member `armProvenance: ResearchInputProvenance` of 5.3. (Rev. 2) The arm label displayed at an extreme and in the onset-support list comes from the weakest kind among the provenance records of the inputs the arm changes, ranked weakest first: `declaredAssumption` and `legacyEstimate` (and a `followsInput` or `derived` record whose label is Unresolved); then `userInput`; then `alloyTransfer` (and a `derived` record with status extrapolated, such as `vapour_o8`); then `sourcedAlternative` and `modelConvention` (and other `derived` records); then `sourceDefault` and `sourceModelAssumption`. On a tie the first changed input in descriptor order wins; when more inputs changed, the label adds "(+{k} more)". `armProvenance` stays available in the expanded row.
-2. `armResults[].inputProvenance` (one record per input key) becomes `changes[].provenance` for the inputs the arm changes and the container's `inputProvenance` map for the nominal, with keys translated by 13.3.
+2. `armResults[].inputProvenance` (one record per input key) becomes `changes[].provenance` for the inputs the arm changes and the container's `inputProvenance` map for the nominal, with keys translated by 13.3. Revision 4 (15) splits each fixture record: its 17 base keys form the `provenance`, and `weakestInputs`, `derivationInputs` and `sourceLawProvenance` form the separate `derivation`.
 3. `armResults[].valueProvenance` (per derived leaf: `sourceEvidenceKind`, `dependsOn`, `weakestInputs`) becomes the derived leaf's `sourceEvidenceKind`, `dependsOn` and `weakestInputs`.
 4. `consistencyStatus`, `validationStatus`, `experimentalValidation` and `moduleEvidenceCeiling` become the per-arm note status, the leaf status (6.1), `experimentalValidation` and the container's `moduleEvidenceCeiling`; `inputScopeReasons` become `SOURCE_SCOPE_TRANSFER` warnings with the reasons listed in the per-arm note.
 5. The Rev. 0 arm kinds `literatureModelInput` and `unsourcedDiagnostic` are retired. There is no generic PROPERTY_LEDGER fallback: a value without a located record is `declaredAssumption` and Unresolved (Amendment 3 C5).
@@ -1216,3 +1217,24 @@ Later phases:
 1. Phase D (Sonnet): a TypeScript sender test (the route path literal appears only in `src/services/pythonComputationService.ts`, `scripts/research-route-batch.ts`, `routes/physics.ts`, the generated registry and tests); the service passes `relay.subsetJson` through as a string, never parsed and re-serialized; batch-client tests for sequential requests, the 48 default cap, the 256 ceiling of `--max-requests`, the printed estimate and the retry rule of 14.4 item 6.
 2. Phase E (Sonnet): a blind-sender request never supersedes a panel request, and the panel's state and results are unaffected by relay traffic.
 3. Hub phases (hub owner, X-3): the freeze checks of 14.3 item 7, served-arm byte equality with and without a relay, the rendering rules of 14.5, and the 576,000-character budget check of 14.4 item 4.
+
+## 15. Revision 4 (one closed input provenance record, 2026-10-15)
+
+Request: the solidification Phase 0.1 lane (`feat/solidification-phase0`, `3c797aba..310f4ce2`) shares P8's closed 17-key input record through its TypeScript parser `checkedValueProvenance` and `python/quantity_envelope.py`. The Amendment 4 fixture records carry three extra keys on some inputs: `weakestInputs` (163 derived records), `derivationInputs` (9 derived records) and `sourceLawProvenance` (87 followed records).
+
+Decision: the shared record stays exactly the 17 keys of 6.3, closed, in both lanes. The three keys do not join it and do not move into the arm descriptor, because they describe one input, not an arm. They move into a separate P8-only member beside the record:
+
+```ts
+type ResearchInputDerivation = {
+  weakestInputs: string[];   // inputs that made a derived or followed input Unresolved or User input; [] otherwise
+  derivationInputs: Record<string, { value: number | string | null; provenance: ResearchInputProvenance }> | null;   // kind derived only
+  sourceLawProvenance: ResearchInputProvenance | null;   // kind followsInput only: the governing source law (for example Assael for Al viscosity)
+};
+type ResearchInputEntry = { provenance: ResearchInputProvenance; derivation: ResearchInputDerivation | null };
+```
+
+1. The container's `inputProvenance` map and the descriptor's `changes[]` (5.3) carry `ResearchInputEntry` values: `changes[]` members are `input`, `value`, `nominalAnchor`, `provenance` and `derivation`. `derivation` is null when all three parts are empty.
+2. Every nested record (each `derivationInputs[*].provenance` and `sourceLawProvenance`) is itself a closed 17-key `ResearchInputProvenance` with no further nesting; the Amendment 4 fixture already satisfies this (no nested record carries the three keys). The shared parser therefore validates every record in both lanes, nested ones included.
+3. Fixture mapping (`FIXTURE_TO_RUNTIME`, R-MAP-1): each fixture input record splits into the 17 base keys (`provenance`) and the three extra keys (`derivation`); an absent extra key maps to `[]` or null. A fixture record with any other key fails R-MAP-1.
+4. The output-leaf member `weakestInputs` on derived `ResearchField`s (6.2, from the fixture's `valueProvenance`) is a different field and stays where it is.
+5. Tests: R-MAP-1 asserts that the split leaves exactly 17 keys in every `provenance`, nested records included. Phase B's transport fixtures carry no input records, so no phase B test changes. The solidification lane keeps its 17-key parser unchanged and adds no P8 keys.
