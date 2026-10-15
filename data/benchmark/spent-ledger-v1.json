@@ -1,0 +1,255 @@
+{
+  "schema": "lpbf-spent-ledger-1",
+  "entries": [
+    {
+      "datasetId": "nist-amb2022-03-optical",
+      "title": "AM Bench 2022 AMB2022-03 Benchmark Measurements and Challenge Results, Table 4 (IN718 single tracks, bare plate)",
+      "doi": "10.18434/mds2-2718",
+      "alloy": "IN718",
+      "observable": "fusion-boundary-depth",
+      "datum": "top of the ImageJ bounding rectangle, which corresponds to the specimen surface (publisher observation operator)",
+      "beam": {
+        "value_um": 67,
+        "definition": "D4sigma per case in Table 4: 67 um in five of seven cases, 49 um (case 1.1) and 82 um (case 1.2); the inventory records a D4sigma versus Gaussian label conflict",
+        "status": "stated",
+        "sensitivity_um": null,
+        "locator": "data/benchmark/nist-amb2022-03-optical/table4-aggregate-v2.json, cases[].beamDiameterD4sigma_um"
+      },
+      "powerBasis": "laser power per case as listed in Table 4 (245, 285 and 325 W)",
+      "substrate": "bare IN718 plate BP1 (AMMT), residual-stress annealed at 800 C for 2 h, substrate and chamber at 23.5 C",
+      "digitized": false,
+      "status": "SPENT",
+      "spentBy": [
+        {
+          "event": "catalog sentinel in calibration, used while the physics was developed; error bands",
+          "record": ".orchestra/reports/blind_validation_inventory_2026-10-11.md, section 1, row nist-amb2022-03 IN718 optical (git-ignored in the product repo)",
+          "date": "2026-10-11"
+        }
+      ],
+      "sameExperimentsAs": null,
+      "loader": "lpbf_process_window (NIST_TABLE4_PATH, table4-aggregate-v2.json)",
+      "tableSha256": "d1b36dfa2e01a3537093c481e249ce52df6b8879c1c67480ddb9aa10799133da",
+      "curveAxis": "speed",
+      "locator": "Table 4, CHAL-AMB2022-03-TMPG, page 5 (PDF page index 4), AMB2022-03 Benchmark Measurements and Challenge Results",
+      "licence": "NIST open data, https://www.nist.gov/open/license",
+      "attribution": "NIST AM Bench 2022, AMB2022-03 Benchmark Measurements and Challenge Results, Table 4; DOI 10.18434/mds2-2718",
+      "licenceFile": "data/benchmark/nist-amb2022-03-optical/LICENSE-ATTRIBUTION.md",
+      "transcription": "table",
+      "inputsInferred": [],
+      "usedInServedDevelopment": true
+    },
+    {
+      "datasetId": "lane-in625-amb2018-02",
+      "title": "Measurements of melt pool geometry and cooling rates of individual laser traces on IN625 bare plates",
+      "doi": "10.1007/s40192-020-00169-1",
+      "alloy": "IN625",
+      "observable": "fusion-boundary-depth",
+      "datum": "plate surface (bare plate)",
+      "beam": {
+        "value_um": 100,
+        "definition": "D4sigma, 100 um nominal for the CBM machine; the AMMT tracks at 170 um D4sigma are in the same table",
+        "status": "stated",
+        "sensitivity_um": null,
+        "locator": "data/benchmark/lane-in625-amb2018-02/table3_tracks.csv, d4sigma_um column"
+      },
+      "powerBasis": "power as printed in Table 3 (137.9, 150, 179.2 and 195 W); applied versus commanded power not resolved",
+      "substrate": "bare IN625 plate",
+      "digitized": false,
+      "status": "SPENT",
+      "spentBy": [
+        {
+          "event": "calibration v1 trainable; error bands; held-out units of the IN625 regime cut 13.6",
+          "record": ".orchestra/reports/blind_validation_inventory_2026-10-11.md, section 1, row lane-in625-2020 (git-ignored in the product repo)",
+          "date": "2026-10-11"
+        },
+        {
+          "event": "N3 ledger (lane-CBM and lane-AMMT) in ke_width_n3, lane_ab_latent and depth_path stage 1",
+          "record": ".orchestra/reports/blind_validation_inventory_2026-10-11.md, section 1, row lane-in625-2020 (git-ignored in the product repo)",
+          "date": "2026-10-11"
+        }
+      ],
+      "sameExperimentsAs": null,
+      "loader": "lpbf_public_datasets.load_lane_in625",
+      "tableSha256": "32fe10fb8606a49cdc59e1e3753b40e6be9ea9751dae9ec8ac95c217e6d16179",
+      "curveAxis": "speed",
+      "locator": "Lane et al. 2020, Tables 3 and 4 (PMC8194244; the JATS XML is not committed)",
+      "licence": "none stated (PMC permissions text only: text mining and fair use)",
+      "attribution": "B. Lane, J. Heigel, R. Ricker, I. Zhirnov, V. Khromschenko, J. Weaver, T. Phan, M. Stoudt, S. Mekhontsev, L. Levine, Integrating Materials and Manufacturing Innovation 9(1) (2020), doi:10.1007/s40192-020-00169-1, PMC8194244",
+      "licenceFile": "data/benchmark/lane-in625-amb2018-02/LICENSE-ATTRIBUTION.md",
+      "transcription": "table",
+      "inputsInferred": [],
+      "usedInServedDevelopment": true
+    },
+    {
+      "datasetId": "cunningham-ti64-2019",
+      "title": "Keyhole threshold and morphology in laser melting revealed by ultrahigh-speed x-ray imaging",
+      "doi": "10.1126/science.aav4687",
+      "alloy": "Ti-6Al-4V",
+      "observable": "vapour-depression-depth",
+      "datum": "not stated in the digitized figure (supplementary methods not available)",
+      "beam": {
+        "value_um": 95,
+        "definition": "1/e2 diameter, assumed (supplementary methods not available); the set also holds a 140 um spot series (Fig. 3C, 23 rows)",
+        "status": "assumed",
+        "sensitivity_um": null,
+        "locator": "data/benchmark/cunningham-ti64-2019/LICENSE-ATTRIBUTION.md, Supplementary materials paragraph"
+      },
+      "powerBasis": "digitized from the power axis of Fig. 3B and 3C (read uncertainty 3 W)",
+      "substrate": "bare Ti-6Al-4V plate",
+      "digitized": true,
+      "status": "SPENT",
+      "spentBy": [
+        {
+          "event": "derivation input of the 20 keyhole cut (Fig. 3A red line); Fabbro depth under-prediction benchmark; Gan Eq. 2 in-sample check; A0 diagnostic",
+          "record": ".orchestra/reports/blind_validation_inventory_2026-10-11.md, section 1, row cunningham-ti64-2019 (git-ignored in the product repo)",
+          "date": "2026-10-11"
+        }
+      ],
+      "sameExperimentsAs": null,
+      "loader": "lpbf_keyhole_literature.load_cunningham_depths",
+      "tableSha256": "223583bb6eead835ebbc0071fae0619408617bacf616790f9226267dacf34a03",
+      "curveAxis": "power",
+      "locator": "Science 363 (2019), Fig. 3B and 3C (locator per row in fig3bc_vapor_depth_digitized.csv)",
+      "licence": "AAAS copyright, (c) 2019 The Authors, some rights reserved (only digitized numbers stored)",
+      "attribution": "R. Cunningham, C. Zhao, N. Parab, C. Kantzos, J. Pauza, K. Fezzaa, T. Sun, A. D. Rollett, Science 363 (2019) 849 to 852, doi:10.1126/science.aav4687",
+      "licenceFile": "data/benchmark/cunningham-ti64-2019/LICENSE-ATTRIBUTION.md",
+      "transcription": "digitized-figure",
+      "inputsInferred": [
+        {
+          "input": "beam definition",
+          "method": "1/e2 diameter assumed; supplementary methods not available",
+          "locator": "data/benchmark/cunningham-ti64-2019/LICENSE-ATTRIBUTION.md"
+        },
+        {
+          "input": "preheat",
+          "method": "20 C assumed",
+          "locator": "data/benchmark/cunningham-ti64-2019/LICENSE-ATTRIBUTION.md"
+        }
+      ],
+      "usedInServedDevelopment": true
+    },
+    {
+      "datasetId": "ku-leuven-316l-2021",
+      "title": "Melt pool measurements of SS316L, processed sections (V. Coen, KU Leuven)",
+      "doi": "10.6084/m9.figshare.15035703.v1",
+      "alloy": "316L",
+      "observable": "fusion-boundary-depth",
+      "datum": "not stated in the files (article not read)",
+      "beam": {
+        "value_um": 37.5,
+        "definition": "unverified: carried from the repo IN718 record; diameter versus radius and beam definition not verified (article returned HTTP 403); 75 um is the sensitivity re-run",
+        "status": "unverified",
+        "sensitivity_um": 75,
+        "locator": "data/benchmark/ku-leuven-316l-ti64-2021/LICENSE-ATTRIBUTION.md, section Not established here"
+      },
+      "powerBasis": "power as listed in the processed Figshare file (basis not stated)",
+      "substrate": "not stated in the files (powder layer and preheat not stated)",
+      "digitized": false,
+      "status": "SPENT",
+      "spentBy": [
+        {
+          "event": "calibration v1 and v2 trainable; keyhole benchmark held-out class counts (37.5 and 75 um readings); A0 run",
+          "record": ".orchestra/reports/blind_validation_inventory_2026-10-11.md, section 1, row ku-leuven-316l-2021 and ku-leuven-ti64-2021 (git-ignored in the product repo)",
+          "date": "2026-10-11"
+        }
+      ],
+      "sameExperimentsAs": null,
+      "loader": "lpbf_public_datasets.load_ku_leuven_316l_ti64",
+      "tableSha256": "e031aead71bf64c70a35ae05d64c0c576d33c2ae757a1e5bda68b5da532ac831",
+      "curveAxis": "speed",
+      "locator": "Figshare 10.6084/m9.figshare.15035703.v1 (processed file), conditions.csv rows with alloy 316L",
+      "licence": "CC0",
+      "attribution": "V. Coen, KU Leuven, melt-pool measurements of SS316L and Ti-6Al-4V, Figshare (CC0), DOIs as listed in the licence file; manuscript doi:10.1016/j.jmatprotec.2022.117547",
+      "licenceFile": "data/benchmark/ku-leuven-316l-ti64-2021/LICENSE-ATTRIBUTION.md",
+      "transcription": "table",
+      "inputsInferred": [
+        {
+          "input": "beam",
+          "method": "37.5 um carried from the repo IN718 KU Leuven record; not stated in the Figshare files",
+          "locator": "data/benchmark/ku-leuven-316l-ti64-2021/LICENSE-ATTRIBUTION.md"
+        }
+      ],
+      "usedInServedDevelopment": true
+    },
+    {
+      "datasetId": "ku-leuven-ti64-2021",
+      "title": "Melt pool measurements of Ti-6Al-4V, processed sections (V. Coen, KU Leuven)",
+      "doi": "10.6084/m9.figshare.15035712.v2",
+      "alloy": "Ti-6Al-4V",
+      "observable": "fusion-boundary-depth",
+      "datum": "not stated in the files (article not read)",
+      "beam": {
+        "value_um": 37.5,
+        "definition": "unverified: carried from the repo IN718 record; diameter versus radius and beam definition not verified (article returned HTTP 403); 75 um is the sensitivity re-run",
+        "status": "unverified",
+        "sensitivity_um": 75,
+        "locator": "data/benchmark/ku-leuven-316l-ti64-2021/LICENSE-ATTRIBUTION.md, section Not established here"
+      },
+      "powerBasis": "power as listed in the processed Figshare file (basis not stated)",
+      "substrate": "not stated in the files (powder layer and preheat not stated)",
+      "digitized": false,
+      "status": "SPENT",
+      "spentBy": [
+        {
+          "event": "calibration v1 and v2 trainable; keyhole benchmark held-out class counts (37.5 and 75 um readings); A0 run",
+          "record": ".orchestra/reports/blind_validation_inventory_2026-10-11.md, section 1, row ku-leuven-316l-2021 and ku-leuven-ti64-2021 (git-ignored in the product repo)",
+          "date": "2026-10-11"
+        }
+      ],
+      "sameExperimentsAs": null,
+      "loader": "lpbf_public_datasets.load_ku_leuven_316l_ti64",
+      "tableSha256": "e031aead71bf64c70a35ae05d64c0c576d33c2ae757a1e5bda68b5da532ac831",
+      "curveAxis": "speed",
+      "locator": "Figshare 10.6084/m9.figshare.15035712.v2 (processed file), conditions.csv rows with alloy Ti-6Al-4V",
+      "licence": "CC0",
+      "attribution": "V. Coen, KU Leuven, melt-pool measurements of SS316L and Ti-6Al-4V, Figshare (CC0), DOIs as listed in the licence file; manuscript doi:10.1016/j.jmatprotec.2022.117547",
+      "licenceFile": "data/benchmark/ku-leuven-316l-ti64-2021/LICENSE-ATTRIBUTION.md",
+      "transcription": "table",
+      "inputsInferred": [
+        {
+          "input": "beam",
+          "method": "37.5 um carried from the repo IN718 KU Leuven record; not stated in the Figshare files",
+          "locator": "data/benchmark/ku-leuven-316l-ti64-2021/LICENSE-ATTRIBUTION.md"
+        }
+      ],
+      "usedInServedDevelopment": true
+    },
+    {
+      "datasetId": "totis-ti64-2021",
+      "title": "Single-track Ti6Al4V SEM images and geometrical data (Concept Laser M2, 50 um laser spot)",
+      "doi": "10.17632/s9438vb5xd.1",
+      "alloy": "Ti-6Al-4V",
+      "observable": "fusion-boundary-depth",
+      "datum": "top surface of the printed Ti-6Al-4V base, below the 25 um powder layer (Vaglio et al. 2020, Fig. 1, Fig. 2(b), Sec. 1.3)",
+      "beam": {
+        "value_um": 50,
+        "definition": "1/e2 classical definition, M^2 1.08, 1070 nm (Vaglio et al. 2020, as recorded in the licence file)",
+        "status": "stated",
+        "sensitivity_um": null,
+        "locator": "data/benchmark/totis-ti64-2021/LICENSE-ATTRIBUTION.md, section Depth datum and spot definition"
+      },
+      "powerBasis": "power as listed in the workbook (8 levels, 50 to 400 W), basis not stated",
+      "substrate": "printed Ti-6Al-4V base made in the same job, 25 um powder layer; preheat not stated",
+      "digitized": false,
+      "status": "SPENT",
+      "spentBy": [
+        {
+          "event": "calibration v1 and v2 trainable; held-out check of the 15/20 keyhole bump; A0 held-out run (partly exposed)",
+          "record": ".orchestra/reports/blind_validation_inventory_2026-10-11.md, section 1, row totis-ti64-2021 (git-ignored in the product repo)",
+          "date": "2026-10-11"
+        }
+      ],
+      "sameExperimentsAs": null,
+      "loader": "lpbf_public_datasets.load_totis_ti64",
+      "tableSha256": "3b5794f3a25a5f67fa0d8d1ab006834205ef820b046c24deb15836025825d623",
+      "curveAxis": "speed",
+      "locator": "Mendeley s9438vb5xd.1, Allegati/Data.xlsx, sheets Track depth (D) and Track width (W); tracks.csv",
+      "licence": "CC BY 4.0",
+      "attribution": "Totis, Vaglio et al., single-track Ti6Al4V SEM images and geometrical data (Concept Laser M2, 50 um laser spot), Mendeley Data, doi:10.17632/s9438vb5xd.1; related article doi:10.1016/j.dib.2020.106443",
+      "licenceFile": "data/benchmark/totis-ti64-2021/LICENSE-ATTRIBUTION.md",
+      "transcription": "table",
+      "inputsInferred": [],
+      "usedInServedDevelopment": true
+    }
+  ]
+}
