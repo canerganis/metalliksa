@@ -51,11 +51,13 @@ BASE_REF = BASE_REF_CANDIDATES[0]
 # authority 0.30 instead of 0.42 and the conduction kernel reads the melting-point k 28.5 / cp 830, so width, depth
 # and length move in every kernel; the index keeps absorptivity_index_IR 0.42 so normalizedEnthalpy and the regime
 # label are unchanged; the new basis keys, the field-extent grid with nullable cells, the High band removed; all three
-# digests change).
+# digests change); re-pinned at the SOL-A1 blanket-null front bump (2026-10-15, 1f8ad2b2: solidificationKinetics is the
+# null quantity container with reason codes; putting the previous front block back into the new output reproduces the
+# previous three digests exactly, so nothing else moved).
 HTTP_GOLDEN = {
-    "eagar-tsai": "84e7cdd8c0018053046a4488d8ca3a949f3aed89c9c97577e9149bb947d9ecf6",
-    "goldak": "4e898835200d22ec154a0b2a00c530d137a3bf7857a3ef840b8b51c530d6ee4b",
-    "rosenthal": "e74869355304712d9d5ff9804e7bd6149dd5035f54ba4762b62350972523ae09",
+    "eagar-tsai": "4ded683781e5032b25947141751d74d8193d103b1db990409966d01038effc4b",
+    "goldak": "e9ae172573f73cce2f6dfd69bbe58a9dec11a410e4f02c18bc2ba2dd344651f7",
+    "rosenthal": "719cec4f80229644d7529170529e2e0d269f946e67631d3ac060d8c75f4201bf",
 }
 HTTP_INPUT = {"material": "316L Stainless Steel", "laserPower_W": 200, "scanSpeed_mm_s": 900, "beamDiameter_um": 80,
               "preheatTemp_C": 20, "layerThickness_um": 30, "hatchSpacing_um": 100}

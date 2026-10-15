@@ -4,9 +4,9 @@
  "group": "G12",
  "description": "Eagar-Tsai, Rosenthal, Goldak, Fabbro, Marangoni, solidification front",
  "slow": false,
- "recordedImplementationHash": "36cd9d4a96c9726ab2ff4f3030b442f862d96f9ebdc3f724cc6dd85f55110348",
+ "recordedImplementationHash": "1f8ad2b28ef951c4b062ee8f25ce4e463a519e6eb12ccd75098424cf556ff916",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "49e17b04e5b25301235a4b0b9357382d763b22cd",
+ "recordedGitHead": "3d694540153324891c14c1a588b2a235b6402c4d",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,7 +68,7 @@
   }
  },
  "recordedRuns_s": [
-  0.1,
+  0.0,
   0.1
  ],
  "recordedTwice": true,
@@ -79,11 +79,10 @@
   "fabbro.depth": "6ecad13825def95bf5c6d1019ead87e8d1a15417b73cafb9ffd0345efe14038d",
   "marangoni.heipleRoper": "76d623965f3510de7d4a8bf448f689e2cf121e63c88cad7aba5e30cd48950684",
   "marangoni.screening": "4bd91bbbca7c8f6e50e3c250c6286ad692169e64f01d7be9dfd7564b6868513d",
-  "solidification.hunt": "6fa44203139e750b644c79cb4305ead9fa2878a2908948252d87aaa05034eb24",
-  "solidification.pdas": "6310041425088cc02995e3d4a8e0c28913327371dfb1bb47d45c706bb0f09507",
-  "solidification.sdas": "8fc4b0101adb6ade0393cf83ce899c1e6b3ed5589cbb7a31c56c16e53fa1684a",
-  "solidification.phaseNote": "9d343e9d8f2983094755b57e5484e42195afa49d418fb0029f73256b9bd584eb",
-  "solidification.evaluate": "a969e83c3e2ac727b5bfcbcfa73eee89eaffa8745b7e7cb3a545a17bb1cca38f",
+  "solidification.evaluate": "f12201c7b4b59e2f3b43cfdf2d18a023b8996fc2a905b1a03bb5dd9f0d762855",
+  "solidification.pdasAdmission": "4511b168f467dc5b3a054959247f0d60c9064e88c4f1b2147f8fd857d5c1d167",
+  "solidification.defaultBlock": "c6d24ad332aaedd72c854f6c7b394b2e5c6e59c485f9a01770239fadbb4f7777",
+  "solidification.unknownAlias": "c63ef9317d2eb4509fc79c66b53d9f36afe9b4234304b33dfeee7100a0efac60",
   "powderPacker.seeded": {
    "error": "NotImplementedError: Fabrication of powder bed via random packing is disabled. Use proper LPBF DEM coupling."
   }
@@ -428,131 +427,6 @@
    80.00008102164666,
    80.00017884904975,
    80.0002363607208
-  ],
-  "solidification.evaluate": {
-   "modelId": "solidification-front-v1",
-   "gradientSource": null,
-   "usedFieldMap": false,
-   "interface": "rear liquidus isotherm of the loss-free conduction field in the y = 0 plane (conduction-field interface); G = |grad T|, R = v n_x, cooling = G R per sample, medians over the solidifying samples (n_x > 0)",
-   "unavailableReason": "fewer than 3 solidifying rear-liquidus samples (n_x > 0) in the conduction field: no interface statistic is served and the former tail-length fallback G = dT/x_rear was removed as uncited (P6 containment)",
-   "thermalGradient_G_K_m": null,
-   "solidificationRate_R_m_s": null,
-   "coolingRate_K_s": null,
-   "g_over_r_ratio": null,
-   "microstructureMorphology": null,
-   "primaryDendriteArmSpacing_PDAS_um": null,
-   "pdasBand_um": null,
-   "pdasBasis": null,
-   "pdasOutOfRange": null,
-   "pdasUnavailableReason": "fewer than 3 solidifying rear-liquidus samples (n_x > 0) in the conduction field: no interface statistic is served and the former tail-length fallback G = dT/x_rear was removed as uncited (P6 containment)",
-   "secondaryDendriteArmSpacing_SDAS_um": null,
-   "sdasUnavailableReason": "no sourced SDAS prefactor: Kirkwood 1985 gives the exponent form \u03bb2 \u221d \u1e6a^(-1/3) only and the former per-alloy B1 values had no source (P7a)",
-   "phaseTransformation": null,
-   "doi": "10.1016/0025-5416(84)90201-5",
-   "disclaimer": "G,R from the rear liquidus of the loss-free conduction field (conduction-field interface). Hunt G/R bands are not calibrated N0 CET. Does not re-score Build Job. Null with unavailableReason where the interface is not described by that field (P6 containment)."
-  },
-  "solidification.hunt": [
-   "Planar (Hunt G/R screening)",
-   "Cellular (Hunt G/R screening)",
-   "Columnar dendritic (Hunt G/R screening)",
-   "Mixed / equiaxed tendency (Hunt G/R screening)",
-   "Mixed / equiaxed tendency (Hunt G/R screening)"
-  ],
-  "solidification.pdas": [
-   2.116152497946318,
-   0.20013334683038408,
-   0.3763110415600372
-  ],
-  "solidification.phaseNote": [
-   {
-    "alloyClass": "Ti-6Al-4V",
-    "expected": "diffusion_alpha_possible",
-    "criterion": "Ahmed & Rack 1998: \u03b2 \u2192 \u03b1' when cooling > 410 K/s (here 100 K/s)",
-    "source": "Ahmed & Rack, Mater. Sci. Eng. A 243 (1998) 206\u2013211",
-    "doi": "10.1016/S0921-5093(97)00802-2"
-   },
-   {
-    "alloyClass": "Ti-6Al-4V",
-    "expected": "beta_to_alpha_prime_martensite",
-    "criterion": "Ahmed & Rack 1998: \u03b2 \u2192 \u03b1' when cooling > 410 K/s (here 100000 K/s)",
-    "source": "Ahmed & Rack, Mater. Sci. Eng. A 243 (1998) 206\u2013211",
-    "doi": "10.1016/S0921-5093(97)00802-2"
-   },
-   {
-    "alloyClass": "Ti-6Al-4V",
-    "expected": "beta_to_alpha_prime_martensite",
-    "criterion": "Ahmed & Rack 1998: \u03b2 \u2192 \u03b1' when cooling > 410 K/s (here 10000000 K/s)",
-    "source": "Ahmed & Rack, Mater. Sci. Eng. A 243 (1998) 206\u2013211",
-    "doi": "10.1016/S0921-5093(97)00802-2"
-   },
-   {
-    "alloyClass": "IN718",
-    "expected": "gamma_cellular_possible_laves",
-    "criterion": "interdendritic Laves possible; not quantified without Scheil/CALPHAD",
-    "source": "screening \u2014 no invented Laves fraction",
-    "doi": "10.1016/0025-5416(84)90201-5"
-   },
-   {
-    "alloyClass": "IN718",
-    "expected": "gamma_cellular_possible_laves",
-    "criterion": "interdendritic Laves possible; not quantified without Scheil/CALPHAD",
-    "source": "screening \u2014 no invented Laves fraction",
-    "doi": "10.1016/0025-5416(84)90201-5"
-   },
-   {
-    "alloyClass": "IN718",
-    "expected": "gamma_cellular_possible_laves",
-    "criterion": "interdendritic Laves possible; not quantified without Scheil/CALPHAD",
-    "source": "screening \u2014 no invented Laves fraction",
-    "doi": "10.1016/0025-5416(84)90201-5"
-   },
-   {
-    "alloyClass": "316L",
-    "expected": "austenite_cellular_dendritic",
-    "criterion": "LPBF cooling typically yields sub-micron cells; spacing from PDAS/SDAS only",
-    "source": "screening \u2014 no invented cell-size table",
-    "doi": "10.1016/0025-5416(84)90201-5"
-   },
-   {
-    "alloyClass": "316L",
-    "expected": "austenite_cellular_dendritic",
-    "criterion": "LPBF cooling typically yields sub-micron cells; spacing from PDAS/SDAS only",
-    "source": "screening \u2014 no invented cell-size table",
-    "doi": "10.1016/0025-5416(84)90201-5"
-   },
-   {
-    "alloyClass": "316L",
-    "expected": "austenite_cellular_dendritic",
-    "criterion": "LPBF cooling typically yields sub-micron cells; spacing from PDAS/SDAS only",
-    "source": "screening \u2014 no invented cell-size table",
-    "doi": "10.1016/0025-5416(84)90201-5"
-   },
-   {
-    "alloyClass": "AlSi10Mg",
-    "expected": "alpha_Al_plus_eutectic_Si",
-    "criterion": "rapid solidification eutectic Si network (not quantified here)",
-    "source": "screening \u2014 no invented Si spacing table",
-    "doi": "10.1016/0025-5416(84)90201-5"
-   },
-   {
-    "alloyClass": "AlSi10Mg",
-    "expected": "alpha_Al_plus_eutectic_Si",
-    "criterion": "rapid solidification eutectic Si network (not quantified here)",
-    "source": "screening \u2014 no invented Si spacing table",
-    "doi": "10.1016/0025-5416(84)90201-5"
-   },
-   {
-    "alloyClass": "AlSi10Mg",
-    "expected": "alpha_Al_plus_eutectic_Si",
-    "criterion": "rapid solidification eutectic Si network (not quantified here)",
-    "source": "screening \u2014 no invented Si spacing table",
-    "doi": "10.1016/0025-5416(84)90201-5"
-   }
-  ],
-  "solidification.sdas": [
-   5.1164649614037705,
-   1.1193605692841695,
-   0.24488940968422304
   ]
  }
 }
