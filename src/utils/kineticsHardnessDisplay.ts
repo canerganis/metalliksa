@@ -35,8 +35,6 @@ export const KINETICS_STATUS_NOTES: Readonly<Record<string, string>> = {
   "unavailable-fractions-not-computed":
     "Unavailable: phase fractions and hardness are not computed (the Li model needs equilibrium ferrite/pearlite amounts from a thermodynamic model that is not implemented).",
   "unavailable-not-modelled": "Unavailable: not modelled.",
-  "unavailable-aging-temperature-at-or-above-solvus":
-    "Unavailable: the aging temperature is at or above the registry solvus (steels: Ae1); no precipitate population.",
   "generic-constants-illustrative":
     "Generic constants shared by every alloy (only the activation energy is per alloy); illustrative.",
   "registry-screening-value": "Registry screening value (unsourced); not a measured or computed temperature.",
@@ -157,12 +155,24 @@ export interface LswRowLike {
   precipitationHardening_MPa?: number | null;
   strengtheningMechanism?: string | null;
   status?: string | null;
+  /** Machine-readable reasons of an unavailable row; the sentence for each code is not written here. */
+  reasonCodes?: readonly string[] | null;
 }
 
-/** Whether any LSW row has a radius; otherwise the solver's reason (aging at or above the registry solvus). */
+export interface LswBlockLike {
+  status?: string | null;
+  reason?: string | null;
+  reasonCodes?: readonly string[] | null;
+}
+
+/**
+ * Whether any LSW row has a radius; otherwise the solver's reason. The solver returns no radius, strength or
+ * mechanism for any alloy (python/kinetics_ttt_cct_solver.py, SOL-K): the reason is its sentence when it gives one
+ * (aging at or above the registry solvus), else the note of its status.
+ */
 export function kineticsLswAvailability(
   rows: LswRowLike[] | null | undefined,
-  block: { status?: string | null; reason?: string | null } | null | undefined
+  block: LswBlockLike | null | undefined
 ): { available: boolean; reason: string } {
   if ((rows ?? []).some((r) => finite(r?.meanRadius_nm))) return { available: true, reason: "" };
   return {

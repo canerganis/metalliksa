@@ -302,9 +302,10 @@ class StepBGoldenTest(unittest.TestCase):
         return doc["driftVsBase"], doc["stdout"]
 
     def test_kinetics_documented_changes_are_checked_against_the_document(self):
-        # Lanes fx-kinetics + kin-li (tools/kinetics_documented_changes.py): every documented row must equal the
-        # re-blessed document at its key (LSW rows also their old formula), and the whole document must equal the
-        # independent expectation (Li oracle for AISI 4140/4340, exact unavailable blocks for the others).
+        # Lanes fx-kinetics + kin-li + SOL-K (tools/kinetics_documented_changes.py): every documented row must equal
+        # the re-blessed document at its key (an LSW row: the old value is the old formula's, the new value is null),
+        # and the whole document must equal the independent expectation (Li oracle for AISI 4140/4340, exact
+        # unavailable blocks for the others, LSW rows unavailable for every alloy).
         import copy
         solver = "kinetics_ttt_cct_solver"
         for case in ("aisi4140_ui_defaults", "aisi4340_slow_cool", "in718_lpbf_quench", "ti64_beta_quench"):
@@ -343,12 +344,25 @@ class StepBGoldenTest(unittest.TestCase):
         # placeholders: only keys flagged in alloy_registry.KINETICS_PLACEHOLDERS may be null
         self.assertTrue(violations("ti64_beta_quench", mutate_rows=lambda rows: rows.append(
             {"key": "alloyMetadata.Ms_C", "kind": "changed", "old": 800.0, "new": None})))
-        # LSW: the recorded old/new radius and regime must equal the independent oracle
+        # LSW (SOL-K): the recorded old value must equal the old formula, the new value must be null
         key = "lswPrecipitateCoarsening[9].meanRadius_nm"
+        hard = "lswPrecipitateCoarsening[9].precipitationHardening_MPa"
+        mech = "lswPrecipitateCoarsening[9].strengtheningMechanism"
         self.assertTrue(violations("aisi4140_ui_defaults", mutate_rows=lambda rows: row(rows, key).update(new=22.9)))
         self.assertTrue(violations("aisi4140_ui_defaults", mutate_rows=lambda rows: row(rows, key).update(old=1.6)))
+        self.assertTrue(violations("aisi4140_ui_defaults", mutate_rows=lambda rows: row(rows, hard).update(old=117.0)))
+        self.assertTrue(violations("aisi4140_ui_defaults", mutate_rows=lambda rows: row(rows, mech).update(
+            old="Orowan Dislocation Looping (Over-aged)")))  # the d33b6f5 radius 1.52 nm is the cutting regime
+        self.assertTrue(violations("aisi4140_ui_defaults", mutate_rows=lambda rows: row(rows, key).update(
+            kind="numeric", new=22.9, abs=21.38, rel=14.07)))  # a value change is not a documented removal
         self.assertTrue(violations("aisi4140_ui_defaults", mutate_doc=doc_set(
             ["lswPrecipitateCoarsening", 0, "meanRadius_nm"], 1.5)))
+        # the new LSW status and reason-code rows are accepted only with the document's own values
+        status_key = "lswPrecipitateCoarsening[3].status"
+        self.assertTrue(violations("aisi4140_ui_defaults", mutate_rows=lambda rows: row(rows, status_key).update(
+            new="generic-constants-illustrative")))
+        self.assertTrue(violations("aisi4140_ui_defaults", mutate_rows=lambda rows: row(
+            rows, "lswPrecipitateCoarsening[3].reasonCodes[0]").update(new="missing-source-constant")))
         # an undocumented section stays under the default guard (alloyMetadata composition, inputParameters)
         self.assertTrue(golden.step_b_violations(solver, [{"key": "inputParameters.agingTime_h", "kind": "changed",
                                                            "old": 8.0, "new": "8"}],
@@ -416,9 +430,30 @@ class StepBGoldenTest(unittest.TestCase):
         rejected("ti64_beta_quench", lambda d: d["calphadVsKineticsGap"]["equilibriumPrediction"].update(
             stablePhasesAtRT="Ferrite + Cementite / Equilibrium intermetallics"))
         rejected("ti64_beta_quench", lambda d: d.update(tttIsothermalCurves=[]))
-        # LSW: a null below the solvus and an aging temperature that would put it above
-        rejected("in718_lpbf_quench", lambda d: d["lswPrecipitateCoarsening"][0].update(meanRadius_nm=None))
-        rejected("in718_lpbf_quench", lambda d: d["inputParameters"].update(agingTemp_C=1100.0))
+        # LSW (SOL-K): unavailable for every alloy, exact status and reason codes; an aging temperature that would put
+        # the rows above the registry solvus changes the expected status; nonphysical aging inputs never appear
+        for case in ("aisi4140_ui_defaults", "in718_lpbf_quench", "ti64_beta_quench"):
+            rejected(case, lambda d: d["lswPrecipitateCoarsening"][0].update(meanRadius_nm=5.03))
+            rejected(case, lambda d: d["lswPrecipitateCoarsening"][4].update(precipitationHardening_MPa=209.3))
+            rejected(case, lambda d: d["lswPrecipitateCoarsening"][1].update(
+                strengtheningMechanism="Weak-Pair / Strong-Pair Cutting"))
+            rejected(case, lambda d: d["lswPrecipitateCoarsening"][2].update(status="generic-constants-illustrative"))
+            rejected(case, lambda d: d["lswPrecipitateCoarsening"][2].update(
+                reasonCodes=["missing-source-bound-model"]))
+            rejected(case, lambda d: d["lswPrecipitateCoarsening"][5].pop("reasonCodes"))
+            rejected(case, lambda d: d["lswPrecipitateCoarsening"].pop())
+            rejected(case, lambda d: d["kineticsModel"]["lswPrecipitateCoarsening"].update(note="x"))
+            rejected(case, lambda d: d["kineticsModel"]["lswPrecipitateCoarsening"].update(
+                reasonCodes=["missing-source-constant"]))
+            rejected(case, lambda d: d["kineticsModel"]["lswPrecipitateCoarsening"].update(
+                status="unavailable-aging-temperature-at-or-above-solvus"))
+            rejected(case, lambda d: d["inputParameters"].update(agingTemp_C=-273.15))
+            rejected(case, lambda d: d["inputParameters"].update(agingTemp_C=float("nan")))
+            rejected(case, lambda d: d["inputParameters"].update(agingTime_h=-1.0))
+        # A registry transition temperature does not define a precipitate solvus (SOLK-1).
+        hot = json.loads(json.dumps(docs["in718_lpbf_quench"]))
+        hot["inputParameters"]["agingTemp_C"] = 1100.0
+        self.assertEqual(golden.step_b_document_violations(solver, hot), [])
 
         # HV rows of a row whose HRC is now null: the old value must be the old formula of an old HRC band
         steel_doc, in718_doc = docs["aisi4140_ui_defaults"], docs["in718_lpbf_quench"]

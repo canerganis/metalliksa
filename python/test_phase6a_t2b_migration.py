@@ -91,8 +91,8 @@ class KineticsTest(unittest.TestCase):
         """Drift rows (old blob -> new) that are NOT a documented change, after verifying the documented ones.
 
         Documented changes: predictedHardness_HV -> ASTM E140 (golden.documented_change_violation) and the
-        fx-kinetics changes (steel-only model, registry placeholders, TTT floor flags, LSW unit fix;
-        kinetics_documented_changes.row_violation). Each documented row is checked exactly against ``new``;
+        fx-kinetics / SOL-K changes (steel-only model, registry placeholders, TTT floor flags, LSW rows unavailable
+        for every alloy; kinetics_documented_changes.row_violation). Each documented row is checked exactly against ``new``;
         the rows returned are the rest, for the caller to bound or to require empty.
         """
         import capture_phase6a_golden as golden
@@ -115,8 +115,8 @@ class KineticsTest(unittest.TestCase):
     def test_every_alloy_equals_the_base_blob_with_the_legacy_r_including_key_order(self):
         # Design step (b) changed only R (8.314 -> exact). With R_GAS put back to 8.314 the migrated
         # solver must reproduce the base blob bit for bit, key order included, apart from the documented
-        # changes (HV -> E140, fx-kinetics steel-only/placeholder/TTT-floor/LSW; each checked exactly in
-        # _undocumented_rows).
+        # changes (HV -> E140, fx-kinetics steel-only/placeholder/TTT-floor, SOL-K LSW unavailable; each checked
+        # exactly in _undocumented_rows).
         import drift_report
         with mock.patch.object(kin, "R_GAS", 8.314):
             for name in self.LEGACY:
@@ -178,8 +178,15 @@ class KineticsTest(unittest.TestCase):
         self.assertEqual(set(out), {"success", "error", "errorKind"})
         self.assertEqual(out["errorKind"], "validation")
         self.assertEqual(out["error"]["code"], "UNKNOWN_ALLOY")
-        # an unconverted aging temperature still reaches the internal-error envelope (exit 1)
-        code, out = _run("kinetics_ttt_cct_solver.py", {"alloy": "Inconel 718", "agingTemp_C": None})
+        # SOL-K: an aging temperature that is not a number is a validation envelope with the reason code (was an
+        # internal error, exit 1); NaN and absolute zero are refused the same way
+        for aging in (None, float("nan"), -273.15):
+            code, out = _run("kinetics_ttt_cct_solver.py", {"alloy": "Inconel 718", "agingTemp_C": aging})
+            self.assertEqual((code, out["errorKind"]), (2, "validation"), aging)
+            self.assertEqual((out["error"]["field"], out["error"]["detail"]["reasonCode"]),
+                             ("agingTemp_C", "nonphysical-input"))
+        # the internal-error envelope itself is unchanged: a payload that is not an object
+        code, out = _run("kinetics_ttt_cct_solver.py", [])
         self.assertEqual(code, 1)
         self.assertEqual(out["errorKind"], "internal")
         # kin-li fix round: a non-number cooling rate is a validation envelope for every alloy (was internal)

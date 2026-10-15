@@ -1066,7 +1066,7 @@
   {
    "key": "engine",
    "kind": "changed",
-   "new": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+   "new": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
    "old": "MetalliX-Python-HPC-JMAK-Kinetics-v3.10"
   },
   {
@@ -1090,7 +1090,7 @@
   {
    "key": "kineticsModel.lswPrecipitateCoarsening.note",
    "kind": "added",
-   "new": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
+   "new": null,
    "old": null
   },
   {
@@ -1100,9 +1100,21 @@
    "old": null
   },
   {
+   "key": "kineticsModel.lswPrecipitateCoarsening.reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "kineticsModel.lswPrecipitateCoarsening.reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
+  },
+  {
    "key": "kineticsModel.lswPrecipitateCoarsening.status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
@@ -1196,224 +1208,364 @@
    "old": null
   },
   {
-   "abs": 0.010000000000000009,
    "key": "lswPrecipitateCoarsening[0].meanRadius_nm",
-   "kind": "numeric",
-   "new": 1.51,
-   "old": 1.5,
-   "rel": 0.006666666666666672
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
   },
   {
-   "abs": 0.29999999999999716,
    "key": "lswPrecipitateCoarsening[0].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 114.6,
-   "old": 114.3,
-   "rel": 0.002624671916010474
+   "kind": "changed",
+   "new": null,
+   "old": 114.3
+  },
+  {
+   "key": "lswPrecipitateCoarsening[0].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[0].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[0].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 0.030000000000000027,
-   "key": "lswPrecipitateCoarsening[1].meanRadius_nm",
-   "kind": "numeric",
-   "new": 1.53,
-   "old": 1.5,
-   "rel": 0.020000000000000018
+   "key": "lswPrecipitateCoarsening[0].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 1.2999999999999972,
+   "key": "lswPrecipitateCoarsening[1].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[1].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 115.6,
-   "old": 114.3,
-   "rel": 0.011373578302712137
+   "kind": "changed",
+   "new": null,
+   "old": 114.3
+  },
+  {
+   "key": "lswPrecipitateCoarsening[1].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[1].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[1].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 0.07000000000000006,
-   "key": "lswPrecipitateCoarsening[2].meanRadius_nm",
-   "kind": "numeric",
-   "new": 1.57,
-   "old": 1.5,
-   "rel": 0.04666666666666671
+   "key": "lswPrecipitateCoarsening[1].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 2.5,
+   "key": "lswPrecipitateCoarsening[2].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[2].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 116.8,
-   "old": 114.3,
-   "rel": 0.021872265966754158
+   "kind": "changed",
+   "new": null,
+   "old": 114.3
+  },
+  {
+   "key": "lswPrecipitateCoarsening[2].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[2].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[2].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 0.1299999999999999,
-   "key": "lswPrecipitateCoarsening[3].meanRadius_nm",
-   "kind": "numeric",
-   "new": 1.63,
-   "old": 1.5,
-   "rel": 0.0866666666666666
+   "key": "lswPrecipitateCoarsening[2].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 4.799999999999997,
+   "key": "lswPrecipitateCoarsening[3].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[3].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 119.1,
-   "old": 114.3,
-   "rel": 0.04199475065616796
+   "kind": "changed",
+   "new": null,
+   "old": 114.3
+  },
+  {
+   "key": "lswPrecipitateCoarsening[3].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[3].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[3].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 0.24,
-   "key": "lswPrecipitateCoarsening[4].meanRadius_nm",
-   "kind": "numeric",
-   "new": 1.74,
-   "old": 1.5,
-   "rel": 0.16
+   "key": "lswPrecipitateCoarsening[3].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 8.799999999999997,
+   "key": "lswPrecipitateCoarsening[4].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[4].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 123.1,
-   "old": 114.3,
-   "rel": 0.07699037620297461
+   "kind": "changed",
+   "new": null,
+   "old": 114.3
+  },
+  {
+   "key": "lswPrecipitateCoarsening[4].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[4].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[4].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 0.42999999999999994,
-   "key": "lswPrecipitateCoarsening[5].meanRadius_nm",
-   "kind": "numeric",
-   "new": 1.93,
-   "old": 1.5,
-   "rel": 0.2866666666666666
+   "key": "lswPrecipitateCoarsening[4].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 15.099999999999994,
+   "key": "lswPrecipitateCoarsening[5].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[5].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 129.5,
-   "old": 114.4,
-   "rel": 0.13199300699300695
+   "kind": "changed",
+   "new": null,
+   "old": 114.4
+  },
+  {
+   "key": "lswPrecipitateCoarsening[5].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[5].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[5].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 0.7200000000000002,
-   "key": "lswPrecipitateCoarsening[6].meanRadius_nm",
-   "kind": "numeric",
-   "new": 2.22,
-   "old": 1.5,
-   "rel": 0.48000000000000015
+   "key": "lswPrecipitateCoarsening[5].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 24.599999999999994,
+   "key": "lswPrecipitateCoarsening[6].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[6].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 139.0,
-   "old": 114.4,
-   "rel": 0.21503496503496497
+   "kind": "changed",
+   "new": null,
+   "old": 114.4
+  },
+  {
+   "key": "lswPrecipitateCoarsening[6].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[6].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[6].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 0.9500000000000002,
-   "key": "lswPrecipitateCoarsening[7].meanRadius_nm",
-   "kind": "numeric",
-   "new": 2.45,
-   "old": 1.5,
-   "rel": 0.6333333333333334
+   "key": "lswPrecipitateCoarsening[6].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 31.69999999999999,
+   "key": "lswPrecipitateCoarsening[7].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.5
+  },
+  {
    "key": "lswPrecipitateCoarsening[7].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 146.1,
-   "old": 114.4,
-   "rel": 0.27709790209790197
+   "kind": "changed",
+   "new": null,
+   "old": 114.4
+  },
+  {
+   "key": "lswPrecipitateCoarsening[7].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[7].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[7].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 1.45,
-   "key": "lswPrecipitateCoarsening[8].meanRadius_nm",
-   "kind": "numeric",
-   "new": 2.96,
-   "old": 1.51,
-   "rel": 0.9602649006622517
+   "key": "lswPrecipitateCoarsening[7].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 46.099999999999994,
+   "key": "lswPrecipitateCoarsening[8].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.51
+  },
+  {
    "key": "lswPrecipitateCoarsening[8].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 160.7,
-   "old": 114.6,
-   "rel": 0.40226876090750435
+   "kind": "changed",
+   "new": null,
+   "old": 114.6
+  },
+  {
+   "key": "lswPrecipitateCoarsening[8].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[8].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[8].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
   },
   {
-   "abs": 2.1900000000000004,
-   "key": "lswPrecipitateCoarsening[9].meanRadius_nm",
-   "kind": "numeric",
-   "new": 3.7,
-   "old": 1.51,
-   "rel": 1.4503311258278149
+   "key": "lswPrecipitateCoarsening[8].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
-   "abs": 64.6,
+   "key": "lswPrecipitateCoarsening[9].meanRadius_nm",
+   "kind": "changed",
+   "new": null,
+   "old": 1.51
+  },
+  {
    "key": "lswPrecipitateCoarsening[9].precipitationHardening_MPa",
-   "kind": "numeric",
-   "new": 179.5,
-   "old": 114.9,
-   "rel": 0.5622280243690164
+   "kind": "changed",
+   "new": null,
+   "old": 114.9
+  },
+  {
+   "key": "lswPrecipitateCoarsening[9].reasonCodes[0]",
+   "kind": "added",
+   "new": "missing-source-bound-model",
+   "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[9].reasonCodes[1]",
+   "kind": "added",
+   "new": "missing-source-constant",
+   "old": null
   },
   {
    "key": "lswPrecipitateCoarsening[9].status",
    "kind": "added",
-   "new": "generic-constants-illustrative",
+   "new": "unavailable-not-modelled",
    "old": null
+  },
+  {
+   "key": "lswPrecipitateCoarsening[9].strengtheningMechanism",
+   "kind": "changed",
+   "new": null,
+   "old": "Weak-Pair / Strong-Pair Cutting"
   },
   {
    "key": "tttIncubationFloor.floorHitCount",
@@ -2461,7 +2613,7 @@
   }
  ],
  "exitCode": 0,
- "gitHead": "a062a46e3b706eb6eb39186a45809d5618ad8fc9",
+ "gitHead": "d38ea7d4cbd1615753a63144ed47d6f25f2252ed",
  "input": {
   "agingTemp_C": 720.0,
   "agingTime_h": 8.0,
@@ -2503,7 +2655,7 @@
  "schema": "phase6a-step-b-golden-1",
  "solver": "kinetics_ttt_cct_solver",
  "solverFile": "python/kinetics_ttt_cct_solver.py",
- "solverSha256": "954fa53e7a0e2610f807d2364146e28887910a07eb945dd3a9004875d1f1467d",
+ "solverSha256": "4ced538cfe1bb8543a3916cb449f2d79631680cf817ebf677fc2f03640770116",
  "solverSha256Normalization": "CRLF->LF (git blob form)",
  "solverSource": "worktree",
  "stdout": {
@@ -2771,7 +2923,7 @@
    "Ms_C": null,
    "Ms_C_status": "unavailable-registry-placeholder"
   },
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "inputParameters": {
    "agingTemp_C": 720.0,
    "agingTime_h": 8.0,
@@ -2784,9 +2936,13 @@
    "illustrativeOnly": true,
    "li1998": null,
    "lswPrecipitateCoarsening": {
-    "note": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
+    "note": null,
     "reason": null,
-    "status": "generic-constants-illustrative"
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled"
    },
    "modelVersion": "li1998-additivity-v1",
    "note": "The Li (1998) TTT/CCT model covers low-alloy steels only; no sourced transformation-kinetics model of this alloy class is implemented, so no TTT/CCT curves, start temperatures, phase fractions or hardness are reported.",
@@ -2811,73 +2967,113 @@
   "lswPrecipitateCoarsening": [
    {
     "agingTime_h": 0.1,
-    "meanRadius_nm": 1.51,
-    "precipitationHardening_MPa": 114.6,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 0.5,
-    "meanRadius_nm": 1.53,
-    "precipitationHardening_MPa": 115.6,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 1.0,
-    "meanRadius_nm": 1.57,
-    "precipitationHardening_MPa": 116.8,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 2.0,
-    "meanRadius_nm": 1.63,
-    "precipitationHardening_MPa": 119.1,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 4.0,
-    "meanRadius_nm": 1.74,
-    "precipitationHardening_MPa": 123.1,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 8.0,
-    "meanRadius_nm": 1.93,
-    "precipitationHardening_MPa": 129.5,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 16.0,
-    "meanRadius_nm": 2.22,
-    "precipitationHardening_MPa": 139.0,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 24.0,
-    "meanRadius_nm": 2.45,
-    "precipitationHardening_MPa": 146.1,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 48.0,
-    "meanRadius_nm": 2.96,
-    "precipitationHardening_MPa": 160.7,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    },
    {
     "agingTime_h": 100.0,
-    "meanRadius_nm": 3.7,
-    "precipitationHardening_MPa": 179.5,
-    "status": "generic-constants-illustrative",
-    "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting"
+    "meanRadius_nm": null,
+    "precipitationHardening_MPa": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ],
+    "status": "unavailable-not-modelled",
+    "strengtheningMechanism": null
    }
   ],
   "success": true,

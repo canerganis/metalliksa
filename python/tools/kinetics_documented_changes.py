@@ -25,13 +25,21 @@ Changes (base golden -> now):
 2. fx-kinetics (kept): non-steel alloys unavailable ("kinetics model is steel-only"); registry placeholders
    (alloy_registry.KINETICS_PLACEHOLDERS) null in alloyMetadata; non-steel alloyMetadata Ae1/critical cooling
    rate null.
-3. fx-kinetics (kept): LSW K used the mole fraction where mol/m^3 is needed (K too small by 1/Vm = 9.1e4) and had
-   a 1e-3 nm^3/h floor; null at or above the registry Ae3 (steels: Ae1).
+3. fx-kinetics (superseded by 4): LSW K used the mole fraction where mol/m^3 is needed (K too small by 1/Vm = 9.1e4)
+   and had a 1e-3 nm^3/h floor; null at or above the registry Ae3 (steels: Ae1).
+4. SOL-K (SPEC_solidification section 6.3, integration plan 7.1 and 8.2): the generic LSW radius (constants shared by
+   every alloy, no source-bound model) and the 280 MPa / 9 nm strengthening curve are unavailable for EVERY alloy:
+   meanRadius_nm, precipitationHardening_MPa and strengtheningMechanism are null in all ten rows. The OLD value of
+   each such row is still checked against the old formula (legacy R, unit error, 1e-3 floor); the NEW value must be
+   null. Each row has status unavailable-not-modelled and the two missing-source reason codes. Aging inputs are checked before any
+   arithmetic: a non-number, NaN, an infinity, a temperature at or below absolute zero (-273.15 C included) or a
+   negative time is refused with the reason code nonphysical-input (``aging_input_reason`` is the independent rule).
 """
 
 from __future__ import annotations
 
 import math
+import numbers
 import re
 import sys
 from pathlib import Path
@@ -66,13 +74,19 @@ ST_BS = "computed-li-1998-screening"
 ST_MS = "computed-andrews-kung-rayment-1982-screening"
 ST_MF = "unavailable-not-modelled"
 ST_TTT_NO_FLOOR = "no-floor-li-1998-law"
-ST_LSW_ILLUSTRATIVE = "generic-constants-illustrative"
-ST_LSW_ABOVE = "unavailable-aging-temperature-at-or-above-solvus"
+ST_LSW_NOT_MODELLED = "unavailable-not-modelled"
+# Independent copies of the SOL-K reason codes (SPEC_solidification section 2, integration contract 4.5 and 4.6).
+RC_NO_MODEL, RC_NO_CONSTANT = "missing-source-bound-model", "missing-source-constant"
+RC_DOMAIN, RC_NONPHYSICAL = "outside-source-model-domain", "nonphysical-input"
+LSW_CODES = [RC_NO_MODEL, RC_NO_CONSTANT]
+LSW_AGING_TIMES_H = [0.1, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 24.0, 48.0, 100.0]
+LSW_ROW_KEYS = ["agingTime_h", "meanRadius_nm", "precipitationHardening_MPa", "strengtheningMechanism", "status",
+                "reasonCodes"]
 LEGACY_R_GAS = 8.314  # the d33b6f5 / 7f3f803 base goldens were captured with this R
 CCT_RATES = (0.05, 0.2, 1.0, 5.0, 10.0, 25.0, 50.0, 100.0, 500.0, 2000.0)
 ATHERMAL_LABEL = "Martensite (Athermal)"
 MODEL_VERSION = "li1998-additivity-v1"
-ENGINE = "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0"
+ENGINE = "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1"
 TTT_POINT_KEYS = ["temperature_C", "phase", "tStart_s", "t50_s", "tFinish_s", "avramiExponent_n",
                   "drivingForce_DeltaT_C", "floorHit"]
 KM_ALPHA = 0.011
@@ -113,11 +127,6 @@ TTT_NO_FLOOR_NOTE = (
     "Points with a start time of 1e6 s or more are not listed."
 )
 TTT_UNAVAILABLE_NOTE = "No TTT points: the kinetics model is unavailable for this alloy."
-LSW_NOTE = (
-    "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the "
-    "activation energy is per alloy; one molar volume serves both the matrix concentration and the "
-    "precipitate); the strengthening column is an unsourced screening curve."
-)
 STEEL_PHASES = "Ferrite + Cementite / Equilibrium intermetallics"
 GAP_STEEL_EQ = {"stablePhasesAtRT": STEEL_PHASES,
                 "martensiteFraction": "0.0% (Thermodynamically Forbidden in Equilibrium)",
@@ -155,7 +164,9 @@ TOL_REL_CCR = 1e-3        # 4 significant digits (5e-4) + midpoint rule
 OLD_KINETICS_HRC_BANDS = (18.0, 28.0, 42.0, 54.0, 58.0, 64.0)
 
 # ----------------------------------------------------------------------------------------------
-# LSW oracle: r^3 - r0^3 = K t, K = 8 gamma D C_e Vm^2 / (9 R T) with C_e in mol/m^3.
+# Old LSW values (d33b6f5 / 7f3f803 base goldens): r^3 - r0^3 = K t, K = 8 gamma D C_e Vm^2 / (9 R T) with the mole
+# fraction in place of C_e (unit error) and a 1e-3 nm^3/h floor on K. They are no longer produced (SOL-K); this
+# formula only verifies the OLD side of a drift row, which must not be an arbitrary number.
 # Lifshitz & Slyozov, J. Phys. Chem. Solids 19 (1961) 35; Wagner, Z. Elektrochem. 65 (1961) 581.
 _GAMMA_J_M2 = 0.045
 _X_E = 0.02
@@ -167,18 +178,12 @@ _OROWAN_PEAK_MPA = 280.0
 _OLD_K_FLOOR_NM3_H = 1e-3
 
 
-def _k_si_m3_s(q_j_mol: float, t_k: float, r_gas: float, concentration_mol_m3: float) -> float:
-    d = _D0_M2_S * math.exp(-q_j_mol / (r_gas * t_k))
-    return 8.0 * _GAMMA_J_M2 * d * concentration_mol_m3 * _VM_M3_MOL ** 2 / (9.0 * r_gas * t_k)
-
-
-def lsw_radius_nm(q_kj_mol: float, aging_c: float, time_h: float, r_gas: float, *, corrected: bool) -> float:
-    """Unrounded mean radius (nm). corrected=False reproduces the old unit error and floor."""
+def legacy_lsw_radius_nm(q_kj_mol: float, aging_c: float, time_h: float) -> float:
+    """Unrounded OLD mean radius (nm) of the base goldens: legacy R, mole fraction as C_e, 1e-3 nm^3/h floor."""
     t_k = aging_c + 273.15
-    conc = _X_E / _VM_M3_MOL if corrected else _X_E
-    k_nm3_h = _k_si_m3_s(q_kj_mol * 1e3, t_k, r_gas, conc) * 1e27 * 3600.0
-    if not corrected:
-        k_nm3_h = max(_OLD_K_FLOOR_NM3_H, k_nm3_h)
+    d = _D0_M2_S * math.exp(-q_kj_mol * 1e3 / (LEGACY_R_GAS * t_k))
+    k_m3_s = 8.0 * _GAMMA_J_M2 * d * _X_E * _VM_M3_MOL ** 2 / (9.0 * LEGACY_R_GAS * t_k)
+    k_nm3_h = max(_OLD_K_FLOOR_NM3_H, k_m3_s * 1e27 * 3600.0)
     return (_R0_NM ** 3 + k_nm3_h * time_h) ** (1.0 / 3.0)
 
 
@@ -193,18 +198,26 @@ def lsw_regime(r_nm: float) -> str:
             else "Orowan Dislocation Looping (Over-aged)")
 
 
-def lsw_limit(alloy_meta: Dict[str, Any], aging_c: float, steel: bool) -> Optional[Tuple[str, float]]:
-    """(label, temperature) when the aging temperature is at or above the registry Ae3 (steels: Ae1)."""
-    if aging_c >= alloy_meta["Ae3_C"]:
-        return "Ae3 (solvus/transus)", alloy_meta["Ae3_C"]
-    if steel and aging_c >= alloy_meta["Ae1_C"]:
-        return "Ae1", alloy_meta["Ae1_C"]
+def aging_input_reason(temp_c: Any, time_h: Any) -> Optional[str]:
+    """Independent input rule of SOL-K: ``nonphysical-input`` when the aging inputs must be refused, else None.
+
+    Refused: a non-number (bool included), NaN, an infinity, a temperature at or below absolute zero (-273.15 C is
+    refused, it is 0 K) and a negative time. Zero time is accepted.
+    """
+    for value in (temp_c, time_h):
+        try:
+            if isinstance(value, bool) or not isinstance(value, numbers.Real) or not math.isfinite(value):
+                return RC_NONPHYSICAL
+        except OverflowError:
+            return RC_NONPHYSICAL
+    if temp_c + 273.15 <= 0.0 or time_h < 0.0:
+        return RC_NONPHYSICAL
     return None
 
 
-def lsw_reason(aging_c: float, limit: Tuple[str, float]) -> str:
-    return (f"aging temperature {aging_c:g} C is at or above the registry {limit[0]} of {limit[1]:g} C: "
-            "no precipitate population, so no coarsening or strengthening is reported")
+def lsw_expected() -> Dict[str, Any]:
+    """The exact expected status, reason and reason codes of every LSW row and of the kineticsModel block."""
+    return {"status": ST_LSW_NOT_MODELLED, "reason": None, "reasonCodes": list(LSW_CODES)}
 
 
 # ----------------------------------------------------------------------------------------------
@@ -286,39 +299,26 @@ def _h_placeholder_null(row, doc, r_gas):
 
 
 def _h_lsw(row, doc, r_gas):
+    """A radius, strengthening or mechanism of the base golden is now null (SOL-K: unavailable for every alloy).
+
+    The OLD value must be the old formula's (legacy R, unit error, 1e-3 floor: not an arbitrary number); the NEW
+    value must be null. The new status and reason codes are verified by the whole-document check.
+    """
     i = int(re.search(r"\[(\d+)\]", row["key"]).group(1))
     leaf = row["key"].rsplit(".", 1)[-1]
     q = doc["alloyMetadata"]["Q_diff_kJ_mol"]
     aging_c = doc["inputParameters"]["agingTemp_C"]
     t_h = doc["lswPrecipitateCoarsening"][i]["agingTime_h"]
-    _rid, steel, _inside = classify(doc)
-    meta = {"Ae3_C": _record(doc).value("Ae3_C", alloy_registry.DOMAIN_KINETICS),
-            "Ae1_C": _record(doc).value("Ae1_C", alloy_registry.DOMAIN_KINETICS)}
-    unavailable = lsw_limit(meta, aging_c, steel) is not None
-    r_new = lsw_radius_nm(q, aging_c, t_h, r_gas, corrected=True)
-    r_old = lsw_radius_nm(q, aging_c, t_h, LEGACY_R_GAS, corrected=False)
-    if leaf == "meanRadius_nm":
-        exp_old, exp_new, tol = r_old, r_new, 0.005
-    elif leaf == "precipitationHardening_MPa":
-        exp_old, exp_new, tol = lsw_boost_mpa(r_old), lsw_boost_mpa(r_new), 0.05
-    else:
-        old_text = lsw_regime(r_old)
-        new_text = None if unavailable else lsw_regime(r_new)
-        if row["kind"] != "changed" or row["old"] != old_text or row["new"] != new_text:
-            return f"{row['key']}: regime {row['old']!r} -> {row['new']!r}, expected {old_text!r} -> {new_text!r}"
+    r_old = legacy_lsw_radius_nm(q, aging_c, t_h)
+    if row["kind"] != "changed" or row["new"] is not None:
+        return f"{row['key']}: expected a value changed to null, got {row['kind']} {row['new']!r}"
+    if leaf == "strengtheningMechanism":
+        if row["old"] != lsw_regime(r_old):
+            return f"{row['key']}: old {row['old']!r} is not the old regime {lsw_regime(r_old)!r}"
         return None
-    if unavailable:
-        if row["kind"] != "changed" or row["new"] is not None or type(row["old"]) is not float:
-            return f"{row['key']}: aging above the solvus must give null, got {row['kind']} {row['new']!r}"
-        if abs(row["old"] - exp_old) > tol + 1e-9:
-            return f"{row['key']}: old {row['old']!r} is not the old formula value {exp_old!r}"
-        return None
-    if row["kind"] != "numeric" or type(row["old"]) is not float or type(row["new"]) is not float:
-        return f"{row['key']}: expected a float change, got {row['kind']}"
-    if abs(row["old"] - exp_old) > tol + 1e-9:
+    exp_old, tol = (r_old, 0.005) if leaf == "meanRadius_nm" else (lsw_boost_mpa(r_old), 0.05)
+    if type(row["old"]) is not float or abs(row["old"] - exp_old) > tol + 1e-9:
         return f"{row['key']}: old {row['old']!r} is not the old formula value {exp_old!r}"
-    if abs(row["new"] - exp_new) > tol + 1e-9:
-        return f"{row['key']}: new {row['new']!r} is not the SI oracle value {exp_new!r}"
     return None
 
 
@@ -353,7 +353,7 @@ _ANY = {"added", "changed", "numeric", "removed"}
 _A, _C = {"added"}, {"changed"}
 _LSW = r"lswPrecipitateCoarsening\[\d+\]"
 _RULES: List[Tuple[str, set, Callable, str]] = [
-    (r"engine", _C, _h_doc_leaf, "engine name: Li (1998) additivity kinetics v4.0"),
+    (r"engine", _C, _h_doc_leaf, "engine name: Li (1998) additivity kinetics v4.1"),
     (r"tttIsothermalCurves", _A, _h_doc_leaf, "TTT curves null when the model is unavailable"),
     (r"tttIsothermalCurves\[\d+\](\..+)?", _ANY, _h_doc_leaf,
      "TTT curves: Li (1998) C-curves of a steel inside the model range (verified against the independent oracle); "
@@ -373,10 +373,11 @@ _RULES: List[Tuple[str, set, Callable, str]] = [
      "non-steel alloys: the steel registry echoes Ae1 and critical cooling rate are null"),
     (r"alloyMetadata\.(Ms_C|Mf_C)", _C, _h_placeholder_null,
      "registry placeholders (alloy_registry.KINETICS_PLACEHOLDERS) are null"),
-    (_LSW + r"\.(meanRadius_nm|precipitationHardening_MPa|strengtheningMechanism)", {"numeric", "changed"}, _h_lsw,
-     "LSW unit fix: C_e in mol/m^3 (x_e/Vm), no 1e-3 nm^3/h floor; null at or above the registry solvus "
-     "(steels: Ae1); checked against an independent SI formula"),
-    (_LSW + r"\.status", _A, _h_doc_leaf, "new LSW row status"),
+    (_LSW + r"\.(meanRadius_nm|precipitationHardening_MPa|strengtheningMechanism)", _C, _h_lsw,
+     "SOL-K: LSW radius, strengthening and mechanism unavailable (null) for every alloy; the old value is checked "
+     "against the old formula"),
+    (_LSW + r"\.status", _A, _h_doc_leaf, "new LSW row status (unavailable for every alloy)"),
+    (_LSW + r"\.reasonCodes(\[\d+\])?", _A, _h_doc_leaf, "new LSW row reason codes (SOL-K)"),
 ]
 HANDLERS: Dict[str, Callable] = {p: h for p, _k, h, _d in _RULES}
 HANDLER_KINDS: Dict[str, set] = {p: k for p, k, _h, _d in _RULES}
@@ -439,6 +440,13 @@ def _document_violations(n: Dict[str, Any], r_gas: float, out: List[str]) -> Lis
     placeholders = sorted(k for a, k in alloy_registry.KINETICS_PLACEHOLDERS if a == reg_id)
     params = n["inputParameters"]
     aging_c = params["agingTemp_C"]
+    # SOL-K: a document built from nonphysical aging inputs must not exist (the solver refuses them), and no
+    # non-finite number may appear anywhere in it (a bare NaN/Infinity token is not valid JSON).
+    input_problem = aging_input_reason(aging_c, params["agingTime_h"])
+    if input_problem:
+        out.append(f"inputParameters: aging inputs {aging_c!r}, {params['agingTime_h']!r} are {input_problem}")
+        return out
+    out.extend(f"non-finite number at {path}" for path in _nonfinite_paths(n))
     registry = {key: record.value(key, alloy_registry.DOMAIN_KINETICS)
                 for key in ("Ae3_C", "Ae1_C", "Ms_C", "Mf_C", "Q_diff_kJ_mol", "critical_cooling_rate_C_s")}
     if n.get("engine") != ENGINE:
@@ -462,10 +470,22 @@ def _document_violations(n: Dict[str, Any], r_gas: float, out: List[str]) -> Lis
     orc = None
     aust = params["austSolutionTemp_C"]
     user_cr = params["selectedCoolingRate_C_s"]
+    if not modelled:
+        for key, lower, inclusive in (("austSolutionTemp_C", -273.15, True),
+                                      ("priorGrainSize_um", 0.0, False),
+                                      ("selectedCoolingRate_C_s", 0.0, False)):
+            value = params[key]
+            try:
+                valid = (not isinstance(value, bool) and isinstance(value, numbers.Real)
+                         and math.isfinite(value) and (value >= lower if inclusive else value > lower))
+            except OverflowError:
+                valid = False
+            if not valid:
+                out.append(f"inputParameters.{key}: nonphysical echoed input")
+                return out
     if modelled:
         orc = oracle.Oracle(comp, float(params["priorGrainSize_um"]), r_gas)
     # ---- kineticsModel
-    limit = lsw_limit({"Ae3_C": registry["Ae3_C"], "Ae1_C": registry["Ae1_C"]}, aging_c, steel)
     model = n["kineticsModel"]
     expected_model = {
         "status": "available" if modelled else "unavailable",
@@ -475,8 +495,7 @@ def _document_violations(n: Dict[str, Any], r_gas: float, out: List[str]) -> Lis
         "illustrativeOnly": True,
         "note": note,
         "placeholderParameters": placeholders,
-        "lswPrecipitateCoarsening": {"status": ST_LSW_ABOVE if limit else ST_LSW_ILLUSTRATIVE, "note": LSW_NOTE,
-                                     "reason": lsw_reason(aging_c, limit) if limit else None},
+        "lswPrecipitateCoarsening": {**lsw_expected(), "note": None},
         "modelVersion": MODEL_VERSION,
         "sourceLabel": SOURCE_LABEL,
         "validationStatus": "unvalidated",
@@ -599,30 +618,34 @@ def _document_violations(n: Dict[str, Any], r_gas: float, out: List[str]) -> Lis
                        f"{gap['kineticRealityAtSelectedCooling']!r}")
     else:
         _check_modelled(n, orc, crit, rows, gap, aust, user_cr, hv_status, null_fractions, out)
-    # ---- LSW rows
-    q = registry["Q_diff_kJ_mol"]
-    for i, entry in enumerate(n["lswPrecipitateCoarsening"]):
+    # ---- LSW rows: unavailable for every alloy (SOL-K), with the exact status and reason codes
+    expected_lsw = lsw_expected()
+    rows_lsw = n["lswPrecipitateCoarsening"]
+    if [entry.get("agingTime_h") for entry in rows_lsw] != LSW_AGING_TIMES_H:
+        out.append("lswPrecipitateCoarsening: the aging-time grid changed")
+    for i, entry in enumerate(rows_lsw):
         tag = f"lswPrecipitateCoarsening[{i}]"
-        if sorted(entry) != sorted(["agingTime_h", "meanRadius_nm", "precipitationHardening_MPa",
-                                    "strengtheningMechanism", "status"]):
+        if sorted(entry) != sorted(LSW_ROW_KEYS):
             out.append(f"{tag}: keys {list(entry)!r}")
             continue
-        if limit:
-            if (entry["meanRadius_nm"], entry["precipitationHardening_MPa"], entry["strengtheningMechanism"],
-                    entry["status"]) != (None, None, None, ST_LSW_ABOVE):
-                out.append(f"{tag}: aging above the solvus must be unavailable")
-            continue
-        r = lsw_radius_nm(q, aging_c, entry["agingTime_h"], r_gas, corrected=True)
-        if entry["meanRadius_nm"] is None or abs(entry["meanRadius_nm"] - r) > 0.005 + 1e-9:
-            out.append(f"{tag}.meanRadius_nm {entry['meanRadius_nm']} != SI oracle {r}")
-        if (entry["precipitationHardening_MPa"] is None
-                or abs(entry["precipitationHardening_MPa"] - lsw_boost_mpa(r)) > 0.05 + 1e-9):
-            out.append(f"{tag}.precipitationHardening_MPa mismatch")
-        if entry["strengtheningMechanism"] != lsw_regime(r):
-            out.append(f"{tag}.strengtheningMechanism mismatch")
-        if entry["status"] != ST_LSW_ILLUSTRATIVE:
-            out.append(f"{tag}.status {entry['status']!r}")
+        values = (entry["meanRadius_nm"], entry["precipitationHardening_MPa"], entry["strengtheningMechanism"])
+        if values != (None, None, None):
+            out.append(f"{tag}: radius, strengthening and mechanism must be null (unavailable for every alloy)")
+        if entry["status"] != expected_lsw["status"] or entry["reasonCodes"] != expected_lsw["reasonCodes"]:
+            out.append(f"{tag}: status/reasonCodes {entry['status']!r}/{entry['reasonCodes']!r}, expected "
+                       f"{expected_lsw['status']!r}/{expected_lsw['reasonCodes']!r}")
     return out
+
+
+def _nonfinite_paths(value: Any, path: str = "") -> List[str]:
+    """Paths of NaN/infinite floats in a JSON-like document."""
+    if isinstance(value, float):
+        return [] if math.isfinite(value) else [path or "<root>"]
+    if isinstance(value, dict):
+        return [p for k, v in value.items() for p in _nonfinite_paths(v, f"{path}.{k}" if path else str(k))]
+    if isinstance(value, list):
+        return [p for i, v in enumerate(value) for p in _nonfinite_paths(v, f"{path}[{i}]")]
+    return []
 
 
 def _check_modelled(n, orc, crit, rows, gap, aust, user_cr, hv_status, null_fractions, out):

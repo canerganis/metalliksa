@@ -99,7 +99,7 @@
  },
  "aisi4140_in_map_30_hypothetical": {
   "success": true,
-  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.0",
+  "engine": "MetalliX-Python-Li1998-Additivity-Kinetics-v4.1",
   "alloy": "AISI 4140",
   "alloyMetadata": {
    "type": "Low-Alloy Steel",
@@ -418,9 +418,13 @@
    "note": "Li et al. (1998) isothermal start/finish law with Grange Ae3/Ae1, Li Bs and Kung-Rayment Ms; CCT starts from the additivity rule applied to each phase's 1 % start curve independently (no phase interaction, no carbon partitioning). Unvalidated screening model: phase fractions and hardness are not computed.",
    "placeholderParameters": [],
    "lswPrecipitateCoarsening": {
-    "status": "generic-constants-illustrative",
-    "note": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve.",
-    "reason": null
+    "status": "unavailable-not-modelled",
+    "note": null,
+    "reason": null,
+    "reasonCodes": [
+     "missing-source-bound-model",
+     "missing-source-constant"
+    ]
    },
    "modelVersion": "li1998-additivity-v1",
    "sourceLabel": "Li, Niebuhr, Meekisho & Atteridge, Metall. Mater. Trans. B 29 (1998) 661-672: equations as printed in M. Li, PhD thesis, Oregon Graduate Institute (1996), Eqs. 3.67 and 3.70-3.77, and in Collins et al., Metals 13 (2023) 1168, Eqs. 1-14; Ae3/Ae1: Grange (1961) as printed in Collins et al. Eqs. 8 and 11; Ms: Andrews linear equation modified by Kung & Rayment (1982), Li (1996) Eq. 3.77; CCT: additivity rule (Scheil 1935).",
