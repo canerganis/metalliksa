@@ -1,0 +1,575 @@
+{
+  "schema": "solidification-coupling-audit-2",
+  "baselinePolicy": "Expected-defect assertions against served source, not future implementation acceptance.",
+  "checkKind": "synthetic software and algebra checks",
+  "experimentalValidation": false,
+  "readsMeasuredMeltPoolDepths": false,
+  "analyticCoolingOracle": {
+    "definition": "v*dT/dx at unrounded original sample positions in laboratory frame; translating quasi-steady field",
+    "relativeTolerance": 3e-06,
+    "maximumRelativeResidual": 1.764706022422402e-07,
+    "R_equals_scanSpeed_mutantResidual": 49.561577709421165
+  },
+  "evenCountFront": {
+    "sampleCount": 8,
+    "productOfUpperMedians_K_s": 78538.87773872206,
+    "maximumLocalCooling_K_s": 61998.21806035288
+  },
+  "nonmonotonePairedEvaluation": {
+    "samples": [
+      {
+        "G_K_m": 100000.0,
+        "R_m_s": 1
+      },
+      {
+        "G_K_m": 20000000.0,
+        "R_m_s": 0.01
+      },
+      {
+        "G_K_m": 1000000.0,
+        "R_m_s": 0.8
+      },
+      {
+        "G_K_m": 80000000.0,
+        "R_m_s": 0.02
+      },
+      {
+        "G_K_m": 300000.0,
+        "R_m_s": 0.5
+      },
+      {
+        "G_K_m": 10000000.0,
+        "R_m_s": 0.04
+      },
+      {
+        "G_K_m": 4000000.0,
+        "R_m_s": 0.3
+      },
+      {
+        "G_K_m": 60000000.0,
+        "R_m_s": 0.06
+      }
+    ],
+    "separateUpperMedians": {
+      "G_K_m": 10000000.0,
+      "R_m_s": 0.3
+    },
+    "localMorphology": [
+      "Mixed / equiaxed tendency (Hunt G/R screening)",
+      "Cellular (Hunt G/R screening)",
+      "Mixed / equiaxed tendency (Hunt G/R screening)",
+      "Cellular (Hunt G/R screening)",
+      "Mixed / equiaxed tendency (Hunt G/R screening)",
+      "Columnar dendritic (Hunt G/R screening)",
+      "Columnar dendritic (Hunt G/R screening)",
+      "Cellular (Hunt G/R screening)"
+    ],
+    "aggregateMorphology": "Columnar dendritic (Hunt G/R screening)",
+    "localCET": [
+      "mixed",
+      "columnar",
+      "columnar",
+      "columnar",
+      "columnar",
+      "columnar",
+      "columnar",
+      "columnar"
+    ],
+    "aggregateCET": "columnar",
+    "localTrapping_k": [
+      0.8266666666666667,
+      0.49019607843137253,
+      0.8,
+      0.5,
+      0.74,
+      0.5185185185185184,
+      0.675,
+      0.5357142857142857
+    ],
+    "trappingAtMedianR": 0.675,
+    "meanLocalTrapping_k": 0.6357619436663554,
+    "note": "Morphology/CET distributions and mean k differ from one median result. Scalar upper-median k does commute with upper-median R because this k(V) is monotone."
+  },
+  "prospectiveNonNullFrontContract": {
+    "fixture": {
+      "request": {
+        "namedLiquidusInput": {
+          "name": "synthetic-liquidus_K",
+          "value": 1700.0,
+          "sourceLabel": "Explicit synthetic test input; no measured or alloy claim"
+        },
+        "scanSpeed_m_s": 1.0,
+        "material": "synthetic-no-alloy"
+      },
+      "parent": {
+        "engine": "manufactured-analytic-field-test-only",
+        "input": "698196be06d5f4e47bcd21e2b3c74cad098c86a9de89c8bbf9df75bdea2a5ad4",
+        "field": "rear-ellipse-spatial-amplitude",
+        "admission": "synthetic-fixture-only"
+      },
+      "quantities": {
+        "G": {
+          "status": "computed",
+          "value": 512787.53473896306,
+          "unit": "K/m",
+          "quantityDefinition": "liquidus-front-thermal-gradient",
+          "evidenceKind": "screening-only",
+          "numericalStatus": {
+            "state": "not-assessed",
+            "settings": "synthetic semantic probe only"
+          },
+          "physicalValidation": {
+            "status": "unvalidated",
+            "experimentalValidation": false,
+            "productionReady": false
+          },
+          "sources": [
+            {
+              "id": "synthetic-front-fixture",
+              "label": "Synthetic field relation and explicitly named test liquidus",
+              "locator": "check_solidification_coupling.py manufactured field and fixture request",
+              "verification": "synthetic-test-input; no literature measurement"
+            }
+          ],
+          "assumptions": [
+            "Synthetic admitted liquidus applies only to this fixture",
+            "No real alloy or physical applicability"
+          ],
+          "validity": {
+            "domain": "manufactured test field only",
+            "samples": 9,
+            "weighting": "unweighted fixed-y slice"
+          },
+          "inputIdentity": {
+            "digest": "698196be06d5f4e47bcd21e2b3c74cad098c86a9de89c8bbf9df75bdea2a5ad4",
+            "request": {
+              "namedLiquidusInput": {
+                "name": "synthetic-liquidus_K",
+                "value": 1700.0,
+                "sourceLabel": "Explicit synthetic test input; no measured or alloy claim"
+              },
+              "scanSpeed_m_s": 1.0,
+              "material": "synthetic-no-alloy"
+            }
+          },
+          "modelIdentity": {
+            "engine": "manufactured-analytic-field-test-only",
+            "algorithm": "paired-local-values-then-upper-median-test-only"
+          },
+          "parentIdentity": {
+            "digest": "cd59489714fd9a71391d9a9741978392d9d513ed52f6126e415f01483fa57fda",
+            "request": {
+              "engine": "manufactured-analytic-field-test-only",
+              "input": "698196be06d5f4e47bcd21e2b3c74cad098c86a9de89c8bbf9df75bdea2a5ad4",
+              "field": "rear-ellipse-spatial-amplitude",
+              "admission": "synthetic-fixture-only"
+            }
+          },
+          "uncertainty": {
+            "kind": "not-quantified",
+            "construction": "No experimental or numerical coverage"
+          }
+        },
+        "R": {
+          "status": "computed",
+          "value": 0.1177579616338539,
+          "unit": "m/s",
+          "quantityDefinition": "liquidus-front-normal-speed",
+          "evidenceKind": "screening-only",
+          "numericalStatus": {
+            "state": "not-assessed",
+            "settings": "synthetic semantic probe only"
+          },
+          "physicalValidation": {
+            "status": "unvalidated",
+            "experimentalValidation": false,
+            "productionReady": false
+          },
+          "sources": [
+            {
+              "id": "synthetic-front-fixture",
+              "label": "Synthetic field relation and explicitly named test liquidus",
+              "locator": "check_solidification_coupling.py manufactured field and fixture request",
+              "verification": "synthetic-test-input; no literature measurement"
+            }
+          ],
+          "assumptions": [
+            "Synthetic admitted liquidus applies only to this fixture",
+            "No real alloy or physical applicability"
+          ],
+          "validity": {
+            "domain": "manufactured test field only",
+            "samples": 9,
+            "weighting": "unweighted fixed-y slice"
+          },
+          "inputIdentity": {
+            "digest": "698196be06d5f4e47bcd21e2b3c74cad098c86a9de89c8bbf9df75bdea2a5ad4",
+            "request": {
+              "namedLiquidusInput": {
+                "name": "synthetic-liquidus_K",
+                "value": 1700.0,
+                "sourceLabel": "Explicit synthetic test input; no measured or alloy claim"
+              },
+              "scanSpeed_m_s": 1.0,
+              "material": "synthetic-no-alloy"
+            }
+          },
+          "modelIdentity": {
+            "engine": "manufactured-analytic-field-test-only",
+            "algorithm": "paired-local-values-then-upper-median-test-only"
+          },
+          "parentIdentity": {
+            "digest": "cd59489714fd9a71391d9a9741978392d9d513ed52f6126e415f01483fa57fda",
+            "request": {
+              "engine": "manufactured-analytic-field-test-only",
+              "input": "698196be06d5f4e47bcd21e2b3c74cad098c86a9de89c8bbf9df75bdea2a5ad4",
+              "field": "rear-ellipse-spatial-amplitude",
+              "admission": "synthetic-fixture-only"
+            }
+          },
+          "uncertainty": {
+            "kind": "not-quantified",
+            "construction": "No experimental or numerical coverage"
+          }
+        },
+        "cooling": {
+          "status": "computed",
+          "value": 54906.492177337896,
+          "unit": "K/s",
+          "quantityDefinition": "liquidus-front-cooling-rate",
+          "evidenceKind": "screening-only",
+          "numericalStatus": {
+            "state": "not-assessed",
+            "settings": "synthetic semantic probe only"
+          },
+          "physicalValidation": {
+            "status": "unvalidated",
+            "experimentalValidation": false,
+            "productionReady": false
+          },
+          "sources": [
+            {
+              "id": "synthetic-front-fixture",
+              "label": "Synthetic field relation and explicitly named test liquidus",
+              "locator": "check_solidification_coupling.py manufactured field and fixture request",
+              "verification": "synthetic-test-input; no literature measurement"
+            }
+          ],
+          "assumptions": [
+            "Synthetic admitted liquidus applies only to this fixture",
+            "No real alloy or physical applicability"
+          ],
+          "validity": {
+            "domain": "manufactured test field only",
+            "samples": 9,
+            "weighting": "unweighted fixed-y slice"
+          },
+          "inputIdentity": {
+            "digest": "698196be06d5f4e47bcd21e2b3c74cad098c86a9de89c8bbf9df75bdea2a5ad4",
+            "request": {
+              "namedLiquidusInput": {
+                "name": "synthetic-liquidus_K",
+                "value": 1700.0,
+                "sourceLabel": "Explicit synthetic test input; no measured or alloy claim"
+              },
+              "scanSpeed_m_s": 1.0,
+              "material": "synthetic-no-alloy"
+            }
+          },
+          "modelIdentity": {
+            "engine": "manufactured-analytic-field-test-only",
+            "algorithm": "paired-local-values-then-upper-median-test-only"
+          },
+          "parentIdentity": {
+            "digest": "cd59489714fd9a71391d9a9741978392d9d513ed52f6126e415f01483fa57fda",
+            "request": {
+              "engine": "manufactured-analytic-field-test-only",
+              "input": "698196be06d5f4e47bcd21e2b3c74cad098c86a9de89c8bbf9df75bdea2a5ad4",
+              "field": "rear-ellipse-spatial-amplitude",
+              "admission": "synthetic-fixture-only"
+            }
+          },
+          "uncertainty": {
+            "kind": "not-quantified",
+            "construction": "No experimental or numerical coverage"
+          }
+        },
+        "G_over_R": {
+          "status": "computed",
+          "value": 4354589.087856147,
+          "unit": "K s/m2",
+          "quantityDefinition": "liquidus-front-g-over-r",
+          "evidenceKind": "screening-only",
+          "numericalStatus": {
+            "state": "not-assessed",
+            "settings": "synthetic semantic probe only"
+          },
+          "physicalValidation": {
+            "status": "unvalidated",
+            "experimentalValidation": false,
+            "productionReady": false
+          },
+          "sources": [
+            {
+              "id": "synthetic-front-fixture",
+              "label": "Synthetic field relation and explicitly named test liquidus",
+              "locator": "check_solidification_coupling.py manufactured field and fixture request",
+              "verification": "synthetic-test-input; no literature measurement"
+            }
+          ],
+          "assumptions": [
+            "Synthetic admitted liquidus applies only to this fixture",
+            "No real alloy or physical applicability"
+          ],
+          "validity": {
+            "domain": "manufactured test field only",
+            "samples": 9,
+            "weighting": "unweighted fixed-y slice"
+          },
+          "inputIdentity": {
+            "digest": "698196be06d5f4e47bcd21e2b3c74cad098c86a9de89c8bbf9df75bdea2a5ad4",
+            "request": {
+              "namedLiquidusInput": {
+                "name": "synthetic-liquidus_K",
+                "value": 1700.0,
+                "sourceLabel": "Explicit synthetic test input; no measured or alloy claim"
+              },
+              "scanSpeed_m_s": 1.0,
+              "material": "synthetic-no-alloy"
+            }
+          },
+          "modelIdentity": {
+            "engine": "manufactured-analytic-field-test-only",
+            "algorithm": "paired-local-values-then-upper-median-test-only"
+          },
+          "parentIdentity": {
+            "digest": "cd59489714fd9a71391d9a9741978392d9d513ed52f6126e415f01483fa57fda",
+            "request": {
+              "engine": "manufactured-analytic-field-test-only",
+              "input": "698196be06d5f4e47bcd21e2b3c74cad098c86a9de89c8bbf9df75bdea2a5ad4",
+              "field": "rear-ellipse-spatial-amplitude",
+              "admission": "synthetic-fixture-only"
+            }
+          },
+          "uncertainty": {
+            "kind": "not-quantified",
+            "construction": "No experimental or numerical coverage"
+          }
+        }
+      }
+    },
+    "controlProblems": [],
+    "mutationProblems": {
+      "missingPerValueSourceLabel": [
+        "G: per-value source label missing"
+      ],
+      "unnamedUnresolvedInput": [
+        "G: missing named/admitted liquidus input",
+        "G: stale input"
+      ],
+      "missingParent": [
+        "G: missing/stale engine or parent identity"
+      ],
+      "staleNonNull": [
+        "G: stale input",
+        "R: stale input",
+        "cooling: stale input",
+        "G_over_R: stale input"
+      ],
+      "nullComputed": [
+        "G: invalid non-null computed value"
+      ],
+      "wrongUnit": [
+        "G: observable or SI unit missing"
+      ]
+    },
+    "contractStatus": "Prospective physics-semantic fixture only; no normative wire vocabulary, runtime restoration or Phase 0.1 compliance claimed.",
+    "requiredLaterCheck": "Phase 0.1/SOL-A1 must inject the same synthetic admitted parent into the actual Python/TypeScript envelope builders and validators in a test-only path; narrow integration check remains required. SOL-A1 runtime remains blanket-null for all real alloys."
+  },
+  "manufacturedFront": {
+    "fieldDefinition": "T=1700+100*(1-(x/0.001)^2-(z/0.0002)^2)*(1+0.8*x/0.001), y-independent",
+    "scanSpeed_m_s": 1.0,
+    "sampleCount": 9,
+    "medianG_K_m": 512787.53473896306,
+    "medianR_m_s": 0.1177579616338539,
+    "medianLocalCooling_K_s": 54906.492177337896,
+    "productOfMedians_K_s": 60384.814842109336,
+    "wrapperGtimesR_K_s": 54906.492177337896,
+    "aliasRelativeMismatch": -0.09072351516015797,
+    "perSampleKinematicMaximumResidual_K_s": 0.0,
+    "samples": [
+      {
+        "x_um": -98.4,
+        "z_um": 199.0,
+        "G_K_m": 916960.920982905,
+        "R_m_s": 0.019777860360221063,
+        "coolingRate_K_s": 18135.525050979595,
+        "g_over_r": 46362999.04448591,
+        "n_x": 0.019777860360221063
+      },
+      {
+        "x_um": -201.3,
+        "z_um": 195.9,
+        "G_K_m": 822474.2557855931,
+        "R_m_s": 0.041068291902760054,
+        "coolingRate_K_s": 33777.61281910807,
+        "g_over_r": 20026989.623357516,
+        "n_x": 0.041068291902760054
+      },
+      {
+        "x_um": -304.2,
+        "z_um": 190.5,
+        "G_K_m": 722248.5027544999,
+        "R_m_s": 0.06373744917920683,
+        "coolingRate_K_s": 46034.27723907316,
+        "g_over_r": 11331619.19806041,
+        "n_x": 0.06373744917920683
+      },
+      {
+        "x_um": -407.1,
+        "z_um": 182.7,
+        "G_K_m": 618339.8966922939,
+        "R_m_s": 0.08879661893248521,
+        "coolingRate_K_s": 54906.492177337896,
+        "g_over_r": 6963552.262754922,
+        "n_x": 0.08879661893248521
+      },
+      {
+        "x_um": -510.0,
+        "z_um": 172.0,
+        "G_K_m": 512787.53473896306,
+        "R_m_s": 0.1177579616338539,
+        "coolingRate_K_s": 60384.814842109336,
+        "g_over_r": 4354589.087856147,
+        "n_x": 0.1177579616338539
+      },
+      {
+        "x_um": -612.9,
+        "z_um": 158.0,
+        "G_K_m": 407531.8097171445,
+        "R_m_s": 0.1533140377757589,
+        "coolingRate_K_s": 62480.347269797676,
+        "g_over_r": 2658150.6535834065,
+        "n_x": 0.1533140377757589
+      },
+      {
+        "x_um": -715.8,
+        "z_um": 139.7,
+        "G_K_m": 304633.7471531264,
+        "R_m_s": 0.20083491244848325,
+        "coolingRate_K_s": 61181.09193835153,
+        "g_over_r": 1516836.6069383922,
+        "n_x": 0.20083491244848325
+      },
+      {
+        "x_um": -818.7,
+        "z_um": 114.8,
+        "G_K_m": 206026.21133636267,
+        "R_m_s": 0.27422286225184905,
+        "coolingRate_K_s": 56497.09737156172,
+        "g_over_r": 751309.3899047195,
+        "n_x": 0.27422286225184905
+      },
+      {
+        "x_um": -921.6,
+        "z_um": 77.6,
+        "G_K_m": 112882.37561723498,
+        "R_m_s": 0.42899250211682977,
+        "coolingRate_K_s": 48425.69276092945,
+        "g_over_r": 263133.67963362014,
+        "n_x": 0.42899250211682977
+      }
+    ],
+    "interpretation": "Local G*R is internally consistent; separate statistic cooling is not the product of the displayed median G and R. Wrapper GtimesR aliases a different statistic."
+  },
+  "transportRoundingPositiveRateProjection": {
+    "input": {
+      "solidificationKinetics": {
+        "usedFieldMap": true,
+        "gradientSource": "conduction-field-interface",
+        "thermalGradient_G_K_m": 100000.0,
+        "solidificationRate_R_m_s": 0.0,
+        "solidificationRate_R_mm_s": 0.1,
+        "coolingRate_K_s": 10.0
+      }
+    },
+    "fixtureType": "synthetic transport-rounding probe, not a real served low-rate run",
+    "status": "degenerate-floor",
+    "reason": "solidification front degenerate: floor-clamped R/cooling (R <= 1e-4 m/s or cooling <= 1 K/s), not a computed value",
+    "interpretation": "Projection still treats a true small positive front speed (represented by R_mm_s=0.1, R_m_s rounded to 0 by the producer) as an old clamp floor, although P6 removed the upstream clamps."
+  },
+  "stationaryLiquidMovingPlanarInterface": {
+    "manufacturedField": "T=Tl+G*(x-v*t); normal points along +x into liquid",
+    "partialTimeDerivative_K_s": -100000.0,
+    "gradient_K_m": 1000000.0,
+    "liquidVelocity_m_s": 0.0,
+    "levelSetInterfaceSpeed_m_s": 0.1,
+    "legacyCfdReportedSpeed_m_s": 1e-06,
+    "interpretation": "Fluid velocity is not interface migration speed; floor gives 1e-6 for a manufactured interface migrating at 0.1 m/s."
+  },
+  "legacyCfdMorphologyFractions": {
+    "input": {
+      "G_K_m": 10000000.0,
+      "R_m_s": 1.0
+    },
+    "fractions": {
+      "columnar": 0.5,
+      "equiaxed": 0.5,
+      "mixed": 0.0
+    },
+    "interpretation": "A mixed label produces zero mixed fraction; complement interpolation is not a grain-volume model."
+  },
+  "implementationManifest": {
+    "manifestCount": 36,
+    "targetMembership": {
+      "calphad_solver.py": false,
+      "lpbf_solidification_segregation.py": false,
+      "lpbf_solidification_microstructure.py": false,
+      "lpbf_gr_solidification.py": false,
+      "lpbf_cet_screening.py": false,
+      "solidification_front.py": true,
+      "kinetics_ttt_cct_solver.py": false
+    },
+    "legacyCfdHeaderMember": false
+  },
+  "checks": {
+    "prospectiveNonNullFrontSemanticControlAccepted": true,
+    "prospectiveNonNullFrontSemanticMutantsRejected": true,
+    "analyticCoolingOracle": true,
+    "R_equals_scanSpeed_mutantDetected": true,
+    "evenUpperMedianPairExceedsLocalMaximum": true,
+    "pairedMorphologyDistributionDiffers": true,
+    "pairedCETDistributionDiffers": true,
+    "pairedMeanTrappingDiffers": true,
+    "localKinematicIdentityAccountingOnly": true,
+    "aggregateAliasMismatchReproduced": true,
+    "obsoleteFloorMisclassificationReproduced": true,
+    "cfdFluidVelocityCounterexample": true,
+    "zeroMixedFractionReproduced": true
+  },
+  "limits": [
+    "No thermal solver or measured dataset imported.",
+    "Manufactured fields do not establish real-alloy applicability.",
+    "No package installed.",
+    "No mesh/time-step convergence, browser execution, or blind experiment test performed."
+  ],
+  "sourceIdentityAlgorithm": "sha256-utf8-lf-v1",
+  "sourceSha256": {
+    "docs/research/scripts/_solidification_check_common.py": "65997ab31ad9fd764bfe554cfe134c59bfdd6b411aa6e26d6f9f3df1a117a51a",
+    "docs/research/scripts/check_solidification_coupling.py": "d9c8777c97998c11de2f85947d8f8cff84fce8cdac0d3ee32548fc5335ddb575",
+    "python/alloy_data_calphad_battery_icme.py": "8253a0407b12887ff010163276755cc1cc22d2ede5e6f057d91b93d94afc0fd0",
+    "python/alloy_data_kinetics_uq_fatigue.py": "9d1349085981f2f86ed465bbc048e9fc9704138ebec68e9d1a4e7eee5f5ecf95",
+    "python/alloy_registry.py": "ec2a6f4fc8dda5c322b60444d197af5fd81e908363cd6eba44de21f2839a7268",
+    "python/calphad_solver.py": "a266bbabfcb8d6db9c337de07db41e6ea2d3321fcc3d9fde831f056b59581ac2",
+    "python/four_alloy_materials.py": "b5aedb24b5261c7ef8dfd7bcb80c723ca1eb32c9be4e94a6519f06db951c90a9",
+    "python/kinetics_ttt_cct_solver.py": "954fa53e7a0e2610f807d2364146e28887910a07eb945dd3a9004875d1f1467d",
+    "python/lpbf_cet_screening.py": "d63532332c164bc8f1272e8e510d27626f7b840b6be95a0873272f629d014e6e",
+    "python/lpbf_gr_solidification.py": "c262158960e1e886506f0799da89c70c8c8b0ac08ee9ed880ce3c8c764a311a5",
+    "python/lpbf_simulation.py": "e9b42209917e39d112dd5f869c4f6fe83ce714abb1bfc3c6fb13e055775f9b85",
+    "python/lpbf_solidification_microstructure.py": "211a40e1c018b5839c566c589523c884028e3bd0fc6d64fc500aa04a03df4bdf",
+    "python/lpbf_solidification_segregation.py": "d6c2c2421aec83c2e279dd93e7727c765b86f939d5620e0baaeb39e38f26f5f3",
+    "python/openfoam/meltPoolFoam/solidificationModel.H": "fd31e9c65e9d4aa78fcd75b8ac78a49c4532f27da7227a6d6be687abd69f58b4",
+    "python/physical_constants.py": "ae07777055febf111903c81f08d6a948ccedff6339cbec5339317e12e8aeef87",
+    "python/solidification_front.py": "a8841a2ceeaed2522bad6fa5d8642833f5e8b059592759b7f9874aa69303793d"
+  }
+}

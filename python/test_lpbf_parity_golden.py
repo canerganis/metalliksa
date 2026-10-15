@@ -755,6 +755,171 @@ class ParityHarnessTests(unittest.TestCase):
         self.assertIn("changed in625.snapshot.latentHeat_J_kg: not named by --expect-drift", output)
         self.assertNotIn("allowed by --expect-drift", output)
 
+    # Error rule (solidification integration contract Revision 1, 6.1, F10; Phase 0.2): one test per error shape the
+    # harness writes, each under a whole-case entry, globs and the exact key. A value turning into an error never passes.
+
+    def _error_rule_verdicts(self, case_id, before, after, allows):
+        case = parity.CASE_BY_ID[case_id]
+        return {allow: parity.evaluate_drift(case, self._synthetic_outcome(before, after),
+                                             parity.parse_expect_drift([allow])) for allow in allows}
+
+    def test_error_rule_shape_observe_value_a_value_that_becomes_an_error_never_passes(self):
+        key = "solidification.evaluate"
+        before = {key: "0" * 64, "goldak.field": "1" * 64}
+        after = {key: {"error": "ValueError: refused"}, "goldak.field": "2" * 64}
+        allows = ("g12_analytical_modules", "g12_analytical_modules:*", "g12_analytical_modules:solidification.*",
+                  f"g12_analytical_modules:{key}")
+        for allow, result in self._error_rule_verdicts("g12_analytical_modules", before, after, allows).items():
+            with self.subTest(allow=allow):
+                self.assertEqual(result["status"], "FAIL")
+                self.assertIn(f"changed {key}: the value became an error observation, which never passes under "
+                              "--expect-drift", result["problems"])
+        # A reference case behaves the same under its exact-key entry.
+        ref_key = "result.key.analyticalComparison"
+        ref = self._error_rule_verdicts("g1_v1_60w_in718", {ref_key: "0" * 64}, {ref_key: {"error": "KeyError: x"}},
+                                        (f"g1_v1_60w_in718:{ref_key}",))
+        self.assertEqual(ref[f"g1_v1_60w_in718:{ref_key}"]["status"], "FAIL")
+        self.assertTrue(parity.is_error_observation({"error": "x"}))
+        self.assertFalse(parity.is_error_observation("0" * 64))
+
+    def test_error_rule_shape_g11_a_new_error_key_with_vanished_success_keys_needs_exact_keys(self):
+        before = {"meltpool.0.typedSha256": "0" * 64, "meltpool.0.canonicalSha256": "1" * 64,
+                  "meltpool.0.geometry_um": "2" * 64, "meltpool.1.typedSha256": "3" * 64}
+        after = {"meltpool.0": {"error": "RuntimeError: solver failed"}, "meltpool.1.typedSha256": "4" * 64}
+        exact_all = ",".join(f"g11_build_job_meltpool:{key}" for key in
+                             ("meltpool.0", "meltpool.0.typedSha256", "meltpool.0.canonicalSha256",
+                              "meltpool.0.geometry_um", "meltpool.1.typedSha256"))
+        allows = ("g11_build_job_meltpool", "g11_build_job_meltpool:meltpool.*", "g11_build_job_meltpool:*",
+                  "g11_build_job_meltpool:meltpool.0", exact_all)
+        for allow, result in self._error_rule_verdicts("g11_build_job_meltpool", before, after, allows).items():
+            with self.subTest(allow=allow):
+                self.assertEqual(result["status"], "DRIFT" if allow == exact_all else "FAIL")
+                if allow != exact_all:
+                    self.assertTrue(result["problems"])
+
+    def test_error_rule_shape_g16_new_and_changed_errors_need_exact_keys(self):
+        before = {"ti6al4v.result.canonicalSha256": "0" * 64, "ss316l.result.canonicalSha256": "1" * 64}
+        after = {"ti6al4v.error": "RuntimeError: transient run failed", "ss316l.result.canonicalSha256": "2" * 64}
+        allows = ("g16_non_in718_transient", "g16_non_in718_transient:*", "g16_non_in718_transient:ti6al4v.*",
+                  "g16_non_in718_transient:ti6al4v.error",
+                  "g16_non_in718_transient:ti6al4v.error,g16_non_in718_transient:ti6al4v.result.canonicalSha256")
+        for allow, result in self._error_rule_verdicts("g16_non_in718_transient", before, after, allows).items():
+            with self.subTest(allow=allow):
+                self.assertEqual(result["status"], "FAIL")
+                self.assertTrue(result["problems"])
+        changed = self._error_rule_verdicts("g16_non_in718_transient", {"alsi10mg.error": "A"},
+                                            {"alsi10mg.error": "B"},
+                                            ("g16_non_in718_transient:*", "g16_non_in718_transient:alsi10mg.error"))
+        for allow, result in changed.items():
+            with self.subTest(allow=allow, changed=True):
+                self.assertEqual(result["status"], "DRIFT" if allow.endswith(":alsi10mg.error") else "FAIL")
+        exact = "g16_non_in718_transient:ti6al4v.error,g16_non_in718_transient:ti6al4v.result.canonicalSha256,g16_non_in718_transient:ss316l.result.canonicalSha256"
+        self.assertEqual(self._error_rule_verdicts("g16_non_in718_transient", before, after, (exact,))[exact]["status"], "DRIFT")
+        self.assertTrue(parity.is_error_key("error") and parity.is_error_key("x.error"))
+        self.assertFalse(parity.is_error_key("x.errorBudget"))
+
+    def test_removal_and_a_changed_recorded_error_pass_only_by_their_exact_key(self):
+        # A deliberate removal deletes the observation: it shows as <missing> and needs an exact entry.
+        key = "solidification.hunt_morphology"
+        before = {key: "0" * 64, "goldak.field": "1" * 64}
+        after = {"goldak.field": "2" * 64}
+        for allow in ("g12_analytical_modules", "g12_analytical_modules:*",
+                      "g12_analytical_modules:solidification.*"):
+            with self.subTest(allow=allow):
+                result = self._error_rule_verdicts("g12_analytical_modules", before, after, (allow,))[allow]
+                self.assertEqual(result["status"], "FAIL")
+                self.assertIn(f"removed {key}: a removal is allowed only by an entry naming this exact key",
+                              result["problems"])
+        exact = (f"g12_analytical_modules:{key},g12_analytical_modules:goldak.field")
+        result = self._error_rule_verdicts("g12_analytical_modules", before, after, (exact,))[exact]
+        self.assertEqual((result["status"], result["problems"]), ("DRIFT", []))
+        self.assertEqual({record["key"]: record["after"] for record in result["drift"]}[key], "<missing>")
+        # Changed and recovered errors both need the exact key.
+        refusal = "registry.material.Inconel 625"
+        verdicts = self._error_rule_verdicts("g9_material_snapshots", {refusal: {"error": "KeyError: a"}},
+                                             {refusal: {"error": "KeyError: b"}},
+                                             ("g9_material_snapshots:registry.material.*",
+                                              f"g9_material_snapshots:{refusal}"))
+        self.assertEqual(verdicts["g9_material_snapshots:registry.material.*"]["status"], "FAIL")
+        self.assertIn(f"changed {refusal}: a recorded error that changes is allowed only by an entry naming this "
+                      "exact key", verdicts["g9_material_snapshots:registry.material.*"]["problems"])
+        self.assertEqual(verdicts[f"g9_material_snapshots:{refusal}"]["status"], "DRIFT")
+        admitted = self._error_rule_verdicts("g9_material_snapshots", {refusal: {"error": "KeyError: a"}},
+                                             {refusal: "0" * 64}, ("g9_material_snapshots:registry.material.*",))
+        self.assertEqual(admitted["g9_material_snapshots:registry.material.*"]["status"], "FAIL")
+        exact = f"g9_material_snapshots:{refusal}"
+        self.assertEqual(self._error_rule_verdicts("g9_material_snapshots", {refusal: {"error": "KeyError: a"}},
+                                                  {refusal: "0" * 64}, (exact,))[exact]["status"], "DRIFT")
+        # Removing an honesty or reference-numerics observation still fails with its exact entry.
+        honesty = self._error_rule_verdicts("g12_analytical_modules", {"validationStatus": "unvalidated"}, {},
+                                            ("g12_analytical_modules:validationStatus",))
+        self.assertIn("changed validationStatus: honesty observation never drifts under --expect-drift",
+                      honesty["g12_analytical_modules:validationStatus"]["problems"])
+
+    def test_each_item_error_transitions_are_checked_behind_the_digest(self):
+        case = parity.CASE_BY_ID["g9_material_snapshots"]
+        key = "fam.u95.in718.cp"
+        entries = (case.id, f"{case.id}:*", f"{case.id}:fam.u95.*", f"{case.id}:{key}")
+        transitions = [
+            ([["ok", 1], ["error", "old"]], [["error", "new"], ["error", "old"]], False),
+            ([["error", "old"]], [["error", "new"]], True),
+            ([["error", "old"]], [["ok", 1]], True),
+        ]
+        for before, after, exact_allowed in transitions:
+            for allow in entries:
+                with self.subTest(before=before, after=after, allow=allow):
+                    outcome = self._synthetic_outcome({key: parity.typed_sha256(before)}, {key: parity.typed_sha256(after)})
+                    outcome["golden"]["rawValues"] = {key: before}
+                    outcome["rawValues"] = {key: after}
+                    result = parity.evaluate_drift(case, outcome, parity.parse_expect_drift([allow]))
+                    self.assertEqual(result["status"], "DRIFT" if exact_allowed and allow == entries[-1] else "FAIL")
+
+    def test_g9_u95_call_raising_never_passes_even_with_an_exact_key(self):
+        import four_alloy_materials as fam
+        case = parity.CASE_BY_ID["g9_material_snapshots"]
+        before, _, _ = parity.execute(case, self.root)
+        raw_before = copy.deepcopy(parity.LAST_RAW_VALUES)
+        with patch.object(fam, "four_alloy_u95_at_temperature", side_effect=RuntimeError("gate injected u95 failure")):
+            after, _, _ = parity.execute(case, self.root)
+        outcome = self._synthetic_outcome(before, after)
+        outcome["golden"]["rawValues"] = raw_before
+        outcome["rawValues"] = dict(parity.LAST_RAW_VALUES)
+        keys = parity.diff_keys(before, after)
+        self.assertTrue(keys)
+        for allow in (case.id, f"{case.id}:fam.u95.*", ",".join(f"{case.id}:{key}" for key in keys)):
+            result = parity.evaluate_drift(case, outcome, parity.parse_expect_drift([allow]))
+            self.assertEqual(result["status"], "FAIL", allow)
+            self.assertTrue(any("became an error" in problem for problem in result["problems"]))
+
+    def test_plain_string_refusal_changes_need_exact_keys_and_no_error_never_passes(self):
+        for case_id, key in (("g8_observers", "reject.invalid"),
+                             ("g14_calibration_measurements", "reject.calibrationWithoutMeasurements")):
+            for before, after, exact_allowed in (("ValueError: A", "ValueError: B", True),
+                                                  ("ValueError: A", "NO-ERROR", False),
+                                                  ("NO-ERROR", "ValueError: B", False)):
+                allows = (case_id, f"{case_id}:reject.*", f"{case_id}:{key}")
+                for allow, result in self._error_rule_verdicts(case_id, {key: before}, {key: after}, allows).items():
+                    with self.subTest(case=case_id, before=before, after=after, allow=allow):
+                        self.assertEqual(result["status"], "DRIFT" if exact_allowed and allow == allows[-1] else "FAIL")
+
+    def test_new_error_and_recovered_error_are_symmetric_exact_key_changes(self):
+        case_id, key = "g12_analytical_modules", "solidification.unknownAlias"
+        for before, after in (({}, {key: {"error": "ValueError: unknown alias"}}),
+                              ({key: {"error": "old refusal"}}, {key: "value"})):
+            allows = (case_id, f"{case_id}:solidification.*", f"{case_id}:{key}")
+            for allow, result in self._error_rule_verdicts(case_id, before, after, allows).items():
+                self.assertEqual(result["status"], "DRIFT" if allow == allows[-1] else "FAIL")
+
+    def test_each_errors_beyond_the_report_size_limit_are_retained(self):
+        before = [["ok", "x" * (parity.RAW_VALUE_LIMIT + 1)]]
+        after = [["error", "failure"]]
+        raw = {}
+        with patch.object(parity, "_RAW_SINK", raw):
+            observations = {}
+            parity.observe_value(observations, "probe", lambda: before)
+        self.assertIn("probe", raw)
+        self.assertIsNotNone(parity.error_rule_problem("probe", raw["probe"], after))
+
     def test_drift_report_prints_raw_before_and_after_values(self):
         case = parity.CASE_BY_ID["g12_analytical_modules"]
         parity.execute(case, self.root)

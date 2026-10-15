@@ -1,0 +1,378 @@
+{
+  "schema": "solidification-kinetics-software-audit-2",
+  "baselinePolicy": "Expected-defect assertions against served source, not future implementation acceptance.",
+  "experimentalValidation": false,
+  "scope": "synthetic counterexamples and source-form software reproduction only; no physical or blind validation",
+  "checks": {
+    "HuntEquationArithmeticExpectedValue": true,
+    "KurzFisherEquationArithmeticExpectedValue": true,
+    "gate4CurrentServedCoefficientsRejectedPendingSOL_A1": true,
+    "gate4CanonicalServedASTControlAccepted": true,
+    "gate4WrongServedHuntMutantRejected": true,
+    "gate4NonCanonicalPrecisionMutantRejected": true,
+    "gate4RoundedCaptionKFMutantRejected": true,
+    "KnappPrintedColumnarWithin2Percent": true,
+    "KnappPrintedEquiaxedWithin2Percent": true,
+    "HuntArithmeticWithinRoundedSource3PerMille": true,
+    "servedHuntCoefficientMismatchReproduced": true,
+    "sameGRMorphologyDisagreement": true,
+    "zeroMixedFractionReproduced": true,
+    "positiveLowRateObsoleteFloor": true,
+    "in625MisclassifiedAsIN718": true,
+    "Ti64LiquidusSwitchReproduced": true,
+    "unverifiedCETStillListed": true,
+    "absoluteZeroExplicitException": true,
+    "unsupportedLSW_Ti-6Al-4V": true,
+    "unsupportedLSW_Inconel 718": true,
+    "unsupportedAlloyExplicitException_AlSi10Mg": true,
+    "unsupportedAlloyExplicitException_Inconel 625": true,
+    "unsupportedAlloyExplicitException_316L SS": true,
+    "segregationNotApplicable_ti6al4v": true,
+    "segregationNotApplicable_alsi10mg": true,
+    "segregationNotApplicable_ss316l": true,
+    "printedKnappConstantsRetained": true,
+    "nonpositiveCETGradientAccepted": true,
+    "nonfiniteCETGradientAccepted": true,
+    "PDAS_planarSideStillServed": true,
+    "PDAS_absoluteStabilitySideStillServed": true
+  },
+  "cases": {
+    "synthetic_same_GR_different_morphology_rules": {
+      "inputs": {
+        "G_K_m": 1000000.0,
+        "R_m_s": 0.1
+      },
+      "solidification_front": "Columnar dendritic (Hunt G/R screening)",
+      "cfd_helper": "mixed",
+      "cfd_fractions": {
+        "columnar": 0.5,
+        "equiaxed": 0.5,
+        "mixed": 0.0
+      },
+      "note": "The middle of the CFD transition gives mixed=0 despite morphology=mixed."
+    },
+    "synthetic_positive_low_R_projection_false_floor": {
+      "status": "degenerate-floor",
+      "source": "thermal.solidificationKinetics",
+      "modelId": null,
+      "gradientSource": "conduction-field-interface",
+      "usedFieldMap": true,
+      "regime": null,
+      "normalizedEnthalpy": null,
+      "regimeNote": null,
+      "G_K_m": 1000000.0,
+      "R_m_s": 0.0001,
+      "coolingRate_K_s": 100.0,
+      "PDAS_um": null,
+      "pdasBand_um": null,
+      "pdasBasis": null,
+      "pdasOutOfRange": null,
+      "pdasUnavailableReason": null,
+      "SDAS_um": null,
+      "sdasUnavailableReason": null,
+      "morphology": null,
+      "g_over_r_ratio": null,
+      "doi": null,
+      "disclaimer": "Build-job microstructure is a projection of the thermal block's conduction-field G/R; no second estimate. R and the cooling rate sit on the solver clamp floors (see reason): the values above, and the PDAS/SDAS/morphology derived from them, are not a computed result.",
+      "reason": "solidification front degenerate: floor-clamped R/cooling (R <= 1e-4 m/s or cooling <= 1 K/s), not a computed value"
+    },
+    "in625_phase_note_identity": {
+      "alloyClass": "IN718",
+      "expected": "gamma_cellular_possible_laves",
+      "criterion": "interdendritic Laves possible; not quantified without Scheil/CALPHAD",
+      "source": "screening — no invented Laves fraction",
+      "doi": "10.1016/0025-5416(84)90201-5"
+    },
+    "Ti64_liquidus_cooling_only_phase_note": {
+      "alloyClass": "Ti-6Al-4V",
+      "expected": "beta_to_alpha_prime_martensite",
+      "criterion": "Ahmed & Rack 1998: β → α' when cooling > 410 K/s (here 100000 K/s)",
+      "source": "Ahmed & Rack, Mater. Sci. Eng. A 243 (1998) 206–211",
+      "doi": "10.1016/S0921-5093(97)00802-2"
+    },
+    "CET_equation_verification_not_gate": [
+      {
+        "id": "knapp2019",
+        "equationVerified": true
+      },
+      {
+        "id": "polonsky2020",
+        "equationVerified": false
+      }
+    ],
+    "CET_nonfinite_gradient_accepted": {
+      "band": "mixed",
+      "G_columnar_K_m": 123292.35322349718,
+      "G_equiaxed_K_m": 26415.005945317374
+    },
+    "CET_source_limits_software_reproduction": {
+      "quantity": "Gcrit**2 / R in K**2 s / m**3 (Knapp Eq.12)",
+      "columnar": 152010043633.87595,
+      "equiaxed": 6977525390.911521,
+      "printedColumnar": 152000000000.0,
+      "printedEquiaxed": 6980000000.0,
+      "relativeTolerance": 0.02
+    },
+    "direct_kinetics_Ti-6Al-4V": {
+      "kineticsModel_status": "unavailable",
+      "kineticsModel_reason": "kinetics model is steel-only",
+      "criticalTransformationTemperatures": {
+        "Ae3_BetaTransus_GammaSolvus_C": 995.0,
+        "Ae1_C": null,
+        "Ms_C": 800.0,
+        "Mf_C": 650.0,
+        "CriticalCoolingRate_CCR_C_s": null,
+        "Ae1_C_status": "unavailable-kinetics-model-steel-only",
+        "Ms_C_status": "registry-screening-value",
+        "Mf_C_status": "registry-screening-value",
+        "CriticalCoolingRate_CCR_status": "unavailable-kinetics-model-steel-only",
+        "Ae3_C_status": "registry-screening-value",
+        "Bs_C": null,
+        "Bs_C_status": "unavailable-kinetics-model-steel-only"
+      },
+      "lswFirst": {
+        "agingTime_h": 0.1,
+        "meanRadius_nm": 5.03,
+        "precipitationHardening_MPa": 209.3,
+        "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
+        "status": "generic-constants-illustrative"
+      },
+      "lswLast": {
+        "agingTime_h": 100.0,
+        "meanRadius_nm": 49.83,
+        "precipitationHardening_MPa": 50.6,
+        "strengtheningMechanism": "Orowan Dislocation Looping (Over-aged)",
+        "status": "generic-constants-illustrative"
+      },
+      "lswNote": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve."
+    },
+    "direct_kinetics_Inconel 718": {
+      "kineticsModel_status": "unavailable",
+      "kineticsModel_reason": "kinetics model is steel-only",
+      "criticalTransformationTemperatures": {
+        "Ae3_BetaTransus_GammaSolvus_C": 1020.0,
+        "Ae1_C": null,
+        "Ms_C": null,
+        "Mf_C": null,
+        "CriticalCoolingRate_CCR_C_s": null,
+        "Ae1_C_status": "unavailable-kinetics-model-steel-only",
+        "Ms_C_status": "unavailable-registry-placeholder",
+        "Mf_C_status": "unavailable-registry-placeholder",
+        "CriticalCoolingRate_CCR_status": "unavailable-kinetics-model-steel-only",
+        "Ae3_C_status": "registry-screening-value",
+        "Bs_C": null,
+        "Bs_C_status": "unavailable-kinetics-model-steel-only"
+      },
+      "lswFirst": {
+        "agingTime_h": 0.1,
+        "meanRadius_nm": 1.51,
+        "precipitationHardening_MPa": 114.6,
+        "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
+        "status": "generic-constants-illustrative"
+      },
+      "lswLast": {
+        "agingTime_h": 100.0,
+        "meanRadius_nm": 3.7,
+        "precipitationHardening_MPa": 179.5,
+        "strengtheningMechanism": "Weak-Pair / Strong-Pair Cutting",
+        "status": "generic-constants-illustrative"
+      },
+      "lswNote": "K_LSW uses generic gamma, equilibrium concentration, molar volume and D0 shared by every alloy (only the activation energy is per alloy; one molar volume serves both the matrix concentration and the precipitate); the strengthening column is an unsourced screening curve."
+    },
+    "direct_kinetics_absolute_zero_aging": {
+      "exceptionType": "ZeroDivisionError",
+      "message": "float division by zero"
+    },
+    "direct_kinetics_alloy_support_AlSi10Mg": {
+      "exceptionType": "ValidationError",
+      "message": "[UNKNOWN_ALLOY] alloy: Alloy 'AlSi10Mg' is registered but has no data for domain 'kinetics'. Alloys with data: aisi4140, aisi4340, aisid2, al7075, in718, ti6al4v."
+    },
+    "direct_kinetics_alloy_support_Inconel 625": {
+      "exceptionType": "ValidationError",
+      "message": "[UNKNOWN_ALLOY] alloy: Unknown alloy 'Inconel 625' for domain 'kinetics'. Did you mean: inconel 718, inconel-718, inconel 718 (ams 5662)?"
+    },
+    "direct_kinetics_alloy_support_316L SS": {
+      "exceptionType": "ValidationError",
+      "message": "[UNKNOWN_ALLOY] alloy: Alloy '316L SS' is registered but has no data for domain 'kinetics'. Alloys with data: aisi4140, aisi4340, aisid2, al7075, in718, ti6al4v."
+    },
+    "segregation_priority_support_ti6al4v": {
+      "schema": "lpbf-solidification-segregation-1",
+      "modelId": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+      "status": "not-applicable",
+      "alloyId": "ti6al4v",
+      "reason": "no Nb-bearing gamma/Laves model for this alloy",
+      "evidenceLabel": null
+    },
+    "segregation_priority_support_alsi10mg": {
+      "schema": "lpbf-solidification-segregation-1",
+      "modelId": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+      "status": "not-applicable",
+      "alloyId": "alsi10mg",
+      "reason": "no Nb-bearing gamma/Laves model for this alloy",
+      "evidenceLabel": null
+    },
+    "segregation_priority_support_ss316l": {
+      "schema": "lpbf-solidification-segregation-1",
+      "modelId": "dupont1997-pseudo-ternary-gamma-nb-c-v1",
+      "status": "not-applicable",
+      "alloyId": "ss316l",
+      "reason": "no Nb-bearing gamma/Laves model for this alloy",
+      "evidenceLabel": null
+    },
+    "gate4ServedCoefficientBinding": {
+      "currentServed": {
+        "encodedConstants": {
+          "PDAS_A_HUNT_SI": 0.000956,
+          "PDAS_A_KURZ_FISHER_SI": 0.0026
+        },
+        "probeG_K_m": 10000000.0,
+        "probeR_m_s": 0.01,
+        "probeBand_um": {
+          "hunt": 0.9560000000000001,
+          "kurzFisher": 2.6
+        },
+        "accepted": false
+      },
+      "canonicalInMemoryControl": {
+        "encodedConstants": {
+          "PDAS_A_HUNT_SI": 0.0011773863284676703,
+          "PDAS_A_KURZ_FISHER_SI": 0.0025821435943712695
+        },
+        "probeG_K_m": 10000000.0,
+        "probeR_m_s": 0.01,
+        "probeBand_um": {
+          "hunt": 1.1773863284676702,
+          "kurzFisher": 2.5821435943712694
+        },
+        "accepted": true
+      },
+      "wrongHuntMutant": {
+        "encodedConstants": {
+          "PDAS_A_HUNT_SI": 0.001189160191752347,
+          "PDAS_A_KURZ_FISHER_SI": 0.0025821435943712695
+        },
+        "probeG_K_m": 10000000.0,
+        "probeR_m_s": 0.01,
+        "probeBand_um": {
+          "hunt": 1.189160191752347,
+          "kurzFisher": 2.5821435943712694
+        },
+        "accepted": false
+      },
+      "nonCanonicalPrecisionMutant": {
+        "encodedConstants": {
+          "PDAS_A_HUNT_SI": 0.001177386328467788,
+          "PDAS_A_KURZ_FISHER_SI": 0.0025821435943712695
+        },
+        "probeG_K_m": 10000000.0,
+        "probeR_m_s": 0.01,
+        "probeBand_um": {
+          "hunt": 1.1773863284677881,
+          "kurzFisher": 2.5821435943712694
+        },
+        "accepted": false
+      },
+      "roundedCaptionKFMutant": {
+        "encodedConstants": {
+          "PDAS_A_HUNT_SI": 0.0011773863284676703,
+          "PDAS_A_KURZ_FISHER_SI": 0.0026
+        },
+        "probeG_K_m": 10000000.0,
+        "probeR_m_s": 0.01,
+        "probeBand_um": {
+          "hunt": 1.1773863284676702,
+          "kurzFisher": 2.6
+        },
+        "accepted": false
+      },
+      "scope": "Future SOL-A1 coefficient acceptance only; current served rejection is an expected unresolved defect. In-memory substitutions do not alter served source, model or fingerprint, and do not admit physical samples."
+    },
+    "independentHuntArithmetic": {
+      "formula": "2.83*(k_e*Gamma*DeltaT0*D_l)^0.25",
+      "inputs": {
+        "k_e": 0.48,
+        "Gamma_K_m": 3.65e-07,
+        "DeltaT0_K": 57,
+        "D_l_m2_s": 3e-09
+      },
+      "expected_A_SI": 0.0011773863284676703,
+      "served_A_SI": 0.000956,
+      "roundedSource_A_SI": 0.00118,
+      "roundedRelativeTolerance": 0.003
+    },
+    "independentKurzFisherArithmetic": {
+      "formula": "4.3*(Gamma*DeltaT0*D_l/k_e)^0.25",
+      "sourceLocator": "S04 Eq.8/Table2; Fig.6 caption rounded alternative",
+      "inputs": {
+        "k_e": 0.48,
+        "Gamma_K_m": 3.65e-07,
+        "DeltaT0_K": 57,
+        "D_l_m2_s": 3e-09
+      },
+      "expected_A_SI": 0.0025821435943712695,
+      "canonical_A_SI": 0.0025821435943712695,
+      "display_A_SI": 0.0025821,
+      "caption_A_SI": 0.0026,
+      "captionRelativeDifferenceFromEquation": 0.006915341837554934,
+      "served_A_SI": 0.0026,
+      "decision": "Use full Eq.8 value in future SOL-A1 arithmetic; shorter representations are display only. Current served rounded caption value remains unchanged in this documentary check work."
+    },
+    "PDAS_sourceStabilityCounterexamples": [
+      {
+        "G_K_m": 50000000.0,
+        "R_m_s": 0.0012,
+        "Vcs_m_s": 0.002631578947368421,
+        "Vab_m_s": 0.9760273972602741,
+        "sourceStableCellularRange": false,
+        "fixedSourceGradient": false,
+        "served": {
+          "pdasBand_um": {
+            "hunt": 0.7264029154829225,
+            "kurzFisher": 1.9755727826941405
+          },
+          "pdasOutOfRange": false,
+          "pdasUnavailableReason": null,
+          "pdasBasis": "Ni-Nb model alloy band, Ghosh et al. 2017 (Modelling Simul. Mater. Sci. Eng. 25, 065002, doi 10.1088/1361-651X/aa7369) Fig. 6 caption: Eq. 7 Hunt A = 9.56e-4 and Eq. 8 Kurz-Fisher A = 2.6e-3 (m^0.75 s^-0.25 K^0.5), λ1 = A G^-0.5 R^-0.25. The phase-field PDAS values lie near Hunt (p.11); the line of best fit has a slope close to Kurz-Fisher with a constant offset (p.12), so the slope-only member is not served. The system is a dilute binary Ni-Nb model alloy (Table 2), applied to IN625 and IN718 as the closest sourced Ni-Nb system and not a measurement of those alloys; the coefficients are alloy specific. Validity: x = G^-0.5 R^-0.25 in [4e-4, 1.2e-3] and cooling rate 5e4 to 3e6 K/s (Fig. 6 abscissa and operating range, p.11); outside it the band is null (pdasOutOfRange)",
+          "x": 0.0007598356856515925
+        }
+      },
+      {
+        "G_K_m": 1000000.0,
+        "R_m_s": 1.5,
+        "Vcs_m_s": 5.2631578947368424e-05,
+        "Vab_m_s": 0.9760273972602741,
+        "sourceStableCellularRange": false,
+        "fixedSourceGradient": false,
+        "served": {
+          "pdasBand_um": {
+            "hunt": 0.8638435154510118,
+            "kurzFisher": 2.3493652093855966
+          },
+          "pdasOutOfRange": false,
+          "pdasUnavailableReason": null,
+          "pdasBasis": "Ni-Nb model alloy band, Ghosh et al. 2017 (Modelling Simul. Mater. Sci. Eng. 25, 065002, doi 10.1088/1361-651X/aa7369) Fig. 6 caption: Eq. 7 Hunt A = 9.56e-4 and Eq. 8 Kurz-Fisher A = 2.6e-3 (m^0.75 s^-0.25 K^0.5), λ1 = A G^-0.5 R^-0.25. The phase-field PDAS values lie near Hunt (p.11); the line of best fit has a slope close to Kurz-Fisher with a constant offset (p.12), so the slope-only member is not served. The system is a dilute binary Ni-Nb model alloy (Table 2), applied to IN625 and IN718 as the closest sourced Ni-Nb system and not a measurement of those alloys; the coefficients are alloy specific. Validity: x = G^-0.5 R^-0.25 in [4e-4, 1.2e-3] and cooling rate 5e4 to 3e6 K/s (Fig. 6 abscissa and operating range, p.11); outside it the band is null (pdasOutOfRange)",
+          "x": 0.0009036020036098449
+        }
+      }
+    ]
+  },
+  "checkKind": "synthetic software and algebra checks",
+  "readsMeasuredMeltPoolDepths": false,
+  "sourceIdentityAlgorithm": "sha256-utf8-lf-v1",
+  "sourceSha256": {
+    "docs/research/scripts/_solidification_check_common.py": "65997ab31ad9fd764bfe554cfe134c59bfdd6b411aa6e26d6f9f3df1a117a51a",
+    "docs/research/scripts/check_solidification_kinetics.py": "6098653230c21f80b0bcc68e0616ef2c5b84bd865e430eb2fdc30657f697ed98",
+    "python/alloy_data_calphad_battery_icme.py": "8253a0407b12887ff010163276755cc1cc22d2ede5e6f057d91b93d94afc0fd0",
+    "python/alloy_data_kinetics_uq_fatigue.py": "9d1349085981f2f86ed465bbc048e9fc9704138ebec68e9d1a4e7eee5f5ecf95",
+    "python/alloy_registry.py": "ec2a6f4fc8dda5c322b60444d197af5fd81e908363cd6eba44de21f2839a7268",
+    "python/four_alloy_materials.py": "b5aedb24b5261c7ef8dfd7bcb80c723ca1eb32c9be4e94a6519f06db951c90a9",
+    "python/hardness_conversion_e140.py": "fd250e094fcb3207d430b3ad2ab13e16a9f7ed80ecb3d2f3df6480ce70265b41",
+    "python/input_validation.py": "e31f7bf8aec687f1f03f25da4de63a3967bcdaf5ca47dc4af4f83c5712521489",
+    "python/kinetics_ttt_cct_solver.py": "954fa53e7a0e2610f807d2364146e28887910a07eb945dd3a9004875d1f1467d",
+    "python/lpbf_cet_screening.py": "d63532332c164bc8f1272e8e510d27626f7b840b6be95a0873272f629d014e6e",
+    "python/lpbf_solidification_microstructure.py": "211a40e1c018b5839c566c589523c884028e3bd0fc6d64fc500aa04a03df4bdf",
+    "python/lpbf_solidification_segregation.py": "d6c2c2421aec83c2e279dd93e7727c765b86f939d5620e0baaeb39e38f26f5f3",
+    "python/physical_constants.py": "ae07777055febf111903c81f08d6a948ccedff6339cbec5339317e12e8aeef87",
+    "python/solidification_front.py": "a8841a2ceeaed2522bad6fa5d8642833f5e8b059592759b7f9874aa69303793d"
+  }
+}

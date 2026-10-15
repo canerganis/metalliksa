@@ -1,0 +1,285 @@
+{
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "quantities": {
+    "thermalGradient": {
+      "status": "computed",
+      "value": 12345678.901234567,
+      "unit": "K/m",
+      "quantityDefinition": "liquidus-front-thermal-gradient",
+      "leafRole": "derived",
+      "sourceEvidenceKind": "Literature estimate",
+      "dependsOn": [
+        "liquidus_K",
+        "conductivity_W_mK",
+        "power_W",
+        "speed_m_s"
+      ],
+      "weakestInputs": [],
+      "labelSources": [
+        "python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)"
+      ],
+      "reasons": [],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [
+        {
+          "id": "synthetic-f16-relation",
+          "locator": "python/tools/quantity_envelope_fixtures.py (synthetic test relation, not a literature source)",
+          "readLevel": "repository-attribution"
+        }
+      ],
+      "assumptions": [
+        "synthetic-fixture",
+        "fixed-liquidus-approximation"
+      ],
+      "validity": null,
+      "uncertainty": {
+        "kind": "not-quantified",
+        "construction": null
+      },
+      "fractionBasis": null,
+      "identity": {
+        "input": "synthetic-f16-request",
+        "model": "synthetic-f16-engine-v1 (test fixture, not a served model)",
+        "parent": "parents-v2:[\"object\",[[\"conductivity_W_mK\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",\"sourceDefault\"],[\"defaultValue\",[\"number\",\"0x1.9000000000000p+4\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",\"solid\"],[\"referenceTemperature_K\",null],[\"scope\",\"Synthetic property for the F16 envelope fixture\"],[\"source\",\"Synthetic F16 property record\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"synthetic-f16:conductivity\"],[\"sourceLocator\",\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"liquidus_K\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",\"alloyTransfer\"],[\"defaultValue\",[\"number\",\"0x1.9280000000000p+10\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"alloyTransfer\"],[\"label\",\"transferred: Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\"],[\"phase\",\"solid-liquid-mean\"],[\"referenceTemperature_K\",[\"number\",\"0x1.9280000000000p+10\"]],[\"scope\",\"Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\"],[\"source\",\"Synthetic F16 endpoint record\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"synthetic-f16:liquidus:transfer\"],[\"sourceLocator\",\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]],[\"power_W\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:power_W\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"speed_m_s\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:speed_m_s\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+      }
+    },
+    "normalSpeed": {
+      "status": "computed",
+      "value": 0.051234567890123456,
+      "unit": "m/s",
+      "quantityDefinition": "liquidus-front-normal-speed",
+      "leafRole": "derived",
+      "sourceEvidenceKind": "Literature estimate",
+      "dependsOn": [
+        "liquidus_K",
+        "conductivity_W_mK",
+        "power_W",
+        "speed_m_s"
+      ],
+      "weakestInputs": [],
+      "labelSources": [
+        "python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)"
+      ],
+      "reasons": [],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [
+        {
+          "id": "synthetic-f16-relation",
+          "locator": "python/tools/quantity_envelope_fixtures.py (synthetic test relation, not a literature source)",
+          "readLevel": "repository-attribution"
+        }
+      ],
+      "assumptions": [
+        "synthetic-fixture",
+        "fixed-liquidus-approximation"
+      ],
+      "validity": null,
+      "uncertainty": {
+        "kind": "not-quantified",
+        "construction": null
+      },
+      "fractionBasis": null,
+      "identity": {
+        "input": "synthetic-f16-request",
+        "model": "synthetic-f16-engine-v1 (test fixture, not a served model)",
+        "parent": "parents-v2:[\"object\",[[\"conductivity_W_mK\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",\"sourceDefault\"],[\"defaultValue\",[\"number\",\"0x1.9000000000000p+4\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",\"solid\"],[\"referenceTemperature_K\",null],[\"scope\",\"Synthetic property for the F16 envelope fixture\"],[\"source\",\"Synthetic F16 property record\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"synthetic-f16:conductivity\"],[\"sourceLocator\",\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"liquidus_K\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",\"alloyTransfer\"],[\"defaultValue\",[\"number\",\"0x1.9280000000000p+10\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"alloyTransfer\"],[\"label\",\"transferred: Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\"],[\"phase\",\"solid-liquid-mean\"],[\"referenceTemperature_K\",[\"number\",\"0x1.9280000000000p+10\"]],[\"scope\",\"Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\"],[\"source\",\"Synthetic F16 endpoint record\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"synthetic-f16:liquidus:transfer\"],[\"sourceLocator\",\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]],[\"power_W\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:power_W\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"speed_m_s\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:speed_m_s\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+      }
+    },
+    "coolingRate": {
+      "status": "computed",
+      "value": 632525.5238149671,
+      "unit": "K/s",
+      "quantityDefinition": "liquidus-front-cooling-rate",
+      "leafRole": "derived",
+      "sourceEvidenceKind": "Literature estimate",
+      "dependsOn": [
+        "thermalGradient",
+        "normalSpeed"
+      ],
+      "weakestInputs": [],
+      "labelSources": [
+        "python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)"
+      ],
+      "reasons": [],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [
+        {
+          "id": "synthetic-f16-relation",
+          "locator": "python/tools/quantity_envelope_fixtures.py (synthetic test relation, not a literature source)",
+          "readLevel": "repository-attribution"
+        }
+      ],
+      "assumptions": [
+        "synthetic-fixture",
+        "fixed-liquidus-approximation"
+      ],
+      "validity": null,
+      "uncertainty": {
+        "kind": "not-quantified",
+        "construction": null
+      },
+      "fractionBasis": null,
+      "identity": {
+        "input": "synthetic-f16-request",
+        "model": "synthetic-f16-engine-v1 (test fixture, not a served model)",
+        "parent": "parents-v2:[\"object\",[[\"conductivity_W_mK\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",\"sourceDefault\"],[\"defaultValue\",[\"number\",\"0x1.9000000000000p+4\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",\"solid\"],[\"referenceTemperature_K\",null],[\"scope\",\"Synthetic property for the F16 envelope fixture\"],[\"source\",\"Synthetic F16 property record\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"synthetic-f16:conductivity\"],[\"sourceLocator\",\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"liquidus_K\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",\"alloyTransfer\"],[\"defaultValue\",[\"number\",\"0x1.9280000000000p+10\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"alloyTransfer\"],[\"label\",\"transferred: Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\"],[\"phase\",\"solid-liquid-mean\"],[\"referenceTemperature_K\",[\"number\",\"0x1.9280000000000p+10\"]],[\"scope\",\"Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\"],[\"source\",\"Synthetic F16 endpoint record\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"synthetic-f16:liquidus:transfer\"],[\"sourceLocator\",\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]],[\"normalSpeed\",[\"object\",[[\"identity\",[\"object\",[[\"input\",\"synthetic-f16-request\"],[\"model\",\"synthetic-f16-engine-v1 (test fixture, not a served model)\"],[\"parent\",\"parents-v2:[\\\"object\\\",[[\\\"conductivity_W_mK\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",\\\"sourceDefault\\\"],[\\\"defaultValue\\\",[\\\"number\\\",\\\"0x1.9000000000000p+4\\\"]],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"sourceDefault\\\"],[\\\"label\\\",\\\"sourced default\\\"],[\\\"phase\\\",\\\"solid\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Synthetic property for the F16 envelope fixture\\\"],[\\\"source\\\",\\\"Synthetic F16 property record\\\"],[\\\"sourceEvidenceKind\\\",\\\"Literature estimate\\\"],[\\\"sourceId\\\",\\\"synthetic-f16:conductivity\\\"],[\\\"sourceLocator\\\",\\\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\\\"],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]],[\\\"liquidus_K\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",\\\"alloyTransfer\\\"],[\\\"defaultValue\\\",[\\\"number\\\",\\\"0x1.9280000000000p+10\\\"]],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"alloyTransfer\\\"],[\\\"label\\\",\\\"transferred: Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\\\"],[\\\"phase\\\",\\\"solid-liquid-mean\\\"],[\\\"referenceTemperature_K\\\",[\\\"number\\\",\\\"0x1.9280000000000p+10\\\"]],[\\\"scope\\\",\\\"Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\\\"],[\\\"source\\\",\\\"Synthetic F16 endpoint record\\\"],[\\\"sourceEvidenceKind\\\",\\\"Literature estimate\\\"],[\\\"sourceId\\\",\\\"synthetic-f16:liquidus:transfer\\\"],[\\\"sourceLocator\\\",\\\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\\\"],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"extrapolated\\\"]]]]]]],[\\\"power_W\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",null],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"userInput\\\"],[\\\"label\\\",\\\"user input\\\"],[\\\"phase\\\",\\\"process\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Process request value; excluded from the source-label rule\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"User input\\\"],[\\\"sourceId\\\",\\\"request:power_W\\\"],[\\\"sourceLocator\\\",null],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]],[\\\"speed_m_s\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",null],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"userInput\\\"],[\\\"label\\\",\\\"user input\\\"],[\\\"phase\\\",\\\"process\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Process request value; excluded from the source-label rule\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"User input\\\"],[\\\"sourceId\\\",\\\"request:speed_m_s\\\"],[\\\"sourceLocator\\\",null],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]]]]\"]]]],[\"value\",[\"number\",\"0x1.a3b6ad3068a0cp-5\"]]]]],[\"power_W\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:power_W\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"speed_m_s\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:speed_m_s\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"thermalGradient\",[\"object\",[[\"identity\",[\"object\",[[\"input\",\"synthetic-f16-request\"],[\"model\",\"synthetic-f16-engine-v1 (test fixture, not a served model)\"],[\"parent\",\"parents-v2:[\\\"object\\\",[[\\\"conductivity_W_mK\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",\\\"sourceDefault\\\"],[\\\"defaultValue\\\",[\\\"number\\\",\\\"0x1.9000000000000p+4\\\"]],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"sourceDefault\\\"],[\\\"label\\\",\\\"sourced default\\\"],[\\\"phase\\\",\\\"solid\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Synthetic property for the F16 envelope fixture\\\"],[\\\"source\\\",\\\"Synthetic F16 property record\\\"],[\\\"sourceEvidenceKind\\\",\\\"Literature estimate\\\"],[\\\"sourceId\\\",\\\"synthetic-f16:conductivity\\\"],[\\\"sourceLocator\\\",\\\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\\\"],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]],[\\\"liquidus_K\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",\\\"alloyTransfer\\\"],[\\\"defaultValue\\\",[\\\"number\\\",\\\"0x1.9280000000000p+10\\\"]],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"alloyTransfer\\\"],[\\\"label\\\",\\\"transferred: Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\\\"],[\\\"phase\\\",\\\"solid-liquid-mean\\\"],[\\\"referenceTemperature_K\\\",[\\\"number\\\",\\\"0x1.9280000000000p+10\\\"]],[\\\"scope\\\",\\\"Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\\\"],[\\\"source\\\",\\\"Synthetic F16 endpoint record\\\"],[\\\"sourceEvidenceKind\\\",\\\"Literature estimate\\\"],[\\\"sourceId\\\",\\\"synthetic-f16:liquidus:transfer\\\"],[\\\"sourceLocator\\\",\\\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\\\"],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"extrapolated\\\"]]]]]]],[\\\"power_W\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",null],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"userInput\\\"],[\\\"label\\\",\\\"user input\\\"],[\\\"phase\\\",\\\"process\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Process request value; excluded from the source-label rule\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"User input\\\"],[\\\"sourceId\\\",\\\"request:power_W\\\"],[\\\"sourceLocator\\\",null],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]],[\\\"speed_m_s\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",null],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"userInput\\\"],[\\\"label\\\",\\\"user input\\\"],[\\\"phase\\\",\\\"process\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Process request value; excluded from the source-label rule\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"User input\\\"],[\\\"sourceId\\\",\\\"request:speed_m_s\\\"],[\\\"sourceLocator\\\",null],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]]]]\"]]]],[\"value\",[\"number\",\"0x1.78c29dcd6e9e0p+23\"]]]]]]]"
+      }
+    },
+    "gOverR": {
+      "status": "computed",
+      "value": 240963853.30526927,
+      "unit": "K*s/m^2",
+      "quantityDefinition": "liquidus-front-g-over-r",
+      "leafRole": "derived",
+      "sourceEvidenceKind": "Literature estimate",
+      "dependsOn": [
+        "thermalGradient",
+        "normalSpeed"
+      ],
+      "weakestInputs": [],
+      "labelSources": [
+        "python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)"
+      ],
+      "reasons": [],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [
+        {
+          "id": "synthetic-f16-relation",
+          "locator": "python/tools/quantity_envelope_fixtures.py (synthetic test relation, not a literature source)",
+          "readLevel": "repository-attribution"
+        }
+      ],
+      "assumptions": [
+        "synthetic-fixture",
+        "fixed-liquidus-approximation"
+      ],
+      "validity": null,
+      "uncertainty": {
+        "kind": "not-quantified",
+        "construction": null
+      },
+      "fractionBasis": null,
+      "identity": {
+        "input": "synthetic-f16-request",
+        "model": "synthetic-f16-engine-v1 (test fixture, not a served model)",
+        "parent": "parents-v2:[\"object\",[[\"conductivity_W_mK\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",\"sourceDefault\"],[\"defaultValue\",[\"number\",\"0x1.9000000000000p+4\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourced default\"],[\"phase\",\"solid\"],[\"referenceTemperature_K\",null],[\"scope\",\"Synthetic property for the F16 envelope fixture\"],[\"source\",\"Synthetic F16 property record\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"synthetic-f16:conductivity\"],[\"sourceLocator\",\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"liquidus_K\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",\"alloyTransfer\"],[\"defaultValue\",[\"number\",\"0x1.9280000000000p+10\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"alloyTransfer\"],[\"label\",\"transferred: Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\"],[\"phase\",\"solid-liquid-mean\"],[\"referenceTemperature_K\",[\"number\",\"0x1.9280000000000p+10\"]],[\"scope\",\"Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\"],[\"source\",\"Synthetic F16 endpoint record\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"synthetic-f16:liquidus:transfer\"],[\"sourceLocator\",\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]],[\"normalSpeed\",[\"object\",[[\"identity\",[\"object\",[[\"input\",\"synthetic-f16-request\"],[\"model\",\"synthetic-f16-engine-v1 (test fixture, not a served model)\"],[\"parent\",\"parents-v2:[\\\"object\\\",[[\\\"conductivity_W_mK\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",\\\"sourceDefault\\\"],[\\\"defaultValue\\\",[\\\"number\\\",\\\"0x1.9000000000000p+4\\\"]],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"sourceDefault\\\"],[\\\"label\\\",\\\"sourced default\\\"],[\\\"phase\\\",\\\"solid\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Synthetic property for the F16 envelope fixture\\\"],[\\\"source\\\",\\\"Synthetic F16 property record\\\"],[\\\"sourceEvidenceKind\\\",\\\"Literature estimate\\\"],[\\\"sourceId\\\",\\\"synthetic-f16:conductivity\\\"],[\\\"sourceLocator\\\",\\\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\\\"],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]],[\\\"liquidus_K\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",\\\"alloyTransfer\\\"],[\\\"defaultValue\\\",[\\\"number\\\",\\\"0x1.9280000000000p+10\\\"]],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"alloyTransfer\\\"],[\\\"label\\\",\\\"transferred: Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\\\"],[\\\"phase\\\",\\\"solid-liquid-mean\\\"],[\\\"referenceTemperature_K\\\",[\\\"number\\\",\\\"0x1.9280000000000p+10\\\"]],[\\\"scope\\\",\\\"Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\\\"],[\\\"source\\\",\\\"Synthetic F16 endpoint record\\\"],[\\\"sourceEvidenceKind\\\",\\\"Literature estimate\\\"],[\\\"sourceId\\\",\\\"synthetic-f16:liquidus:transfer\\\"],[\\\"sourceLocator\\\",\\\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\\\"],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"extrapolated\\\"]]]]]]],[\\\"power_W\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",null],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"userInput\\\"],[\\\"label\\\",\\\"user input\\\"],[\\\"phase\\\",\\\"process\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Process request value; excluded from the source-label rule\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"User input\\\"],[\\\"sourceId\\\",\\\"request:power_W\\\"],[\\\"sourceLocator\\\",null],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]],[\\\"speed_m_s\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",null],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"userInput\\\"],[\\\"label\\\",\\\"user input\\\"],[\\\"phase\\\",\\\"process\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Process request value; excluded from the source-label rule\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"User input\\\"],[\\\"sourceId\\\",\\\"request:speed_m_s\\\"],[\\\"sourceLocator\\\",null],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]]]]\"]]]],[\"value\",[\"number\",\"0x1.a3b6ad3068a0cp-5\"]]]]],[\"power_W\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:power_W\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"speed_m_s\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:speed_m_s\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"thermalGradient\",[\"object\",[[\"identity\",[\"object\",[[\"input\",\"synthetic-f16-request\"],[\"model\",\"synthetic-f16-engine-v1 (test fixture, not a served model)\"],[\"parent\",\"parents-v2:[\\\"object\\\",[[\\\"conductivity_W_mK\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",\\\"sourceDefault\\\"],[\\\"defaultValue\\\",[\\\"number\\\",\\\"0x1.9000000000000p+4\\\"]],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"sourceDefault\\\"],[\\\"label\\\",\\\"sourced default\\\"],[\\\"phase\\\",\\\"solid\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Synthetic property for the F16 envelope fixture\\\"],[\\\"source\\\",\\\"Synthetic F16 property record\\\"],[\\\"sourceEvidenceKind\\\",\\\"Literature estimate\\\"],[\\\"sourceId\\\",\\\"synthetic-f16:conductivity\\\"],[\\\"sourceLocator\\\",\\\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\\\"],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]],[\\\"liquidus_K\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",\\\"alloyTransfer\\\"],[\\\"defaultValue\\\",[\\\"number\\\",\\\"0x1.9280000000000p+10\\\"]],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"alloyTransfer\\\"],[\\\"label\\\",\\\"transferred: Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\\\"],[\\\"phase\\\",\\\"solid-liquid-mean\\\"],[\\\"referenceTemperature_K\\\",[\\\"number\\\",\\\"0x1.9280000000000p+10\\\"]],[\\\"scope\\\",\\\"Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record\\\"],[\\\"source\\\",\\\"Synthetic F16 endpoint record\\\"],[\\\"sourceEvidenceKind\\\",\\\"Literature estimate\\\"],[\\\"sourceId\\\",\\\"synthetic-f16:liquidus:transfer\\\"],[\\\"sourceLocator\\\",\\\"python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)\\\"],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"extrapolated\\\"]]]]]]],[\\\"power_W\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",null],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"userInput\\\"],[\\\"label\\\",\\\"user input\\\"],[\\\"phase\\\",\\\"process\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Process request value; excluded from the source-label rule\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"User input\\\"],[\\\"sourceId\\\",\\\"request:power_W\\\"],[\\\"sourceLocator\\\",null],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]],[\\\"speed_m_s\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",null],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"userInput\\\"],[\\\"label\\\",\\\"user input\\\"],[\\\"phase\\\",\\\"process\\\"],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"Process request value; excluded from the source-label rule\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"User input\\\"],[\\\"sourceId\\\",\\\"request:speed_m_s\\\"],[\\\"sourceLocator\\\",null],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]]]]\"]]]],[\"value\",[\"number\",\"0x1.78c29dcd6e9e0p+23\"]]]]]]]"
+      }
+    }
+  },
+  "inputProvenance": {
+    "liquidus_K": {
+      "kind": "alloyTransfer",
+      "label": "transferred: Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record",
+      "sourceId": "synthetic-f16:liquidus:transfer",
+      "sourceLocator": "python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)",
+      "declarationLocator": null,
+      "source": "Synthetic F16 endpoint record",
+      "scope": "Synthetic family transfer for the F16 envelope fixture; not an admitted ledger record",
+      "status": "extrapolated",
+      "sourceEvidenceKind": "Literature estimate",
+      "defaultValue": 1610.0,
+      "defaultKind": "alloyTransfer",
+      "followsInput": null,
+      "followState": null,
+      "dependsOn": [],
+      "phase": "solid-liquid-mean",
+      "referenceTemperature_K": 1610.0,
+      "sourceRange_K": null
+    },
+    "conductivity_W_mK": {
+      "kind": "sourceDefault",
+      "label": "sourced default",
+      "sourceId": "synthetic-f16:conductivity",
+      "sourceLocator": "python/tools/quantity_envelope_fixtures.py (synthetic test record, not a literature source)",
+      "declarationLocator": null,
+      "source": "Synthetic F16 property record",
+      "scope": "Synthetic property for the F16 envelope fixture",
+      "status": "inRange",
+      "sourceEvidenceKind": "Literature estimate",
+      "defaultValue": 25.0,
+      "defaultKind": "sourceDefault",
+      "followsInput": null,
+      "followState": null,
+      "dependsOn": [],
+      "phase": "solid",
+      "referenceTemperature_K": null,
+      "sourceRange_K": null
+    },
+    "power_W": {
+      "kind": "userInput",
+      "label": "user input",
+      "sourceId": "request:power_W",
+      "sourceLocator": null,
+      "declarationLocator": null,
+      "source": null,
+      "scope": "Process request value; excluded from the source-label rule",
+      "status": "inRange",
+      "sourceEvidenceKind": "User input",
+      "defaultValue": null,
+      "defaultKind": null,
+      "followsInput": null,
+      "followState": null,
+      "dependsOn": [],
+      "phase": "process",
+      "referenceTemperature_K": null,
+      "sourceRange_K": null
+    },
+    "speed_m_s": {
+      "kind": "userInput",
+      "label": "user input",
+      "sourceId": "request:speed_m_s",
+      "sourceLocator": null,
+      "declarationLocator": null,
+      "source": null,
+      "scope": "Process request value; excluded from the source-label rule",
+      "status": "inRange",
+      "sourceEvidenceKind": "User input",
+      "defaultValue": null,
+      "defaultKind": null,
+      "followsInput": null,
+      "followState": null,
+      "dependsOn": [],
+      "phase": "process",
+      "referenceTemperature_K": null,
+      "sourceRange_K": null
+    }
+  }
+}

@@ -7,7 +7,10 @@ state. See .orchestra/DESIGN-7-module-sdk.md (section 1).
 
 Every vocabulary below is closed. Validation happens in ``__post_init__`` so an
 invalid contract cannot be constructed. The contract never computes or upgrades
-an evidence status; it only bounds what a module may report.
+an evidence status; it only bounds what a module may report. Quantity envelope
+declarations (QuantityDeclaration, ObservationDeclaration) take their closed
+vocabularies from python/quantity_envelope.py (stdlib only, outside the LPBF
+fingerprint manifest).
 
 Items marked TODO(maintainer-review) are skeleton defaults, not reviewed facts.
 """
@@ -17,6 +20,8 @@ import math
 import re
 from dataclasses import dataclass, field
 from typing import Any, Optional, Tuple, Union
+
+import quantity_envelope as _envelope
 
 # --- Closed vocabularies ---------------------------------------------------
 
@@ -377,6 +382,104 @@ class OutputSchema:
                                      for key, members in self.transport_objects}}
 
 
+def _envelope_path(path: Any, member: str, name: str) -> Tuple[str, ...]:
+    """Segments of a quantity/observation path: ``[container.]member.leaf`` with ``member`` exactly once."""
+    _require(isinstance(path, str) and path != "", f"{name}.path must be a non-empty string")
+    parts = tuple(path.split("."))
+    _require(len(parts) >= 2 and all(_KEY.fullmatch(part) for part in parts),
+             f"{name}.path {path!r} must be dot-separated plain names")
+    _require(parts[-2] == member and parts.count("quantities") + parts.count("observations") == 1,
+             f"{name}.path {path!r} must end in '{member}.<name>' under exactly one container")
+    _require(all(part not in FORBIDDEN_CLAIM_KEYS and not part.replace("_", "").lower().startswith("evidence")
+                 for part in parts), f"{name}.path {path!r} hides evidence or a claim")
+    return parts
+
+
+@dataclass(frozen=True)
+class QuantityDeclaration:
+    """One envelope quantity an operation output may carry (quantity_envelope wire format v1, contract 4.1).
+
+    ``path`` starts at an output field and ends in ``quantities.<name>``; list levels in the payload are traversed.
+    ``source_evidence_kinds`` are per-value source labels, never module evidence; "Measured" is refused here
+    (it is legal only in an ObservationDeclaration)."""
+    path: str
+    definition: str
+    unit: str
+    statuses: Tuple[str, ...]
+    source_evidence_kinds: Tuple[str, ...]
+    reason_codes: Tuple[str, ...]
+    fraction_basis: Optional[str] = None
+    leaf_role: str = "derived"
+
+    def __post_init__(self) -> None:
+        name = f"quantity {self.path!r}"
+        _envelope_path(self.path, "quantities", name)
+        _one_of(self.definition, tuple(_envelope.QUANTITY_DEFINITIONS), f"{name}.definition")
+        expected_unit = _envelope.QUANTITY_DEFINITIONS[self.definition]["unit"]
+        _require(self.unit == expected_unit, f"{name}.unit must be {expected_unit!r} for {self.definition}")
+        _require(len(self.statuses) > 0, f"{name}.statuses must not be empty")
+        _unique(self.statuses, f"{name}.statuses")
+        for status in self.statuses:
+            _one_of(status, _envelope.QUANTITY_STATUSES, f"{name}.statuses")
+        _unique(self.source_evidence_kinds, f"{name}.sourceEvidenceKinds")
+        _require("Measured" not in self.source_evidence_kinds,
+                 f"{name}: Measured is legal only in an ObservationDeclaration (transcribed measurements)")
+        for kind in self.source_evidence_kinds:
+            _one_of(kind, _envelope.QUANTITY_SOURCE_EVIDENCE_KINDS, f"{name}.sourceEvidenceKinds")
+        _one_of(self.leaf_role, _envelope.LEAF_ROLES, f"{name}.leafRole")
+        carries_value = any(status in _envelope.VALUE_STATUSES for status in self.statuses)
+        if self.leaf_role in _envelope.UNLABELLED_ROLES:
+            _require(not self.source_evidence_kinds, f"{name}: a {self.leaf_role} leaf carries no source label")
+        elif self.leaf_role == "requestInput":
+            _require(set(self.source_evidence_kinds) <= {"User input"}, f"{name}: a request echo reads User input")
+        elif carries_value:
+            _require(len(self.source_evidence_kinds) > 0,
+                     f"{name}: a value-carrying {self.leaf_role} quantity declares its per-value source labels")
+        _unique(self.reason_codes, f"{name}.reasonCodes")
+        for code in self.reason_codes:
+            _one_of(code, _envelope.REASON_CODES, f"{name}.reasonCodes")
+        if any(status != "computed" for status in self.statuses):
+            _require(len(self.reason_codes) > 0, f"{name}: statuses other than computed need reason codes")
+        if "not-requested" in self.statuses:
+            _require("not-requested" in self.reason_codes, f"{name}: not-requested needs the reason not-requested")
+        if _envelope.QUANTITY_DEFINITIONS[self.definition]["fraction"]:
+            _one_of(self.fraction_basis, _envelope.FRACTION_BASES, f"{name}.fractionBasis")
+        else:
+            _require(self.fraction_basis is None, f"{name}: fractionBasis applies only to fraction quantities")
+
+    def to_dict(self) -> dict:
+        return {"path": self.path, "definition": self.definition, "unit": self.unit,
+                "statuses": list(self.statuses), "sourceEvidenceKinds": list(self.source_evidence_kinds),
+                "reasonCodes": list(self.reason_codes), "fractionBasis": self.fraction_basis,
+                "leafRole": self.leaf_role}
+
+
+@dataclass(frozen=True)
+class ObservationDeclaration:
+    """One transcribed source observation record (``[container.]observations.<name>``); may read Measured."""
+    path: str
+    observable: str
+    source_evidence_kinds: Tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        name = f"observation {self.path!r}"
+        _envelope_path(self.path, "observations", name)
+        _text(self.observable, f"{name}.observable")
+        _require(len(self.source_evidence_kinds) > 0, f"{name}.sourceEvidenceKinds must not be empty")
+        _unique(self.source_evidence_kinds, f"{name}.sourceEvidenceKinds")
+        for kind in self.source_evidence_kinds:
+            _one_of(kind, _envelope.OBSERVATION_SOURCE_EVIDENCE_KINDS, f"{name}.sourceEvidenceKinds")
+
+    def to_dict(self) -> dict:
+        return {"path": self.path, "observable": self.observable,
+                "sourceEvidenceKinds": list(self.source_evidence_kinds)}
+
+
+def _paths_overlap(a: Tuple[str, ...], b: Tuple[str, ...]) -> bool:
+    shorter = min(len(a), len(b))
+    return a[:shorter] == b[:shorter]
+
+
 @dataclass(frozen=True)
 class Operation:
     id: str
@@ -391,6 +494,9 @@ class Operation:
     # Request keys the authority reads that the Field schema cannot describe
     # (free-text labels, element maps). Recorded so they are not silently missing.
     undeclared_input: Tuple[str, ...] = ()
+    # Quantity envelope declarations (contract 4.1 item 2): per-value quantities and transcribed observations.
+    quantities: Tuple[QuantityDeclaration, ...] = ()
+    observations: Tuple[ObservationDeclaration, ...] = ()
 
     def __post_init__(self) -> None:
         _require(isinstance(self.id, str) and bool(_MODULE_ID.match(self.id)), f"invalid operation id {self.id!r}")
@@ -415,6 +521,22 @@ class Operation:
                      f"{self.id}.{field.key}: unitSelector must reference a declared enum")
             _require(set(dict(field.unit_options)) == set(selector.enum),
                      f"{self.id}.{field.key}: unitOptions must cover exactly the selector enum")
+        _require(all(isinstance(item, QuantityDeclaration) for item in self.quantities),
+                 f"{self.id}.quantities must hold QuantityDeclaration items")
+        _require(all(isinstance(item, ObservationDeclaration) for item in self.observations),
+                 f"{self.id}.observations must hold ObservationDeclaration items")
+        declared = [item.path for item in self.quantities] + [item.path for item in self.observations]
+        if declared:
+            _require(self.output is not None, f"{self.id}: envelope declarations need a declared output schema")
+            for path in declared:
+                _require(path.split(".")[0] in self.output.fields,
+                         f"{self.id}: envelope path {path!r} must start at an output field")
+            _unique(tuple(declared), f"{self.id} envelope paths")
+            segments = [tuple(path.split(".")) for path in declared]
+            for index, first in enumerate(segments):
+                for second in segments[index + 1:]:
+                    _require(not _paths_overlap(first, second),
+                             f"{self.id}: envelope paths {'.'.join(first)!r} and {'.'.join(second)!r} overlap")
 
     def to_dict(self) -> dict:
         return {
@@ -422,6 +544,8 @@ class Operation:
             "input": [f.to_dict() for f in self.input],
             "undeclaredInput": list(self.undeclared_input),
             "output": self.output.to_dict() if self.output else None,
+            "quantities": [item.to_dict() for item in self.quantities],
+            "observations": [item.to_dict() for item in self.observations],
         }
 
     def input_problems(self, payload: Any) -> list:
@@ -636,6 +760,12 @@ class ModuleContract:
         if self.tests.oracle.status == "pending":
             _require(EVIDENCE_RANK[self.evidence.ceiling] >= EVIDENCE_RANK[PENDING_ORACLE_CEILING],
                      f"{self.id}: a pending oracle caps the ceiling at {PENDING_ORACLE_CEILING!r}")
+        if any(op.quantities or op.observations for op in self.operations):
+            # Every container states the envelope ceiling; it must not claim more than the contract ceiling.
+            _require(within_ceiling(_envelope.MODULE_EVIDENCE_CEILING, self.evidence.ceiling),
+                     f"{self.id}: envelope containers state {_envelope.MODULE_EVIDENCE_CEILING!r}, above the "
+                     f"contract ceiling {self.evidence.ceiling!r}")
+            _one_of(self.maturity, _envelope.MODULE_MATURITIES, f"{self.id}.maturity (container echo)")
         if self.migration_state == "contracted":
             _require(len(self.operations) > 0, f"{self.id}: contracted modules need operations")
             _require(all(op.output is not None for op in self.operations),
@@ -725,10 +855,21 @@ def _operation_from_dict(d: dict) -> Operation:
     authority = Authority(kind=a["kind"], timeout_ms=a["timeoutMs"], gpu=a["gpu"], warm=a["warm"],
                           script=a["script"], worker_method=a["workerMethod"], exception_reason=a["exceptionReason"])
     out = d["output"]
+    quantities = d.get("quantities", [])
+    observations = d.get("observations", [])
+    _require(isinstance(quantities, list) and isinstance(observations, list),
+             "operation.quantities and operation.observations must be JSON arrays")
     return Operation(id=d["id"], route=d["route"], method=d["method"], authority=authority,
                      input=tuple(_field_from_dict(f) for f in d["input"]),
                      undeclared_input=tuple(d["undeclaredInput"]),
-                     output=_output_from_dict(out) if out is not None else None)
+                     output=_output_from_dict(out) if out is not None else None,
+                     quantities=tuple(QuantityDeclaration(
+                         path=q["path"], definition=q["definition"], unit=q["unit"], statuses=tuple(q["statuses"]),
+                         source_evidence_kinds=tuple(q["sourceEvidenceKinds"]), reason_codes=tuple(q["reasonCodes"]),
+                         fraction_basis=q["fractionBasis"], leaf_role=q["leafRole"]) for q in quantities),
+                     observations=tuple(ObservationDeclaration(
+                         path=o["path"], observable=o["observable"],
+                         source_evidence_kinds=tuple(o["sourceEvidenceKinds"])) for o in observations))
 
 
 def contract_from_dict(d: dict) -> ModuleContract:

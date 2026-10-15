@@ -1,0 +1,379 @@
+{
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "quantities": {
+    "thermalGradient": {
+      "status": "unavailable",
+      "value": null,
+      "unit": "K/m",
+      "quantityDefinition": "liquidus-front-thermal-gradient",
+      "leafRole": "derived",
+      "sourceEvidenceKind": null,
+      "dependsOn": [
+        "liquidus_K",
+        "power_W",
+        "speed_m_s"
+      ],
+      "weakestInputs": [],
+      "labelSources": [],
+      "reasons": [
+        {
+          "code": "missing-source-constant",
+          "params": {},
+          "parent": {
+            "input": "liquidus_K",
+            "kind": "declaredAssumption"
+          }
+        }
+      ],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [],
+      "assumptions": [],
+      "validity": null,
+      "uncertainty": null,
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      }
+    },
+    "normalSpeed": {
+      "status": "unavailable",
+      "value": null,
+      "unit": "m/s",
+      "quantityDefinition": "liquidus-front-normal-speed",
+      "leafRole": "derived",
+      "sourceEvidenceKind": null,
+      "dependsOn": [
+        "liquidus_K",
+        "power_W",
+        "speed_m_s"
+      ],
+      "weakestInputs": [],
+      "labelSources": [],
+      "reasons": [
+        {
+          "code": "missing-source-constant",
+          "params": {},
+          "parent": {
+            "input": "liquidus_K",
+            "kind": "declaredAssumption"
+          }
+        }
+      ],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [],
+      "assumptions": [],
+      "validity": null,
+      "uncertainty": null,
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      }
+    },
+    "coolingRate": {
+      "status": "unavailable",
+      "value": null,
+      "unit": "K/s",
+      "quantityDefinition": "liquidus-front-cooling-rate",
+      "leafRole": "derived",
+      "sourceEvidenceKind": null,
+      "dependsOn": [
+        "thermalGradient",
+        "normalSpeed"
+      ],
+      "weakestInputs": [],
+      "labelSources": [],
+      "reasons": [
+        {
+          "code": "missing-source-constant",
+          "params": {},
+          "parent": {
+            "input": "liquidus_K",
+            "kind": "declaredAssumption"
+          }
+        },
+        {
+          "code": "parent-unavailable",
+          "params": {},
+          "parent": {
+            "input": "thermalGradient",
+            "kind": "derived"
+          }
+        },
+        {
+          "code": "parent-unavailable",
+          "params": {},
+          "parent": {
+            "input": "normalSpeed",
+            "kind": "derived"
+          }
+        }
+      ],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [],
+      "assumptions": [],
+      "validity": null,
+      "uncertainty": null,
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      }
+    },
+    "gOverR": {
+      "status": "unavailable",
+      "value": null,
+      "unit": "K*s/m^2",
+      "quantityDefinition": "liquidus-front-g-over-r",
+      "leafRole": "derived",
+      "sourceEvidenceKind": null,
+      "dependsOn": [
+        "thermalGradient",
+        "normalSpeed"
+      ],
+      "weakestInputs": [],
+      "labelSources": [],
+      "reasons": [
+        {
+          "code": "missing-source-constant",
+          "params": {},
+          "parent": {
+            "input": "liquidus_K",
+            "kind": "declaredAssumption"
+          }
+        },
+        {
+          "code": "parent-unavailable",
+          "params": {},
+          "parent": {
+            "input": "thermalGradient",
+            "kind": "derived"
+          }
+        },
+        {
+          "code": "parent-unavailable",
+          "params": {},
+          "parent": {
+            "input": "normalSpeed",
+            "kind": "derived"
+          }
+        }
+      ],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [],
+      "assumptions": [],
+      "validity": null,
+      "uncertainty": null,
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      }
+    },
+    "pdas": {
+      "status": "unavailable",
+      "value": null,
+      "unit": "m",
+      "quantityDefinition": "pdas-model-alternatives",
+      "leafRole": "derived",
+      "sourceEvidenceKind": null,
+      "dependsOn": [
+        "thermalGradient",
+        "normalSpeed"
+      ],
+      "weakestInputs": [],
+      "labelSources": [],
+      "reasons": [
+        {
+          "code": "missing-source-constant",
+          "params": {},
+          "parent": {
+            "input": "liquidus_K",
+            "kind": "declaredAssumption"
+          }
+        },
+        {
+          "code": "parent-unavailable",
+          "params": {},
+          "parent": {
+            "input": "thermalGradient",
+            "kind": "derived"
+          }
+        },
+        {
+          "code": "parent-unavailable",
+          "params": {},
+          "parent": {
+            "input": "normalSpeed",
+            "kind": "derived"
+          }
+        }
+      ],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [],
+      "assumptions": [],
+      "validity": null,
+      "uncertainty": null,
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      }
+    },
+    "morphology": {
+      "status": "unavailable",
+      "value": null,
+      "unit": "1",
+      "quantityDefinition": "front-morphology",
+      "leafRole": "derived",
+      "sourceEvidenceKind": null,
+      "dependsOn": [
+        "liquidus_K"
+      ],
+      "weakestInputs": [],
+      "labelSources": [],
+      "reasons": [
+        {
+          "code": "missing-source-constant",
+          "params": {},
+          "parent": {
+            "input": "liquidus_K",
+            "kind": "declaredAssumption"
+          }
+        }
+      ],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [],
+      "assumptions": [],
+      "validity": null,
+      "uncertainty": null,
+      "fractionBasis": null,
+      "identity": {
+        "input": null,
+        "model": null,
+        "parent": null
+      }
+    }
+  },
+  "inputProvenance": {
+    "liquidus_K": {
+      "kind": "declaredAssumption",
+      "label": "declared assumption (no source)",
+      "sourceId": "synthetic-sol-a1:liquidus:no-provenance",
+      "sourceLocator": null,
+      "declarationLocator": "python/tools/quantity_envelope_fixtures.py (synthetic stand-in for a served liquidus without a provenance entry)",
+      "source": null,
+      "scope": "Served liquidus without an admitted source (synthetic stand-in)",
+      "status": "inRange",
+      "sourceEvidenceKind": "Unresolved",
+      "defaultValue": null,
+      "defaultKind": null,
+      "followsInput": null,
+      "followState": null,
+      "dependsOn": [],
+      "phase": "solid-liquid-mean",
+      "referenceTemperature_K": null,
+      "sourceRange_K": null
+    },
+    "power_W": {
+      "kind": "userInput",
+      "label": "user input",
+      "sourceId": "request:power_W",
+      "sourceLocator": null,
+      "declarationLocator": null,
+      "source": null,
+      "scope": "Process request value; excluded from the source-label rule",
+      "status": "inRange",
+      "sourceEvidenceKind": "User input",
+      "defaultValue": null,
+      "defaultKind": null,
+      "followsInput": null,
+      "followState": null,
+      "dependsOn": [],
+      "phase": "process",
+      "referenceTemperature_K": null,
+      "sourceRange_K": null
+    },
+    "speed_m_s": {
+      "kind": "userInput",
+      "label": "user input",
+      "sourceId": "request:speed_m_s",
+      "sourceLocator": null,
+      "declarationLocator": null,
+      "source": null,
+      "scope": "Process request value; excluded from the source-label rule",
+      "status": "inRange",
+      "sourceEvidenceKind": "User input",
+      "defaultValue": null,
+      "defaultKind": null,
+      "followsInput": null,
+      "followState": null,
+      "dependsOn": [],
+      "phase": "process",
+      "referenceTemperature_K": null,
+      "sourceRange_K": null
+    }
+  }
+}
