@@ -133,10 +133,22 @@ class RequestChecks(ResearchTestCase):  # R-TR-1
                                                                                  "step": 1}}}}),
              "/researchOptions/ranges/marangoni/length_m/step", "unknown-key", None),
             ([base], "", "wrong-type", None),
+            # Revision 3: sender is a known member with a closed enum (the relay rules are in R-REL-1)
+            (with_(("sender",), "served-solver"), "/sender", "wrong-type", None),
+            (with_(("sender",), "blind-freeze"), "/supersedeKey", "sender-key-mismatch", None),
         ]
         for body, pointer, rule, limit in table:
             with self.subTest(pointer=pointer, rule=rule):
                 self.refuse(body, pointer, rule, limit)
+
+    def test_the_two_new_senders_are_known_members(self):  # Revision 3, 14.7
+        for sender, key in (("blind-freeze", "p8-research:blind:" + "0" * 16),
+                            ("batch-client", "p8-research:batch:run0001a"), ("research-panel", "p8-research:build-job")):
+            with self.subTest(sender=sender):
+                body = h.request("nominal")
+                body.update(sender=sender, supersedeKey=key)
+                parsed, code, _ = h.call(self.deps, body)
+                self.assertEqual(code, 0, parsed)
 
     def test_tampered_snapshot_hash_is_its_own_code(self):
         body = h.request("nominal", property_context={"kind": "build-job-snapshot", "alloyId": h.SYNTHETIC_ALLOY_ID,
@@ -633,8 +645,10 @@ class TransportFixture(ResearchTestCase):  # R-TR-11
 
     def test_fixture_shape(self):
         expected = json.loads(h.FIXTURE_PATH.read_text(encoding="utf-8"))
-        self.assertEqual(sorted(expected), ["cache", "clientRequestId", "identity", "labels", "progress",
+        self.assertEqual(sorted(expected), ["cache", "clientRequestId", "digests", "identity", "labels", "progress",
                                             "requestKey", "researchModels", "schemaVersion", "stage", "success"])
+        self.assertEqual(expected["digests"]["researchModelsSha256"],
+                         h.hashlib.sha256(codes.canonical_json(expected["researchModels"]).encode("utf-8")).hexdigest())
         self.assertEqual(expected["schemaVersion"], "p8-research-response-v1")
         self.assertEqual(expected["identity"]["researchImplementationSha256"], h.STUB_RESEARCH_SHA256)
         self.assertEqual(expected["cache"], {"cacheInstanceId": h.FIXTURE_CACHE_INSTANCE_ID, "armsHit": 0,
@@ -698,7 +712,8 @@ class CodeRegistry(ResearchTestCase):
             "unknown-key", "wrong-type", "not-finite", "below-min", "above-max", "range-inverted",
             "range-excludes-nominal", "range-without-nominal", "mode-field-ignored", "binary-combination",
             "preset-alloy-mismatch", "not-positive", "too-large", "alloy-material-mismatch",
-            "snapshot-hash-mismatch"})
+            "snapshot-hash-mismatch", "sender-key-mismatch", "relay-sender-mismatch", "relay-options-forbidden",
+            "relay-required"})
 
     def test_classes_precedence_and_warnings(self):
         self.assertEqual(len(codes.REASON_CODES), 4 + 3 + 4 + 3 + 8 + 4 + 5 + 13 + 8 + 3)

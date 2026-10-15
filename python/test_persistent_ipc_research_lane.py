@@ -6,7 +6,8 @@ Deterministic lane tests use the thread-pool factory pattern of the _AffinityLan
 timeouts answer exit 124 with the research timeout envelope; a queued research request is superseded; the lane is
 never prestarted; a research payload with an ``action`` key never reaches the shared pool; a result carrying
 "recycleWorker": true replaces the worker before the next request. One test runs the real script in a real lane
-worker process. This file imports no research module (R-ISO-1): it talks to the lane through the IPC service only.
+worker process. This file imports no research module (R-ISO-1) and names neither the research route nor its script
+(R-ISO-4): it takes the one isolated script name from the IPC service and talks to the lane through the service only.
 """
 
 from __future__ import annotations
@@ -23,7 +24,8 @@ from unittest import mock
 import persistent_ipc_service as ipc
 
 HERE = Path(__file__).resolve().parent
-RESEARCH = "lpbf_research_models"
+# The single isolated (research) script; R-ISO-3 and test_persistent_ipc_security pin its name and its route literal.
+(RESEARCH,) = tuple(ipc.ISOLATED_SCRIPT_NAMES)
 RESEARCH_SCRIPT = f"python/{RESEARCH}.py"
 STALE_STDOUT = json.dumps({"success": False, "errorKind": "validation", "reasonCode": "RESEARCH_CODE_STALE",
                            "problems": [], "recycleWorker": True})
@@ -99,7 +101,8 @@ def _script_returning(*outputs, delay=0.0):
 
 class IsolatedLaneConfiguration(unittest.TestCase):
     def test_constants(self):
-        self.assertEqual(ipc.ISOLATED_SCRIPT_NAMES, frozenset({RESEARCH}))
+        self.assertEqual(len(ipc.ISOLATED_SCRIPT_NAMES), 1)
+        self.assertTrue((HERE / f"{RESEARCH}.py").is_file())
         self.assertIn(RESEARCH, ipc.AFFINITY_SCRIPT_NAMES)
         self.assertIn(RESEARCH, ipc.ALLOWED_SCRIPT_NAMES)
         self.assertNotIn(RESEARCH, ipc.WARM_MODULE_NAMES)
@@ -185,6 +188,27 @@ class IsolatedLane(unittest.TestCase):
         self.assertEqual(json.loads(stale[1]["out"]["stdout"])["status"], "superseded")
         self.assertEqual(latest[1]["out"]["exitCode"], 0)
         self.assertEqual(running[1]["out"]["exitCode"], 0)
+
+    def test_distinct_sender_keys_never_supersede_each_other(self):  # Revision 3, 14.4 item 1
+        keys = ("p8-research:melt-pool", "p8-research:blind:0123456789abcdef", "p8-research:batch:run0001a")
+        with mock.patch.object(ipc, "_worker_run_script", _script_returning('{"success": true}', delay=0.6)):
+            first = self.run_async({"supersedeKey": "p8-research:build-job"}, 20000)
+            deadline = time.monotonic() + 10
+            while not (self.reg.affinity_lanes.get(RESEARCH) and self.reg.affinity_lanes[RESEARCH].running):
+                self.assertLess(time.monotonic(), deadline)
+                time.sleep(0.005)
+            queued = []
+            for key in keys:
+                queued.append(self.run_async({"supersedeKey": key}, 20000))
+                while self.reg.affinity_lanes[RESEARCH].snapshot()["queued"] < len(queued):
+                    self.assertLess(time.monotonic(), deadline)
+                    time.sleep(0.005)
+            for t, _ in [first] + queued:
+                t.join(20)
+        for _, box in queued:
+            self.assertEqual(box["out"]["exitCode"], 0)
+            self.assertEqual(json.loads(box["out"]["stdout"]), {"success": True})  # none was superseded
+        self.assertEqual(self.reg.affinity_lanes[RESEARCH].snapshot()["superseded"], 0)
 
     def test_recycle_worker_flag_replaces_the_worker_before_the_next_request(self):  # R-TR-13 lane side
         fake = _script_returning(STALE_STDOUT, '{"success": true}')

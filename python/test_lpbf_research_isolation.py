@@ -4,8 +4,9 @@ R-ISO-1 AST import guard over python/**/*.py: importers of lpbf_research_* are o
 test_lpbf_research_* files; research modules never reference calculate_meltpool_physics; no research file is in
 IMPLEMENTATION_SOURCE_FILES; every research test class runs with calculate_meltpool_physics patched to raise.
 R-ISO-3 lane configuration in a subprocess with METALLIX_IPC_AFFINITY=0 and unset: research always has its own lane,
-which is never prestarted. The former R-ISO-2 diff guard is the branch-scoped phase G tool
-python/tools/p8_isolation_diff_check.py, not a permanent test.
+which is never prestarted. R-ISO-4 (Revision 3, 14.7 item 7): no Python file outside the research modules,
+persistent_ipc_service.py, module_registry.py and test_lpbf_research_* names the route or its script. The former
+R-ISO-2 diff guard is the branch-scoped phase G tool python/tools/p8_isolation_diff_check.py, not a permanent test.
 """
 
 from __future__ import annotations
@@ -105,7 +106,9 @@ class ImportGuard(ResearchTestCase):  # R-ISO-1
                 continue
             tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
             for node in tree.body:
-                if isinstance(node, ast.ClassDef):
+                has_tests = isinstance(node, ast.ClassDef) and any(
+                    isinstance(item, ast.FunctionDef) and item.name.startswith("test") for item in node.body)
+                if has_tests:
                     bases = [b.id if isinstance(b, ast.Name) else getattr(b, "attr", "") for b in node.bases]
                     if "ResearchTestCase" not in bases:
                         missing.append((path.name, node.name))
@@ -115,6 +118,33 @@ class ImportGuard(ResearchTestCase):  # R-ISO-1
         import lpbf_calibration_layer
         with self.assertRaises(AssertionError):
             lpbf_calibration_layer._default_solver()("Ti-6Al-4V", 200.0, 800.0, 80.0, 20.0)
+
+
+ROUTE_PATH = "/api/python/" + "lpbf-research-models"
+SCRIPT_NAME = RESEARCH_PREFIX + "models"
+R_ISO_4_ALLOWED = ("persistent_ipc_service.py", "module_registry.py")
+
+
+class RouteNaming(ResearchTestCase):  # R-ISO-4
+    def test_no_other_python_file_names_the_route_or_its_script(self):
+        offenders, scanned = [], 0
+        for path in _python_files():
+            scanned += 1
+            name = path.name
+            if name.startswith(RESEARCH_PREFIX) or name.startswith(RESEARCH_TEST_PREFIX)                     or (path.parent == HERE and name in R_ISO_4_ALLOWED):
+                continue
+            text = path.read_text(encoding="utf-8", errors="replace")
+            for needle in (ROUTE_PATH, SCRIPT_NAME):
+                if needle in text:
+                    offenders.append((str(path.relative_to(HERE)), needle))
+        self.assertGreater(scanned, 100)
+        self.assertEqual(offenders, [])
+
+    def test_the_allowed_files_do_name_it(self):
+        self.assertIn(SCRIPT_NAME, (HERE / "persistent_ipc_service.py").read_text(encoding="utf-8"))
+        registry = (HERE / "module_registry.py").read_text(encoding="utf-8")
+        self.assertIn(SCRIPT_NAME, registry)
+        self.assertIn(ROUTE_PATH, registry)
 
 
 _LANE_PROBE = r"""

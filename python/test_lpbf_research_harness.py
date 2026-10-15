@@ -9,7 +9,7 @@ None of the fake values is physics: they are exact arithmetic on the request so 
 bands, non-finite handling) can be checked byte for byte. The fixture they produce describes transport shape only
 and does not change when the phase C evaluator lands.
 
-Regenerate the transport fixture (only when the transport shape changes deliberately):
+Regenerate the transport and relay fixtures (only when the transport shape changes deliberately):
     python -B test_lpbf_research_harness.py --write-fixture
 """
 
@@ -33,6 +33,7 @@ import lpbf_research_models as models
 PYTHON_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PYTHON_DIR.parent
 FIXTURE_PATH = REPO_ROOT / "tests" / "fixtures" / "lpbf-research-response-v1.json"
+RELAY_FIXTURE_PATH = REPO_ROOT / "tests" / "fixtures" / "lpbf-research-relay-v1.json"
 
 SYNTHETIC_MATERIAL = "P8-Synthetic-Alloy"
 SYNTHETIC_ALLOY_ID = "p8synthetic"
@@ -62,8 +63,16 @@ FAKE_FIELDS = {
     "alSi10MgIndexDisclosure": ("syntheticIndexRatio",),
     "unavailablePhysics": ("syntheticClosure",),
 }
+# Revision 3: with relay_fields=True the fake also emits, with synthetic values, the keyholeCavity and meltDepthLink
+# paths the blind relay projection BLIND_RELAY_V1 reads (14.3 item 4), so the projection has content to carry.
+RELAY_FAKE_FIELDS = {
+    "keyholeCavity": ("cavityDepth_um", "onsetPower_W", "powerOverOnset", "peclet", "onsetEvent"),
+    "meltDepthLink": ("linkedMeltDepth_um", "conditionalMeltDepth_um", "conductionDepth_um", "controllingLeg",
+                      "linkDispatch", "conductionStatus", "floorFieldModelId", "floorExtractorId",
+                      "cavityLedgerRatio"),
+}
 FIXED_LABELS = {f"{module}.{field}": f"Synthetic {field} (fake evaluator, not physics)"
-                for module, fields in FAKE_FIELDS.items() for field in fields}
+                for table in (FAKE_FIELDS, RELAY_FAKE_FIELDS) for module, fields in table.items() for field in fields}
 
 # Declared arms per banded module: (armId, {input: multiplier}). The first is the nominal arm.
 DEFAULT_DECLARED_ARMS = {
@@ -152,7 +161,7 @@ class FakeEngine:
     def __init__(self, *, declared: Mapping | None = None, clock: FakeClock | None = None,
                  seconds_per_arm: float = 0.0, nonfinite: Mapping | None = None, raise_in_arm=(),
                  raise_in_aggregate=(), failures: Mapping | None = None, oversize: bool = False,
-                 o8_declared: bool = False):
+                 o8_declared: bool = False, relay_fields: bool = False, statement_padding: int = 0):
         self.declared = {k: tuple(v) for k, v in (declared or DEFAULT_DECLARED_ARMS).items()}
         self.clock = clock
         self.seconds_per_arm = seconds_per_arm
@@ -162,6 +171,8 @@ class FakeEngine:
         self.failures = dict(failures or {})            # (module, armId, field) -> reason code
         self.oversize = oversize
         self.o8_declared = o8_declared
+        self.relay_fields = relay_fields
+        self.statement_padding = statement_padding
         self.evaluations: list = []
         self.aggregations: list = []
 
@@ -315,6 +326,20 @@ class FakeEngine:
             values = {"syntheticIndexRatio": context.conduction.wallAbsorptance / context.indexAbsorptance}
         else:
             values = {"syntheticClosure": None}
+        if self.relay_fields and module_id == "keyholeCavity":
+            onset = 31.25 * x["K"] / 16.0
+            values.update({"cavityDepth_um": x["P"] * x["A"] / 2.0, "onsetPower_W": onset,
+                           "powerOverOnset": x["P"] / onset, "peclet": x["v"] * x["d"] / (2.0 * x["alpha"]),
+                           "onsetEvent": "dwell"})
+        elif self.relay_fields and module_id == "meltDepthLink":
+            cavity = upstream[f"keyholeCavity/{arm_id}"]["values"]
+            depth = cavity.get("cavityDepth_um")
+            values.update({"linkedMeltDepth_um": None if depth is None else depth + 40.0,
+                           "conditionalMeltDepth_um": None if depth is None else depth + 40.0,
+                           "conductionDepth_um": 40.0, "controllingLeg": "conditional-link",
+                           "linkDispatch": "fake-dispatch", "conductionStatus": "computed",
+                           "floorFieldModelId": "fake-field-v1", "floorExtractorId": "fake-extractor-v1",
+                           "cavityLedgerRatio": 0.5})
         failures = {"syntheticClosure": "KEYHOLE_THERMAL_FLOW_CLOSURE_UNAVAILABLE"} if module_id == "unavailablePhysics" \
             else {}
         for (mod, aid, field), bad in self.nonfinite.items():
@@ -337,7 +362,8 @@ class FakeEngine:
         nominal_id = manifest["arms"][0]["armId"]
         nominal = records[nominal_id]
         fields = {}
-        for name in FAKE_FIELDS[module_id]:
+        names = FAKE_FIELDS[module_id] + (RELAY_FAKE_FIELDS.get(module_id, ()) if self.relay_fields else ())
+        for name in names:
             value = nominal["values"].get(name)
             code = None if value is not None else nominal["failures"].get(name, "RESEARCH_EVALUATION_FAILED")
             band = None if bands is None else bands["numeric"].get(name)
@@ -355,6 +381,30 @@ class FakeEngine:
                                                 for f, entries in sorted(bands["categorical"].items())
                                                 for e in entries],
                          "failedArms": bands["failedArms"]}}
+        if self.relay_fields and module_id in RELAY_FAKE_FIELDS:
+            descriptors = [] if bands is None else [{"armId": a, "label": a} for a in bands["armIds"]]
+            for name in RELAY_FAKE_FIELDS[module_id]:
+                band = container["fields"][name]["band"]
+                if band is not None:
+                    container["fields"][name]["band"] = {**band, "manifest": descriptors}
+            container.update({
+                "moduleMaturity": "Research", "moduleEvidenceCeiling": "screening-only",
+                "validationStatus": "Synthetic status (fake evaluator)" + " pad" * self.statement_padding,
+                "validationStatusLocator": "test_lpbf_research_harness.py", "experimentalValidation": False,
+                "uiSentence": "Synthetic sentence (fake evaluator, not physics).",
+                "consistencyNote": {"status": "extrapolated", "worstArmStatus": "extrapolated",
+                                    "sentence": "Synthetic primary sentence.", "assumptions": ["Synthetic assumption."],
+                                    "knownContradictions": [{"id": "fake-contradiction", "statement": "x"}],
+                                    "reasons": [], "onsetMismatch": {"comparison": "unavailable"}},
+            })
+            if module_id == "meltDepthLink":
+                container["consistencyNote"].update({"fieldShapeStep": {"relativeBracket": 1e-9},
+                                                     "fieldShapeShare": {"applicable": False}})
+            if container["band"] is not None:
+                container["band"]["statusSupport"] = [{"status": "extrapolated", "count": len(descriptors)}]
+                if module_id == "keyholeCavity":
+                    container["band"]["onsetSupport"] = {"supported": len(descriptors), "total": len(descriptors),
+                                                         "unresolved": 0, "caveat": "Synthetic caveat."}
         if self.oversize and module_id == "keyholeCavity":
             container["padding"] = "x" * (5 * 1024 * 1024)
         return container
@@ -433,6 +483,30 @@ def fixture_response() -> dict:
     return parsed
 
 
+PREVIEW_SHA256 = hashlib.sha256(b"p8-stub-blind-preview").hexdigest()
+
+
+def relay_request(stage: str = "band", *, budget: Any = None, ordinal: int = 0, sender: str = "blind-freeze",
+                  preview: str = PREVIEW_SHA256, client_id: str = "blind:1", supersede_key: str | None = None) -> dict:
+    body = request(stage, budget=budget, client_id=client_id)
+    body["sender"] = sender
+    body["supersedeKey"] = supersede_key or (f"p8-research:blind:{preview[:16]}" if sender == "blind-freeze"
+                                             else "p8-research:batch:run0001a")
+    body["relay"] = {"kind": "blind-freeze-v1", "previewSha256": preview, "conditionOrdinal": ordinal}
+    return body
+
+
+def relay_fixture_response() -> dict:
+    """The relay fixture: the R-TR-11 stubs (identity, synthetic property set, arm and label tables, injected
+    cacheInstanceId, cold cache) with the relay paths emitted; computeMs removed."""
+    deps = make_dependencies(FakeEngine(relay_fields=True), cache=research_cache.ResearchLRU())
+    parsed, code, _text = call(deps, relay_request())
+    if code != 0 or "relay" not in parsed:
+        raise RuntimeError(f"relay fixture request failed with exit {code}: {parsed}")
+    parsed.pop("computeMs", None)
+    return parsed
+
+
 def fixture_text(response: Mapping) -> str:
     return json.dumps(response, indent=2, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n"
 
@@ -494,4 +568,5 @@ if __name__ == "__main__":
         sys.exit(2)
     FIXTURE_PATH.parent.mkdir(parents=True, exist_ok=True)
     FIXTURE_PATH.write_text(fixture_text(fixture_response()), encoding="utf-8", newline="\n")
-    print(f"wrote {FIXTURE_PATH}")
+    RELAY_FIXTURE_PATH.write_text(fixture_text(relay_fixture_response()), encoding="utf-8", newline="\n")
+    print(f"wrote {FIXTURE_PATH} and {RELAY_FIXTURE_PATH}")

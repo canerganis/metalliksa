@@ -5,6 +5,10 @@
     "cacheInstanceId": "0123456789abcdef0123456789abcdef"
   },
   "clientRequestId": "fixture:1",
+  "digests": {
+    "labelsSha256": "de2119a5109a07f7c37707d7361889679b3e0d5be53d6128d410dd4991269baa",
+    "researchModelsSha256": "d9b23ec575e6703c2b710e0f472ec3fc17ca6eb9efb4373ef4f110bdd95bd6af"
+  },
   "identity": {
     "propertyContextKind": "nominal",
     "propertySetSha256": "b4b88be232581aea2d5bbc8fbb402362db8f4b60415645b30e8db173cd30f433",

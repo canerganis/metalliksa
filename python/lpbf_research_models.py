@@ -8,6 +8,12 @@ the stage protocol (describe, nominal, band), serializes strictly and sets the e
     request-scope research failure (HTTP 200 envelope)        exit 0, errorKind "research"
     success                                                   exit 0
 
+Revision 3 (contract section 14): the optional ``sender`` (research-panel, blind-freeze, batch-client) and ``relay``
+members with their supersedeKey and relay rules; every complete response carries ``digests`` (sha256 of the canonical
+researchModels and labels), and a complete band response to a relay request carries ``relay.subsetJson``, the ASCII
+canonical JSON of the closed projection BLIND_RELAY_V1, with its sha256 (at most 12,000 characters). Sender and
+binding change neither requestKey nor any cache key.
+
 It holds no module-level state: the IPC worker executes it in a fresh namespace per request, and every per-process
 state (cache, identity, priority) lives in lpbf_research_cache. Heavy work runs only under __main__.
 
@@ -21,6 +27,7 @@ Research only: no served module may import this file, and it never calls calcula
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import re
@@ -61,7 +68,7 @@ PLAN_ORDER = BAND_ORDER + tuple(m for m in CONTAINERS if m not in BAND_ORDER)
 OPTION_MODULES = ("marangoni", "surfaceBalance")
 
 _TOP_KEYS = ("schemaVersion", "supersedeKey", "clientRequestId", "stage", "timeBudgetMs", "process",
-             "propertyContext", "researchOptions")
+             "propertyContext", "researchOptions", "sender", "relay")
 _REQUIRED_TOP_KEYS = ("schemaVersion", "supersedeKey", "clientRequestId", "stage", "process", "propertyContext")
 _PROCESS_NUMBERS = ("laserPower_W", "scanSpeed_mm_s", "beamDiameter_um", "preheatTemp_C")
 _POSITIVE_PROCESS_NUMBERS = ("laserPower_W", "scanSpeed_mm_s", "beamDiameter_um")
@@ -154,10 +161,11 @@ class Refused(Exception):
 
 
 class RequestScopeFailure(Exception):
-    def __init__(self, code: str, detail: str):
+    def __init__(self, code: str, detail: str, cause: str | None = None):
         super().__init__(detail)
         self.code = code
         self.detail = detail
+        self.cause = cause
 
 
 # --- Request checks (contract 3.4 and 9.3, request scope) --------------------------------------------------------
@@ -326,6 +334,56 @@ def _parse(raw: str) -> Any:
     return request
 
 
+def _check_relay(relay: Any, problems: list) -> bool:
+    """The closed relay member (14.1, R-REL-1); True when it is well formed."""
+    if not isinstance(relay, dict):
+        problems.append(_problem("/relay", "wrong-type", value=relay, type="JSON object"))
+        return False
+    before = len(problems)
+    _check_keys(relay, ("kind", "previewSha256", "conditionOrdinal"), "/relay", problems)
+    if relay.get("kind") != codes.RELAY_KIND:
+        problems.append(_problem("/relay/kind", "wrong-type", value=relay.get("kind"), type=f"string {codes.RELAY_KIND}"))
+    sha = relay.get("previewSha256")
+    if not isinstance(sha, str) or not _SHA256_HEX.match(sha):
+        problems.append(_problem("/relay/previewSha256", "wrong-type", value=sha,
+                                 type="64-character lowercase hex SHA-256"))
+    ordinal = relay.get("conditionOrdinal")
+    if not isinstance(ordinal, int) or isinstance(ordinal, bool):
+        problems.append(_problem("/relay/conditionOrdinal", "wrong-type", value=ordinal,
+                                 type="integer from 0 to 1023"))
+    elif ordinal < 0:
+        problems.append(_problem("/relay/conditionOrdinal", "below-min", value=ordinal, limit=0, min=0,
+                                 max=codes.RELAY_CONDITION_ORDINAL_MAX))
+    elif ordinal > codes.RELAY_CONDITION_ORDINAL_MAX:
+        problems.append(_problem("/relay/conditionOrdinal", "above-max", value=ordinal,
+                                 limit=codes.RELAY_CONDITION_ORDINAL_MAX, min=0, max=codes.RELAY_CONDITION_ORDINAL_MAX))
+    return len(problems) == before
+
+
+def _check_sender_and_relay(request: Mapping, problems: list) -> None:
+    """Revision 3 (14.1): the closed sender list, its supersedeKey prefix, and where a relay or options may appear."""
+    sender = request.get("sender", codes.DEFAULT_SENDER)
+    if sender not in codes.SENDERS:
+        problems.append(_problem("/sender", "wrong-type", value=sender,
+                                 type="sender (" + ", ".join(codes.SENDERS) + ")"))
+        return
+    has_relay = "relay" in request
+    relay_ok = _check_relay(request["relay"], problems) if has_relay else False
+    key = request.get("supersedeKey")
+    if isinstance(key, str) and 1 <= len(key) <= MAX_ID_CHARS:
+        preview = request["relay"]["previewSha256"] if relay_ok else None
+        if not codes.supersede_key_matches(sender, key, preview):
+            problems.append(_problem("/supersedeKey", "sender-key-mismatch", value=key, sender=sender,
+                                     expected=codes.SUPERSEDE_KEY_RULES[sender]))
+    if has_relay and sender == "research-panel":
+        problems.append(_problem("/relay", "relay-sender-mismatch", value=request["relay"], sender=sender))
+    if "researchOptions" in request and (has_relay or sender == "blind-freeze"):
+        problems.append(_problem("/researchOptions", "relay-options-forbidden", value=request["researchOptions"],
+                                 context="with a relay" if has_relay else "from sender blind-freeze"))
+    if sender == "blind-freeze" and request.get("stage") == "band" and not has_relay:
+        problems.append(_problem("/relay", "relay-required", value=None))
+
+
 def check_request(raw: str, provider) -> dict:
     """Contract 3.4 request checks 1 to 8; raises Refused with every problem found, in check order."""
     request = _parse(raw)
@@ -351,6 +409,7 @@ def check_request(raw: str, provider) -> dict:
         _check_property_context(request["propertyContext"], problems)
     if "researchOptions" in request:
         _check_research_options(request["researchOptions"], problems)
+    _check_sender_and_relay(request, problems)
     if problems:
         raise Refused("RESEARCH_REQUEST_INVALID", problems)
     context = request["propertyContext"]
@@ -623,8 +682,10 @@ class _ModulePlan:
 
 
 class _Protocol:
-    def __init__(self, deps: Dependencies, context, options: dict, identity: dict, t0: float):
+    def __init__(self, deps: Dependencies, context, options: dict, identity: dict, t0: float,
+                 sender: str = codes.DEFAULT_SENDER):
         self.deps = deps
+        self.sender = sender
         self.engine = deps.engine
         self.context = context
         self.options = options
@@ -649,7 +710,7 @@ class _Protocol:
             try:
                 self.plans[module] = self._plan_module(module)
             except Exception:
-                self.deps.log(f"[lpbf_research_models] manifest failed: module={module} "
+                self.deps.log(f"[lpbf_research_models] manifest failed: sender={self.sender} module={module} "
                               + traceback.format_exc().strip().replace("\n", " | "))
                 self.plans[module] = _ModulePlan(module, "failed", "RESEARCH_EVALUATION_FAILED")
 
@@ -714,7 +775,8 @@ class _Protocol:
             record = sanitize_arm_record(self.engine.evaluate_arm(plan.module, self.context, self.options, arm,
                                                                   upstream))
         except Exception:
-            self.deps.log(f"[lpbf_research_models] arm failed: module={plan.module} arm={arm_id} "
+            self.deps.log(f"[lpbf_research_models] arm failed: sender={self.sender} module={plan.module} "
+                          f"arm={arm_id} "
                           + traceback.format_exc().strip().replace("\n", " | "))
             record = {"values": {}, "failures": {}, "armFailure": "RESEARCH_EVALUATION_FAILED"}
         transient = (upstream_transient or record.get("armFailure") in codes.TRANSIENT_CODES
@@ -766,7 +828,8 @@ class _Protocol:
             container = serialization_pass(build())
             research_cache.canonical(container)
         except Exception:
-            self.deps.log(f"[lpbf_research_models] module assembly failed: module={plan.module} "
+            self.deps.log(f"[lpbf_research_models] module assembly failed: sender={self.sender} "
+                          f"module={plan.module} "
                           + traceback.format_exc().strip().replace("\n", " | "))
             return self._failed(plan.module, "RESEARCH_EVALUATION_FAILED")
         if agg_key is not None and not self.transient(plan):
@@ -831,13 +894,18 @@ def _labels(block: Mapping | None, table: Mapping[str, str]) -> dict:
     return {path: table[path] for path in sorted(paths) if path in table}
 
 
+def _canonical_property_context(request: Mapping, context) -> dict:
+    prop_context = dict(request["propertyContext"])
+    if prop_context.get("kind") == "build-job-snapshot":
+        prop_context["alloyId"] = context.alloyId or prop_context["alloyId"]
+    return prop_context
+
+
 def request_key(identity: Mapping, request: Mapping, context, options: Mapping, engine) -> str:
     """Contract 3.6: identity prefix, canonical process subset, propertyContext, propertySetSha256 and canonical
     researchOptions (a follow flag is the absence of its key, so it is part of the options)."""
     process = request["process"]
-    prop_context = dict(request["propertyContext"])
-    if prop_context.get("kind") == "build-job-snapshot":
-        prop_context["alloyId"] = context.alloyId or prop_context["alloyId"]
+    prop_context = _canonical_property_context(request, context)
     return research_cache.canonical_sha256({
         "kind": "request",
         "prefix": {**identity, "researchSchemaVersion": research_cache.RESEARCH_SCHEMA_VERSION,
@@ -889,6 +957,75 @@ def _response_identity(identity: Mapping, context) -> dict:
             "propertySetSha256": context.propertySetSha256, "propertyContextKind": context.propertyContextKind}
 
 
+def canonical_sha256_json(value: Any) -> str:
+    """sha256 of the canonical JSON of 14.3 item 1 (UTF-8 of an ASCII text)."""
+    return hashlib.sha256(codes.canonical_json(value).encode("utf-8")).hexdigest()
+
+
+def _path_value(block: Mapping, path: str) -> Any:
+    """A dotted path into researchModels; None when the block does not carry it."""
+    ids_only = path.endswith("[].id")
+    parts = (path[:-len("[].id")] if ids_only else path).split(".")
+    node: Any = block
+    for part in parts:
+        if not isinstance(node, Mapping) or part not in node:
+            return None
+        node = node[part]
+    if ids_only:
+        return [item.get("id") for item in node if isinstance(item, Mapping)] if isinstance(node, list) else None
+    return node
+
+
+def _hash_manifests(value: Any) -> Any:
+    """14.3 item 4: a band's manifest is replaced by manifestSha256 (canonical descriptor list) and manifestLength."""
+    if isinstance(value, Mapping):
+        out = {}
+        for key, item in value.items():
+            if key == "manifest" and isinstance(item, list):
+                out["manifestSha256"] = canonical_sha256_json(item)
+                out["manifestLength"] = len(item)
+            else:
+                out[key] = _hash_manifests(item)
+        return out
+    if isinstance(value, list):
+        return [_hash_manifests(item) for item in value]
+    return value
+
+
+def blind_relay_subset(request: Mapping, context, request_key: str, identity: Mapping, digests: Mapping,
+                       block: Mapping, labels: Mapping) -> dict:
+    """The closed projection BLIND_RELAY_V1 of a complete block (14.3 item 4); no volatile member enters it."""
+    spec = codes.BLIND_RELAY_V1
+    relay = request["relay"]
+    subset: dict = {
+        "relaySchemaVersion": codes.RELAY_KIND,
+        "relayPathsSha256": codes.RELAY_PATHS_SHA256,
+        "binding": {"previewSha256": relay["previewSha256"], "conditionOrdinal": relay["conditionOrdinal"]},
+        "request": {
+            "process": {key: _floats(request["process"][key]) for key in codes.RELAY_PROCESS_KEYS},
+            "si": {"power_W": context.power_W, "speed_m_s": context.speed_m_s,
+                   "beamDiameter_m": context.beamDiameter_m, "preheat_K": context.preheat_K},
+            "propertyContext": _canonical_property_context(request, context),
+            "sender": request.get("sender", codes.DEFAULT_SENDER),
+        },
+        "requestKey": request_key,
+        "identity": {key: identity[key] for key in spec["identity"]},
+        "digests": dict(digests),
+    }
+    field_paths = []
+    for section in ("scored", "context", "support", "notes", "statements"):
+        values = {}
+        for path in spec[section]:
+            value = _path_value(block, path)
+            values[path] = _hash_manifests(value) if section in ("scored", "context") else value
+            if section in ("scored", "context"):
+                module, _fields, name = path.split(".")
+                field_paths.append(f"{module}.{name}")
+        subset[section] = values
+    subset["labels"] = {path: labels[path] for path in sorted(field_paths) if path in labels}
+    return subset
+
+
 def _respond(deps: Dependencies, raw: str, t0: float) -> dict:
     stale = deps.identity.check()
     if stale.get("stale"):
@@ -908,13 +1045,13 @@ def _respond(deps: Dependencies, raw: str, t0: float) -> dict:
     if stage == "describe":
         return _describe(deps, request, context, options, identity, key)
     _controls, refused, _problems = _refused_modules(deps, context, options)
-    protocol = _Protocol(deps, context, options, identity, t0)
+    protocol = _Protocol(deps, context, options, identity, t0, request.get("sender", codes.DEFAULT_SENDER))
     protocol.plan(refused)
     if stage == "nominal":
         block, progress = protocol.nominal_stage()
     else:
         block, progress = protocol.band_stage(request.get("timeBudgetMs"))
-    return {
+    response = {
         "success": True,
         "schemaVersion": RESPONSE_SCHEMA_VERSION,
         "clientRequestId": request["clientRequestId"],
@@ -927,14 +1064,35 @@ def _respond(deps: Dependencies, raw: str, t0: float) -> dict:
         "cache": {"cacheInstanceId": deps.cache_instance_id, "armsHit": protocol.hits,
                   "armsComputed": protocol.computed},
     }
+    if block is not None:
+        # Revision 3 (14.3 items 1 and 2): digests on every complete response; the relay on a complete band
+        # response to a relay request. Both are computed on exactly the values that are serialized.
+        block = serialization_pass(block)
+        labels = response["labels"]
+        digests = {"researchModelsSha256": canonical_sha256_json(block), "labelsSha256": canonical_sha256_json(labels)}
+        response["researchModels"] = block
+        response["digests"] = digests
+        if stage == "band" and progress["complete"] and "relay" in request:
+            subset = blind_relay_subset(request, context, key, response["identity"], digests, block, labels)
+            subset_json = codes.canonical_json(subset)
+            if len(subset_json) > codes.RELAY_SUBSET_MAX_CHARS:
+                raise RequestScopeFailure("RESEARCH_RESPONSE_TOO_LARGE",
+                                          f"relay subsetJson has {len(subset_json)} characters "
+                                          f"(cap {codes.RELAY_SUBSET_MAX_CHARS})", cause="relay")
+            response["relay"] = {"kind": codes.RELAY_KIND, "subsetJson": subset_json,
+                                 "subsetSha256": hashlib.sha256(subset_json.encode("ascii")).hexdigest()}
+    return response
 
 
 def _dumps(value: Any) -> str:
-    return json.dumps(value, allow_nan=False, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
+    return codes.canonical_json(value)
 
 
-def _failure_text(code: str) -> str:
-    return _dumps({"success": False, "errorKind": RESEARCH_ERROR_KIND, "reasonCode": code})
+def _failure_text(code: str, cause: str | None = None) -> str:
+    body = {"success": False, "errorKind": RESEARCH_ERROR_KIND, "reasonCode": code}
+    if cause is not None:
+        body["cause"] = cause
+    return _dumps(body)
 
 
 def run(raw: str, deps: Dependencies) -> tuple:
@@ -951,7 +1109,7 @@ def run(raw: str, deps: Dependencies) -> tuple:
         return _dumps(body), EXIT_REFUSED
     except RequestScopeFailure as failure:
         deps.log(f"[lpbf_research_models] {failure.code}: {failure.detail}")
-        return _failure_text(failure.code), EXIT_OK
+        return _failure_text(failure.code, failure.cause), EXIT_OK
     except Exception:
         deps.log("[lpbf_research_models] RESEARCH_EVALUATION_FAILED: "
                  + traceback.format_exc().strip().replace("\n", " | "))
