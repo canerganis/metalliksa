@@ -7,7 +7,7 @@
     "timestamp": "2026-09-06T19:41:46Z",
     "tools": [
       {
-        "vendor": "MetalliX",
+        "vendor": "Metalliksa",
         "name": "generate_sbom.py",
         "version": "1.0.0"
       }

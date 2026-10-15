@@ -41,7 +41,7 @@ const requests = [
   { label: 'Engine status fixture', group: 'engine-status', source: 'fixture', method: 'GET', path: '/api/python/status',
     fixture: { success: true, status: 'static snapshot', platform: 'static-demo', warm: false, channel: 'static-demo', subsystemStatus: 'static snapshot' } },
   { label: 'Health fixture', group: 'engine-status', source: 'fixture', method: 'GET', path: '/api/health',
-    fixture: { status: 'ok', service: 'MetalliX-Static-Demo', hasApiKey: false, airgapped: false } },
+    fixture: { status: 'ok', service: 'Metalliksa-Static-Demo', hasApiKey: false, airgapped: false } },
   { label: 'Runtime config fixture', group: 'engine-status', source: 'fixture', method: 'GET', path: '/api/runtime-config',
     fixture: { airgapped: false, blockedServices: [], allowedLocal: [], staticDemo: true } },
 ];

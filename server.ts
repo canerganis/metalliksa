@@ -54,7 +54,7 @@ let bindConfig: ReturnType<typeof resolveBindConfig>;
 try {
   bindConfig = resolveBindConfig(process.env);
 } catch (error: any) {
-  console.error(`[MetalliX-Server] ${error?.message || error}`);
+  console.error(`[Metalliksa-Server] ${error?.message || error}`);
   process.exit(1);
 }
 
@@ -88,7 +88,7 @@ app.use(processOrchestrationMiddleware);
 app.get("/api/health", (req: Request, res: Response) => {
   res.json({
     status: "ok",
-    service: "MetalliX-Unified-Server",
+    service: "Metalliksa-Unified-Server",
     hasApiKey: AIRGAPPED ? false : isAuthenticated(req, bindConfig.token, loginAuth) && !!process.env.OPENAI_API_KEY?.trim(),
     airgapped: AIRGAPPED,
     timestamp: new Date().toISOString(),
@@ -144,15 +144,15 @@ async function startServer() {
   }
 
   httpServer.listen(PORT, bindConfig.host, () => {
-    console.log(`[MetalliX-Server] Modular server running on http://${bindConfig.host}:${PORT}`);
+    console.log(`[Metalliksa-Server] Modular server running on http://${bindConfig.host}:${PORT}`);
     if (!bindConfig.loopback) {
-      console.warn(`[MetalliX-Server] Network exposure: host ${bindConfig.host} is not loopback. Prefer HTTPS (reverse proxy) for non-local use.`);
+      console.warn(`[Metalliksa-Server] Network exposure: host ${bindConfig.host} is not loopback. Prefer HTTPS (reverse proxy) for non-local use.`);
     }
     const proxyWarning = buildTrustProxyWarning(bindConfig, trustProxy);
-    if (proxyWarning) console.warn(`[MetalliX-Server] ${proxyWarning}`);
-    for (const line of buildLoginBannerLines(bindConfig, PORT)) console.log(`[MetalliX-Server] ${line}`);
+    if (proxyWarning) console.warn(`[Metalliksa-Server] ${proxyWarning}`);
+    for (const line of buildLoginBannerLines(bindConfig, PORT)) console.log(`[Metalliksa-Server] ${line}`);
     if (AIRGAPPED) {
-      console.log("[MetalliX-Server] AIRGAPPED=1 — GPT-6 / NVIDIA / live MP / external pricing disabled; local LPBF open.");
+      console.log("[Metalliksa-Server] AIRGAPPED=1 — Crossref literature search disabled; local LPBF and physics engines remain available.");
     }
   });
 }
