@@ -384,6 +384,12 @@ def _fixture() -> Tuple[Dict[str, Any], Dict[str, Any]]:
 # The fixture comparison drops ONLY these names and only when the fixture lacks them, so every key the
 # fixture has is still compared bit-exact; the label itself is pinned by result.key.<name> in the golden.
 FIXTURE_POST_CAPTURE_LABEL_KEYS = ("solidificationResolution",)
+# SOL-T (2026-10-16, D13): the transient G/R/cooling containment envelope and the admitted melt-point parent record
+# were added after the capture. The envelope re-labels the metrics values that stay in result.metrics (compared
+# bit-exact); the parent record is source/parent identity. Each is dropped by exact name, only when the fixture lacks
+# it, so every key the capture has is still compared; both are pinned by their own result.key.* observations.
+FIXTURE_POST_CAPTURE_D13_KEYS = ("transientFrontDiagnostics",)
+FIXTURE_POST_CAPTURE_MATERIAL_PARENT_KEYS = ("endpointAdmission",)
 
 
 MATERIAL_IDENTITY_KEYS = ("materialRevisionSha256", "materialAuthorityRevisionSha256")
@@ -409,9 +415,14 @@ def case_g2_bare_plate_fixture(ctx: CaseContext) -> Dict[str, Any]:
     artifact_dir = ctx.work_dir / "result"
     run_stripped, _ = strip_result(result)
     reference_stripped, reference_hash = strip_result(reference)
-    for key in FIXTURE_POST_CAPTURE_LABEL_KEYS:
+    for key in FIXTURE_POST_CAPTURE_LABEL_KEYS + FIXTURE_POST_CAPTURE_D13_KEYS:
         if key not in reference_stripped:
             run_stripped.pop(key, None)
+    run_material, reference_material = run_stripped.get("material"), reference_stripped.get("material")
+    if isinstance(run_material, dict) and isinstance(reference_material, dict):
+        for key in FIXTURE_POST_CAPTURE_MATERIAL_PARENT_KEYS:
+            if key not in reference_material:
+                run_material.pop(key, None)
     observations["fixture.strippedResultEqual"] = (
         canonical_json_sha256(run_stripped) == canonical_json_sha256(reference_stripped))
     # P7b (2026-10-14): the material authority moved, so the capture's material identity (materialRevisionSha256,
