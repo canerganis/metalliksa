@@ -502,7 +502,8 @@ def check():
                     assert row["provenance"] == changed_input_provenance(alloy, row["armId"], row["inputs"], nominal, records)
                     if row["armId"] in {"slope_-0.000244", "slope_-7.86e-05"}:
                         assert row["provenance"]["kind"] == "alloyTransfer", row["armId"]
-                    if row["armId"].startswith("liquidus_"):
+                    # SOL-T re-pin: liquidus_872.15 now equals the installed nominal liquidus, so it changes no value.
+                    if row["armId"].startswith("liquidus_") and row["inputs"]["Tl"] != nominal["Tl"]:
                         assert row["provenance"]["label"] == "Unresolved", row["armId"]
                     assert set(records) == set(row["inputs"])
                     assert all(r["kind"] in KINDS for r in records.values())
@@ -534,9 +535,12 @@ def check():
     # Exercise the exact source-only registry the integration fixture passes.
     # Read only this named source blob; no solver imports, papers or datasets.
     repo = Path(__file__).resolve().parents[3]
-    source = subprocess.check_output(["git", "show", LEDGER], cwd=repo, text=True, encoding="utf-8")
+    # SOL-T re-pin (2026-10-16): the fixture registry is the installed SOL-T source (synthetic BASE); LEDGER stays the
+    # historical locator text of the provenance records.
+    blob = "8de9373d774236d8155aa84cfd00dfd616c92744:python/four_alloy_materials.py"
+    source = subprocess.check_output(["git", "show", blob], cwd=repo, text=True, encoding="utf-8")
     registry = types.ModuleType("p8_provenance_check_registry")
-    exec(compile(source, LEDGER, "exec"), registry.__dict__)
+    exec(compile(source, blob, "exec"), registry.__dict__)
     secondary = secondary_manifests(registry)
     assert fixture["secondaryAlloyManifests"] == secondary, "stale secondary inputProvenance"
     for alloy, modules in secondary.items():
@@ -550,7 +554,7 @@ def check():
             assert tested[alloy]["surfaceBalance"]["n"] == (9 if alloy == "in625" else 8)
             assert tested[alloy]["cavityAdmission"] == "ALLOY_CONSTANT_CHAIN_NOT_ADMITTED"
     assert secondary["in718"]["marangoni"]["manifest"][0]["inputs"]["Tref"] == 1859.15
-    assert secondary["ss316l"]["marangoni"]["manifest"][0]["inputs"]["Tref"] == 1923.15
+    assert secondary["ss316l"]["marangoni"]["manifest"][0]["inputs"]["Tref"] == 1973.15  # SOL-T: Tl 1723.15 (was 1923.15)
     assert secondary["in625"]["marangoni"]["manifest"][0]["inputs"]["mu"] is None
     in625_surface = secondary["in625"]["surfaceBalance"]["manifest"]
     assert len(in625_surface) == 9
@@ -562,7 +566,7 @@ def check():
     assert source_evidence_kind({"mu": user}, ("mu",)) == "User input"
     assert source_evidence_kind({"mu": user, "cp": _assumption("cp", "test")}, ("mu", "cp")) == "Unresolved"
     assert source_evidence_kind({"mu": _record("sourceDefault", "test:source"), "P": user}, ("mu",)) == "Literature estimate"
-    print(f"P8 provenance check PASS: {found} primary arm records; BASE835466fa secondary counts7/8/7 and9/8/8; label precedence and request exclusion; no target data")
+    print(f"P8 provenance check PASS: {found} primary arm records; SOL-T base 8de9373d secondary counts7/8/7 and9/8/8; label precedence and request exclusion; no target data")
 
 
 if __name__ == "__main__":

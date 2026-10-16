@@ -13,7 +13,7 @@ class ManifestContract(ResearchTestCase):
     def test_default_counts_secondary_aliases_and_provenance_split(self):
         fixture=json.loads(FIXTURE.read_text(encoding='utf-8'))
         engine=arm.Engine()
-        for alloy,counts in [('ti6al4v',(20,20,17,19)),('alsi10mg',(25,25,13,24)),
+        for alloy,counts in [('ti6al4v',(20,20,17,19)),('alsi10mg',(25,25,12,23)),  # SOL-T: liquidus_872.15 now equals the nominal Tl and dedupes (was 13, 24)
                              ('in625',(1,1,7,9)),('in718',(1,1,8,8)),('ss316l',(1,1,7,8))]:
             ctx=resolved(alloy)
             for module,n in zip(('keyholeCavity','meltDepthLink','marangoni','surfaceBalance'),counts):
