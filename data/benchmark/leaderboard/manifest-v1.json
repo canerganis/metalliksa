@@ -18,7 +18,7 @@
   "statement": "Screening benchmark: predictions scored on published single tracks; not validation"
  },
  "inputsFile": "inputs-v1.csv",
- "inputsSha256": "84529f05d7da0b93a979bdf2a4da290f49c19170ea878eacfe27a8bb32afecc8",
+ "inputsSha256": "77e6931d35267d553efbceed01233d4459428d472ca62240f5ca03de8844a42e",
  "protocol": {
   "clusters": "parameter set via lpbf_calibration_stats.set_key = (source, material, power_W, speed_mm_s, beamDiameter_um)",
   "coverage": {

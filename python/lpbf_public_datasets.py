@@ -1105,7 +1105,8 @@ def wave2_reference_targets() -> List[Dict[str, Any]]:
                   for r in nist["rows"]],
          "comparison": {"status": "unavailable", "reason": (
              "No like-for-like model comparison exists in the app for these quantities. The default screening kernels "
-             "leave solidificationKinetics.coolingRate_K_s unavailable because no liquidus-front endpoint is admitted. "
+             "leave the front cooling rate unavailable: the SOL-T liquidus is an admitted nominal convention, but SOL-C's "
+             "co-located interface samples are not installed. "
              "Even an admitted G x R at a solidification-front point would not be the surface "
              "centerline cooling rate just below the solidus (TSCR) or above the liquidus (TLCR), and no reviewed "
              "operator converts a kernel melt-pool length into a time above 1298 C at the surface centerline (TTAM). "
