@@ -52,6 +52,8 @@ def _rpc_fatigue_fracture(request):
 
 def _rpc_keyhole_raytracing(request):
     # Phase 26
+    from gpu_capability import require_warp
+    require_warp(request.get("payload", {}).get("device", "cpu"))
     from lpbf_keyhole_raytracing import compute_keyhole_raytracing
     data = compute_keyhole_raytracing(request.get("payload", {}))
     return data

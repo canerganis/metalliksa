@@ -1,4 +1,5 @@
 import { parseGpuPilotArtifactDescriptor } from '../types/lpbfGpuArtifacts';
+import { gpuCapability, GpuCapabilityError } from '../utils/gpuCapability';
 import type { GpuPilotArtifactDescriptor } from '../types/lpbfGpuArtifacts';
 
 export type SimulationMode = "screening" | "standard" | "high-fidelity" | "calibration";
@@ -363,6 +364,8 @@ export function parseSimulationJob(value: unknown): SimulationJob {
 async function request(url: string, options?: RequestInit): Promise<unknown> {
   const res = await fetch(url, { ...options, signal: AbortSignal.timeout(25000), headers: { "Content-Type": "application/json" } });
   const data: unknown = await res.json();
+  const capability = object(data) ? gpuCapability(data.capability) : null;
+  if (!res.ok && capability) throw new GpuCapabilityError(capability);
   if (!res.ok) throw new Error(object(data) && typeof data.error === "string" ? data.error : `LPBF HTTP ${res.status}`);
   return data;
 }

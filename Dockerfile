@@ -63,6 +63,7 @@ npm run build
 /opt/venv/bin/python python/test_eagar_tsai.py
 /opt/venv/bin/python python/test_goldak_fabbro.py
 /opt/venv/bin/python python/test_lpbf_meltpool_accuracy.py
+/opt/venv/bin/python python/test_gpu_capability.py
 EOF
 
 # Production dependencies only.
@@ -101,6 +102,12 @@ COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=verify /app/dist ./dist
 COPY package.json ./
 COPY python ./python
+ARG INSTALL_GPU=0
+# Opt-in only: verification above always exercises the unchanged CPU environment.
+RUN if [ "$INSTALL_GPU" = "1" ]; then \
+      /opt/venv/bin/pip install --no-cache-dir --require-hashes -r python/requirements-gpu-linux-py312.lock \
+      && mkdir -p /app/.cache && chown 10001 /app/.cache; \
+    elif [ "$INSTALL_GPU" != "0" ]; then echo "INSTALL_GPU must be 0 or 1" >&2; exit 1; fi
 COPY data ./data
 # docs/sources/in625 is read at run time (server/lpbfPropertySourceCatalog.ts resolves it
 # against the working directory; lpbfSourceArchiveService archives from it).

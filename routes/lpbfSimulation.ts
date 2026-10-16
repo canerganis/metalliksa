@@ -1,7 +1,11 @@
 import { Router, Request, Response } from "express";
 import { lpbfWorker, LpbfWorkerUnavailableError, LpbfWorkerValidationError } from "../server/lpbfWorkerBridge";
+import { GpuCapabilityError } from '../src/utils/gpuCapability';
 
 export function workerError(res: Response, error: unknown, fallback: string) {
+  if (error instanceof GpuCapabilityError) return res.status(503).json({
+    error: error.message, code: error.capability.code, capability: error.capability,
+  });
   // Phase 6a: a worker-side input_validation error (e.g. fatigue UNKNOWN_ALLOY) is a
   // 422 with the validation envelope, like the migrated solvers on the dispatch routes.
   if (error instanceof LpbfWorkerValidationError) return res.status(422).json(error.envelope);

@@ -1,0 +1,7 @@
+# Linux x86_64 / CPython 3.12 optional GPU stack.
+# Generated from pip download --no-deps --only-binary=:all: --platform manylinux_2_28_x86_64 --python-version 312 --implementation cp --abi cp312 warp-lang==1.17.0
+# SHA-256 computed from the downloaded wheel bytes with hashlib.
+# Reuse the CPU lock for Warp's numpy dependency without changing its version.
+-r requirements-lpbf-linux-py312.lock
+warp-lang==1.17.0 \
+    --hash=sha256:47cd93636828dd16e55eeb4e77a0e3547b5fb0f383000a3d228629df68f28fd8
