@@ -12,6 +12,7 @@ import json
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
@@ -22,6 +23,16 @@ import lpbf_keyhole_literature as kl  # noqa: E402
 
 REPORT = HERE.parent / "docs" / "LPBF_KEYHOLE_BENCHMARK_2026-10-07_keyhole-regime.json"
 OLD_REPORT = HERE.parent / "docs" / "LPBF_KEYHOLE_BENCHMARK_2026-10-07.json"
+# SOL-T (2026-10-16) moved the served 316L endpoints (1375 / 1400 -> 1385 / 1450 C). The 2026-10-07 record stays the
+# historical record of the keyhole-regime bump and is reproduced at the pre-SOL-T 316L endpoints; the SOL-T record is
+# reproduced at the served properties.
+SOLT_REPORT = HERE.parent / "docs" / "LPBF_KEYHOLE_BENCHMARK_2026-10-16_solt.json"
+PRE_SOLT_316L = {"solidus_C": 1375.0, "liquidus_C": 1400.0}
+
+
+def _pre_solt_props(material, _served=kb.pds.screening_props):
+    props = _served(material)
+    return {**props, **PRE_SOLT_316L} if material == "316L Stainless Steel" else props
 INDEX_KEYS = ("appIndex_dHhs", "appRegime", "appRegimeLegacy_15_30", "appPorosityRiskByIndex", "appPorosityRiskLegacy",
               "ganKe", "ganEta", "ganRegime", "ganKeyholeDepth_um", "huangProduct_betaYe", "huangProduct_betaAppFlat",
               "hannRegime")
@@ -31,7 +42,8 @@ class CommittedReport(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.doc = json.loads(REPORT.read_text(encoding="utf-8"))
-        cls.idx = kb.evaluate(run_kernels=False)
+        with mock.patch.object(kb.pds, "screening_props", _pre_solt_props):
+            cls.idx = kb.evaluate(run_kernels=False)
 
     def test_schema_and_data_pins(self):
         self.assertEqual(self.doc["schema"], "lpbf-keyhole-benchmark-2")
@@ -174,6 +186,27 @@ class CommittedReport(unittest.TestCase):
             got = json.loads(json.dumps(kb.kernel_block(c["power_W"], c["speed_mm_s"], c["beamDiameter_um"],
                                                         c["preheat_C"])))
             self.assertEqual(got, c["kernels"], c["rowId"])
+
+
+class SolTReport(unittest.TestCase):
+    """The SOL-T dated record reproduces the index-only evaluation at the served properties and its companions."""
+
+    def test_index_evaluation_and_companions_reproduce(self):
+        doc = json.loads(SOLT_REPORT.read_text(encoding="utf-8"))
+        idx = kb.evaluate(run_kernels=False)
+        self.assertEqual(doc["generatedAt"], "2026-10-16")
+        for group in ("cunningham", "zhaoBoundary", "zhaoPores"):
+            for a, b in zip(doc["cases"][group], idx["cases"][group]):
+                for k in INDEX_KEYS:
+                    self.assertEqual(a[k], b[k], (group, a["rowId"], k))
+        for key in ("cunninghamLines", "zhaoPores", "zhaoBoundary", "hannRelationCheck", "heldOut", "ganData1Check",
+                    "kingConversion"):
+            self.assertEqual(doc[key], idx[key], key)
+        with mock.patch.object(kb, "TITLE_TAG", "solt"), mock.patch.object(kb, "GENERATED_AT", "2026-10-16"):
+            self.assertEqual(SOLT_REPORT.with_suffix(".md").read_text(encoding="utf-8"), kb.to_markdown(doc))
+        view = json.loads(SOLT_REPORT.with_name(SOLT_REPORT.stem + ".view.json").read_text(encoding="utf-8"))
+        self.assertEqual(view, json.loads(json.dumps(kb.view(doc))))
+        self.assertEqual(doc["kingConversion"]["app316lProperties"]["liquidus_C"], 1450.0)
 
 
 if __name__ == "__main__":
