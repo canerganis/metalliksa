@@ -1,5 +1,7 @@
 # SOL-C Amendment 6 spacing decisions (2026-10-16)
 
+Historical A6 record. Amendment 7 in the SPEC and [A7 resolution](sol_c_a7_resolution.md) supersede its promotion, tiny-scale and display rules. In particular, no transferred or extrapolated route reaches Tier 1, every PDAS/SDAS passes the named surrogate capillary gate, and all SDAS texts say secondary arms may not form.
+
 This note supersedes the no-value dispositions in the spacing part of Amendment 5 only. These are research model contracts, not installed producers or experimental validation. The new maintainer rule permits disclosed extrapolation and alloy-family transfer. Empirical solidification correlations below are physics models of dendrite scale, not arbitrary numeric defaults. A value does not prove that dendrites or secondary arms actually formed.
 
 ## Common contract

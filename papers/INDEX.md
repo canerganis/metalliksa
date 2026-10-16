@@ -56,3 +56,11 @@ Local-only source objects for [A6 spacing models](../docs/research/sol_c_a6_spac
 | `solc_a6_spacing_ni.pdf` | Mitchell2005, DOI10.7449/2005/Superalloys_2005_299_310, PDF4 Eq1 | `9ceee36095cd4363239a0457f305e65970deeb1c813c2114546c7b63848f9569` |
 
 The separate [A6 morphology/phase source record](../docs/research/sol_c_a6_morph_source_extracts.json) stores bounded normalized primary-browser/table transcriptions, with exact URLs/locators and retrieval limitations. It is committed as a small numeric/equation research record, not a PDF archive or raw source-byte authentication. Its source/transcription checks and independent physical-model arithmetic are described in [sol_c_a6_morph_phase.md](../docs/research/sol_c_a6_morph_phase.md).
+
+## SOL-C Amendment 7 local source additions (2026-10-16)
+
+The [A7 source audit](../docs/research/sol_c_a7_source_audit.md) contains exact download URLs, page locators, SHA256 identities and failed-access limits. Six complete PDFs were obtained and their selected pages inspected as text and rendered images: `solc_a7_salsi2018.pdf`, `solc_a7_ghosh2018.pdf`, `solc_a7_azizi2020.pdf`, `solc_a7_gerstgrasser2021.pdf`, `solc_a7_yaokawa2023.pdf`, `solc_a7_eutectic2022.pdf`. The executable pins are in `docs/research/scripts/sol_c_a7_sources_check.py`; missing or changed source objects fail rather than skip.
+
+Brooke's complete primary JATS XML and PMC HTML are local `solc_a7_brooke_jats.xml` and `solc_a7_brooke_pmc.html`; their hashes and selected MathML agree. This is source-byte authentication of those representations, not of an absent PDF. DOI103802 is Durga and Lindwall (2023), not Mishra; primary indexed text verifies the .0049/.49 true-fraction convention, with no PDF authentication claim. Gao2025's original PDF and the content of its 2026 corrigendum remain unverified. Nucleation assumptions retain Unresolved provenance. Hunt1984/MS1964 originals were sought but not obtained.
+
+All PDFs, XML/HTML objects, metadata, text extracts and page renders remain local-only and are never staged; the commit contains only source notes, specification and checks. No measured-pool validation or redistribution rights are inferred. The preserved A6 transcription JSON is historical and explicitly hash-pinned; new primary verification does not silently rewrite it.

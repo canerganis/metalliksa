@@ -9,9 +9,12 @@ import argparse
 from decimal import Decimal, localcontext
 import hashlib
 import html
+import importlib.util
+import inspect
 import math
 from pathlib import Path
 import re
+import sys
 import unicodedata
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -81,15 +84,44 @@ def primary_sources():
     for page, token in ((11, 'PDAS=2.83(keΓ∆T0Dl)0.25G-0.5V-0.25'),
                         (12, 'PDAS=4.3(Γ∆T0Dl/ke)0.25G-0.5V-0.25')):
         need(token in compact(ghosh_reader.pages[page].extract_text()), 'Ghosh primary equation missing')
-    return ni_a, ni_n
+    # Feed PARSED source coefficients into the actual estimator, not duplicate
+    # hand-entered literals that merely agree with the source assertions above.
+    def parsed(pattern,text):
+        match = re.search(pattern,text)
+        need(match is not None,'coefficient parser: '+pattern)
+        return tuple(map(float,match.groups()))
+    ti_primary = parsed(r'λ1=\(-([0-9.]+)CAl\+([0-9.]+)\)T⋅-([0-9.]+)',ti)
+    ti_secondary = parsed(r'λ2=\(-([0-9.]+)CAl\+([0-9.]+)\)T⋅-([0-9.]+)',ti)
+    al_primary = parsed(r'λ1=([0-9.]+)\([^)]*\)-([0-9.]+)forbothalloys',al)
+    al_secondary = parsed(r'0.45wt.%Mg:λ2=([0-9.]+)\(vL\)-([0-9]+)/([0-9]+)',al)
+    al_alternative = parsed(r'1wt.%Mg:λ2=([0-9.]+)\(vL\)-([0-9.]+)',al)
+    steel_primary = parsed(r'\(2\)/u1D7061=([0-9.]+)\(/u1D700\)-([0-9.]+)',steel1)
+    steel_secondary = parsed(r'\(6\)/u1D7062=([0-9.]+)\(/u1D700\)-([0-9.]+)',steel2)
+    def ghosh_number(pattern):
+        return parsed(pattern,table)[0]
+    def ghosh_scientific(pattern):
+        a,b = parsed(pattern,table)
+        return a*10**b
+    eq7 = compact(ghosh_reader.pages[11].extract_text())
+    eq8 = compact(ghosh_reader.pages[12].extract_text())
+    return dict(ti_pdas=ti_primary,ti_sdas=ti_secondary,al_pdas=al_primary,
+                al_sdas=(al_secondary[0],al_secondary[1]/al_secondary[2]),
+                al_sdas_1mg=al_alternative,steel_pdas=steel_primary,steel_sdas=steel_secondary,
+                ni_sdas=(ni_a,ni_n),
+                ni_hunt=parsed(r'PDAS=([0-9.]+)\(keΓ∆T0Dl\)',eq7)[0],
+                ni_kf=parsed(r'PDAS=([0-9.]+)\(Γ∆T0Dl/ke\)',eq8)[0],
+                k=ghosh_number(r'EquilibriumPartitionCoefficient,ke([0-9.]+)'),
+                dt=ghosh_number(r'∆T0=Tl-Ts([0-9.]+)K'),
+                dl=ghosh_scientific(r'LiquidDiffusionCoefficient,Dl([0-9.]+)×10(-?[0-9]+)'),
+                gamma=ghosh_scientific(r'Gibbs-Thomsoncoefficient,Γ([0-9.]+)×10(-?[0-9]+)'))
 
 
 def positive(x):
     return isinstance(x, (int, float)) and math.isfinite(x) and x > 0
 
 
-def estimate(alloy, kind, g, r, *, cooling_side=True, al=6., mg=.45, ni_a=19.5, ni_n=.63):
-    """Research only. Values in metres. Source-domain flags do not erase T2."""
+def raw_estimate(alloy, kind, g, r, *, coefficients, cooling_side=True, al=6., mg=.45):
+    """Internal algebra only, NEVER an admitted value before estimate()'s gate."""
     if not cooling_side or not positive(g) or not positive(r):
         return None
     q = g * r
@@ -98,29 +130,64 @@ def estimate(alloy, kind, g, r, *, cooling_side=True, al=6., mg=.45, ni_a=19.5, 
     if alloy == 'ti6al4v':
         if not positive(al):
             return None
-        a, n = ((699 - 62 * al, .39) if kind == 'pdas' else (366 - 33 * al, .40))
+        slope,intercept,n = coefficients['ti_'+kind]
+        a = intercept-slope*al
         return a * q ** -n * 1e-6 if a > 0 else None
     if alloy == 'alsi10mg':
         if kind == 'pdas':
-            return 165 * q ** -.4 * 1e-6
+            a,n=coefficients['al_pdas']
+            return a * q ** -n * 1e-6
         if mg == .45:
-            return 22 * (1000 * r) ** (-2 / 3) * 1e-6
+            a,n=coefficients['al_sdas']
+            return a * (1000 * r) ** -n * 1e-6
         if mg == 1.:
-            return 14 / (1000 * r) * 1e-6
+            a,n=coefficients['al_sdas_1mg']
+            return a * (1000 * r) ** -n * 1e-6
         return None  # no invented interpolation between source chemistries
     if alloy == 'ss316l':
-        a, n = ((80, .33) if kind == 'pdas' else (25, .28))
+        a,n = coefficients['steel_'+kind]
         return a * q ** -n * 1e-6
     if alloy in ('in718', 'in625'):
         if kind == 'sdas':
-            return ni_a * q ** -ni_n * 1e-6
-        k, gamma, dt, dl = .48, 3.65e-7, 57, 3e-9
+            a,n = coefficients['ni_sdas']
+            return a * q ** -n * 1e-6
+        k,gamma,dt,dl = (coefficients[key] for key in ('k','gamma','dt','dl'))
         if not g * dl / dt < r < dt * dl / (k * gamma):
             return None
         return {name: p * z ** .25 * g ** -.5 * r ** -.25
-                for name, p, z in (('hunt', 2.83, k * gamma * dt * dl),
-                                   ('kurzFisher', 4.3, gamma * dt * dl / k))}
+                for name, p, z in (('hunt', coefficients['ni_hunt'], k * gamma * dt * dl),
+                                   ('kurzFisher', coefficients['ni_kf'], gamma * dt * dl / k))}
     return None
+
+
+def load_morphology():
+    spec=importlib.util.spec_from_file_location('solc_a7_morph',Path(__file__).with_name('sol_c_a6_morph_phase_check.py'))
+    module=importlib.util.module_from_spec(spec)
+    sys.modules[spec.name]=module
+    spec.loader.exec_module(module)
+    return module
+
+
+MORPH = load_morphology()
+ALIASES = {'ti6al4v':'ti64','ss316l':'316l','alsi10mg':'alsi10mg','in718':'in718','in625':'in625'}
+
+
+def estimate(alloy,kind,g,r,*,coefficients,**kwargs):
+    """Every PDAS/SDAS value passes its own named binary capillary screening gate.
+
+    None maps to outside-source-model-domain for a scale/stability failure; the
+    caller must retain raw diagnostics but must not display them as estimates.
+    """
+    if alloy not in ALIASES or kind not in ('pdas','sdas'):
+        return None
+    value=raw_estimate(alloy,kind,g,r,coefficients=coefficients,**kwargs)
+    if value is None:
+        return None
+    cutoff=MORPH.capillary_cutoff(MORPH.PARAMS[ALIASES[alloy]],g,r)
+    if cutoff is None:
+        return None
+    values=value.values() if isinstance(value,dict) else [value]
+    return value if all(v >= cutoff for v in values) else None
 
 
 def source_outside(alloy, q, r, *, al=6., process='lpbf', g=1e7):
@@ -144,14 +211,19 @@ def decimal_reference(a, x, n):
         return float(aa * (-nn * xx.ln()).exp() * Decimal('0.000001'))
 
 
-def check_reference(ni_a, ni_n):
+def check_reference(coefficients, estimator=estimate):
+    def estimate(*args,**kwargs):
+        return estimator(*args,coefficients=coefficients,**kwargs)
+    ni_a,ni_n=coefficients['ni_sdas']
     g, r = 1e7, .01
     cases = [('ti6al4v', 'pdas', 327., .39), ('ti6al4v', 'sdas', 168., .4),
              ('alsi10mg', 'pdas', 165., .4), ('ss316l', 'pdas', 80., .33),
              ('ss316l', 'sdas', 25., .28), ('in718', 'sdas', ni_a, ni_n),
              ('in625', 'sdas', ni_a, ni_n)]
     for alloy, kind, a, n in cases:
-        value = estimate(alloy, kind, g, r)
+        # Source-law algebra is checked independently EVEN when the gate refuses
+        # its tiny output. A refused raw result is never promoted to a value.
+        value = raw_estimate(alloy, kind, g, r,coefficients=coefficients)
         expected = decimal_reference(a, g*r, n)
         need(math.isclose(value, expected, rel_tol=2e-14), 'independent Decimal reference: '+alloy+kind)
         # Invert the cooling law; this detects wrong exponent sign and um/m units.
@@ -181,10 +253,30 @@ def check_reference(ni_a, ni_n):
     # An actual independent interior grid must lie in an analytical monotone box.
     # This box is a numerical fixture, not a fabricated specimen uncertainty range.
     for alloy, kind, _, _ in cases:
-        low=estimate(alloy,kind,2e7,.02); high=estimate(alloy,kind,5e6,.005)
-        for gg in (5e6,7e6,1e7,1.3e7,2e7):
-            for rr in (.005,.007,.01,.013,.02):
+        # At this lower-gradient fixture even the Ni secondary route is physical
+        # under its explicitly transferred binary capillary screening model.
+        low=estimate(alloy,kind,200,.002); high=estimate(alloy,kind,50,.0005)
+        need(low is not None and high is not None,'admitted box unexpectedly refused')
+        for gg in (50,70,100,130,200):
+            for rr in (.0005,.0007,.001,.0013,.002):
                 need(low <= estimate(alloy,kind,gg,rr) <= high, 'input sensitivity enclosure')
+    for alloy in ALIASES:
+        p=MORPH.PARAMS[ALIASES[alloy]]
+        cutoff=MORPH.capillary_cutoff(p,1e7,.1)
+        # Independent sign balance, not merely comparing a function to itself.
+        drive=p.m*p.c*(1-p.k)/p.k*.1/p.d-1e7
+        need(drive-p.gamma*(2*math.pi/(.9*cutoff))**2 < 0,'subcritical perturbation grew')
+        need(drive-p.gamma*(2*math.pi/(1.1*cutoff))**2 > 0,'supercritical perturbation suppressed')
+        for kind in ('pdas','sdas'):
+            tiny=dict(coefficients)
+            tiny.update(ti_pdas=(0,1e-12,.39),ti_sdas=(0,1e-12,.4),
+                        al_pdas=(1e-12,.4),al_sdas=(1e-12,2/3),
+                        steel_pdas=(1e-12,.33),steel_sdas=(1e-12,.28),
+                        ni_sdas=(1e-12,.63),ni_hunt=1e-12,ni_kf=1e-12)
+            need(estimator(alloy,kind,1e7,.1,coefficients=tiny) is None,'capillary gate bypass '+alloy+kind)
+    for alloy in ('in718','in625'):
+        for cooling in (1e5,1e6,1e7):
+            need(estimate(alloy,'sdas',cooling/.1,.1) is None,'Mitchell nanometres admitted')
     return cases
 
 
@@ -192,17 +284,38 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', required=True, action='store_true')
     parser.parse_args()
-    ni_a, ni_n = primary_sources()
-    check_reference(ni_a, ni_n)
-    # Negative mutants must disagree with an independent equation invariant.
-    wrong_mm = 22 * .001 ** (-2/3) * 1e-6
-    need(not math.isclose(wrong_mm, 22e-6, rel_tol=1e-3), 'unit mutant not distinguished')
-    wrong_caption = 9.56e-4 * 1e7**-.5 * .01**-.25
-    need(not math.isclose(wrong_caption**4 * 1e14 * .01,
-                         2.83**4 * .48 * 3.65e-7 * 57 * 3e-9, rel_tol=1e-3), 'caption mutant escaped')
-    wrong_ni = 19.5 * 1e5 ** .63 * 1e-6
-    need(not math.isclose(wrong_ni, decimal_reference(ni_a,1e5,ni_n), rel_tol=1e-3), 'exponent mutant escaped')
-    print('PASS: five primary-source byte/equation checks; all-five research spacing, Decimal/inverse/fourth-power oracles; physical refusal versus extrapolation; units/coefficient/exponent mutants; input-box interior checks. No served or physical validation.')
+    coefficients=primary_sources()
+    check_reference(coefficients)
+    # Mutate the ACTUAL functions used by estimate(), not unrelated expressions.
+    for old,new in [('1000 * r','r'),('q ** -n','q ** n')]:
+        scope=dict(globals())
+        text=inspect.getsource(raw_estimate)
+        need(old in text,'mutation site missing')
+        exec(compile(text.replace(old,new),'raw-estimator-mutant','exec'),scope)
+        exec(compile(inspect.getsource(estimate),'estimator-mutant','exec'),scope)
+        try:
+            check_reference(coefficients,scope['estimate'])
+        except (AssertionError,TypeError):
+            pass
+        else:
+            raise AssertionError('live estimator mutant survived: '+old)
+    scope=dict(globals())
+    text=inspect.getsource(estimate).replace('all(v >= cutoff for v in values)','True')
+    exec(compile(text,'gate-mutant','exec'),scope)
+    try:
+        check_reference(coefficients,scope['estimate'])
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError('live capillary-gate mutant survived')
+    changed=dict(coefficients,ni_hunt=9.56e-4)
+    try:
+        check_reference(changed)
+    except (AssertionError,TypeError):
+        pass
+    else:
+        raise AssertionError('actual prefactor mutant survived')
+    print('PASS: parsed primary coefficients drive estimate; all-five capillary gates; independent Decimal/inverse/fourth-power/sign-balance references; actual estimator unit/exponent/prefactor/gate mutants rejected. Research only, not served or physical validation.')
 
 
 if __name__ == '__main__':

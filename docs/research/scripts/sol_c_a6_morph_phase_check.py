@@ -20,13 +20,14 @@ class Binary:
     gamma: float
     nuclei: float
     activation: float
+    eutectic_ce: float | None = None
 
 
 # wt-percent-based source coefficients. m is a positive magnitude here.
 PARAMS = {
     # Explicit freezing-range-closed surrogate, not a correction of printed m=.088.
     "ti64": Binary(10, .838, 50*.838/(10*(1-.838)), 9.5e-9, 2.2e-7, 5e14, 8),
-    "alsi10mg": Binary(10, .13, 6.5, 3e-9, 9e-8, 2e15, 8),
+    "alsi10mg": Binary(10, .13, 6.5, 3e-9, 9e-8, 2e15, 8,12.6),
     "in718": Binary(5, .48, 10.5, 3e-9, 3.65e-7, 2.65e14, 0),
     "in625": Binary(5, .48, 10.5, 3e-9, 3.65e-7, 2.65e14, 0),
     "316l": Binary(.029, .17, 84.3, 2e-9, 1.9e-7, 1e13, 8),
@@ -47,6 +48,25 @@ KM_TRANSUS_C = 998.0
 KM_MS_C = 575.0
 KM_COEFFICIENT = .005
 KM_RATE_K_S = 410.0
+RECEIPT_SHA256 = 'd7c4d4d2b713145d623bf3edb44eb3cda63e6e3e2b6c04ca641ac4b93900e929'
+KM_EVALUATION_OFFSET_K = 25.0
+
+
+def capillary_cutoff(p: Binary, g: float, rate: float):
+    """Declared one-sided binary screening bound, not a full MS dispersion solver.
+
+    A sinusoidal displacement h has constitutional drive S*h and Gibbs-Thomson
+    suppression Gamma*wavenumber**2*h. Only S > Gamma*wavenumber**2 grows.
+    Constants are the SAME named surrogate as morphology, never pure Ni for Al.
+    """
+    positive(p.c, p.m, p.d, p.gamma, g, rate)
+    if not 0 < p.k < 1:
+        raise ValueError('nonphysical-input')
+    freezing = p.m*p.c*(1-p.k)/p.k
+    drive = freezing*rate/p.d-g
+    if drive <= 0 or rate >= freezing*p.d/(p.k*p.gamma):
+        return None
+    return 2*math.pi*math.sqrt(p.gamma/drive)
 
 
 def positive(*values: float) -> None:
@@ -71,24 +91,28 @@ def morphology(p: Binary, g: float, rate: float, *, cooling=True,
     freezing = q/p.k
     chi = freezing * rate / (p.d*g)
     tip = math.sqrt(8*q*p.gamma*rate/p.d)
+    tip_radius = 4*p.gamma/tip  # extremum closure of Q*R*rho/D + 2*Gamma/rho
+    peclet = rate*tip_radius/(2*p.d)
+    warnings = ['low-peclet-tip-law'] if peclet >= .1 else []
+    eutectic_interval = None if p.eutectic_ce is None else p.m*(p.eutectic_ce-p.c)
     # The planar index remains numeric when no dendritic grain model applies.
-    if chi <= 1 or tip > freezing or (absolute_stability_limit is not None and rate >= absolute_stability_limit):
+    if (chi <= 1 or tip > freezing
+            or (eutectic_interval is not None and (eutectic_interval <= 0 or tip >= eutectic_interval))
+            or (absolute_stability_limit is not None and rate >= absolute_stability_limit)):
         return dict(chi=chi,tip_K=tip,radius_m=None,extended=None,fraction=None,
-                    grain_class=None,warnings=[],reason="outside-dendritic-growth-domain")
+                    grain_class=None,warnings=warnings,tip_radius_m=tip_radius,peclet=peclet,
+                    reason='tip-reaches-eutectic' if eutectic_interval is not None and tip >= eutectic_interval
+                    else "outside-dendritic-growth-domain")
     radius = 0.0 if tip <= p.activation else tip/(3*g)*(1-(p.activation/tip)**3)
     extended = 4*math.pi/3 * p.nuclei*radius**3
     fraction = -math.expm1(-extended)
     grain_class = "columnar" if fraction <= .0049 else "equiaxed" if fraction >= .49 else "mixed"
-    warnings = []
-    if chi <= 1:
-        warnings.append("outside-dendritic-stability-domain")
-    if tip > freezing:
-        warnings.append("tip-undercooling-exceeds-binary-freezing-range")
     return dict(chi=chi, tip_K=tip, radius_m=radius, extended=extended,
-                fraction=fraction, grain_class=grain_class, warnings=warnings)
+                fraction=fraction, grain_class=grain_class, warnings=warnings,
+                tip_radius_m=tip_radius,peclet=peclet)
 
 
-def km_quench(history, *, fully_melted: bool, beta0=1.0):
+def km_quench(history, *, fully_melted: bool, preheat_K: float, beta0=1.0):
     """History rows are increasing time in seconds and absolute temperature in K."""
     if not fully_melted:
         raise ValueError("missing-full-melt-initialization")
@@ -96,6 +120,7 @@ def km_quench(history, *, fully_melted: bool, beta0=1.0):
         raise ValueError("nonphysical-input")
     if len(history) < 2:
         raise ValueError("missing-thermal-history")
+    positive(preheat_K)
     for t, temp in history:
         if not math.isfinite(t):
             raise ValueError("nonphysical-input")
@@ -103,6 +128,27 @@ def km_quench(history, *, fully_melted: bool, beta0=1.0):
     transus, ms, coefficient = KM_TRANSUS_C+273.15, KM_MS_C+273.15, KM_COEFFICIENT
     if history[0][1] < transus:
         raise ValueError("missing-beta-initialization")
+    evaluation = preheat_K+KM_EVALUATION_OFFSET_K
+    # Choose the first post-melt downward crossing of a fixed finite target.
+    # A truncated history does not get to choose the final KM temperature.
+    crossing = None
+    trimmed = [history[0]]
+    for index, ((t0,a),(t1,b)) in enumerate(zip(history,history[1:])):
+        if t1 <= t0:
+            raise ValueError('nonphysical-input')
+        if b > a:
+            raise ValueError('reheating-needs-competing-kinetics')
+        if a >= evaluation >= b and a > b:
+            time = t0+(t1-t0)*(a-evaluation)/(a-b)
+            trimmed.append((time,evaluation))
+            crossing = dict(ruleId='finite-25K-above-preheat-v1',preheat_K=preheat_K,
+                            offset_K=KM_EVALUATION_OFFSET_K,temperature_K=evaluation,
+                            time_s=time,bracket=[index,index+1])
+            break
+        trimmed.append((t1,b))
+    if crossing is None:
+        raise ValueError('missing-evaluation-crossing')
+    history = trimmed
     checked = []
     for (t0, a), (t1, b) in zip(history, history[1:]):
         if t1 <= t0:
@@ -111,14 +157,14 @@ def km_quench(history, *, fully_melted: bool, beta0=1.0):
             raise ValueError("reheating-needs-competing-kinetics")
         # Strict research-scenario gate, not a universal source kinetic threshold:
         # extend rapid cooling below Ms to exclude omitted holds/dissolution.
-        if a <= transus and (a-b)/(t1-t0) < KM_RATE_K_S:
+        if (a <= transus or b < transus) and (a-b)/(t1-t0) < KM_RATE_K_S:
             raise ValueError("slow-cooling-needs-competing-kinetics")
         if min(a, transus) > max(b, ms):
             checked.append((a-b)/(t1-t0))
     if history[-1][1] < ms and (not checked or min(checked) < KM_RATE_K_S):
         raise ValueError("slow-cooling-needs-competing-kinetics")
     martensite = beta0 * -math.expm1(-coefficient*max(0, ms-history[-1][1]))
-    return martensite, beta0-martensite
+    return dict(alpha_m=martensite,untransformedAsymptote=beta0-martensite,evaluation=crossing)
 
 
 def al_constituents(c=10.0, k=.13, ce=12.6, *, complete=True):
@@ -133,7 +179,7 @@ def al_constituents(c=10.0, k=.13, ce=12.6, *, complete=True):
     return 1-residual, residual
 
 
-def al_equilibrium_limit(c_si=.10, c_mg=.003):
+def al_equilibrium_limit(c_si=.10, c_mg=.0045):
     if any(not math.isfinite(x) or x < 0 for x in (c_si,c_mg)) or c_si+c_mg >= 1:
         raise ValueError("nonphysical-input")
     mg, si = 24.305,28.085
@@ -164,6 +210,7 @@ def run_checks():
     receipt = Path(__file__).resolve().parents[1]/"sol_c_a6_morph_source_extracts.json"
     raw_receipt = receipt.read_bytes()
     source_identity = hashlib.sha256(raw_receipt).hexdigest()
+    assert source_identity == RECEIPT_SHA256, 'morphology source receipt drift'
     extracted = json.loads(raw_receipt)["sources"]
     def number(source,key):
         rows = [row for row in extracted[source]["excerpt"].splitlines() if row.startswith(key)]
@@ -208,7 +255,7 @@ def run_checks():
     examples = {}
     for alloy, p in PARAMS.items():
         # 316L's carbon-only binary law has a narrower physical R domain.
-        reference_rate = .01 if alloy=="316l" else .1
+        reference_rate = .001 if alloy=='alsi10mg' else .01 if alloy=="316l" else .1
         result = morphology(p, 1e6, reference_rate)
         examples[alloy] = {k: result[k] for k in ("chi", "tip_K", "fraction", "grain_class", "warnings")}
         # Radius oracle: independent Simpson integration of v_e/(R G) d(DeltaT).
@@ -231,13 +278,25 @@ def run_checks():
         chi_mm = p_kelvin*(reference_rate*1000)/((p.d*1e6)*(1e6/1000))
         close(result["chi"], chi_mm)
         assert 0 <= result["fraction"] <= 1
+        close(result['tip_radius_m'],math.sqrt(2*p.gamma*p.d/(p.m*p.c*(1-p.k)*reference_rate)))
+        close(result['peclet'],reference_rate*result['tip_radius_m']/(2*p.d))
+        high_pe = morphology(p,1e6,.1)
+        assert 'low-peclet-tip-law' in high_pe['warnings']
         for bad in (math.nan, math.inf, 0, -1):
             rejects(lambda: morphology(p,bad,.1))
             rejects(lambda: morphology(p,1e6,bad))
         rejects(lambda: morphology(p,1e6,.1,cooling=False), "invalid-interface-sample")
         rejects(lambda: morphology(p,1e6,.1,current=False), "stale-parent-input")
         rejects(lambda: morphology(p,1e6,.1,compatible_field=False), "keyhole-field-inconsistent")
-    # True-fraction threshold differs from extended fraction; detect wrong-threshold mutant.
+    # Verified Durga & Lindwall 2023 convention, not an assertion about Hunt1984.
+    assert not math.isclose(-math.expm1(-.0066),.0049,rel_tol=.01)
+    close(-math.expm1(-.66),.4831486655083008)
+    al = morphology(PARAMS['alsi10mg'],1e6,.1)
+    assert al['fraction'] is None and al['reason']=='tip-reaches-eutectic'
+    close(PARAMS['alsi10mg'].m*(12.6-PARAMS['alsi10mg'].c),16.9)
+    assert al['tip_K'] > 16.9 and al['chi'] > 1
+    # Eutectic gate mutation really invokes the same grain model.
+    assert morphology(replace(PARAMS['alsi10mg'],eutectic_ce=None),1e6,.1)['fraction'] is not None
     p = PARAMS["in718"]
     base = morphology(p,1e6,.1)
     for target, expected in ((.0048,"columnar"),(.0055,"mixed"),(.48,"mixed"),(.50,"equiaxed")):
@@ -268,30 +327,43 @@ def run_checks():
     # KM independent depletion ODE via 10,000 equal undercooling increments.
     history = [(0,1700+273.15),(.7,1000+273.15),(.9,800+273.15),
                (1.125,575+273.15),(1.675,25+273.15)]
-    alpha, beta = km_quench(history,fully_melted=True)
-    close(alpha,.9360721387932924)
+    result = km_quench(history,fully_melted=True,preheat_K=298.15)
+    alpha,beta = result['alpha_m'],result['untransformedAsymptote']
+    close(result['evaluation']['temperature_K'],323.15)
+    close(alpha, .9275602429657486)
     independent_beta = 1.0
-    dx = (source_ms-25)/10000
+    dx = (source_ms-50)/10000
     z = -source_km*dx
     rk4_decay = 1+z+z*z/2+z*z*z/6+z**4/24
     for _ in range(10000):
         independent_beta *= rk4_decay
     close(beta,independent_beta,rtol=1e-10)
     close(alpha+beta,1)
-    alpha_half,beta_half = km_quench(history,fully_melted=True,beta0=.5)
+    half = km_quench(history,fully_melted=True,preheat_K=298.15,beta0=.5)
+    alpha_half,beta_half = half['alpha_m'],half['untransformedAsymptote']
     close(alpha_half,alpha/2)
     close(alpha_half+beta_half,.5)
     # Identical front cooling can precede a slow subsolidus path: must not inherit G*R.
     slow = list(history)
     slow[2:] = [(2.7,800+273.15),(4.95,575+273.15),(10.45,25+273.15)]
-    rejects(lambda: km_quench(slow,fully_melted=True),"slow-cooling-needs-competing-kinetics")
+    rejects(lambda: km_quench(slow,fully_melted=True,preheat_K=298.15),"slow-cooling-needs-competing-kinetics")
     slow_below_ms = history[:4]+[(2.125,500+273.15),(2.6,25+273.15)]
-    rejects(lambda: km_quench(slow_below_ms,fully_melted=True),"slow-cooling-needs-competing-kinetics")
+    rejects(lambda: km_quench(slow_below_ms,fully_melted=True,preheat_K=298.15),"slow-cooling-needs-competing-kinetics")
     held_below_ms = history[:4]+[(1.3,500+273.15),(2.3,500+273.15),(2.8,25+273.15)]
-    rejects(lambda: km_quench(held_below_ms,fully_melted=True),"slow-cooling-needs-competing-kinetics")
-    rejects(lambda: km_quench(history,fully_melted=False),"missing-full-melt-initialization")
+    rejects(lambda: km_quench(held_below_ms,fully_melted=True,preheat_K=298.15),"slow-cooling-needs-competing-kinetics")
+    rejects(lambda: km_quench(history,fully_melted=False,preheat_K=298.15),"missing-full-melt-initialization")
     reheated = history + [(2,200+273.15)]
-    rejects(lambda: km_quench(reheated,fully_melted=True),"reheating-needs-competing-kinetics")
+    # Later history cannot change a first-pass estimate at an earlier crossing.
+    close(km_quench(reheated,fully_melted=True,preheat_K=298.15)['alpha_m'],alpha)
+    rejects(lambda: km_quench(history[:3]+[(1.0,900+273.15)],fully_melted=True,preheat_K=298.15),
+            'reheating-needs-competing-kinetics')
+    rejects(lambda: km_quench(history[:4],fully_melted=True,preheat_K=298.15),'missing-evaluation-crossing')
+    close(km_quench(history+[(4,299)],fully_melted=True,preheat_K=298.15)['alpha_m'],alpha)
+    # Preheat selects a different physical evaluation state even with the same front.
+    warm = km_quench(history,fully_melted=True,preheat_K=573.15)
+    close(warm['evaluation']['temperature_K'],598.15)
+    assert warm['alpha_m'] < alpha
+    close(km_quench(history,fully_melted=True,preheat_K=873.15)['alpha_m'],0)
     # Scheil independent explicit mass-balance integration until CL reaches Ce.
     primary,eutectic = al_constituents()
     liquid, solute_liquid, solute_solid = 1.0,10.0,0.0
@@ -316,9 +388,9 @@ def run_checks():
     source_mg=float(extracted["atomic_weights"]["excerpt"].splitlines()[0].split("|")[3].split()[0])
     source_si=float(extracted["atomic_weights"]["excerpt"].splitlines()[1].split("|")[3].split()[0])
     formula_moles = f_mg2si/(2*source_mg+source_si)
-    close(2*formula_moles*source_mg,.003)
+    close(2*formula_moles*source_mg,.0045)
     close(formula_moles*source_si+f_si,.10)
-    close(f_al,.897)
+    close(f_al,.8955)
     close(f_al+f_si+f_mg2si,1)
     close(al_equilibrium_limit(.1,0)[1],.1)
     rejects(lambda: al_equilibrium_limit(.0001,.01),"silicon-deficit-needs-different-phase-set")
@@ -328,7 +400,8 @@ def run_checks():
             "source_authentication":"bounded browser/search primary extraction, not original PDF bytes",
             "morphology_reference_G_K_m":1e6,"morphology_reference_R_m_s":.1,
             "316l_reference_R_m_s":.01,
-            "morphology":examples,"ti64_quench_alpha_m":alpha,"ti64_quench_beta":beta,
+            "morphology":examples,"ti64_quench_alpha_m":alpha,"ti64_km_untransformed_asymptote":beta,
+            'ti64_evaluation':result['evaluation'],
             "alsi10mg_primary_alpha_mass":primary,"alsi10mg_eutectic_constituent_mass":eutectic,
             "alsi10mg_terminal_equilibrium_limit_mass":{"alphaAl":f_al,"Si":f_si,"Mg2Si":f_mg2si},
             "checks":"source transcription, independent integration, unit scaling, joint box, local pairing, negative cases",

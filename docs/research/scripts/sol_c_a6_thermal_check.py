@@ -1,4 +1,4 @@
-"""A6 research-only thermal sweep and tier oracle. No served channel is installed.
+"""A7 research-only rear-branch thermal sweep and tier oracle. No served channel is installed.
 
 python -I -B docs/research/scripts/sol_c_a6_thermal_check.py --check
 Stdlib only. Fixture numbers are manufactured, not alloy data or measured rows.
@@ -13,7 +13,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
-import statistics
+import inspect
 
 ROOT = Path(__file__).resolve().parents[3]
 SOURCE = ROOT / "python/lpbf_thermal_solver.py"
@@ -58,14 +58,14 @@ def admitted(p):
 
 
 def ofat(p):
-    """Declared A6 scenarios, not confidence limits; no source attribution."""
+    """A7 declared input scenarios, not error/confidence limits or source ranges."""
     require(admitted(p), "nonphysical input")
     arms = [("nominal", p)]
     for name, endpoints in {
         "conductivity": (0.8*p.conductivity, 1.2*p.conductivity),
         "capacity": (0.8*p.capacity, 1.2*p.capacity),
         "density": (0.95*p.density, 1.05*p.density),
-        "absorption": (0.8*p.absorption, min(1.0, 1.2*p.absorption)),
+        "absorption": (0.5*p.absorption, min(1.0, 1.5*p.absorption)),
         # Quarter of the nominal freezing interval, not absolute Celsius.
         "liquidus": (p.liquidus-0.25*(p.liquidus-p.solidus), p.liquidus+0.25*(p.liquidus-p.solidus)),
     }.items():
@@ -116,32 +116,134 @@ def tail(source, p):
     return (lo+hi)/2
 
 
-def location(source, p):
-    x = 0.5*tail(source, p)
-    lo, hi = 0.0, 0.02
-    require(temperature(source,p,x,z=lo) > p.liquidus > temperature(source,p,x,z=hi), "depth bracket")
-    for _ in range(70):
+def depth(source, p, x):
+    lo, hi = 0.0, .02
+    require(temperature(source,p,x,z=lo) >= p.liquidus-1e-8, "outside liquidus branch")
+    for _ in range(65):
         mid = (lo+hi)/2
         if temperature(source,p,x,z=mid) > p.liquidus:
             lo = mid
         else:
             hi = mid
-    return x, 0.0, (lo+hi)/2
+    return (lo+hi)/2
+
+
+def branch_nodes(source, p, count=32):
+    """A5 rear slice: open equal-x nodes, explicit chord-length cell weights."""
+    rear = tail(source,p)
+    lo, hi = rear, 0.0
+    for _ in range(60):
+        mid = (lo+hi)/2
+        if gradient(p,mid,0,depth(source,p,mid))[0] > 0:
+            lo = mid
+        else:
+            hi = mid
+    bottom = (lo+hi)/2
+    edges = [(bottom+(rear-bottom)*i/count,0.0,
+              depth(source,p,bottom+(rear-bottom)*i/count)) for i in range(count+1)]
+    points = [(bottom+(rear-bottom)*(i+.5)/count,0.0,
+               depth(source,p,bottom+(rear-bottom)*(i+.5)/count)) for i in range(count)]
+    weights = [math.dist(a,b) for a,b in zip(edges,edges[1:])]
+    return points, weights
+
+
+def weighted_median(values, weights):
+    require(len(values) == len(weights) >= 3, "branch needs three samples")
+    require(all(math.isfinite(w) and w > 0 for w in weights), "invalid branch weights")
+    pairs = sorted(zip(values,weights))
+    half = sum(weights)/2
+    cumulative = 0.0
+    for i,(value,weight) in enumerate(pairs):
+        cumulative += weight
+        if math.isclose(cumulative,half,rel_tol=1e-14):
+            return (value+pairs[i+1][0])/2
+        if cumulative > half:
+            return value
+    raise AssertionError("weighted median missing")
+
+
+def aggregate(rows, weights):
+    return tuple(weighted_median(column,weights) for column in zip(*rows))
 
 
 def summary(source, p):
-    # A single identified interior tuple tests sweep recomputation; A5 branch medians
-    # are tested separately by sol_c_contract_check, never claimed by this fixture.
-    point = location(source,p)
-    require(abs(temperature(source, p, *point)-p.liquidus) < 1e-8, "root residual")
-    return kinematics(gradient(p, *point), p.speed)
+    points, weights = branch_nodes(source,p)
+    require(all(abs(temperature(source,p,*point)-p.liquidus) < 1e-7 for point in points),
+            "arm root residual")
+    return aggregate([kinematics(gradient(p,*point),p.speed) for point in points],weights)
 
 
-def tier(nominal, arms):
+def independent_summary(p, count=32):
+    """Independent isotherm parameterization in radius, finite-difference tuples.
+
+    On T=TL, x(r)=log(C/(TL-T0)/sqrt(r*r+b*b))/a-r. No field root,
+    gradient(), branch_nodes(), kinematics() or weighted_median() is reused.
+    """
+    a = p.speed*p.density*p.capacity/(2*p.conductivity)
+    c = p.power*p.absorption/(2*math.pi*p.conductivity)
+    def xof(r):
+        return math.log(c/((p.liquidus-p.base)*math.sqrt(r*r+p.radius*p.radius)))/a-r
+    def bisect(fn, lo, hi):
+        flo = fn(lo)
+        require(flo*fn(hi) < 0,"independent radial bracket")
+        for _ in range(75):
+            mid = (lo+hi)/2
+            if flo*fn(mid) > 0:
+                lo = mid
+            else:
+                hi = mid
+        return (lo+hi)/2
+    rear_r = math.sqrt((c/(p.liquidus-p.base))**2-p.radius**2)
+    front_r = bisect(lambda r:xof(r)-r,1e-15,rear_r)
+    # z'(r)=0 iff r-x dx/dr=0. This is independent of the gradient-root implementation.
+    bottom_r = bisect(lambda r:r-xof(r)*(-1-r/(a*(r*r+p.radius*p.radius))),front_r,rear_r)
+    bottom_x, rear_x = xof(bottom_r), -rear_r
+    def point_at(f):
+        x = bottom_x+(rear_x-bottom_x)*f
+        if f == 0:
+            r = bottom_r
+        elif f == 1:
+            r = rear_r
+        else:
+            r = bisect(lambda r:xof(r)-x,bottom_r,rear_r)
+        return (x,0.0,math.sqrt(max(0,r*r-x*x)))
+    edges = [point_at(i/count) for i in range(count+1)]
+    weights = [math.dist(u,v) for u,v in zip(edges,edges[1:])]
+    def field(point):
+        r = math.sqrt(sum(q*q for q in point))
+        return p.base+c/math.sqrt(r*r+p.radius*p.radius)*math.exp(-a*(r+point[0]))
+    rows = []
+    for i in range(count):
+        point = point_at((i+.5)/count)
+        h = 1e-8
+        components = []
+        for axis in range(3):
+            vals = []
+            for offset in (-2,-1,1,2):
+                q = list(point)
+                q[axis] += offset*h
+                vals.append(field(q))
+            components.append((vals[0]-8*vals[1]+8*vals[2]-vals[3])/(12*h))
+        norm = math.hypot(*components)
+        rate = p.speed*components[0]/norm
+        rows.append((norm,rate,p.speed*components[0],norm/rate))
+    # Weighted medians minimize sum w |x_i-m|. Exhaustive candidates are cheap,
+    # and independent of the cumulative-weight implementation under test.
+    result = []
+    for column in zip(*rows):
+        costs = [(sum(w*abs(v-candidate) for v,w in zip(column,weights)),candidate)
+                 for candidate in column]
+        best = min(cost for cost,_ in costs)
+        minimizers = [v for cost,v in costs if math.isclose(cost,best,rel_tol=1e-12)]
+        result.append((min(minimizers)+max(minimizers))/2)
+    return tuple(result)
+
+
+def tier(nominal, arms, *, route_outside=False, family_transfer=False):
     if nominal is None:
         return "no-value", None
     require(all(math.isfinite(q) and q > 0 for q in nominal), "invalid nominal")
-    if arms is None or len(arms) != 10 or any(arm is None for arm in arms):
+    if route_outside or family_transfer or arms is None or len(arms) != 10 or any(arm is None for arm in arms):
         return "Physics estimate", None
     require(all(len(a) == len(nominal) and all(math.isfinite(q) and q > 0 for q in a)
                 for a in arms), "bad sweep result")
@@ -153,7 +255,24 @@ def check():
     p = Inputs()
     arms = ofat(p)
     require(len(arms) == 11, "OFAT coverage")
+    require(arms[7][1].absorption == .5*p.absorption and arms[8][1].absorption == 1.5*p.absorption,
+            "A7 absorptivity range")
+    require(ofat(replace(p,absorption=.8))[8][1].absorption == 1,"absorptivity physical cap")
     rows = [summary(source, arm) for _, arm in arms]
+    references = [independent_summary(arm) for _,arm in arms]
+    def assert_summaries(candidate):
+        for (_,arm),reference in zip(arms,references):
+            actual = candidate(source,arm)
+            require(all(math.isclose(a,b,rel_tol=2e-7) for a,b in zip(actual,reference)),
+                    "independent branch median oracle")
+        # The physical Rosenthal branch is monotone, so its medians can select
+        # the same node. Exercise the actual aggregate() with a nonmonotone
+        # local-output population as well, rather than pretending it differs.
+        synthetic = [(1.,101.,101.,1/101),(2.,100.,200.,.02),
+                     (100.,2.,200.,50.),(101.,1.,101.,101.)]
+        require(aggregate(synthetic,[1.,1.,1.,1.]) == (51.,51.,150.5,25.01),
+                "local-before-aggregation oracle")
+    assert_summaries(summary)
     reached, bands = tier(rows[0], rows[1:])
     require(reached == "Estimated", "tier1 unavailable")
     # Independent five-point derivatives and lab-frame time difference. These do
@@ -174,11 +293,27 @@ def check():
     observed_cooling = -(temperature(source,p,point[0]-p.speed*dt,*point[1:])
                          - temperature(source,p,point[0]+p.speed*dt,*point[1:]))/(2*dt)
     require(math.isclose(observed_cooling,kinematics(exact,p.speed)[2],rel_tol=1e-7), "lab-frame oracle")
-    # Arm root must move. Reusing a nominal coordinate is a detectable error.
-    q = replace(p, absorption=p.absorption*1.2)
-    require(abs(tail(source,q)-tail(source,p)) > 1e-6, "root movement fixture")
-    stale = kinematics(gradient(q,*location(source,p)),q.speed)
-    require(not math.isclose(stale[0],summary(source,q)[0],rel_tol=.01), "fixed-root mutant survived")
+    # Mutate the actual summary dependency, then run the same independent oracle.
+    # Residual rejection or mismatched values both kill a stale-root implementation.
+    def killed(replacement_name, replacement):
+        original = globals()[replacement_name]
+        globals()[replacement_name] = replacement
+        try:
+            assert_summaries(summary)
+        except AssertionError:
+            return True
+        finally:
+            globals()[replacement_name] = original
+        return False
+    original_nodes = branch_nodes
+    require(killed("branch_nodes",lambda field,arm:original_nodes(field,p)),"stale-root mutant survived")
+    require(killed("aggregate",lambda tuples,weights:tuple(sum(c)/len(c) for c in zip(*tuples))),
+            "mean-for-weighted-median mutant survived")
+    def separate_medians(tuples,weights):
+        g = weighted_median([row[0] for row in tuples],weights)
+        r = weighted_median([row[1] for row in tuples],weights)
+        return g,r,g*r,g/r
+    require(killed("aggregate",separate_medians),"separate-median mutant survived")
     for name in ("capacity", "density"):
         changed = summary(source,replace(p,**{name:1.1*getattr(p,name)}))
         require(not math.isclose(changed[0],rows[0][0],rel_tol=1e-4), "diffusivity parent not exercised")
@@ -187,12 +322,37 @@ def check():
     require(all(math.isclose(a,b,rel_tol=1e-12) for a,b in zip(rows[0],summary(source,kelvin))), "temperature scale")
     require(all(math.isclose(a.liquidus+273.15,b.liquidus,abs_tol=1e-10)
                 for (_,a),(_,b) in zip(arms,ofat(kelvin))), "absolute-temperature sweep mutant survived")
-    require(all(lo <= row[i] <= hi for i,(lo,hi) in enumerate(bands) for row in rows), "scenario interval")
+    # Reference extrema are independently recomputed arm medians, not the rows
+    # that the interval constructor just consumed.
+    expected = tuple((min(c),max(c)) for c in zip(*references))
+    require(all(math.isclose(a,c,rel_tol=2e-7) and math.isclose(b,d,rel_tol=2e-7)
+                for (a,b),(c,d) in zip(bands,expected)),"independent OFAT extrema")
     require(tier(rows[0],None) == ("Physics estimate",None), "missing interval discarded valid physics")
     require(tier(rows[0],[]) == ("Physics estimate",None), "empty sweep incorrectly promoted")
     require(tier(rows[0],rows[1:-1]) == ("Physics estimate",None), "incomplete sweep incorrectly promoted")
     require(tier(rows[0],[None]) == ("Physics estimate",None), "failed arm discarded nominal")
     require(tier(None,None) == ("no-value",None), "invented nominal")
+    def assert_tier(fn):
+        for flags in ({"route_outside":True},{"family_transfer":True}):
+            require(fn(rows[0],rows[1:],**flags) == ("Physics estimate",None),
+                    "transferred/outside route incorrectly promoted")
+        require(fn(rows[0],rows[1:])[0] == "Estimated","in-domain tier1 lost")
+    assert_tier(tier)
+    # Compile an actual mutant of tier(), disabling its route caps.
+    tree = ast.parse(inspect.getsource(tier))
+    class RemoveCaps(ast.NodeTransformer):
+        def visit_Name(self,node):
+            if isinstance(node.ctx,ast.Load) and node.id in {"route_outside","family_transfer"}:
+                return ast.copy_location(ast.Constant(False),node)
+            return node
+    mutant_scope = dict(globals())
+    exec(compile(ast.fix_missing_locations(RemoveCaps().visit(tree)),"tier-cap-mutant","exec"),mutant_scope)
+    try:
+        assert_tier(mutant_scope["tier"])
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("disabled-tier-cap mutant survived")
     refused = 0
     for vector in ((0,0,0),(-1,2,3),(float("nan"),2,3)):
         try:
@@ -209,13 +369,14 @@ def check():
     else:
         raise AssertionError("clipped-branch derivative falsely claimed")
     require(kinematics((2,3,-6),.8) == (7,.8*2/7,1.6,7/(.8*2/7)), "independent 2,3,6 triangle oracle")
-    # Point populations and prediction error are different objects.
-    require(statistics.median([1,2,100,101])*statistics.median([101,100,2,1]) != 150.5,
-            "aggregation counterexample")
-    return {"result":"PASS", "scope":"A6-research-only", "ofat_fields":len(arms),
+    require(weighted_median([1,2,100,101],[1,1,1,1]) == 51,"even median midpoint")
+    require(weighted_median([1,2,100,101],[1,1,10,1]) == 100,"length-weight median")
+    return {"result":"PASS", "scope":"A7-research-only", "ofat_fields":len(arms),
+            "samples_per_arm":32,"weighting":"liquidus-cell-chord-length",
             "quantities":4, "tiers_tested":["Estimated","Physics estimate","no-value"],
-            "rejected_mutants":["fixed-root","absolute-Celsius-range","melting-side","invalid-parent"],
-            "nominal_fixture":rows[0],"ofat_intervals":bands,
+            "rejected_mutants":["stale-root","mean-for-weighted-median","separate-medians",
+                                "disabled-tier-cap","absolute-Celsius-range","melting-side","invalid-parent"],
+            "nominal_fixture":rows[0],"input_sensitivity_ranges":bands,
             "source_sha256":hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
             "physical_validation":False,"served_channel_installed":False}
 

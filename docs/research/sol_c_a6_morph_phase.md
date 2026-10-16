@@ -1,5 +1,7 @@
 # SOL-C A6: morphology, CET and phase models
 
+Historical A6 record. Amendment 7 and [A7 resolution](sol_c_a7_resolution.md) supersede the Tier 1 joint-sweep suggestion, the Al eutectic omission, optional evaluation temperature, retained-beta wording and 0.3 wt% Mg default. The verified DOI103802 authors are Durga and Lindwall, not Mishra. See the [new primary-source audit](sol_c_a7_source_audit.md); the A6 transcription receipt is preserved and hash-pinned, not silently rewritten.
+
 Research specification, 2026-10-16. No served implementation is changed. The new maintainer rule admits an explicitly transferred physics model at Tier 2. This replaces A5's blanket missing-model conclusion for the routes below, while retaining its physics gates. These models have no independent specimen validation.
 
 ## Morphology and CET: all five alloys
