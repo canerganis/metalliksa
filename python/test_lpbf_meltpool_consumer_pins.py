@@ -47,7 +47,8 @@ class MeltPoolConsumerPins(unittest.TestCase):
         self.assertAlmostEqual(g["width_um"], 131.2, delta=0.5)
         g, _ = _geometry("goldak", "316L Stainless Steel", 370.0, 600.0, 60.0, 25.0, 50.0, 90.0)
         # P7b: 316L authority 0.30 and melting-point k / cp (P1: 183.2; Tier 2: 168.9; v2 kernel: 117.4)
-        self.assertAlmostEqual(g["width_um"], 134.8, delta=0.5)
+        # SOL-T (2026-10-16): 316L Ts/Tl 1385/1450 C (P7b: 134.8)
+        self.assertAlmostEqual(g["width_um"], 132.3, delta=0.5)
 
     def test_retired_heat_source_ids_are_refused(self):
         for retired in ("eagar-tsai-v1", "goldak-v1", "goldak-total-power-v2"):

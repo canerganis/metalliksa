@@ -54,6 +54,7 @@ export interface CoreContractV2 {
 }
 export type CoreContract = CoreContractV1 | CoreContractV2;
 export interface SimulationResult {
+  transientFrontDiagnostics?: import("../data/quantityEnvelope").QuantityContainer;
   coreContract?: CoreContract;
   /** Wave B LT-3: G, R and cooling rate are single-mesh values; status says how many cells span the pool. */
   solidificationResolution?: {

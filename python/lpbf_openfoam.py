@@ -9,6 +9,7 @@ import numpy as np
 from lpbf_core_physics import enthalpy_table, property_at, calculate_mesh_domain, thermal_si_inputs, SOURCE_INTEGRATION
 from lpbf_evidence import thermal_audits
 from lpbf_peak import PeakMeltTracker, PEAK_EXTRACTION
+from lpbf_material_registry import contain_front_metrics
 
 BINARY = Path(__file__).parent/"openfoam/bin/metalliksaThermal"
 HEADER = 'FoamFile { version 2.0; format ascii; class dictionary; object %s; }\n'
@@ -182,7 +183,10 @@ def thermal(p, m, report=lambda *args: None, artifact_dir=None):
                 pecletNumber=p["speed_mm_s"]*.001*w/alpha, aspectRatio=best["depth_um"]/best["width_um"] if w else None,
                 trackOverlapRatio=overlap_metrics["trackOverlapRatio"],
                 remeltingRatio=overlap_metrics["globalRemeltRatio"] if row[12] else 0.)
-    return dict(metrics=best, thermalHistory=history, fieldSeries=recorder.finish(), scanPath=segments,
+    # D13 field identity: producer and extraction rule only (no served implementation fingerprint).
+    best, transient_front = contain_front_metrics(
+        best, m, p, "metalliksaThermal-OpenFOAM14-6:linear-liquidus-crossing-event-means-v1")
+    return dict(metrics=best, transientFrontDiagnostics=transient_front, thermalHistory=history, fieldSeries=recorder.finish(), scanPath=segments,
                 numericalDiagnostics=diagnostics, fieldOverlapDiagnostics=overlap_metrics,
                 energyBalance=dict(input_J=float(row[1]), losses_J=float(row[2]), stored_J=float(row[3]), relativeError=float(balance)),
                 discretization=dict(cells=len(coords), mesh_m=dx, minimumDt_s=float(row[4]), meanDt_s=float(row[0]/row[5]), steps=int(row[5])),

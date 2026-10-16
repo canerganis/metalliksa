@@ -35,7 +35,8 @@ def _run(*args, **kwargs):
 P1_ROSENTHAL = {
     ("Inconel 718", 280, 940, 80, 80): (90.9, 39.2, 106.8, 395.9, 30.58),
     ("Ti-6Al-4V", 200, 900, 80, 150): (77.3, 19.4, 119.3, 404.5, 27.58),
-    ("316L Stainless Steel", 200, 800, 70, 80): (41.6, 0.0, 85.8, 264.6, 24.02),
+    # SOL-T (2026-10-16): 316L Ts/Tl 1385/1450 C (was 41.6, 0.0, 85.8, 264.6, 24.02).
+    ("316L Stainless Steel", 200, 800, 70, 80): (40.7, 0.0, 84.1, 255.1, 23.15),
 }
 # Process-map grid of IN718 200/800/80 (49 cells, P 80..540 W x v 300..2400 mm/s). P7b (2026-10-14, B17): each cell is
 # the served Rosenthal field extent at the authority field power (A 0.32, melting-point k / cp), depth = max(liquidus
@@ -105,10 +106,14 @@ class RegimeThresholds(unittest.TestCase):
         self.assertAlmostEqual(mid, 22.2, delta=0.1)
         self.assertAlmostEqual(hi, 25.2, delta=0.1)
         self.assertTrue(lo - 0.1 <= solver.ENTHALPY_KEYHOLE <= hi)
-        # the solver's own 316L properties are the ones used above
+        # the solver's own 316L properties were the ones used above when the cut was chosen; SOL-T (2026-10-16) moved
+        # the served liquidus to 1450 C, where the same conversion gives 18.6 / 21.4 / 24.3 and still brackets 20.
         props = solver.THERMOPHYSICAL_DB["316L Stainless Steel"]
         self.assertEqual((props["density_kg_m3"], props["specific_heat_J_kgK"], props["liquidus_C"]),
-                         (rho, cp, t_liq))
+                         (rho, cp, 1450.0))
+        factor_solt = factor * (1450.0 - t0) / (t_liq - t0)
+        self.assertEqual(tuple(round(x / factor_solt, 1) for x in (26.0, 30.0, 34.0)), (18.6, 21.4, 24.3))
+        self.assertTrue(26.0 / factor_solt <= solver.ENTHALPY_KEYHOLE <= 34.0 / factor_solt)
 
     def test_cunningham_red_line_brackets_threshold(self):
         # Cunningham 2019 Fig. 3A red (melt-pool transition) line, Ti-6Al-4V 95 um 1/e2, digitized:
@@ -321,9 +326,9 @@ class In625RegimeCut(unittest.TestCase):
 
 class PorosityDecoupled(unittest.TestCase):
     def test_porosity_labels_decoupled(self):
-        # Regime keyhole (24.02 >= 20) but porosity only "Possible" (15 <= 24.02 < 30).
+        # Regime keyhole (23.15 >= 20) but porosity only "Possible" (15 <= 23.15 < 30); SOL-T, was 24.02.
         res = _run("316L Stainless Steel", 200, 800, 70, 80)
-        self.assertEqual(res["processParameters"]["normalizedEnthalpy"], 24.02)
+        self.assertEqual(res["processParameters"]["normalizedEnthalpy"], 23.15)
         self.assertTrue(res["meltPoolGeometry"]["regime"].startswith("Keyhole Mode"))
         risk = res["defectDiagnostics"]["keyholePorosityRisk"]
         self.assertTrue(risk.startswith("Possible"), risk)

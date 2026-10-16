@@ -119,7 +119,7 @@ class ThermalSolverWiring(unittest.TestCase):
             ("Inconel 718", 285, 960, 67, 23.5): ("stable", 3.600),  # NIST AMB2022-03 continuous track
             ("Ti-6Al-4V", 280, 1200, 80, 80.0): ("moderate", 4.345),
             ("Ti-6Al-4V", 200, 1000, 80, 80.0): ("stable", 3.424),
-            ("316L Stainless Steel", 200, 800, 80, 80.0): ("stable", 2.756),
+            ("316L Stainless Steel", 200, 800, 80, 80.0): ("stable", 2.693),  # SOL-T 316L Tl 1450 C (P7b 2.756)
         }
         for (m, P, v, d, pre), (band, lw) in cases.items():
             r = _run(m, P, v, d, pre)

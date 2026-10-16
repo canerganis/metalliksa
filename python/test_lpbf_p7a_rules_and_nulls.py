@@ -59,12 +59,13 @@ REV0_PINS = {
         "grid0": [_cell("#f59e0b", 55.1, 18.26, 80, "Lack of Fusion Zone", 300, 112.3),
                   _cell("#f59e0b", 40.4, 12.91, 80, "Lack of Fusion Zone", 600, 83.2),
                   _cell("#f59e0b", 33.4, 10.54, 80, "Lack of Fusion Zone", 900, 69.1)]},
+    # SOL-T (2026-10-16): 316L Ts/Tl 1385/1450 C (was 85.1/42.4/403.2, dh 17.98; grid 34.1/9.19/70.3, 6.5, 5.31).
     "ss316l|350|1500|100|goldak": {
-        "W": 85.1, "D": 42.4, "L": 403.2, "cav": 0.0, "dh": 17.98, "regime": "Transition Mode", "extent": "computed",
+        "W": 83.4, "D": 41.5, "L": 386.3, "cav": 0.0, "dh": 17.32, "regime": "Transition Mode", "extent": "computed",
         "fieldPower": 105.0, "contour0": {"x_um": 17.5, "y_um": 0.0},
-        "grid0": [_cell("#f59e0b", 34.1, 9.19, 80, "Lack of Fusion Zone", 300, 70.3),
-                  _cell("#10b981", None, 6.5, 80, "Optimal Conduction", 600, None, "width-floor-applied"),
-                  _cell("#10b981", None, 5.31, 80, "Optimal Conduction", 900, None, "width-floor-applied")]},
+        "grid0": [_cell("#f59e0b", 33.0, 8.85, 80, "Lack of Fusion Zone", 300, 68.0),
+                  _cell("#10b981", None, 6.26, 80, "Optimal Conduction", 600, None, "width-floor-applied"),
+                  _cell("#10b981", None, 5.11, 80, "Optimal Conduction", 900, None, "width-floor-applied")]},
     # REV0 rows: 117.2/65.1/491.6/8.3 (76.0), 97.2/49.0/107.2/0.0 (27.0; AlSi10Mg 0.18 to 0.30 deeper, Amendment 1),
     # 93.5/13.4/170.0/0.0 width-floor-applied (18.0; the field with A 0.30 and the kernel ledger resolves this point).
     "in625|200|800|80|rosenthal": {
@@ -73,19 +74,22 @@ REV0_PINS = {
         "grid0": [_cell("#f59e0b", 42.2, 16.74, 80, "Lack of Fusion Zone", 300, 86.3, flag=True),
                   _cell("#f59e0b", 30.8, 11.83, 80, "Lack of Fusion Zone", 600, 63.8),
                   _cell("#f59e0b", 25.4, 9.66, 80, "Lack of Fusion Zone", 900, 52.9)]},
+    # SOL-T: AlSi10Mg Ts/Tl 567/599 C (was 121.4/60.9/130.2, dh 8.48, contour 46.2/0.4; grid 33.1/66.2, 29.7/59.6,
+    # 27.4/54.4 with dh 6.39, 4.52, 3.69).
     "alsi10mg|150|600|80|rosenthal": {
-        "W": 121.4, "D": 60.9, "L": 130.2, "cav": 0.0, "dh": 8.48, "regime": "Conduction Mode (Stable)",
-        "extent": "computed", "fieldPower": 45.0, "contour0": {"x_um": 46.2, "y_um": 0.4},
-        "grid0": [_cell("#f59e0b", 33.1, 6.39, 80, "Lack of Fusion Zone", 300, 66.2),
-                  _cell("#f59e0b", 29.7, 4.52, 80, "Lack of Fusion Zone", 600, 59.6),
-                  _cell("#f59e0b", 27.4, 3.69, 80, "Lack of Fusion Zone", 900, 54.4)]},
+        "W": 120.5, "D": 60.4, "L": 129.2, "cav": 0.0, "dh": 8.41, "regime": "Conduction Mode (Stable)",
+        "extent": "computed", "fieldPower": 45.0, "contour0": {"x_um": 45.9, "y_um": 0.3},
+        "grid0": [_cell("#f59e0b", 32.7, 6.34, 80, "Lack of Fusion Zone", 300, 65.3),
+                  _cell("#f59e0b", 29.4, 4.49, 80, "Lack of Fusion Zone", 600, 58.8),
+                  _cell("#f59e0b", 27.0, 3.66, 80, "Lack of Fusion Zone", 900, 53.7)]},
     # Former fallback point: resolved since P7b (the AlSi10Mg field absorbs 0.30); its grid corner stays unresolved.
+    # SOL-T: was 113.6/24.0, dh 2.23, contour 49.7/0.5, grid dh 2.06, 1.46, 1.19.
     "alsi10mg|100|400|170|eagar-tsai": {
-        "W": 113.6, "D": 24.0, "L": 170.0, "cav": 0.0, "dh": 2.23, "regime": "Conduction Mode (Stable)",
-        "extent": "computed", "fieldPower": 30.0, "contour0": {"x_um": 49.7, "y_um": 0.5},
-        "grid0": [_cell("#10b981", None, 2.06, 80, "Optimal Conduction", 300, None, "heuristic-width-fallback"),
-                  _cell("#10b981", None, 1.46, 80, "Optimal Conduction", 600, None, "heuristic-width-fallback"),
-                  _cell("#10b981", None, 1.19, 80, "Optimal Conduction", 900, None, "heuristic-width-fallback")]},
+        "W": 112.5, "D": 23.5, "L": 170.0, "cav": 0.0, "dh": 2.22, "regime": "Conduction Mode (Stable)",
+        "extent": "computed", "fieldPower": 30.0, "contour0": {"x_um": 49.2, "y_um": 0.6},
+        "grid0": [_cell("#10b981", None, 2.05, 80, "Optimal Conduction", 300, None, "heuristic-width-fallback"),
+                  _cell("#10b981", None, 1.45, 80, "Optimal Conduction", 600, None, "heuristic-width-fallback"),
+                  _cell("#10b981", None, 1.18, 80, "Optimal Conduction", 900, None, "heuristic-width-fallback")]},
 }
 
 # DOI strings that resolve to the wrong paper or to nothing (G1 sweep 1.4 and 6.2): denied everywhere in src/ and python/.
@@ -216,7 +220,7 @@ class Ladder(unittest.TestCase):
         self.assertIsNone(gates["lof_dt"]["required"])
         self.assertIn("Tang criterion as quoted in Harkin 2023 Eq. 5", gates["lof_tang"]["basis"])
         self.assertIn("mode onset, not a porosity boundary", gates["keyhole"]["basis"])
-        self.assertIn("22.2 (19.3 to 25.2)", gates["keyhole"]["basis"])  # 316L, pinned king_conversion numbers
+        self.assertIn("21.4 (18.6 to 24.3) at the SOL-T 316L liquidus 1450 C", gates["keyhole"]["basis"])  # king_conversion
         self.assertEqual(gates["keyhole"]["required"], 20.0)
         ti = _gates(bj.compose_verdict(_thermal(tang=0.5), "ti6al4v"))["keyhole"]["basis"]
         self.assertIn("17.3 to 20.0", ti)
@@ -229,7 +233,7 @@ class Ladder(unittest.TestCase):
         sys.path.insert(0, os.path.join(HERE, "tools"))
         import lpbf_keyhole_benchmark as kb
         conv = kb.king_conversion()["kingThresholdInAppUnits"]
-        self.assertEqual((round(conv["low"], 1), round(conv["mid"], 1), round(conv["high"], 1)), (19.3, 22.2, 25.2))
+        self.assertEqual((round(conv["low"], 1), round(conv["mid"], 1), round(conv["high"], 1)), (18.6, 21.4, 24.3))  # SOL-T
         # P7b (2026-10-14): the conversion reads the index convention constant 0.42; the physical authority is 0.30.
         self.assertEqual(kb.king_conversion()["app316lProperties"]["absorptivity_index_IR"], 0.42)
         self.assertEqual(kb.king_conversion()["app316lProperties"]["absorptivity_IR_physical_not_used"], 0.30)
@@ -464,7 +468,7 @@ class Ladder(unittest.TestCase):
     def test_assumptions_and_revision(self):
         from lpbf_job_cache import BUILD_JOB_SOLVER_REVISION
         # P7b (2026-10-14): v25.
-        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-sola1-v26")
+        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-solt-v27")
         job = bj.solve_lpbf_build_job({"alloyId": "in718", "laserPower_W": 285, "scanSpeed_mm_s": 960,
                                        "hatchSpacing_um": 110, "layerThickness_um": 40, "bypassCache": True})
         text = " ".join(job["assumptions"])

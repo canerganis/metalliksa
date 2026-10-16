@@ -14,6 +14,7 @@ import unittest
 
 import quantity_envelope as qe
 import solidification_front as sf
+from four_alloy_materials import endpoint_admission
 from lpbf_thermal_solver import THERMOPHYSICAL_DB, calculate_meltpool_physics
 
 SERVED_NAMES = {"ti6al4v": "Ti-6Al-4V", "alsi10mg": "AlSi10Mg", "in718": "Inconel 718", "in625": "Inconel 625",
@@ -70,6 +71,9 @@ def ra4_problems(container):
             continue
         if len(path) >= 3 and path[-1] == "locator" and path[-3] == "sources":
             continue
+        if path[:2] == ("inputProvenance", "liquidus_K") and path[-1] in ("scope", "sourceLocator"):
+            if any(endpoint_admission(aid)[path[-1]] == value for aid in SERVED_NAMES):
+                continue
         if path[-1] == "sourceEvidenceKind" and value in qe.SOURCE_EVIDENCE_KINDS:
             continue
         problems.append(f"{'.'.join(path)}: {value!r}")
@@ -87,7 +91,7 @@ class RegistryLiterals(unittest.TestCase):
         kinds = {alloy: entry["kind"] for alloy, entry in sf.SERVED_LIQUIDUS_PROVENANCE.items()}
         self.assertEqual(kinds, qe.SERVED_LIQUIDUS_INPUT_KINDS)
         for entry in sf.SERVED_LIQUIDUS_PROVENANCE.values():
-            self.assertIn(entry["kind"], qe.UNSOURCED_INPUT_KINDS)
+            self.assertIn(entry["kind"], qe.SOURCED_INPUT_KINDS)
 
     def test_front_definitions_and_units_are_registered(self):
         self.assertEqual(tuple(sf.FRONT_QUANTITIES), FRONT_NAMES)
@@ -102,8 +106,8 @@ class RegistryLiterals(unittest.TestCase):
         self.assertIn(sf.MODULE_MATURITY, qe.MODULE_MATURITIES)
         self.assertEqual(sf.CANONICAL_ALLOY_IDS, qe.CANONICAL_ALLOY_IDS)
 
-    def test_model_id_is_v2(self):
-        self.assertEqual(sf.MODEL_ID, "solidification-front-v2")
+    def test_model_id_is_v3(self):
+        self.assertEqual(sf.MODEL_ID, "solidification-front-v3")
 
 
 class BlanketNullContainer(unittest.TestCase):
@@ -139,12 +143,12 @@ class BlanketNullContainer(unittest.TestCase):
             record = container["inputProvenance"]["liquidus_K"]
             self.assertEqual(record["kind"], served["kind"])
             self.assertEqual(record["label"], served["kind"])
-            self.assertEqual(record["sourceEvidenceKind"], "Unresolved")
+            self.assertEqual(record["sourceEvidenceKind"], "Literature estimate")
             self.assertEqual(record["declarationLocator"], served["declarationLocator"])
             self.assertEqual(record["defaultValue"], THERMOPHYSICAL_DB[SERVED_NAMES[alloy]]["liquidus_C"] + 273.15)
             for name in ("thermalGradient", "normalSpeed", "coolingRate", "gOverR", "pdas", "sdas"):
                 first = container["quantities"][name]["reasons"][0]
-                self.assertEqual(first, {"code": "missing-source-constant", "params": {},
+                self.assertEqual(first, {"code": "insufficient-sample-support", "params": {"gate": "sol-c-local-samples-not-installed"},
                                          "parent": {"input": "liquidus_K", "kind": served["kind"]}}, (alloy, name))
 
     def test_keyhole_leg_keeps_keyhole_field_inconsistent(self):
@@ -211,7 +215,7 @@ class AliasesAndInputs(unittest.TestCase):
         self.assertEqual(record["kind"], "userInput")
         self.assertEqual(record["sourceEvidenceKind"], "User input")
         self.assertEqual(record["defaultValue"], 1336.0 + 273.15)
-        self.assertEqual(record["defaultKind"], "declaredAssumption")
+        self.assertEqual(record["defaultKind"], "modelConvention")
         reason = typed["solidificationKinetics"]["quantities"]["thermalGradient"]["reasons"][0]
         self.assertEqual(reason["parent"], {"input": "liquidus_K", "kind": "userInput"})
         self.assertEqual(qe.envelope_problems(typed), [])
@@ -222,7 +226,7 @@ class AliasesAndInputs(unittest.TestCase):
         legacy = _run("AlSi10Mg", 150.0, 1200.0, "rosenthal", prop_overrides={"liquidus_C": 600.0})
         record = legacy["solidificationKinetics"]["inputProvenance"]["liquidus_K"]
         self.assertEqual(record["kind"], "userInput")
-        self.assertIsNone(record["defaultKind"], "a legacy estimate is never a default")
+        self.assertEqual(record["defaultKind"], "alloyTransfer")
         self.assertEqual(qe.envelope_problems(legacy), [])
 
 

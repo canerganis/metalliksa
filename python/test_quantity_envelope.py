@@ -293,12 +293,12 @@ class LedgerMappingTests(unittest.TestCase):
                               material_scope="SRM316L (evaporating)", process_scope="DSC heating")
         self.assertEqual(qe.observation_problems(mp05, "mp05"), [])
 
-    def test_nothing_installed_until_sol_t_keeps_every_front_unresolved(self):
+    def test_sol_t_installs_only_sourced_nominal_conventions(self):
         self.assertEqual(set(qe.SERVED_LIQUIDUS_INPUT_KINDS), set(qe.CANONICAL_ALLOY_IDS))
         for alloy, kind in qe.SERVED_LIQUIDUS_INPUT_KINDS.items():
             with self.subTest(alloy=alloy):
-                self.assertIn(kind, qe.UNSOURCED_INPUT_KINDS)
-                self.assertEqual(qe.INPUT_KIND_EVIDENCE[kind], "Unresolved")
+                self.assertIn(kind, qe.SOURCED_INPUT_KINDS)
+                self.assertEqual(qe.INPUT_KIND_EVIDENCE[kind], "Literature estimate")
         self.assertEqual(qe.LEDGER_ALTERNATIVE_MAPPING["inputKind"], "sourcedAlternative")
         self.assertFalse(qe.LEDGER_ALTERNATIVE_MAPPING["default"])
 

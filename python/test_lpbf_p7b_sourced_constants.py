@@ -73,7 +73,7 @@ ALSI_K_AB = [(298.15, 114.0), (373.15, 118.2), (473.15, 144.0), (573.15, 165.0),
 ALSI_K_HT = [(298.15, 205.5), (373.15, 206.3), (473.15, 201.6), (573.15, 193.6), (673.15, 198.0), (773.15, 192.4)]
 ALSI_CP_AB = [(298.15, 893.0), (373.15, 934.0), (423.15, 952.0), (473.15, 965.0), (523.15, 974.0), (573.15, 978.0),
               (673.15, 1074.0), (723.15, 1121.0), (773.15, 1131.0)]
-ALSI_T_LIQ_K = 868.15
+ALSI_T_LIQ_K = 872.15  # SOL-T (2026-10-16): Brandt 2007 heating pair, was 868.15
 ALSI_RHO_K = 2696.0
 HT_LOW_FACTOR = 173.0 / 205.5   # EOS datasheet 173 W/(m K) via Selo 2020 p.2 over Yang 25 C 205.5
 
@@ -344,6 +344,11 @@ PRE_P7_AMBENCH = [
 ]
 
 
+# Served endpoints before SOL-T (316L and AlSi10Mg moved; Ti-6Al-4V, IN718 and IN625 kept their numbers).
+PRE_SOLT_ENDPOINTS = {"AlSi10Mg": {"solidus_C": 557.0, "liquidus_C": 595.0},
+                      "316L Stainless Steel": {"solidus_C": 1375.0, "liquidus_C": 1400.0}}
+
+
 def _solve(mat, P, v, d=80.0, preheat=80.0, layer=40.0, hatch=100.0, **kw):
     return calculate_meltpool_physics(mat, P, v, d, preheat, layer, hatch, kw.pop("laser_wavelength", "IR_1064nm"), **kw)
 
@@ -394,9 +399,12 @@ class AbsorptivityAuthority(unittest.TestCase):
         self.assertIn("convention constant", _solve("AlSi10Mg", 200, 800)["processParameters"]["absorptivityIndexBasis"])
 
     def test_classification_neutral_grid(self):  # 3 and 19
+        # SOL-T (2026-10-16): the fixture was recorded at the pre-SOL-T endpoints; the P7b neutrality claim is checked at
+        # those endpoints (typed overrides). The SOL-T moves themselves are in the SOL-T moved-value record.
         for mat, rows in PRE_P7_FIXTURE.items():
+            pre_solt = {"prop_overrides": PRE_SOLT_ENDPOINTS[mat]} if mat in PRE_SOLT_ENDPOINTS else {}
             for p, v, dh, code, porosity, blend in rows:
-                r = _solve(mat, p, v)
+                r = _solve(mat, p, v, **pre_solt)
                 pp, g = r["processParameters"], r["meltPoolGeometry"]
                 self.assertEqual(pp["normalizedEnthalpy"], dh, (mat, p, v))
                 self.assertEqual(REGIME_CODE[g["regime"]], code, (mat, p, v))
@@ -408,7 +416,7 @@ class AbsorptivityAuthority(unittest.TestCase):
                                              pp["fabbroAbsorptivity"], pp["normalizedEnthalpy"])
                 self.assertEqual(round(fab["blend"], 6), blend, (mat, p, v))
             # Grid cells: index and enthalpy regime label bit equal (Lack of Fusion relabelling excluded).
-            cells = _solve(mat, 200, 800)["processWindowMap"]["grid"]
+            cells = _solve(mat, 200, 800, **pre_solt)["processWindowMap"]["grid"]
             by_pv = {(row[0], row[1]): row for row in rows}
             for cell in cells:
                 p, v, dh, code = by_pv[(cell["power_W"], cell["speed_mm_s"])][:4]
@@ -522,7 +530,7 @@ class IndexReadersAndRegistry(unittest.TestCase):
         self.assertEqual(props["absorptivity_IR"], 0.30)   # physical
         self.assertEqual(props["absorptivity_index_IR"], 0.42)
         rho, k_s, cp_s = 7990.0, 16.3, 500.0
-        denom = rho * cp_s * (1400.0 - 20.0) * math.sqrt(math.pi * (k_s / (rho * cp_s)) * 0.8 * (40e-6 ** 3))
+        denom = rho * cp_s * (1450.0 - 20.0) * math.sqrt(math.pi * (k_s / (rho * cp_s)) * 0.8 * (40e-6 ** 3))
         self.assertAlmostEqual(pds.normalized_enthalpy("316L Stainless Steel", 200.0, 800.0, 80.0, 20.0),
                                0.42 * 200.0 / denom, places=9)
         if os.path.join(HERE, "tools") not in sys.path:
@@ -531,7 +539,7 @@ class IndexReadersAndRegistry(unittest.TestCase):
         import lpbf_in625_regime_threshold as irt
         king = kb.king_conversion()
         self.assertEqual(tuple(round(king["kingThresholdInAppUnits"][k], 1) for k in ("low", "mid", "high")),
-                         (19.3, 22.2, 25.2))
+                         (18.6, 21.4, 24.3))  # SOL-T: 316L Tl 1450 C (was 19.3, 22.2, 25.2 at 1400 C); cuts unchanged
         self.assertEqual(king["app316lProperties"]["absorptivity_index_IR"], 0.42)
         self.assertEqual(king["app316lProperties"]["absorptivity_IR_physical_not_used"], 0.30)
         ti = kb.ti64_props()
@@ -638,7 +646,7 @@ class ProcessMapGrid(unittest.TestCase):
                                     "beamDiameter_um": 80, "preheatTemp_C": 80, "layerThickness_um": 40,
                                     "hatchSpacing_um": 100, "preset": "nozzle", "bypassCache": True})
         self.assertTrue(job["success"])
-        self.assertEqual(job["solverRevision"], "lpbf-build-job-sola1-v26")
+        self.assertEqual(job["solverRevision"], "lpbf-build-job-solt-v27")
         self.assertFalse(job.get("experimentalValidation", False))
         text = json.dumps(job)
         self.assertNotIn('"productionReady": true', text)
@@ -676,22 +684,22 @@ class KernelLedger(unittest.TestCase):
 
     def test_alsi10mg_kirchhoff_kernel_pins(self):  # 17
         k0 = fam.kernel_properties("alsi10mg", 293.15)
-        for got, want in ((k0["kernel_conductivity_W_mK"], 152.524), (k0["kernel_specific_heat_J_kgK"], 1020.08),
+        for got, want in ((k0["kernel_conductivity_W_mK"], 152.631), (k0["kernel_specific_heat_J_kgK"], 1020.85),
                           (k0["alpha_m2_s"], 5.546e-5)):
             self.assertAlmostEqual(got / want, 1.0, delta=1e-3)
         self.assertEqual(k0["kernel_density_kg_m3"], ALSI_RHO_K)
         self.assertEqual(k0["state"], "AB")
         k80 = fam.kernel_properties("AlSi10Mg", 353.15)
-        self.assertAlmostEqual(k80["kernel_conductivity_W_mK"] / 156.848, 1.0, delta=1e-3)
-        self.assertAlmostEqual(k80["kernel_specific_heat_J_kgK"] / 1033.28, 1.0, delta=1e-3)
-        self.assertAlmostEqual(fam.kernel_properties("alsi10mg", 473.15)["kernel_conductivity_W_mK"] / 165.352, 1.0,
+        self.assertAlmostEqual(k80["kernel_conductivity_W_mK"] / 156.934, 1.0, delta=1e-3)
+        self.assertAlmostEqual(k80["kernel_specific_heat_J_kgK"] / 1034.04, 1.0, delta=1e-3)
+        self.assertAlmostEqual(fam.kernel_properties("alsi10mg", 473.15)["kernel_conductivity_W_mK"] / 165.378, 1.0,
                                delta=1e-3)
         self.assertAlmostEqual(fam.kernel_properties("alsi10mg", 293.15, state="HT_low")["kernel_conductivity_W_mK"]
-                               / 166.910, 1.0, delta=1e-3)
+                               / 166.876, 1.0, delta=1e-3)
         self.assertAlmostEqual(fam.kernel_properties("alsi10mg", 293.15, state="HT")["kernel_conductivity_W_mK"]
-                               / 198.266, 1.0, delta=1e-3)
+                               / 198.226, 1.0, delta=1e-3)
         self.assertAlmostEqual(fam.kernel_properties("alsi10mg", 293.15, state="AB_unrelaxed")["kernel_conductivity_W_mK"]
-                               / 117.890, 1.0, delta=1e-3)
+                               / 117.892, 1.0, delta=1e-3)
         # The integral equals the trapezoid mean of the pinned nodes; first node held below, last value held above.
         self.assertAlmostEqual(k0["kernel_conductivity_W_mK"], _trapezoid_mean(ALSI_K_AB, 293.15, ALSI_T_LIQ_K), places=9)
         self.assertAlmostEqual(k0["kernel_specific_heat_J_kgK"], _trapezoid_mean(ALSI_CP_AB, 293.15, ALSI_T_LIQ_K), places=9)
@@ -849,7 +857,7 @@ class KernelLedger(unittest.TestCase):
         self.assertEqual((arms["melt_front_means"]["K_W_mK"], arms["melt_front_means"]["cp_J_kgK"]), (28.3, 854.0))
         self.assertEqual(arms["enthalpy_consistent_cp_J_kgK"], 822.6)
         al = fam.PROPERTY_LEDGER["alsi10mg"]["numeric"]["arms"]
-        self.assertEqual((al["AB_unrelaxed_K_W_mK"], al["HT_low_K_W_mK"], al["melt_front_means"]["K_W_mK"]), (117.890, 166.910, 116.0))
+        self.assertEqual((al["AB_unrelaxed_K_W_mK"], al["HT_low_K_W_mK"], al["melt_front_means"]["K_W_mK"]), (117.892, 166.876, 116.0))
         disputed = fam.PROPERTY_LEDGER["ti6al4v"]["numeric"]["disputed"]
         self.assertEqual((disputed["cp_l_J_kgK"], disputed["k_l_W_mK"], disputed["rho_l_kg_m3"]),
                          ([831.0, 1126.0], [28.7, 33.4], [3920.0, 4123.0]))
@@ -867,7 +875,7 @@ class KernelLedger(unittest.TestCase):
         self.assertEqual(ti["solidConductivityBasis"], "room temperature value used by the regime index, the keyhole leg "
                                                         "and the transient table; the conduction field uses the kernel mean")
         al = _solve("AlSi10Mg", 200, 800)["processParameters"]
-        self.assertIn("K 156.848 W/mK, cp 1033.28 J/kgK, alpha 5.63e-05 m2/s; state as built, build direction, held above "
+        self.assertIn("K 156.934 W/mK, cp 1034.04 J/kgK, alpha 5.629e-05 m2/s; state as built, build direction, held above "
                       "800.15 K for k and 773.15 K for cp", al["propertyConventionBasis"])
         self.assertTrue(al["absorptivityBasis"].startswith(
             "measured conduction value on an as-built rough AM surface (Sa 22.3 um) in N2 at 1075 nm, Leis 2020 area II "
@@ -887,7 +895,7 @@ class KernelLedger(unittest.TestCase):
 
     def test_alsi10mg_open_items_stay_open(self):  # 23
         t = fam._THERMAL["alsi10mg"]
-        self.assertEqual((t["solidus_C"] + 273.15, t["liquidus_C"] + 273.15), (830.15, 868.15))
+        self.assertEqual((t["solidus_C"] + 273.15, t["liquidus_C"] + 273.15), (840.15, 872.15))
         self.assertEqual(t["latent_heat_fusion_J_kg"], 397000.0)
         self.assertEqual(t["specific_heat_liquid_J_kgK"], 1180.0)
         self.assertEqual((t["boiling_C"], t["latent_heat_vap_J_kg"], t["M_molar_kg_mol"]), (2470.0, 10500000.0, 0.0270))
@@ -984,7 +992,7 @@ class KernelLedger(unittest.TestCase):
         for t0_c, k_want in ((20.0, 16.449), (80.0, 16.857), (200.0, TI64_K_SLOPE * 0.5 * (473.15 + TI64_T_LIQ_K) + TI64_K_INTERCEPT)):
             got = fam.kernel_properties("ti6al4v", t0_c + 273.15)["kernel_conductivity_W_mK"]
             self.assertAlmostEqual(got / k_want, 1.0, delta=1e-3, msg=t0_c)
-        for t0_c, k_want in ((20.0, 152.524), (80.0, 156.848), (200.0, 165.352)):
+        for t0_c, k_want in ((20.0, 152.631), (80.0, 156.934), (200.0, 165.378)):
             got = fam.kernel_properties("alsi10mg", t0_c + 273.15)["kernel_conductivity_W_mK"]
             self.assertAlmostEqual(got / k_want, 1.0, delta=1e-3, msg=t0_c)
         # Within 50 K of the liquidus the floored range of the solver applies: [T_liq - 50, T_liq].
@@ -994,7 +1002,7 @@ class KernelLedger(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "at or above the liquidus"):
             fam.kernel_properties("alsi10mg", ALSI_T_LIQ_K)
         with self.assertRaisesRegex(ValueError, "at or above the liquidus"):
-            _solve("AlSi10Mg", 200, 800, preheat=595.0)
+            _solve("AlSi10Mg", 200, 800, preheat=599.0)
         # Below 293.15 K the forms are evaluated from 293.15 K (the first value held).
         self.assertEqual(fam.kernel_properties("ti6al4v", 200.0)["kernel_conductivity_W_mK"],
                          fam.kernel_properties("ti6al4v", 293.15)["kernel_conductivity_W_mK"])

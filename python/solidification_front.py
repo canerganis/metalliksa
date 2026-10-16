@@ -41,9 +41,9 @@ from __future__ import annotations
 import math
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
-from four_alloy_materials import resolve_alloy_id
+from four_alloy_materials import resolve_alloy_id, endpoint_admission, endpoint_input
 
-MODEL_ID = "solidification-front-v2"
+MODEL_ID = "solidification-front-v3"
 
 # Quantity envelope v1 literals (contract 4.2; registry: quantity_envelope.py, never imported here).
 ENVELOPE_SCHEMA = "metalliksa-quantity-envelope-1"
@@ -56,18 +56,12 @@ _IN625_COMPACT_ALIASES = ("in625", "inconel625")
 
 # Served liquidus at SOL-A1, nothing installed (contract 4.3 item 5, last row): the provenance kind, a status code in
 # the record's scope and where the value is declared. Equal to quantity_envelope.SERVED_LIQUIDUS_INPUT_KINDS (tested).
-SERVED_LIQUIDUS_PROVENANCE: Dict[str, Dict[str, str]] = {
-    "ti6al4v": {"kind": "declaredAssumption", "scope": "no-provenance-entry",
-                "declarationLocator": "python/four_alloy_materials.py#_THERMAL/ti6al4v/liquidus_C"},
-    "alsi10mg": {"kind": "legacyEstimate", "scope": "unsourced-estimate",
-                 "declarationLocator": "python/four_alloy_materials.py#_THERMAL/alsi10mg/liquidus_C"},
-    "in718": {"kind": "declaredAssumption", "scope": "no-provenance-entry",
-              "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C"},
-    "in625": {"kind": "legacyEstimate", "scope": "secondary-unreconciled",
-              "declarationLocator": "python/lpbf_thermal_solver.py#SECONDARY_THERMOPHYSICAL_DB/in625/liquidus_C"},
-    "ss316l": {"kind": "declaredAssumption", "scope": "no-provenance-entry",
-               "declarationLocator": "python/four_alloy_materials.py#_THERMAL/ss316l/liquidus_C"},
+SERVED_LIQUIDUS_PROVENANCE = {
+    aid: {"kind": endpoint_admission(aid)["kind"], "scope": endpoint_admission(aid)["scope"],
+          "declarationLocator": "python/four_alloy_materials.py#ENDPOINT_ADMISSIONS/" + aid}
+    for aid in CANONICAL_ALLOY_IDS
 }
+
 LIQUIDUS_INPUT = "liquidus_K"
 KELVIN_OFFSET = 273.15
 
@@ -376,9 +370,7 @@ def _liquidus_input(alloy_id: str, T_liq_C: float, authority_liquidus_C: Optiona
             "userInput", f"request:prop_overrides:liquidus_C:{alloy_id}", declaration_locator=None,
             scope="typed-over-served-liquidus", source_evidence_kind="User input", default_value=default_K,
             default_kind=None if served["kind"] == "legacyEstimate" else served["kind"])
-    return _input_record(
-        served["kind"], f"served-liquidus:{alloy_id}", declaration_locator=served["declarationLocator"],
-        scope=served["scope"], source_evidence_kind="Unresolved", default_value=default_K, default_kind=None)
+    return endpoint_input(alloy_id, default_K)
 
 
 def _front_quantities(blocking: Sequence[Dict[str, Any]], depends_on: Sequence[str],
@@ -449,7 +441,13 @@ def evaluate_solidification(
                            source_evidence_kind="Unresolved", default_value=None, default_kind=None)})
 
     liquidus = _liquidus_input(alloy_id, T_liq, authority_liquidus_C)
-    blocking = [_reason("missing-source-constant", parent={"input": LIQUIDUS_INPUT, "kind": liquidus["kind"]})]
+    # SOL-T: an admitted nominal convention still serves no front value until SOL-C's co-located sample gates exist
+    # (Amendment 4 A4.1 item 5); a typed or unadmitted liquidus keeps the SOL-A1 missing-source-constant reason.
+    if liquidus["kind"] in ("modelConvention", "alloyTransfer"):
+        blocking = [_reason("insufficient-sample-support", parent={"input": LIQUIDUS_INPUT, "kind": liquidus["kind"]},
+                            gate="sol-c-local-samples-not-installed")]
+    else:
+        blocking = [_reason("missing-source-constant", parent={"input": LIQUIDUS_INPUT, "kind": liquidus["kind"]})]
     if depth_from_keyhole_leg:
         blocking.append(_reason("keyhole-field-inconsistent"))
     no_model = [_reason("missing-source-bound-model")]

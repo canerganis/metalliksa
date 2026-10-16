@@ -73,6 +73,14 @@ PRE_P7B_FROZEN_PROPS = {
                  "density_liquid_kg_m3": 2390.0, "absorptivity_IR": 0.18, "absorptivity_index_IR": 0.18},
 }
 
+# SOL-T (2026-10-16): the melt-point installation moved the served 316L (1375 / 1400 C -> 1385 / 1450 C) and AlSi10Mg
+# (557 / 595 C -> 567 / 599 C) endpoints. This frozen baseline keeps the pre-SOL-T served endpoints as literals so its
+# committed numbers stay bit equal; it is a historical recomposition, not the served SOL-T convention.
+PRE_SOLT_FROZEN_ENDPOINTS = {
+    "ss316l": {"solidus_C": 1375.0, "liquidus_C": 1400.0},
+    "alsi10mg": {"solidus_C": 557.0, "liquidus_C": 595.0},
+}
+
 
 def resolve_props(material: str) -> Dict[str, Any]:
     props = thermal_props(material) or ts.SECONDARY_THERMOPHYSICAL_DB.get(material)
@@ -81,6 +89,7 @@ def resolve_props(material: str) -> Dict[str, Any]:
     out = dict(props)
     out.pop("kernel_density_kg_m3", None)
     out.update(PRE_P7B_FROZEN_PROPS.get(resolve_alloy_id(material) or "", {}))
+    out.update(PRE_SOLT_FROZEN_ENDPOINTS.get(resolve_alloy_id(material) or "", {}))
     return out
 
 

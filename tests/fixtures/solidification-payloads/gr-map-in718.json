@@ -76,26 +76,26 @@
         "alloyId": "in718",
         "inputProvenance": {
           "liquidus_K": {
-            "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+            "declarationLocator": "python/four_alloy_materials.py#ENDPOINT_ADMISSIONS/in718",
             "defaultKind": null,
             "defaultValue": 1609.15,
             "dependsOn": [],
             "followState": null,
             "followsInput": null,
-            "kind": "declaredAssumption",
-            "label": "declaredAssumption",
+            "kind": "modelConvention",
+            "label": "modelConvention",
             "phase": null,
             "referenceTemperature_K": null,
-            "scope": "no-provenance-entry",
-            "source": null,
-            "sourceEvidenceKind": "Unresolved",
-            "sourceId": "served-liquidus:in718",
-            "sourceLocator": null,
+            "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. SMC-045 nominal IN718 compiled convention to nominal IN718 screening; Knapp1533/1609 K recorded as same-lineage integer-273 rendering (interpretation, not independently verified ancestry). Pottlacher DTA transfer refused.",
+            "source": "SMC718",
+            "sourceEvidenceKind": "Literature estimate",
+            "sourceId": "SOL-T-A4-in718:e4170adc48b284e986ad8e1a46052c4611b05f97415e20fc7ecd99e08ed2b4b4",
+            "sourceLocator": "SMC-045 PDF1 Table2; Mills PDF1 compiled IN718",
             "sourceRange_K": null,
             "status": "inRange"
           }
         },
-        "modelId": "solidification-front-v2",
+        "modelId": "solidification-front-v3",
         "moduleEvidenceCeiling": "screening-only",
         "moduleMaturity": "Research",
         "normalizedEnthalpy": 16.21,
@@ -109,7 +109,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -127,11 +127,13 @@
             "quantityDefinition": "liquidus-front-cooling-rate",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -169,7 +171,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -187,11 +189,13 @@
             "quantityDefinition": "liquidus-front-g-over-r",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -228,7 +232,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -246,11 +250,13 @@
             "quantityDefinition": "front-morphology",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -276,7 +282,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -294,11 +300,13 @@
             "quantityDefinition": "liquidus-front-normal-speed",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               }
             ],
@@ -320,7 +328,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -338,11 +346,13 @@
             "quantityDefinition": "pdas-model-alternatives",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -379,7 +389,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -397,11 +407,13 @@
             "quantityDefinition": "sdas",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -435,7 +447,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -453,11 +465,13 @@
             "quantityDefinition": "solid-state-transformation",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -488,7 +502,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -506,11 +520,13 @@
             "quantityDefinition": "liquidus-front-thermal-gradient",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               }
             ],
@@ -682,26 +698,26 @@
         "alloyId": "in718",
         "inputProvenance": {
           "liquidus_K": {
-            "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+            "declarationLocator": "python/four_alloy_materials.py#ENDPOINT_ADMISSIONS/in718",
             "defaultKind": null,
             "defaultValue": 1609.15,
             "dependsOn": [],
             "followState": null,
             "followsInput": null,
-            "kind": "declaredAssumption",
-            "label": "declaredAssumption",
+            "kind": "modelConvention",
+            "label": "modelConvention",
             "phase": null,
             "referenceTemperature_K": null,
-            "scope": "no-provenance-entry",
-            "source": null,
-            "sourceEvidenceKind": "Unresolved",
-            "sourceId": "served-liquidus:in718",
-            "sourceLocator": null,
+            "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. SMC-045 nominal IN718 compiled convention to nominal IN718 screening; Knapp1533/1609 K recorded as same-lineage integer-273 rendering (interpretation, not independently verified ancestry). Pottlacher DTA transfer refused.",
+            "source": "SMC718",
+            "sourceEvidenceKind": "Literature estimate",
+            "sourceId": "SOL-T-A4-in718:e4170adc48b284e986ad8e1a46052c4611b05f97415e20fc7ecd99e08ed2b4b4",
+            "sourceLocator": "SMC-045 PDF1 Table2; Mills PDF1 compiled IN718",
             "sourceRange_K": null,
             "status": "inRange"
           }
         },
-        "modelId": "solidification-front-v2",
+        "modelId": "solidification-front-v3",
         "moduleEvidenceCeiling": "screening-only",
         "moduleMaturity": "Research",
         "normalizedEnthalpy": 14.5,
@@ -715,7 +731,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -733,11 +749,13 @@
             "quantityDefinition": "liquidus-front-cooling-rate",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -775,7 +793,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -793,11 +811,13 @@
             "quantityDefinition": "liquidus-front-g-over-r",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -834,7 +854,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -852,11 +872,13 @@
             "quantityDefinition": "front-morphology",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -882,7 +904,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -900,11 +922,13 @@
             "quantityDefinition": "liquidus-front-normal-speed",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               }
             ],
@@ -926,7 +950,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -944,11 +968,13 @@
             "quantityDefinition": "pdas-model-alternatives",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -985,7 +1011,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1003,11 +1029,13 @@
             "quantityDefinition": "sdas",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -1041,7 +1069,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1059,11 +1087,13 @@
             "quantityDefinition": "solid-state-transformation",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -1094,7 +1124,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1112,11 +1142,13 @@
             "quantityDefinition": "liquidus-front-thermal-gradient",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               }
             ],
@@ -1288,26 +1320,26 @@
         "alloyId": "in718",
         "inputProvenance": {
           "liquidus_K": {
-            "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+            "declarationLocator": "python/four_alloy_materials.py#ENDPOINT_ADMISSIONS/in718",
             "defaultKind": null,
             "defaultValue": 1609.15,
             "dependsOn": [],
             "followState": null,
             "followsInput": null,
-            "kind": "declaredAssumption",
-            "label": "declaredAssumption",
+            "kind": "modelConvention",
+            "label": "modelConvention",
             "phase": null,
             "referenceTemperature_K": null,
-            "scope": "no-provenance-entry",
-            "source": null,
-            "sourceEvidenceKind": "Unresolved",
-            "sourceId": "served-liquidus:in718",
-            "sourceLocator": null,
+            "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. SMC-045 nominal IN718 compiled convention to nominal IN718 screening; Knapp1533/1609 K recorded as same-lineage integer-273 rendering (interpretation, not independently verified ancestry). Pottlacher DTA transfer refused.",
+            "source": "SMC718",
+            "sourceEvidenceKind": "Literature estimate",
+            "sourceId": "SOL-T-A4-in718:e4170adc48b284e986ad8e1a46052c4611b05f97415e20fc7ecd99e08ed2b4b4",
+            "sourceLocator": "SMC-045 PDF1 Table2; Mills PDF1 compiled IN718",
             "sourceRange_K": null,
             "status": "inRange"
           }
         },
-        "modelId": "solidification-front-v2",
+        "modelId": "solidification-front-v3",
         "moduleEvidenceCeiling": "screening-only",
         "moduleMaturity": "Research",
         "normalizedEnthalpy": 30.8,
@@ -1321,7 +1353,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1339,11 +1371,13 @@
             "quantityDefinition": "liquidus-front-cooling-rate",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -1386,7 +1420,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1404,11 +1438,13 @@
             "quantityDefinition": "liquidus-front-g-over-r",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -1450,7 +1486,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1468,11 +1504,13 @@
             "quantityDefinition": "front-morphology",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -1503,7 +1541,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1521,11 +1559,13 @@
             "quantityDefinition": "liquidus-front-normal-speed",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -1552,7 +1592,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1570,11 +1610,13 @@
             "quantityDefinition": "pdas-model-alternatives",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -1616,7 +1658,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1634,11 +1676,13 @@
             "quantityDefinition": "sdas",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -1677,7 +1721,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1695,11 +1739,13 @@
             "quantityDefinition": "solid-state-transformation",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -1735,7 +1781,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1753,11 +1799,13 @@
             "quantityDefinition": "liquidus-front-thermal-gradient",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -1934,26 +1982,26 @@
         "alloyId": "in718",
         "inputProvenance": {
           "liquidus_K": {
-            "declarationLocator": "python/four_alloy_materials.py#_THERMAL/in718/liquidus_C",
+            "declarationLocator": "python/four_alloy_materials.py#ENDPOINT_ADMISSIONS/in718",
             "defaultKind": null,
             "defaultValue": 1609.15,
             "dependsOn": [],
             "followState": null,
             "followsInput": null,
-            "kind": "declaredAssumption",
-            "label": "declaredAssumption",
+            "kind": "modelConvention",
+            "label": "modelConvention",
             "phase": null,
             "referenceTemperature_K": null,
-            "scope": "no-provenance-entry",
-            "source": null,
-            "sourceEvidenceKind": "Unresolved",
-            "sourceId": "served-liquidus:in718",
-            "sourceLocator": null,
+            "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. SMC-045 nominal IN718 compiled convention to nominal IN718 screening; Knapp1533/1609 K recorded as same-lineage integer-273 rendering (interpretation, not independently verified ancestry). Pottlacher DTA transfer refused.",
+            "source": "SMC718",
+            "sourceEvidenceKind": "Literature estimate",
+            "sourceId": "SOL-T-A4-in718:e4170adc48b284e986ad8e1a46052c4611b05f97415e20fc7ecd99e08ed2b4b4",
+            "sourceLocator": "SMC-045 PDF1 Table2; Mills PDF1 compiled IN718",
             "sourceRange_K": null,
             "status": "inRange"
           }
         },
-        "modelId": "solidification-front-v2",
+        "modelId": "solidification-front-v3",
         "moduleEvidenceCeiling": "screening-only",
         "moduleMaturity": "Research",
         "normalizedEnthalpy": 27.55,
@@ -1967,7 +2015,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -1985,11 +2033,13 @@
             "quantityDefinition": "liquidus-front-cooling-rate",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -2032,7 +2082,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -2050,11 +2100,13 @@
             "quantityDefinition": "liquidus-front-g-over-r",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -2096,7 +2148,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -2114,11 +2166,13 @@
             "quantityDefinition": "front-morphology",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -2149,7 +2203,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -2167,11 +2221,13 @@
             "quantityDefinition": "liquidus-front-normal-speed",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -2198,7 +2254,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -2216,11 +2272,13 @@
             "quantityDefinition": "pdas-model-alternatives",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -2262,7 +2320,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -2280,11 +2338,13 @@
             "quantityDefinition": "sdas",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -2323,7 +2383,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -2341,11 +2401,13 @@
             "quantityDefinition": "solid-state-transformation",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -2381,7 +2443,7 @@
             "fractionBasis": null,
             "identity": {
               "input": null,
-              "model": "solidification-front-v2",
+              "model": "solidification-front-v3",
               "parent": null
             },
             "labelSources": [],
@@ -2399,11 +2461,13 @@
             "quantityDefinition": "liquidus-front-thermal-gradient",
             "reasons": [
               {
-                "code": "missing-source-constant",
-                "params": {},
+                "code": "insufficient-sample-support",
+                "params": {
+                  "gate": "sol-c-local-samples-not-installed"
+                },
                 "parent": {
                   "input": "liquidus_K",
-                  "kind": "declaredAssumption"
+                  "kind": "modelConvention"
                 }
               },
               {
@@ -2754,14 +2818,95 @@
   "limits": [
     "No experimental comparison."
   ],
-  "materialEvidence": null,
+  "materialEvidence": {
+    "liquidusParent": {
+      "kind": "modelConvention",
+      "record": {
+        "admissionClass": "fixed-front-literature-model",
+        "baseline_C": [
+          1260,
+          1336
+        ],
+        "chemistryMatch": "not-established",
+        "conversion": {
+          "offset_K": 273.15,
+          "rule": "degC-plus-273.15",
+          "sameLineageKChecks": [
+            "knapp718-pair"
+          ]
+        },
+        "cycle": "not applicable to adopted model; underlying measurement cycle unknown",
+        "decision": "admit-nominal-research-convention",
+        "delta_K": [
+          0,
+          0
+        ],
+        "direction": "not applicable to adopted model; upstream direction unknown",
+        "endpoint_K": [
+          1533.15,
+          1609.15
+        ],
+        "id": "in718",
+        "liquidusDefinition": "Upper compiled melting-range boundary; experimental signal criterion unknown",
+        "method": "SMC-045 September2007 PDF1 Table2 compiled melting-range prescription; Mills2002 PDF1 agrees at 1260/1336 C but tentatively adopts 1170 C solidus separately",
+        "original": {
+          "unit": "degC",
+          "values": [
+            1260,
+            1336
+          ]
+        },
+        "pairingStatus": "same manufacturer compiled range; no same-cycle measurement claim",
+        "parentIdentity": {
+          "conversion": {
+            "offset_K": 273.15,
+            "rule": "degC-plus-273.15",
+            "sameLineageKChecks": [
+              "knapp718-pair"
+            ]
+          },
+          "endpoint_K": [
+            1533.15,
+            1609.15
+          ],
+          "recordId": "SOL-T-A4-in718",
+          "requiredRuntimeBindings": [
+            "complete original and solved chemistry with units",
+            "material state",
+            "source locator and transfer scope",
+            "field/model/solver revision and full process vector",
+            "threshold-dependent property convention and numerical settings",
+            "admission-record canonical hash"
+          ],
+          "sourceSha256": "6c9c60dc272cb4f7275091e02779879760afcb1801fc9bd04fbfca239907da90"
+        },
+        "rate": "not applicable to adopted model; underlying measurement rate unknown",
+        "refusedScope": "Measured or assessed exact-specimen endpoints; automatic user-composition admission; physical validation; restoration of local SOL-A1 quantities before SOL-C",
+        "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance.",
+        "solidusDefinition": "Lower compiled melting-range boundary; experimental signal criterion unknown; Mills tentative 1170 C eutectic solidus remains an unselected alternative",
+        "sourceCheck": "smc718-celsius-pair",
+        "sourceChemistry": "Named nominal IN718; endpoint-batch assay and state unknown; not Pottlacher Mo4.34 batch",
+        "sourceId": "SMC718",
+        "transfer": "SMC-045 nominal IN718 compiled convention to nominal IN718 screening; Knapp1533/1609 K recorded as same-lineage integer-273 rendering (interpretation, not independently verified ancestry). Pottlacher DTA transfer refused.",
+        "uncertainty": {
+          "coverage": "No statistical coverage; unknown model, rate, chemistry/state-transfer biases",
+          "type": "not-quantified"
+        }
+      },
+      "recordSha256": "e4170adc48b284e986ad8e1a46052c4611b05f97415e20fc7ecd99e08ed2b4b4",
+      "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. SMC-045 nominal IN718 compiled convention to nominal IN718 screening; Knapp1533/1609 K recorded as same-lineage integer-273 rendering (interpretation, not independently verified ancestry). Pottlacher DTA transfer refused.",
+      "sourceEvidenceKind": "Literature estimate",
+      "sourceLocator": "SMC-045 PDF1 Table2; Mills PDF1 compiled IN718",
+      "status": "admitted-convention"
+    }
+  },
   "materialName": "Inconel 718",
   "mode": "map",
   "provenance": {
-    "buildJobSolverRevision": "lpbf-build-job-sola1-v26",
+    "buildJobSolverRevision": "lpbf-build-job-solt-v27",
     "frozenFilesModified": false,
     "heatSource": "rosenthal",
-    "solidificationModelId": "solidification-front-v2"
+    "solidificationModelId": "solidification-front-v3"
   },
   "request": {
     "alloyId": "in718",

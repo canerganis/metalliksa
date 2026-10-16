@@ -75,7 +75,14 @@ def build():
             supported = bool(p.get("source")) and p.get("value") == value and p.get("basis") in (
                 "cited-primary", "cited-secondary", "measured-conduction-bare-plate", "measured-conduction-as-built-surface")
             kind = "sourceModelAssumption" if supported else "legacyEstimate"
-            label = qe.input_record(kind, f"served-{aid}-{key}", status="inRange",
+            status = "inRange"
+            # SOL-T: an admitted nominal endpoint convention keeps its admission kind (modelConvention or
+            # alloyTransfer, the latter extrapolated); it is a Literature estimate, never a measured specimen pair.
+            if (p.get("basis") == "admitted-nominal-convention" and p.get("source") and p.get("value") == value
+                    and p.get("admissionKind") in ("modelConvention", "alloyTransfer")):
+                supported, kind = True, p["admissionKind"]
+                status = "extrapolated" if kind == "alloyTransfer" else "inRange"
+            label = qe.input_record(kind, f"served-{aid}-{key}", status=status,
                                     source_locator=(p.get("locator") or p.get("source")) if supported else None,
                                     source=p.get("source") if supported else None)
             scope = p.get("scope", "")

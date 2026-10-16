@@ -1,0 +1,267 @@
+{
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "quantities": {
+    "thermalGradient_K_m": {
+      "status": "computed",
+      "value": 20000000.0,
+      "unit": "K/m",
+      "quantityDefinition": "liquidus-front-thermal-gradient",
+      "leafRole": "derived",
+      "sourceEvidenceKind": "Literature estimate",
+      "dependsOn": [
+        "liquidus_K"
+      ],
+      "weakestInputs": [],
+      "labelSources": [
+        "Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle"
+      ],
+      "reasons": [],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [
+        {
+          "id": "SOL-T-A4-alsi10mg:ca4a499bc021698c9214cb5aa51d4ea4282d05ec2f0741cb6ccd3ca46928bf96",
+          "locator": "Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle",
+          "readLevel": "repository-attribution"
+        }
+      ],
+      "assumptions": [
+        "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction",
+        "Legacy event means; no SOL-C local-sample admission."
+      ],
+      "validity": null,
+      "uncertainty": {
+        "kind": "not-quantified",
+        "construction": "Single-mesh legacy field and convention transfer errors not quantified."
+      },
+      "fractionBasis": null,
+      "identity": {
+        "input": "b8f03b7e6b65c636816e72a35b2299196137bdb2b504ad47abb3493ca81d2f95",
+        "model": "synthetic-field",
+        "parent": "parents-v2:[\"object\",[[\"liquidus_K\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/four_alloy_materials.py#ENDPOINT_ADMISSIONS/alsi10mg\"],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.b413333333333p+9\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"alloyTransfer\"],[\"label\",\"alloyTransfer\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction\"],[\"source\",\"SOLT-BRANDT-AL\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"SOL-T-A4-alsi10mg:ca4a499bc021698c9214cb5aa51d4ea4282d05ec2f0741cb6ccd3ca46928bf96\"],[\"sourceLocator\",\"Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]]]]"
+      }
+    },
+    "solidificationRate_m_s": {
+      "status": "computed",
+      "value": 0.2,
+      "unit": "m/s",
+      "quantityDefinition": "liquidus-front-normal-speed",
+      "leafRole": "derived",
+      "sourceEvidenceKind": "Literature estimate",
+      "dependsOn": [
+        "liquidus_K"
+      ],
+      "weakestInputs": [],
+      "labelSources": [
+        "Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle"
+      ],
+      "reasons": [],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [
+        {
+          "id": "SOL-T-A4-alsi10mg:ca4a499bc021698c9214cb5aa51d4ea4282d05ec2f0741cb6ccd3ca46928bf96",
+          "locator": "Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle",
+          "readLevel": "repository-attribution"
+        }
+      ],
+      "assumptions": [
+        "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction",
+        "Legacy event means; no SOL-C local-sample admission."
+      ],
+      "validity": null,
+      "uncertainty": {
+        "kind": "not-quantified",
+        "construction": "Single-mesh legacy field and convention transfer errors not quantified."
+      },
+      "fractionBasis": null,
+      "identity": {
+        "input": "b8f03b7e6b65c636816e72a35b2299196137bdb2b504ad47abb3493ca81d2f95",
+        "model": "synthetic-field",
+        "parent": "parents-v2:[\"object\",[[\"liquidus_K\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/four_alloy_materials.py#ENDPOINT_ADMISSIONS/alsi10mg\"],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.b413333333333p+9\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"alloyTransfer\"],[\"label\",\"alloyTransfer\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction\"],[\"source\",\"SOLT-BRANDT-AL\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"SOL-T-A4-alsi10mg:ca4a499bc021698c9214cb5aa51d4ea4282d05ec2f0741cb6ccd3ca46928bf96\"],[\"sourceLocator\",\"Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]]]]"
+      }
+    },
+    "coolingRate_K_s": {
+      "status": "computed",
+      "value": 4000000.0,
+      "unit": "K/s",
+      "quantityDefinition": "liquidus-front-cooling-rate",
+      "leafRole": "derived",
+      "sourceEvidenceKind": "Literature estimate",
+      "dependsOn": [
+        "liquidus_K"
+      ],
+      "weakestInputs": [],
+      "labelSources": [
+        "Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle"
+      ],
+      "reasons": [],
+      "numericalStatus": {
+        "state": "not-assessed",
+        "settings": {},
+        "residuals": {}
+      },
+      "physicalValidation": {
+        "status": "unvalidated",
+        "experimentalValidation": false,
+        "productionReady": false
+      },
+      "sources": [
+        {
+          "id": "SOL-T-A4-alsi10mg:ca4a499bc021698c9214cb5aa51d4ea4282d05ec2f0741cb6ccd3ca46928bf96",
+          "locator": "Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle",
+          "readLevel": "repository-attribution"
+        }
+      ],
+      "assumptions": [
+        "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction",
+        "Legacy event means; no SOL-C local-sample admission."
+      ],
+      "validity": null,
+      "uncertainty": {
+        "kind": "not-quantified",
+        "construction": "Single-mesh legacy field and convention transfer errors not quantified."
+      },
+      "fractionBasis": null,
+      "identity": {
+        "input": "b8f03b7e6b65c636816e72a35b2299196137bdb2b504ad47abb3493ca81d2f95",
+        "model": "synthetic-field",
+        "parent": "parents-v2:[\"object\",[[\"liquidus_K\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/four_alloy_materials.py#ENDPOINT_ADMISSIONS/alsi10mg\"],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.b413333333333p+9\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"alloyTransfer\"],[\"label\",\"alloyTransfer\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction\"],[\"source\",\"SOLT-BRANDT-AL\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"SOL-T-A4-alsi10mg:ca4a499bc021698c9214cb5aa51d4ea4282d05ec2f0741cb6ccd3ca46928bf96\"],[\"sourceLocator\",\"Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]]]]"
+      }
+    }
+  },
+  "inputProvenance": {
+    "liquidus_K": {
+      "kind": "alloyTransfer",
+      "label": "alloyTransfer",
+      "sourceId": "SOL-T-A4-alsi10mg:ca4a499bc021698c9214cb5aa51d4ea4282d05ec2f0741cb6ccd3ca46928bf96",
+      "sourceLocator": "Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle",
+      "declarationLocator": "python/four_alloy_materials.py#ENDPOINT_ADMISSIONS/alsi10mg",
+      "source": "SOLT-BRANDT-AL",
+      "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction",
+      "status": "extrapolated",
+      "sourceEvidenceKind": "Literature estimate",
+      "defaultValue": 872.15,
+      "defaultKind": null,
+      "followsInput": null,
+      "followState": null,
+      "dependsOn": [],
+      "phase": null,
+      "referenceTemperature_K": null,
+      "sourceRange_K": null
+    }
+  },
+  "parentBindings": {
+    "materialRevisionSha256": "14d74c27f61233107d75cd5ad96c08560d1e29ac2b565cb9a2911cd195a7db71",
+    "settings": {
+      "power_W": 220
+    },
+    "fieldIdentity": "synthetic-field",
+    "selectedConvention": {
+      "record": {
+        "id": "alsi10mg",
+        "decision": "admit-nominal-research-convention",
+        "sourceId": "SOLT-BRANDT-AL",
+        "sourceCheck": "SOLT-BRANDT-AL-HEATING",
+        "original": {
+          "values": [
+            567,
+            599
+          ],
+          "unit": "degC"
+        },
+        "endpoint_K": [
+          840.15,
+          872.15
+        ],
+        "baseline_C": [
+          557,
+          595
+        ],
+        "delta_K": [
+          10,
+          4
+        ],
+        "admissionClass": "fixed-front-explicit-family-transfer",
+        "chemistryMatch": "not-established",
+        "uncertainty": {
+          "type": "not-quantified",
+          "coverage": "No statistical coverage; unknown model, rate, chemistry/state-transfer biases"
+        },
+        "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance.",
+        "refusedScope": "Measured or assessed exact-specimen endpoints; automatic user-composition admission; physical validation; restoration of local SOL-A1 quantities before SOL-C",
+        "sourceChemistry": {
+          "Si_wt_pct": 9,
+          "Mg_wt_pct": 0.6,
+          "balance": "Al",
+          "otherElements": "unreported, not zero",
+          "state": "Hydro MEBSP alloy; complete prior treatment unknown"
+        },
+        "solidusDefinition": "Source-labelled resistivity transition solidus boundary; onset/peak/end construction unknown",
+        "liquidusDefinition": "Source-labelled resistivity transition liquidus boundary; onset/peak/end construction unknown",
+        "method": "Brandt2007 four-probe resistivity, furnace/tubular ceramic crucible; heating row",
+        "rate": "about 100 K/h in phase-change region; prescribed apparatus rate, not LPBF rate",
+        "cycle": "source Table II Heating cycle; individual run/cycle number unknown",
+        "direction": "heating",
+        "pairingStatus": "same named sample and source-labelled Heating cycle pair; same individual trace not established",
+        "transfer": "Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction",
+        "parentIdentity": {
+          "recordId": "SOL-T-A4-alsi10mg",
+          "endpoint_K": [
+            840.15,
+            872.15
+          ],
+          "sourceSha256": "505f04de097d31d97ca92a35821233f198ac59aca8ff3ffc27c4ce9cb011d0f7",
+          "requiredRuntimeBindings": [
+            "complete original and solved chemistry with units",
+            "material state",
+            "source locator and transfer scope",
+            "field/model/solver revision and full process vector",
+            "threshold-dependent property convention and numerical settings",
+            "admission-record canonical hash"
+          ],
+          "conversion": {
+            "rule": "degC-plus-273.15",
+            "offset_K": 273.15,
+            "sameLineageKChecks": []
+          }
+        },
+        "conversion": {
+          "rule": "degC-plus-273.15",
+          "offset_K": 273.15,
+          "sameLineageKChecks": []
+        }
+      },
+      "recordSha256": "ca4a499bc021698c9214cb5aa51d4ea4282d05ec2f0741cb6ccd3ca46928bf96",
+      "sourceLocator": "Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle",
+      "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction",
+      "sourceEvidenceKind": "Literature estimate",
+      "kind": "alloyTransfer",
+      "status": "extrapolated"
+    },
+    "chemistry": {
+      "selection": "alsi10mg",
+      "specimenAssay": null,
+      "scope": "nominal-convention-only"
+    },
+    "materialState": "nominal-convention; specimen-state-unspecified"
+  }
+}

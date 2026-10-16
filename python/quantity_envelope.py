@@ -231,11 +231,8 @@ LEDGER_ALTERNATIVE_MAPPING: Dict[str, Any] = {"inputKind": "sourcedAlternative",
                                               "sourceEvidenceKind": "Literature estimate", "default": False}
 # Nothing installed until SOL-T: the current served liquidus kinds; dependents are Unresolved (null at SOL-A1).
 SERVED_LIQUIDUS_INPUT_KINDS: Dict[str, str] = {
-    "alsi10mg": "legacyEstimate",       # unsourced-estimate
-    "in625": "legacyEstimate",          # secondary-unreconciled
-    "ti6al4v": "declaredAssumption",    # no provenance entry
-    "in718": "declaredAssumption",
-    "ss316l": "declaredAssumption",
+    "alsi10mg": "alloyTransfer", "ss316l": "alloyTransfer",
+    "ti6al4v": "modelConvention", "in718": "modelConvention", "in625": "modelConvention",
 }
 
 _KEY = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")

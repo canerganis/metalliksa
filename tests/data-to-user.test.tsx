@@ -65,6 +65,14 @@ test('constant evidence remains unresolved without a value-specific admitted sou
   const al = DATA_TO_USER.alloys.find(a => a.id === 'alsi10mg')!;
   assert.equal(al.constants.find(c => c.quantity === 'specific_heat_liquid_J_kgK')?.sourceEvidenceKind, 'Unresolved');
   assert.equal(al.constants.find(c => c.quantity === 'density_liquid_kg_m3')?.sourceEvidenceKind, 'Literature estimate');
+  // SOL-T: admitted endpoint conventions are Literature estimates that carry their transfer scope, never Measured.
+  const alLiquidus = al.constants.find(c => c.quantity === 'liquidus_C')!;
+  assert.equal(alLiquidus.value, 599);
+  assert.equal(alLiquidus.sourceEvidenceKind, 'Literature estimate');
+  assert.equal(alLiquidus.basis, 'admitted-nominal-convention');
+  assert.ok(alLiquidus.note.includes('Al-9Si-0.6Mg'));
+  const ti = DATA_TO_USER.alloys.find(a => a.id === 'ti6al4v')!;
+  assert.ok(ti.constants.find(c => c.quantity === 'liquidus_C')!.note.includes('Cezairliyan'));
 });
 
 test('projection contains no measurement copies and matches current source identities', () => {

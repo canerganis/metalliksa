@@ -15,7 +15,7 @@
       "slicerName": "Ti-6Al-4V ELI",
       "quality": "estimated",
       "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-      "canonicalSourceSha256": "b8a8b54b794a126dd4470d8e3fc1863fa8b74c171fc0db1181d47dfa0bff782d",
+      "canonicalSourceSha256": "d26c4b0318380615fbe89d482100083a5d2ad8193e03640149b0bc2f1770ff12",
       "thermal": {
         "base": "Ti",
         "liquidus_C": 1660.0,
@@ -136,11 +136,11 @@
       "slicerName": "SS 316L",
       "quality": "estimated",
       "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-      "canonicalSourceSha256": "70d125f359d849e05bd46844739101074ec0e6902a54ecc09701d4217baa16a6",
+      "canonicalSourceSha256": "b2b6364d87e63b56934039bf8a08668546dfd5b9707ddce35733c04741ac223d",
       "thermal": {
         "base": "Fe",
-        "liquidus_C": 1400.0,
-        "solidus_C": 1375.0,
+        "liquidus_C": 1450.0,
+        "solidus_C": 1385.0,
         "boiling_C": 2814.0,
         "M_molar_kg_mol": 0.0554,
         "density_kg_m3": 7990.0,
@@ -191,11 +191,11 @@
       "slicerName": "AlSi10Mg",
       "quality": "estimated",
       "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-      "canonicalSourceSha256": "4e2139cbf2f209da5092a5782ab9ec06501f15b5e85576b6a6460fe1b2c3169a",
+      "canonicalSourceSha256": "28d48e9fdde40b86e3d0124e4bc81ca8926b3919db005f47445d57ba55024cb0",
       "thermal": {
         "base": "Al",
-        "liquidus_C": 595.0,
-        "solidus_C": 557.0,
+        "liquidus_C": 599.0,
+        "solidus_C": 567.0,
         "boiling_C": 2470.0,
         "M_molar_kg_mol": 0.027,
         "density_kg_m3": 2680.0,
@@ -237,23 +237,23 @@
         "conditions": "additively manufactured AlSi10Mg blocks without powder (Sa 22.3 um), N2, beams 35, 100 and 200 um at 1/e2, 0.7 to 1.3 m/s, calorimetry (EN ISO 11551); as-built rough AM surface, not a polished or ground plate (disclosure D9)",
         "unsourced": false
       },
-      "kernelLedgerSha256": "6d7183c07a4ded8bd7959f42e9448f4389396afc21306f660bd51f976f6fc060",
+      "kernelLedgerSha256": "0dada3f85eaa428715e750740358606214dc2e46f18db67fb7970b92f23ec32d",
       "kernelLedger": {
         "HT_low_factor": 0.8418491484184915,
-        "T_liq_K": 868.15,
-        "T_sol_K": 830.15,
+        "T_liq_K": 872.15,
+        "T_sol_K": 840.15,
         "arms": {
-          "AB_unrelaxed_K_W_mK": 117.89,
-          "HT_K_W_mK": 198.266,
-          "HT_low_K_W_mK": 166.91,
+          "AB_unrelaxed_K_W_mK": 117.892,
+          "HT_K_W_mK": 198.226,
+          "HT_low_K_W_mK": 166.876,
           "enthalpy_consistent_cp_J_kgK": {
-            "397000": 1710.5,
-            "500000": 1889.6
+            "397000": 1706.5,
+            "500000": 1884.4
           },
           "melt_front_means": {
             "K_W_mK": 116.0,
             "cp_J_kgK": 1150.5,
-            "rho_kg_m3": 2544.9
+            "rho_kg_m3": 2544.4
           }
         },
         "cp_s_nodes_J_kgK": {
@@ -422,23 +422,23 @@
           "rho_arm_ADC12_kg_m3": {
             "slope_per_K": -0.2652,
             "value_at_865K": 2492.0,
-            "value_at_T_liq": 2491.2
+            "value_at_T_liq": 2490.1
           },
           "rho_law_kg_m3": {
             "c1": 2603.0,
             "c2_per_K": 0.241,
-            "value_at_T_liq": 2393.8
+            "value_at_T_liq": 2392.8
           }
         },
         "pins_T0_293_15K": {
-          "K_W_mK": 152.524,
+          "K_W_mK": 152.631,
           "alpha_m2_s": 5.546e-05,
-          "cp_J_kgK": 1020.08
+          "cp_J_kgK": 1020.85
         },
         "pins_T0_353_15K": {
-          "K_W_mK": 156.848,
-          "alpha_m2_s": 5.63e-05,
-          "cp_J_kgK": 1033.28
+          "K_W_mK": 156.934,
+          "alpha_m2_s": 5.629e-05,
+          "cp_J_kgK": 1034.04
         },
         "rho_s_range_kg_m3": [
           2620.0,
@@ -452,7 +452,7 @@
       "slicerName": "Inconel 718",
       "quality": "estimated",
       "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-      "canonicalSourceSha256": "114ed51b8b0262ea1bcfa1eca7b0b9eeb95e1bd46756ee73dc1308cbd5d8ad75",
+      "canonicalSourceSha256": "f1b1e1bcd574d9a1397cffaeefcab3b98a3981ca6a62fa60c96fc06f28039270",
       "thermal": {
         "base": "Ni",
         "liquidus_C": 1336.0,

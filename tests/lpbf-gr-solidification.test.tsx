@@ -40,7 +40,7 @@ test("map keeps empty unavailable cells, keyboard grid semantics and per-quantit
   const grid = renderToStaticMarkup(<GrHeatmap result={result} metric="goverr" selected={{ iP: 0, iV: 0 }} />);
   assert.match(grid, /role="grid"/); assert.match(grid, /tabindex="0"/);
   const detail = renderToStaticMarkup(<GrCellDetail body={body} result={result} />);
-  assert.match(detail, /data-solidification-envelope/); assert.match(detail, /no admitted source/);
+  assert.match(detail, /data-solidification-envelope/); assert.match(detail, /Too few valid interface samples/); // SOL-T: admitted liquidus, SOL-C samples not installed
   assert.doesNotMatch(detail, /Hunt G\/R screening/);
   const card = renderToStaticMarkup(<GrSolidificationMapCard initialResult={result} />);
   assert.doesNotMatch(card, /Hunt bands|Gäumann 2001 PDF read/);

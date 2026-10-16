@@ -111,6 +111,12 @@ def _summarise_completed(result: Dict[str, Any]) -> Dict[str, Any]:
         peakTemperature_K=metrics["peakTemperature_K"],
         thermalGradient_K_m=metrics.get("thermalGradient_K_m"),
         coolingRate_K_s=metrics.get("coolingRate_K_s"),
+        # SOL-T D13: the per-value label and the parent liquidus convention travel with the legacy event means.
+        transientFrontEvidence={
+            name: {"status": q.get("status"), "sourceEvidenceKind": q.get("sourceEvidenceKind"),
+                   "labelSources": q.get("labelSources")}
+            for name, q in ((result.get("transientFrontDiagnostics") or {}).get("quantities") or {}).items()
+            if name in ("thermalGradient_K_m", "coolingRate_K_s")} or None,
         energyBalanceRelativeError=result["energyBalance"]["relativeError"],
         numericalDiagnosticsSummary={k: diagnostics.get(k) for k in keep},
         implementationHash=result["provenance"]["implementationHash"],

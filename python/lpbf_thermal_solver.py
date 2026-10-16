@@ -31,7 +31,7 @@ from four_alloy_materials import (ABSORPTIVITY_BASIS_UNSOURCED, ABSORPTIVITY_IND
                                   KERNEL_LEDGER_BASIS, KERNEL_LEDGER_STATE_NOTE_ALSI10MG, MELT_KEYS,
                                   PROPERTY_CONVENTION_BLEND_BASIS, SOLID_CONDUCTIVITY_BASIS_LEDGER,
                                   absorptivity_authority, four_alloy_thermophysical_db, kernel_properties,
-                                  melt_point_properties, resolve_alloy_id, thermal_props)
+                                  endpoint_admission, melt_point_properties, resolve_alloy_id, thermal_props)
 from in625_thermal_material import LATENT_HEAT_J_KG as IN625_LATENT_HEAT_J_KG
 from goldak_solver import GoldakField, MODEL_ID as GOLDAK_MODEL_ID, seed_goldak_axes
 from solidification_front import evaluate_solidification
@@ -367,7 +367,8 @@ def resolve_conduction_kernel(material_name, props, prop_overrides, T_preheat_C)
 # hs = rho cp_s (T_liq - T0)). 15 = vapor-depression onset (Cunningham 2019 Fig. 3A blue line, app units
 # 13.0-16.9 along speed). 20 = PROVISIONAL screening choice for the keyhole-mode onset (melt-pool D/W ~ 0.5): it
 # lies in the overlap of the King et al. 2014 30 +/- 4 (316L, Table 3 constants with the density unit corrected
-# to 7980 kg/m3, sigma = D4sigma/4) converted to this convention = 22.2 (19.3-25.2, conditional on the app
+# to 7980 kg/m3, sigma = D4sigma/4) converted to this convention = 21.4 (18.6-24.3 at the SOL-T 316L liquidus 1450 C;
+# 22.2, 19.3-25.2 at the former 1400 C, where the cut was chosen; conditional on the app
 # absorptivity, 20 C preheat and property set) and the Cunningham 2019 Fig. 3A red-line values along speed
 # (Ti-6Al-4V, 95 um 1/e^2) = 17.3-20.0 (a range along speed, not a confidence interval). Not an exact threshold.
 ENTHALPY_TRANSITION = 15.0
@@ -391,7 +392,8 @@ REGIME_THRESHOLD_BASIS = ("dH/hs < 15 conduction, 15-20 transition, >= 20 keyhol
                           "no transition band (see the IN625 alloy note). "
                           "20 is a provisional screening choice, not a derived exact threshold: it "
                           "lies in the overlap of King et al. 2014 30+/-4 (316L) converted to the repo convention "
-                          "(19.3-25.2; conditional on the app absorptivity, 20 C preheat and property set; King's "
+                          "(18.6-24.3 at the SOL-T 316L liquidus 1450 C, 19.3-25.2 at the former 1400 C where the cut was chosen; "
+                          "conditional on the app absorptivity, 20 C preheat and property set; King's "
                           "printed density unit kg/m3 corrected to 7980 kg/m3) and the Cunningham et al. 2019 Fig. 3A "
                           "melt-pool transition line (Ti-6Al-4V; app index 17.3-20.0 along speed, a range, not a "
                           "confidence interval). Both sources and the held-out checks are for Ti-6Al-4V and 316L; "
@@ -458,7 +460,8 @@ KEYHOLE_MODE_ONSET_STATEMENT = (
     "paper's units)")
 KEYHOLE_CUT_BASIS_316L = (
     "cut 20: King 2014 30 +/- 4 converted to this convention by the pinned tools/lpbf_keyhole_benchmark.king_conversion: "
-    "22.2 (19.3 to 25.2), conditional on the app absorptivity 0.42 (index convention), T0 20 C and the app 316L "
+    "21.4 (18.6 to 24.3) at the SOL-T 316L liquidus 1450 C (22.2, 19.3 to 25.2 at the former 1400 C, where the cut "
+    "was chosen; the cut is not re-derived), conditional on the app absorptivity 0.42 (index convention), T0 20 C and the app 316L "
     "property set; King's printed density unit corrected to 7980 kg/m3")
 KEYHOLE_CUT_BASIS_TI64 = (
     "cut 20: Cunningham 2019 Fig. 3A red line along speed, 17.3 to 20.0 in app units (a range along speed, not a "
@@ -872,6 +875,9 @@ def calculate_meltpool_physics(
     props = dict(base)
     if prop_overrides:
         props.update(prop_overrides)
+    liquidus_parent = endpoint_admission(material_name)
+    if liquidus_parent is not None and [props["solidus_C"] + 273.15, props["liquidus_C"] + 273.15] != liquidus_parent["record"]["endpoint_K"]:
+        liquidus_parent = None
     
     process_values = {}
     for name, value in (
@@ -1556,6 +1562,7 @@ def calculate_meltpool_physics(
         # SOL-A1: the front container of solidification_front.evaluate_solidification (its modelId is
         # solidification_front.MODEL_ID), full precision, no flat numeric keys, codes only (contract 4.1 item 6).
         "solidificationKinetics": solidification_kinetics,
+        "materialEvidence": {"liquidusParent": liquidus_parent},
         "geometricContours": {
             "topDownXY": top_down_contour,
             "longitudinalXZ": longitudinal_contour,

@@ -70,10 +70,11 @@ class LoaderTests(unittest.TestCase):
 
 class RegimeTests(unittest.TestCase):
     def test_hand_computed_enthalpy_and_labels(self):
-        # 316L (rho 7990, k 16.3, cp 500, T_liq 1400 C, eta 0.42), 100 W, 1000 mm/s, d 50 um, T0 20 C:
-        # alpha = 4.080e-6 m2/s; denom = rho cp 1380 sqrt(pi alpha v r^3) = 2.467e-3 W; dH/hs = 42/2.467e-3/1e3... = 17.02
+        # 316L (rho 7990, k 16.3, cp 500, T_liq 1450 C since SOL-T, eta 0.42), 100 W, 1000 mm/s, d 50 um, T0 20 C:
+        # alpha = 4.080e-6 m2/s; denom = rho cp 1430 sqrt(pi alpha v r^3); dH/hs = 17.02 x 1380 / 1430 = 16.43
+        # (17.02 at the pre-SOL-T 1400 C).
         a = pds.classify_regime("316L Stainless Steel", 100, 1000, 50, 20.0, 0)
-        self.assertAlmostEqual(a["normalizedEnthalpy"], 17.02, delta=0.02)
+        self.assertAlmostEqual(a["normalizedEnthalpy"], 16.43, delta=0.02)
         self.assertEqual(a["label"], "transition")
         b = pds.classify_regime("Ti-6Al-4V", 50, 2500, 50, 20.0, None)
         self.assertLess(b["normalizedEnthalpy"], 15.0)
@@ -85,7 +86,7 @@ class RegimeTests(unittest.TestCase):
     def test_balling_flag_overrides(self):
         r = pds.classify_regime("316L Stainless Steel", 100, 1000, 50, 20.0, 1)
         self.assertEqual(r["label"], "balling-flagged")
-        self.assertAlmostEqual(r["normalizedEnthalpy"], 17.02, delta=0.02)
+        self.assertAlmostEqual(r["normalizedEnthalpy"], 16.43, delta=0.02)
 
 
 class SummaryTests(unittest.TestCase):

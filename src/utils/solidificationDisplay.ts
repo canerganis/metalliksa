@@ -2,7 +2,7 @@ import { checkedQuantityContainer, reasonText, sourceLabelText, type Quantity, t
 
 // Wording table: pending maintainer approval (SOL-A, L6).
 export const SOLIDIFICATION_WORDING = {
-  transientHeading: "Transient diagnostics — unadmitted liquidus, single mesh",
+  transientHeading: "Transient diagnostics · selected liquidus convention · single mesh",
   legacy: "Older solver result, recompute",
   alternatives: { hunt: "Hunt", kurzFisher: "Kurz-Fisher" } as Readonly<Record<string, string>>,
 } as const;
@@ -31,3 +31,21 @@ export function checkedFront(raw: unknown): QuantityContainer {
 }
 
 export const TRANSIENT_FRONT_METRICS = new Set(["thermalGradient_K_m", "solidificationRate_m_s", "coolingRate_K_s"]);
+
+export function quantityScopes(container: QuantityContainer, quantity: Quantity): string[] {
+  return [...new Set(quantity.dependsOn.flatMap(name => {
+    const input = container.inputProvenance?.[name];
+    return input?.scope ? [input.scope] : [];
+  }))];
+}
+
+export function quantityContainerCsv(container: QuantityContainer): string {
+  const cell = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
+  const rows: unknown[][] = [["quantity", "status", "value", "unit", "sourceEvidenceKind", "labelSources", "scope", "parentIdentity"]];
+  for (const [name, quantity] of Object.entries(container.quantities)) rows.push([
+    name, quantity.status, typeof quantity.value === "object" && quantity.value !== null ? JSON.stringify(quantity.value) : quantity.value,
+    quantity.unit, quantity.sourceEvidenceKind, quantity.labelSources.join("; "),
+    quantityScopes(container, quantity).join("; "), quantity.identity.parent,
+  ]);
+  return rows.map(row => row.map(cell).join(",")).join("\r\n") + "\r\n";
+}

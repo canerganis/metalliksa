@@ -12,9 +12,11 @@ from lpbf_material_capabilities import capability_for
 # sourced-constants bump (2026-10-14): the absorptivity authority (IN718 0.32, 316L 0.30, Ti-6Al-4V 0.32) and the
 # Ti-6Al-4V liquid row (k_l 29.8, cp_l 930, rho_l 4087, Mohr 2020) move the snapshot, the table shape does not.
 UNCHANGED_REVISIONS = {
-    "Inconel 718": "8bbceb4e810f",
-    "Ti-6Al-4V": "ac61f9564639",
-    "316L Stainless Steel": "51f124e66e86",
+    # SOL-T (2026-10-16): every snapshot binds its endpoint admission parent (P7b: 8bbceb4e810f, ac61f9564639,
+    # 51f124e66e86); the three-row table shape is unchanged.
+    "Inconel 718": "4562ad022349",
+    "Ti-6Al-4V": "8052bde35739",
+    "316L Stainless Steel": "b79c8cf5018b",
 }
 
 

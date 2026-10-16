@@ -422,7 +422,7 @@ def main():
         "lpbf-build-job-p6-containment-v23",
         "lpbf-build-job-p7a-rules-and-nulls-v24",
     ), BUILD_JOB_SOLVER_REVISION
-    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-sola1-v26"  # P7b (2026-10-14)
+    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-solt-v27"  # P7b (2026-10-14)
     assert ti["processSeed"] == 42
     assert ti["scanStrategy"]["id"] == "stripe"
     assert ti["uq"] is None  # lazy default

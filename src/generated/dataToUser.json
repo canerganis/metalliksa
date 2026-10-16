@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "sourceHashes": {
-    "python/four_alloy_materials.py": "b5aedb24b5261c7ef8dfd7bcb80c723ca1eb32c9be4e94a6519f06db951c90a9",
-    "python/lpbf_thermal_solver.py": "cf6f1fef61398ba3c852f98baca7d70fa3f29819cbdda8be4462a737592cb4ea",
-    "python/lpbf_material_registry.py": "6fb3200863155e51d8d46cce8bcb750491bc1c1272cb10cb899392f690775c42",
-    "python/quantity_envelope.py": "2c016918b991c9013f2edc4eae10bee2afddf89d45e7a22f730f9baa662c654a",
+    "python/four_alloy_materials.py": "d25cf15d3cd312118406a260f48e555d0888fab926776630221f43bffe027e10",
+    "python/lpbf_thermal_solver.py": "053d653b061b459c8b7b528ce30f0b65db3ef8a7f342c7f7f0822b3d71ff3ff6",
+    "python/lpbf_material_registry.py": "6e194ced1314739647bfd0c62126819cb583ef2145e94416344a60af4e0e1a40",
+    "python/quantity_envelope.py": "b33946479001ac7640c1f0a4eddd7ecc5015ac4287a536d0bd672858b772cae0",
     "data/benchmark/spent-ledger-v1.json": "844870bd55f89354e934dc5a6eaad66fe849f131115c9e29e7e8bab9731a3827",
     "data/benchmark/nist-amb2022-03-optical/table4-aggregate-v2.json": "d1b36dfa2e01a3537093c481e249ce52df6b8879c1c67480ddb9aa10799133da",
     "data/benchmark/ku-leuven-316l-ti64-2021/conditions.csv": "e031aead71bf64c70a35ae05d64c0c576d33c2ae757a1e5bda68b5da532ac831",
@@ -223,7 +223,7 @@
         "include_process_map": false
       },
       "modelId": "rosenthal-screening-v1",
-      "depth_um": 53.1,
+      "depth_um": 49.3,
       "extentStatus": "computed",
       "extentNote": null
     },
@@ -241,7 +241,7 @@
         "include_process_map": false
       },
       "modelId": "rosenthal-screening-v1",
-      "depth_um": 42.9,
+      "depth_um": 39.6,
       "extentStatus": "computed",
       "extentNote": null
     },
@@ -259,7 +259,7 @@
         "include_process_map": false
       },
       "modelId": "rosenthal-screening-v1",
-      "depth_um": 35.1,
+      "depth_um": 32.2,
       "extentStatus": "computed",
       "extentNote": null
     },
@@ -277,7 +277,7 @@
         "include_process_map": false
       },
       "modelId": "rosenthal-screening-v1",
-      "depth_um": 29.0,
+      "depth_um": 26.5,
       "extentStatus": "computed",
       "extentNote": null
     },
@@ -2637,22 +2637,22 @@
         {
           "quantity": "liquidus_C",
           "value": 1660.0,
-          "source": "Unresolved",
-          "locator": "Unresolved",
-          "sourceEvidenceKind": "Unresolved",
-          "basis": "Unresolved",
-          "scope": "",
-          "note": ""
+          "source": "SOL-T-A4-ti6al4v",
+          "locator": "Gan2021 SI PDF20 Supplementary Table1 Ti64; integer-273 interpretation",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "admitted-nominal-convention",
+          "scope": "solidus / liquidus of every path (nominal convention)",
+          "note": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. USER-VISIBLE LABEL: Cezairliyan reports solidus 1942.6 K with estimated total inaccuracy 8 K (coverage unspecified), 9.45 K above this convention liquidus 1933.15 K; unresolved batch/observable/rate/temperature-scale contradiction. Gan nominal Ti64 convention to nominal Ti64 screening; exact chemistry match not established; Cezairliyan solidus contradiction unresolved; integer-273 conversion interpretation disclosed, not a verified upstream Celsius pair"
         },
         {
           "quantity": "solidus_C",
           "value": 1604.0,
-          "source": "Unresolved",
-          "locator": "Unresolved",
-          "sourceEvidenceKind": "Unresolved",
-          "basis": "Unresolved",
-          "scope": "",
-          "note": ""
+          "source": "SOL-T-A4-ti6al4v",
+          "locator": "Gan2021 SI PDF20 Supplementary Table1 Ti64; integer-273 interpretation",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "admitted-nominal-convention",
+          "scope": "solidus / liquidus of every path (nominal convention)",
+          "note": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. USER-VISIBLE LABEL: Cezairliyan reports solidus 1942.6 K with estimated total inaccuracy 8 K (coverage unspecified), 9.45 K above this convention liquidus 1933.15 K; unresolved batch/observable/rate/temperature-scale contradiction. Gan nominal Ti64 convention to nominal Ti64 screening; exact chemistry match not established; Cezairliyan solidus contradiction unresolved; integer-273 conversion interpretation disclosed, not a verified upstream Celsius pair"
         },
         {
           "quantity": "boiling_C",
@@ -2772,7 +2772,7 @@
           "sourceEvidenceKind": "Unresolved",
           "basis": "regime-index-convention",
           "scope": "dH/hs regime index only (pre-P7 served value)",
-          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 were derived with it); not a measurement"
+          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 at the pre-SOL-T 316L liquidus were derived with it); not a measurement"
         },
         {
           "quantity": "absorptivity_Green",
@@ -2889,23 +2889,23 @@
       "constants": [
         {
           "quantity": "liquidus_C",
-          "value": 595.0,
-          "source": "Unresolved",
-          "locator": "datasheet class value; Brandt and Neuer Table II AlSi-10 liquidus 872.15 K heating",
-          "sourceEvidenceKind": "Unresolved",
-          "basis": "unsourced-estimate",
-          "scope": "liquidus of every path",
-          "note": "no DSC on AlSi10Mg; bracket +/- 5 K (disclosure)"
+          "value": 599.0,
+          "source": "SOL-T-A4-alsi10mg",
+          "locator": "Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "admitted-nominal-convention",
+          "scope": "solidus / liquidus of every path (nominal convention)",
+          "note": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction"
         },
         {
           "quantity": "solidus_C",
-          "value": 557.0,
-          "source": "Unresolved",
-          "locator": "datasheet class value; Brandt and Neuer Table II AlSi-10 solidus 840.15 K heating",
-          "sourceEvidenceKind": "Unresolved",
-          "basis": "unsourced-estimate",
-          "scope": "solidus of every path",
-          "note": "no DSC on AlSi10Mg; bracket +/- 10 K (disclosure)"
+          "value": 567.0,
+          "source": "SOL-T-A4-alsi10mg",
+          "locator": "Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "admitted-nominal-convention",
+          "scope": "solidus / liquidus of every path (nominal convention)",
+          "note": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction"
         },
         {
           "quantity": "boiling_C",
@@ -3035,7 +3035,7 @@
           "sourceEvidenceKind": "Unresolved",
           "basis": "regime-index-convention",
           "scope": "dH/hs regime index only (pre-P7 served value)",
-          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 were derived with it); not a measurement"
+          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 at the pre-SOL-T 316L liquidus were derived with it); not a measurement"
         },
         {
           "quantity": "absorptivity_Green",
@@ -3153,22 +3153,22 @@
         {
           "quantity": "liquidus_C",
           "value": 1350.0,
-          "source": "Unresolved",
-          "locator": "Unresolved",
-          "sourceEvidenceKind": "Unresolved",
-          "basis": "Unresolved",
-          "scope": "",
-          "note": ""
+          "source": "SOL-T-A4-in625",
+          "locator": "Sabau2020 PDF7 / p1269 linear-fraction constitutive interval",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "admitted-nominal-convention",
+          "scope": "solidus / liquidus of every path (nominal convention)",
+          "note": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Source IN625 constitutive interval to nominal IN625 screening; no primary-measurement claim; independence from CALPHAD not established"
         },
         {
           "quantity": "solidus_C",
           "value": 1290.0,
-          "source": "Unresolved",
-          "locator": "Unresolved",
-          "sourceEvidenceKind": "Unresolved",
-          "basis": "Unresolved",
-          "scope": "",
-          "note": ""
+          "source": "SOL-T-A4-in625",
+          "locator": "Sabau2020 PDF7 / p1269 linear-fraction constitutive interval",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "admitted-nominal-convention",
+          "scope": "solidus / liquidus of every path (nominal convention)",
+          "note": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Source IN625 constitutive interval to nominal IN625 screening; no primary-measurement claim; independence from CALPHAD not established"
         },
         {
           "quantity": "boiling_C",
@@ -3288,7 +3288,7 @@
           "sourceEvidenceKind": "Unresolved",
           "basis": "regime-index-convention",
           "scope": "dH/hs regime index only (pre-P7 served value)",
-          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 were derived with it); not a measurement"
+          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 at the pre-SOL-T 316L liquidus were derived with it); not a measurement"
         },
         {
           "quantity": "absorptivity_Green",
@@ -3426,22 +3426,22 @@
         {
           "quantity": "liquidus_C",
           "value": 1336.0,
-          "source": "Unresolved",
-          "locator": "Unresolved",
-          "sourceEvidenceKind": "Unresolved",
-          "basis": "Unresolved",
-          "scope": "",
-          "note": ""
+          "source": "SOL-T-A4-in718",
+          "locator": "SMC-045 PDF1 Table2; Mills PDF1 compiled IN718",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "admitted-nominal-convention",
+          "scope": "solidus / liquidus of every path (nominal convention)",
+          "note": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. SMC-045 nominal IN718 compiled convention to nominal IN718 screening; Knapp1533/1609 K recorded as same-lineage integer-273 rendering (interpretation, not independently verified ancestry). Pottlacher DTA transfer refused."
         },
         {
           "quantity": "solidus_C",
           "value": 1260.0,
-          "source": "Unresolved",
-          "locator": "Unresolved",
-          "sourceEvidenceKind": "Unresolved",
-          "basis": "Unresolved",
-          "scope": "",
-          "note": ""
+          "source": "SOL-T-A4-in718",
+          "locator": "SMC-045 PDF1 Table2; Mills PDF1 compiled IN718",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "admitted-nominal-convention",
+          "scope": "solidus / liquidus of every path (nominal convention)",
+          "note": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. SMC-045 nominal IN718 compiled convention to nominal IN718 screening; Knapp1533/1609 K recorded as same-lineage integer-273 rendering (interpretation, not independently verified ancestry). Pottlacher DTA transfer refused."
         },
         {
           "quantity": "boiling_C",
@@ -3561,7 +3561,7 @@
           "sourceEvidenceKind": "Unresolved",
           "basis": "regime-index-convention",
           "scope": "dH/hs regime index only (pre-P7 served value)",
-          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 were derived with it); not a measurement"
+          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 at the pre-SOL-T 316L liquidus were derived with it); not a measurement"
         },
         {
           "quantity": "absorptivity_Green",
@@ -3698,23 +3698,23 @@
       "constants": [
         {
           "quantity": "liquidus_C",
-          "value": 1400.0,
-          "source": "Unresolved",
-          "locator": "Unresolved",
-          "sourceEvidenceKind": "Unresolved",
-          "basis": "Unresolved",
-          "scope": "",
-          "note": ""
+          "value": 1450.0,
+          "source": "SOL-T-A4-ss316l",
+          "locator": "Mills/NPL DPSC PDF1 / p135 SS316 liquidus peak",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "admitted-nominal-convention",
+          "scope": "solidus / liquidus of every path (nominal convention)",
+          "note": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. EXPLICIT SS316 -> nominal316L transfer including C0.08 nominal compilation and other chemistry/state differences; not exact316L liquidus. Gan1658/1723 K is same-lineage integer-273 rendering (interpretation, not independently verified ancestry)."
         },
         {
           "quantity": "solidus_C",
-          "value": 1375.0,
-          "source": "Unresolved",
-          "locator": "Unresolved",
-          "sourceEvidenceKind": "Unresolved",
-          "basis": "Unresolved",
-          "scope": "",
-          "note": ""
+          "value": 1385.0,
+          "source": "SOL-T-A4-ss316l",
+          "locator": "Mills/NPL DPSC PDF1 / p135 SS316 liquidus peak",
+          "sourceEvidenceKind": "Literature estimate",
+          "basis": "admitted-nominal-convention",
+          "scope": "solidus / liquidus of every path (nominal convention)",
+          "note": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. EXPLICIT SS316 -> nominal316L transfer including C0.08 nominal compilation and other chemistry/state differences; not exact316L liquidus. Gan1658/1723 K is same-lineage integer-273 rendering (interpretation, not independently verified ancestry)."
         },
         {
           "quantity": "boiling_C",
@@ -3834,7 +3834,7 @@
           "sourceEvidenceKind": "Unresolved",
           "basis": "regime-index-convention",
           "scope": "dH/hs regime index only (pre-P7 served value)",
-          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 were derived with it); not a measurement"
+          "note": "convention constant of the dH/hs regime index (the cuts 15, 20, 13.6 and the King conversion 22.2 at the pre-SOL-T 316L liquidus were derived with it); not a measurement"
         },
         {
           "quantity": "absorptivity_Green",

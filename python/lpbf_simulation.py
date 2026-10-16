@@ -10,7 +10,7 @@ import math
 import datetime
 from pathlib import Path
 import numpy as np
-from lpbf_material_registry import material, reidentify
+from lpbf_material_registry import contain_front_metrics, material, reidentify
 from lpbf_run_progress import (current_progress, track_cpu_progress, track_cpu_run_boundary,
                                validate_cpu_progress)
 from lpbf_source_identity import (CANONICAL_SCHEMA, RAW_SCHEMA, fingerprint_sources,
@@ -813,6 +813,10 @@ def transient(p, m, report=lambda *args: None, artifact_dir=None, final_state_ob
                 aspectRatio=best["depth_um"]/best["width_um"] if width else None,
                 trackOverlapRatio=overlap_metrics["trackOverlapRatio"] if overlap_metrics else None,
                 remeltingRatio=overlap_metrics["globalRemeltRatio"] if overlap_metrics else None)
+    # D13 field identity: the producer and its extraction rule, never the served implementation fingerprint (that
+    # lives only in provenance.implementationHash; the parity harness counts any other occurrence).
+    best, transient_front = contain_front_metrics(
+        best, m, p, f"lpbf-transient:{p.get('thermalModelId') or VERSION}:linear-liquidus-crossing-v1")
     # LT-3: G, R and cooling rate come from one mesh. Report how many cells span the pool (a top-level
     # result label, not part of numericalDiagnostics, which the reference parity cases pin bit-exact); the
     # gradient at a liquidus crossing averages the two adjacent face differences (a 2-cell stencil,
@@ -856,7 +860,7 @@ def transient(p, m, report=lambda *args: None, artifact_dir=None, final_state_ob
                           + "; ".join(f"{row.get('recordId')}={row.get('status')}"
                                        for row in bare_plate_section_observations),
             }
-    return dict(metrics=best, thermalHistory=history, fieldSeries=recorder.finish(),
+    return dict(metrics=best, transientFrontDiagnostics=transient_front, thermalHistory=history, fieldSeries=recorder.finish(),
                 **({"boilingCap": dict(
                     modelId="boiling-cap-v1", active=True, cappedSteps=cap_steps,
                     maxExcessEnthalpy_J_kg=cap_max_excess_h,

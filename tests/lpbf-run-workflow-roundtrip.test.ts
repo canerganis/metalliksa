@@ -113,9 +113,9 @@ test('LPBF source select, CPU compute, unvalidated compare, export and restore p
     assert.equal(job.result.settings[key], value, `resolved workflow setting ${key}`);
   }
   assert.equal(job.result.material.materialId, 'in718');
-  // P7b (2026-10-14): the IN718 registry material absorbs the authority 0.32 (was 0.38, digest 5c9179e947ca...).
+  // SOL-T (2026-10-16): the IN718 registry material binds its admitted endpoint parent (P7b digest 8bbceb4e810f...).
   assert.equal(job.result.material.materialRevisionSha256,
-    '8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8');
+    '4562ad022349e2dcff1681c1aca43da44aebb1dbe7ceed4dcb1f8f6b84e66fbb');
   assert.match(job.result.provenance.inputHash, /^[a-f0-9]{64}$/);
   assert.match(job.result.provenance.implementationHash, /^[a-f0-9]{64}$/);
   assert.equal(job.result.solver.id, 'enthalpy-fv-6');

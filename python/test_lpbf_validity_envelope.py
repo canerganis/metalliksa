@@ -59,6 +59,19 @@ class ClassificationTest(unittest.TestCase):
             raise ValueError("bad input")
         self.assertEqual(envelope.run_case({}, other)["status"], "other-error")
 
+    def test_d13_label_travels_with_the_transient_event_means(self):
+        # SOL-T D13: a synthetic container; the summary keeps status, label and label sources per value.
+        def labelled(raw):
+            out = fake_result(raw["power_W"])
+            q = {"status": "computed", "sourceEvidenceKind": "Literature estimate", "labelSources": ["synthetic"]}
+            out["transientFrontDiagnostics"] = {"quantities": {"thermalGradient_K_m": q, "coolingRate_K_s": q,
+                                                               "solidificationRate_m_s": q}}
+            return out
+        done = envelope.run_case(dict(power_W=40.), labelled)
+        self.assertEqual(set(done["transientFrontEvidence"]), {"thermalGradient_K_m", "coolingRate_K_s"})
+        self.assertEqual(done["transientFrontEvidence"]["coolingRate_K_s"]["sourceEvidenceKind"], "Literature estimate")
+        self.assertIsNone(envelope.run_case(dict(power_W=40.), stub_run(100.))["transientFrontEvidence"])
+
         def crash(raw):
             raise RuntimeError("boom")
         crashed = envelope.run_case({}, crash)

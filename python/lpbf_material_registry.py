@@ -10,7 +10,7 @@ import math
 import numpy as np
 from four_alloy_materials import (
     canonical_material_source, four_alloy_thermophysical_db,
-    resolve_alloy_id, THERMAL_NAME,
+    resolve_alloy_id, THERMAL_NAME, endpoint_admission, endpoint_input,
 )
 from lpbf_thermal_solver import SECONDARY_THERMOPHYSICAL_DB
 from in625_thermal_material import in625_lpbf_thermal_at_kelvin, in625_lpbf_thermal_snapshot
@@ -206,6 +206,8 @@ def material(name, supplied=None):
     m["materialId"] = aid if aid else f"registry:{name}"
     m["provenanceClass"] = "estimated-legacy" if supplied is None else "user-supplied-unverified"
     m["materialIdentitySchemaVersion"] = 1
+    if supplied is None and endpoint_admission(name) is not None:
+        m["endpointAdmission"] = endpoint_admission(name)
     if aid is not None and supplied is None:
         source_snapshot, source_revision_sha256 = canonical_material_source(aid)
         m["materialAuthority"] = source_snapshot["authority"]
@@ -236,6 +238,64 @@ def reidentify(m):
     out = dict(snapshot)
     out["materialRevisionSha256"] = hashlib.sha256(identity_payload).hexdigest()
     return out
+
+
+def contain_front_metrics(metrics, m, settings, field_identity):
+    """D13 legacy event means: selected convention required; no SOL-C admission.
+
+    The closed quantity literals mirror quantity_envelope without importing it
+    into the thermal manifest. Tests validate the complete emitted envelope.
+    """
+    from solidification_front import _null_quantity, _input_record
+    mapping = {"thermalGradient_K_m": "thermalGradient",
+               "solidificationRate_m_s": "normalSpeed", "coolingRate_K_s": "coolingRate"}
+    parent = m.get("endpointAdmission")
+    admitted = (parent is not None and parent == endpoint_admission(m["materialId"])
+                and [m["solidus_K"], m["liquidus_K"]] == parent["record"]["endpoint_K"]
+                and m.get("quality") != "user-supplied-unverified")
+    record = endpoint_input(m["materialId"], m["liquidus_K"]) if admitted else _input_record(
+        "declaredAssumption", "unadmitted-liquidus", declaration_locator="lpbf_material_registry.material",
+        scope="no-selected-admitted-convention", source_evidence_kind="Unresolved",
+        default_value=m["liquidus_K"], default_kind=None)
+    inputs = {"liquidus_K": record}
+
+    # Collision-free parent encoding is the envelope v1 wire contract (parents-v2).
+    def encode(value):
+        if isinstance(value, bool) or value is None or isinstance(value, str):
+            return value
+        if isinstance(value, (int, float)):
+            return ["number", float(value).hex()]
+        if isinstance(value, list):
+            return ["list", [encode(item) for item in value]]
+        return ["object", [[key, encode(item)] for key, item in sorted(value.items())]]
+
+    parent_key = "parents-v2:" + json.dumps(encode({"liquidus_K": {"input": record}}),
+                                           ensure_ascii=False, separators=(",", ":"))
+    bindings = {"materialRevisionSha256": m["materialRevisionSha256"], "settings": settings,
+                "fieldIdentity": field_identity, "selectedConvention": parent if admitted else None,
+                "chemistry": {"selection": m["materialId"], "specimenAssay": None,
+                              "scope": "nominal-convention-only"},
+                "materialState": "nominal-convention; specimen-state-unspecified"}
+    input_key = hashlib.sha256(json.dumps(bindings, sort_keys=True, allow_nan=False).encode()).hexdigest()
+    out, quantities = dict(metrics), {}
+    for metric, name in mapping.items():
+        value = metrics.get(metric) if admitted else None
+        reasons = ([] if admitted and value is not None else [
+            {"code": "insufficient-sample-support" if admitted else "missing-source-constant",
+             "params": {}, "parent": {"input": "liquidus_K", "kind": record["kind"]}}])
+        q = _null_quantity(name, reasons, ("liquidus_K",))
+        if value is not None:
+            q.update(status="computed", value=value, sourceEvidenceKind="Literature estimate",
+                     labelSources=[record["sourceLocator"]],
+                     sources=[{"id": record["sourceId"], "locator": record["sourceLocator"],
+                               "readLevel": "repository-attribution"}],
+                     assumptions=[parent["scope"], "Legacy event means; no SOL-C local-sample admission."],
+                     uncertainty={"kind": "not-quantified", "construction": "Single-mesh legacy field and convention transfer errors not quantified."},
+                     identity={"input": input_key, "model": field_identity, "parent": parent_key})
+        out[metric], quantities[metric] = value, q
+    return out, {"quantityEnvelopeSchema": "metalliksa-quantity-envelope-1",
+                 "moduleEvidenceCeiling": "screening-only", "moduleMaturity": "Research",
+                 "quantities": quantities, "inputProvenance": inputs, "parentBindings": bindings}
 
 
 def property_at(m, temperature, column):

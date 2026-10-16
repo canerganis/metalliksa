@@ -10,21 +10,9 @@ from quantity_envelope import envelope_problems
 
 
 def manifest_text_problems(value, path=()):
-    """RA4: manifest containers carry codes; only sources[].locator may contain whitespace."""
-    problems = []
-    if isinstance(value, dict):
-        for key, child in value.items():
-            if key == "text":
-                problems.append(path + (key,))
-            problems.extend(manifest_text_problems(child, path + (key,)))
-    elif isinstance(value, list):
-        for index, child in enumerate(value):
-            problems.extend(manifest_text_problems(child, path + (index,)))
-    elif isinstance(value, str) and any(char.isspace() for char in value):
-        if not (len(path) >= 3 and path[-3] == "sources"
-                and isinstance(path[-2], int) and path[-1] == "locator"):
-            problems.append(path)
-    return problems
+    # SOL-T permits only the exact frozen source locator/transfer disclosure.
+    from test_solidification_front import ra4_problems
+    return ra4_problems(value)
 
 
 class ThermalEnvelopePayloads(unittest.TestCase):
