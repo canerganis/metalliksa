@@ -88,7 +88,8 @@ test("regime class thresholds and lookup match the artefact (family, regime clas
   assert.equal(c.n, 730);
   assert.equal(c.nSources, 3);
   assert.equal(c.state, "band-under-covers");
-  assert.equal(Math.round((c.loso?.coverageEqualWeight ?? 0) * 100), 65);
+  // SOL-T bands (2026-10-16): coverage 66 % (P7b 65 %).
+  assert.equal(Math.round((c.loso?.coverageEqualWeight ?? 0) * 100), 66);
   assert.equal(bandFor(summary, "eagar-tsai", "AlSi10Mg", "all", "depth"), null);
   assert.equal(bandKernelOfModelId("rosenthal-screening-v1"), "rosenthal");
   assert.equal(bandKernelOfModelId("goldak-half-space-v3"), "goldak");
@@ -144,7 +145,8 @@ test("3-state display: the three states are reachable from the committed artefac
   // every depth cell is under-covers or insufficient today: no depth cell reaches the 0.70 held-out coverage floor
   // P7b bands (2026-10-14): one depth cell reaches the coverage floor (Eagar-Tsai 316L conduction); every other depth cell stays below it.
   const depthBand = summary.cells.filter((c) => c.quantity === "depth" && c.state === "band");
-  assert.deepEqual(depthBand.map((c) => [c.kernel, c.family, c.regime]), [["eagar-tsai", "316L", "conduction"]]);
+  // SOL-T bands (2026-10-16): the Eagar-Tsai 316L conduction cell no longer reaches it, so none does.
+  assert.deepEqual(depthBand.map((c) => [c.kernel, c.family, c.regime]), []);
 });
 
 test("IN718 (Ni family) names the pooled alloys and the sentinel source", () => {
