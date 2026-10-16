@@ -65,8 +65,12 @@ PRE_BUMP_REVISION = "520903802a5cb89e368af60f68e53f232c99046d"
 # SOL-A1 envelope repair (2026-10-15, 1f8ad2b2 -> dc6f5fdd, c6ec6dbf): only ten existing digest
 # observations change (six G11 thermal digests, G12 default/evaluate/unknown-alias, G18 IN625 thermal digest).
 # Null dependency/provenance metadata only; every numerical/reference observation stays bit equal.
-GOLDEN_FINGERPRINT = "dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5"
-GOLDEN_REVISION = "c6ec6dbf5fdbcbfff58056285596c290eaf0b517"
+# SOL-T melt-point installation (2026-10-16, dc6f5fdd -> 13203cac, re-pin commit b5ee77d2 of feat/solidification-solt)
+# re-recorded all goldens: the 456 exact keys of docs/LPBF_IMPLEMENTATION_BUMP_2026-10-16_sol-t.expect-drift.txt moved
+# (IN718 and Ti64 cases: identity and D13 keys only; 316L and AlSi10Mg: endpoint-driven fields; G9 also the 316L U95
+# probe at 1700 K, now mushy); every IN718 reference numeric stays bit equal.
+GOLDEN_FINGERPRINT = "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca"
+GOLDEN_REVISION = "b5ee77d2792e36875ab3d34879816891cdadb5ab"
 SLOW = os.environ.get("LPBF_PARITY_SLOW") == "1"
 # Off the reference machine every case test is skipped (the goldens are bit-exact for one
 # environment). METALLIKSA_REQUIRE_PARITY=1 turns such a "NOT VERIFIED" skip into a failure,
@@ -126,8 +130,10 @@ class ParityHarnessTests(unittest.TestCase):
         # P7b (2026-10-14): the IN718 identity carries the absorptivity authority 0.32, the index convention key and
         # kernelLedgerSha256 (6a8d7bde... -> 582b23d5..., 5c9179e9... -> d04bcd19...); the replay keeps its explicit
         # absorptivity 0.38, so the V1 numerics are bit equal.
-        self.assertTrue(observations["result.coreContract.materialSha256"].startswith("582b23d5"))
-        self.assertTrue(observations["result.material.materialRevisionSha256"].startswith("d04bcd19"))
+        # SOL-T (2026-10-16): the IN718 identity binds its admitted endpoint parent (582b23d5... -> 09fc02b2...,
+        # d04bcd19... -> 3e7f8cf9...); the V1 numerics stay bit equal.
+        self.assertTrue(observations["result.coreContract.materialSha256"].startswith("09fc02b2"))
+        self.assertTrue(observations["result.material.materialRevisionSha256"].startswith("3e7f8cf9"))
         self.assertEqual(observations["result.validationStatus"], "unvalidated")
         self.assertIs(observations["result.productionReady"], False)
         # Corrected-physics bump: only analyticalComparison.goldak differs from the archived V1 run.
@@ -142,8 +148,10 @@ class ParityHarnessTests(unittest.TestCase):
         # balling sources/basis move it f9b41280... -> e37e76ab... (V1 scans at 0 deg: metrics bit-equal).
         # P7b (2026-10-14): the material identity block inside the result moves it e37e76ab... -> 50afda1f... (the
         # stripped-except-identity comparison of the G2 fixture is the proof that nothing numeric moved).
+        # SOL-T (2026-10-16): the endpoint parent in the material block and the D13 envelope transientFrontDiagnostics
+        # move it 50afda1f... -> fcf22a11... (metrics, artifacts and NPZ bit equal).
         self.assertEqual(observations["result.canonicalSha256"],
-                         "50afda1f8cf0778376623f6208e2599edeefe285d05629c2b05a72d34a660919")
+                         "fcf22a11adc407e1a23d479c96b55b010c20e97e1ca5826f2978297144692443")
         self.assertEqual(observations["result.key.solidificationResolution"] is not None, True)
         self.assertEqual(observations["result.implementationHashOccurrencesAfterStrip"], 0)
         self.assertEqual(observations["result.artifactsImplementationHashOccurrences"], 0)

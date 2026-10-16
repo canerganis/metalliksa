@@ -4,9 +4,9 @@
  "group": "G15",
  "description": "Square bare plate with opticalObserver='nist-six-section', all artifacts",
  "slow": false,
- "recordedImplementationHash": "dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5",
+ "recordedImplementationHash": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "c6ec6dbf5fdbcbfff58056285596c290eaf0b517",
+ "recordedGitHead": "c5712223e1d4105ef1f7fd50b1e8a03383d561ce",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,13 +68,13 @@
   }
  },
  "recordedRuns_s": [
-  0.7,
-  0.6
+  0.6,
+  0.5
  ],
  "recordedTwice": true,
  "observations": {
-  "result.canonicalSha256": "d320ebc04d02b5425f7a675d22896be0f1e2826f5b8ece24049d16b302a5774a",
-  "result.orderedTypedSha256": "921ef852aa21299ddb90105c622395fc32edc5cbdd04583ec7c4dec2e741b547",
+  "result.canonicalSha256": "4eb558a87c8e43623838f8ccd64d6d5773b2be45d792181588b42cbe6771a991",
+  "result.orderedTypedSha256": "0022b7f50a7ab2a65ac0599f7f7b5434bd995a93f671cfff51747d62c77e0758",
   "result.topLevelKeys": [
    "schemaVersion",
    "requestedMode",
@@ -92,6 +92,7 @@
    "assumptions",
    "fallbackReason",
    "metrics",
+   "transientFrontDiagnostics",
    "thermalHistory",
    "fieldSeries",
    "peakInterpolatedMeltPool",
@@ -125,7 +126,7 @@
   "result.key.effectiveMode": "cb2842d6687d19c69a6c0d4eb6a0f1af02951cef170de56ab331046ea5baac08",
   "result.key.solver": "379da9f17510ad5e9f42d7be64eda2f553ada427d6a389bd3552f81dbe7cd97d",
   "result.key.settings": "1d15ec4af94285b58ec1c5991d0f147e864fe8473906946649a99ba1997e1b15",
-  "result.key.material": "31b2ace40b5f062758907c4a5393e12176a1c731ccea35a835a81886a50421b2",
+  "result.key.material": "f0af95409def528014641e6d43715a99226734b55685c9a05e9ef090347980aa",
   "result.key.requestedBackend": "86a3d4125c91d4621cfc34f7d2ac1f2fb7df908cae63aef232d0b9e0713171db",
   "result.key.confidence": "364bb7082249ee9fbc5247ee49735c4246f271b82c2745a35107ddda0d7cabcc",
   "result.key.validationStatus": "034d24b06221faeb3860b36b4069fe6436aeadc3db62a687efe73615cfb2541d",
@@ -136,6 +137,7 @@
   "result.key.assumptions": "c7880569ef60b587d23c739080df6ddb2cb8f36d1816820c13649fc7f7409446",
   "result.key.fallbackReason": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
   "result.key.metrics": "955304d76f77dcb03a42bec5dbcbc89232341eb11e2d218c1ba0970f0c5b5eb3",
+  "result.key.transientFrontDiagnostics": "4e4e3e7c99402bf65eb2a1f1c0c60d901f3b3c181f800d4f03264f7a5cda813c",
   "result.key.thermalHistory": "30a09a6f99fee7d649721caccd0bf72b098caabe022d0a35b23a5226a3f4732d",
   "result.key.fieldSeries": "7e5d844a6929e466a78a570e89bba38f7aca29004a88e1b5afc69fa25fa7c8e3",
   "result.key.peakInterpolatedMeltPool": "fb130091476d35fa45fe327d3eb0ff71508bcc0184a8b0e874944432ed5ae47e",
@@ -159,15 +161,15 @@
   "result.key.resourceEstimate": "55287027b8a5001773b660996348abec24cf24941e05a3b1e96afe338d977336",
   "result.key.unresolvedPhysics": "e56903d893f881cd5a1e576df18872eed3708168d7a13e2e07afd6fc3734d9d1",
   "result.key.confidenceReason": "906944d2c579df879c4987a7d07a4e032bf053927f6b33f8e6c954537ac1f1e0",
-  "result.key.coreContract": "525d9ad21b91d8c33b830a1b0f26852ec6300c5cf40aed653f2161a162800189",
+  "result.key.coreContract": "4a3bed00b4f88fadf847e519e1814cfe67c81868a3b3bd3aef203654284ae8b3",
   "result.key.fieldPreviews": "063bd617bcf8a2240843fb42b737f1c1faedb1825e5ea306d6f222dba9726bf5",
   "result.key.artifacts": "f9b37a0483e244c2d599b389fde510cd93a4bffc94953668360795b0e694c352",
   "result.key.retentionPolicy": "ab930f19e2eab573860fa3ee488c98026d2867e0b2408442da3c3d6415a31807",
   "result.coreContract.inputSha256": "d7bee962b9120fc8892e2f6ab83ac9564cc53560264929188773e90069db9a8b",
-  "result.coreContract.materialSha256": "582b23d5afc1f573cf871c2ad795ae8f4cb459cd9046cc243bc5c44d6ee3aa03",
+  "result.coreContract.materialSha256": "09fc02b2c3deb1197262416da1a34f25990026232781b10dbdf3b78b5f8a1586",
   "result.coreContract.solverId": "enthalpy-fv-6",
   "result.coreContract.modelId": "stationary-enthalpy-conduction-v1",
-  "result.material.materialRevisionSha256": "d04bcd199a1db84a325dc698dc86f0ce2cbf7239b43c3d851ce3537cccf6768b",
+  "result.material.materialRevisionSha256": "3e7f8cf9e2b023964fc1108f91a2330fc13aedda3a7419019f6c61556f728963",
   "result.validationStatus": "unvalidated",
   "result.productionReady": false,
   "result.effectiveMode": "standard",
@@ -619,7 +621,7 @@
    "effectiveMode": "standard",
    "solverId": "enthalpy-fv-6",
    "inputSha256": "d7bee962b9120fc8892e2f6ab83ac9564cc53560264929188773e90069db9a8b",
-   "materialSha256": "582b23d5afc1f573cf871c2ad795ae8f4cb459cd9046cc243bc5c44d6ee3aa03",
+   "materialSha256": "09fc02b2c3deb1197262416da1a34f25990026232781b10dbdf3b78b5f8a1586",
    "units": {
     "power": "W",
     "speed": "mm/s",
@@ -675,53 +677,6 @@
    "final_kg": 5.04641701556886e-07,
    "relativeError": 0.0,
    "scope": "Stationary reference mass accounting; no continuity, evaporation or shrinkage solved"
-  },
-  "result.key.material": {
-   "solidus_K": 1533.15,
-   "liquidus_K": 1609.15,
-   "boiling_K": 3123.15,
-   "latentHeat_J_kg": 270000.0,
-   "absorptivity": 0.38,
-   "emissivity": 0.35,
-   "dGamma_dT": -0.0004,
-   "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-   "quality": "estimated",
-   "table": [
-    [
-     273.15,
-     8190.0,
-     11.4,
-     435.0,
-     0.0055
-    ],
-    [
-     1609.15,
-     7450.0,
-     29.0,
-     730.0,
-     0.0055
-    ],
-    [
-     3123.15,
-     7450.0,
-     29.0,
-     730.0,
-     0.0055
-    ]
-   ],
-   "name": "Inconel 718",
-   "version": "lpbf-materials-1",
-   "temperatureCoverage_K": [
-    273.15,
-    3123.15
-   ],
-   "uncertaintyNote": "Property uncertainties not quantified; source string does not establish validation.",
-   "materialId": "in718",
-   "provenanceClass": "estimated-legacy",
-   "materialIdentitySchemaVersion": 1,
-   "materialAuthority": "four_alloy_materials.py",
-   "materialAuthorityRevisionSha256": "114ed51b8b0262ea1bcfa1eca7b0b9eeb95e1bd46756ee73dc1308cbd5d8ad75",
-   "materialRevisionSha256": "d04bcd199a1db84a325dc698dc86f0ce2cbf7239b43c3d851ce3537cccf6768b"
   },
   "result.key.metrics": {
    "length_um": 40.0,

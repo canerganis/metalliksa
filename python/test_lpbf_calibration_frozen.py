@@ -57,10 +57,14 @@ BASE_REF = BASE_REF_CANDIDATES[0]
 # SOL-A1 envelope repair (2026-10-15, dc6f5fdd): morphology and transformation gain their blocking liquidus
 # dependencies/reasons. Replacing only solidificationKinetics with the 5aca4599 producer output reproduces
 # the three preceding HTTP digests exactly; every other field is byte-identical.
+# SOL-T melt-point installation (2026-10-16, 13203cac): the 316L input now runs at the admitted Mills/NPL SS316
+# nominal transfer 1385 / 1450 C (was 1375 / 1400 C), so width, depth, length, normalizedEnthalpy (17.11 at T0 20 C,
+# 1380/1430 of the former value), the regimeBasis/keyhole-cut King text, the front input record and parent and the material identity move;
+# all three digests change. Recorded on the reference machine with the locked interpreter.
 HTTP_GOLDEN = {
-    "eagar-tsai": "9f56b27ab0e79dbb5168ac727dbf5274bc512d990e3696f73ebd0a4997a8cda3",
-    "goldak": "73eee9c2688aaca880dec2efbcfcaf25a1e6e0c90e71a712e147db469cd0117c",
-    "rosenthal": "50ca3ad79b006cb4410390ea6ee80a6be7f714f6f63a6353cc53a03c4e632b1d",
+    "eagar-tsai": "a15dcc353b319d7ee5ab9160671dfdb0cecbffdb475116aa15d03d8d556fbe93",
+    "goldak": "2c2f4c217c5ee1e80e477fda2053fafe36d0c68b69ba9d2c5a57d0cf57069117",
+    "rosenthal": "941724765756a3f88d8a5806f4a315befc13b0b2e7d7521b9a8f3d904b57bc3a",
 }
 HTTP_INPUT = {"material": "316L Stainless Steel", "laserPower_W": 200, "scanSpeed_mm_s": 900, "beamDiameter_um": 80,
               "preheatTemp_C": 20, "layerThickness_um": 30, "hatchSpacing_um": 100}
