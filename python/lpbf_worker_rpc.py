@@ -24,6 +24,12 @@ def _rpc_solidification_microstructure(request):
     return compute_screening_field_microstructure(p)
 
 
+def _rpc_solidification_estimates(request):
+    # SOL-C opt-in estimate channel (RC1): its own schema and identity; nothing served reads it back.
+    from lpbf_solidification_estimates import compute_solidification_estimates
+    return compute_solidification_estimates(request.get("payload"))
+
+
 def _rpc_fatigue_fracture(request):
     # Phase 13
     payload = request["payload"]
@@ -62,6 +68,7 @@ def _rpc_keyhole_raytracing(request):
 # Pure research endpoints: handler(request) -> data.
 RESEARCH_HANDLERS = {
     "solidification-microstructure": _rpc_solidification_microstructure,
+    "solidification-estimates": _rpc_solidification_estimates,
     "fatigue-fracture": _rpc_fatigue_fracture,
     "keyhole-raytracing": _rpc_keyhole_raytracing,
 }

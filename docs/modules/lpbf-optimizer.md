@@ -73,7 +73,7 @@ Background work: none; resources: fetch.
 - `src/services/pythonComputationService.ts::PythonComputationService.runLpbfBayesianOptimization`
 - `routes/physics.ts:73-74#120000`
 - `python/lpbf_bayesian_optimizer.py::run_bayesian_optimization`
-- `python/lpbf_bayesian_optimizer.py:307-334#nIterations`
+- `python/lpbf_bayesian_optimizer.py:285-300#nIterations`
 - `src/components/LpbfProcessWindowMap.tsx::LpbfProcessWindowMap`
 - `src/services/pythonComputationService.ts::PythonComputationService.runLpbfProcessWindow`
 - `routes/physics.ts:87-87#60000`

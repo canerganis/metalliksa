@@ -22,7 +22,13 @@ class SolidificationMicrostructureRegistryContractTests(unittest.TestCase):
 
     def test_operations_match_the_routes_the_view_calls(self):
         ops = {op.id: op for op in self.contract.operations}
-        self.assertEqual(set(ops), {"solidification-microstructure", "gr-solidification"})
+        self.assertEqual(set(ops), {"solidification-microstructure", "solidification-estimates", "gr-solidification"})
+        estimates = ops["solidification-estimates"]
+        self.assertEqual((estimates.method, estimates.route, estimates.authority.kind,
+                          estimates.authority.worker_method, estimates.authority.timeout_ms),
+                         ("POST", "/api/python/lpbf-solidification-estimates", "lpbf-worker",
+                          "solidification-estimates", 20000))
+        self.assertEqual(estimates.quantities, ())  # v2 container, validated by the envelope v2 rules
         worker = ops["solidification-microstructure"]
         self.assertEqual((worker.method, worker.route, worker.authority.kind,
                           worker.authority.worker_method, worker.authority.timeout_ms),

@@ -151,7 +151,7 @@ def build_lpbf_optimizer_contract(seed: Mapping[str, str]) -> ModuleContract:
             "src/services/pythonComputationService.ts::PythonComputationService.runLpbfBayesianOptimization",
             "routes/physics.ts:73-74#120000",
             "python/lpbf_bayesian_optimizer.py::run_bayesian_optimization",
-            "python/lpbf_bayesian_optimizer.py:307-334#nIterations",
+            "python/lpbf_bayesian_optimizer.py:285-300#nIterations",
             "src/components/LpbfProcessWindowMap.tsx::LpbfProcessWindowMap",
             "src/services/pythonComputationService.ts::PythonComputationService.runLpbfProcessWindow",
             "routes/physics.ts:87-87#60000",
@@ -206,6 +206,29 @@ def build_solidification_microstructure_contract(seed: Mapping[str, str]) -> Mod
             transport_values=(("status", ("computed", "partial", "unavailable", "failed", "not-requested")),),
         ),
     )
+    # SOL-C opt-in estimate channel (RC1): a quantity envelope v2 container with typed estimate fields. Its quantity
+    # set and definitions depend on the alloy (single PDAS correlation or the Ni model alternatives, KM, Al phase
+    # references), so no v1 QuantityDeclaration describes it; python/test_lpbf_solidification_estimates.py and the
+    # TypeScript parser validate every payload with the v2 envelope rules instead.
+    estimates_operation = Operation(
+        id="solidification-estimates",
+        method="POST",
+        route="/api/python/lpbf-solidification-estimates",
+        authority=Authority(
+            kind="lpbf-worker",
+            worker_method="solidification-estimates",
+            timeout_ms=20000,
+        ),
+        undeclared_input=("params", "options"),
+        output=OutputSchema(
+            fields=("schema", "channelId", "modelId", "status", "alloyId", "materialName", "heatSourceModel",
+                    "request", "options", "surrogate", "default", "thermalParent", "front", "inputSensitivityRun",
+                    "phaseContext", "refusal", "quantityEnvelopeSchema", "moduleEvidenceCeiling", "moduleMaturity",
+                    "quantities", "inputProvenance"),
+            status_key=None,
+            transport_values=(("status", ("computed", "partial", "unavailable")),),
+        ),
+    )
     gr_operation = Operation(
         id="gr-solidification",
         method="POST",
@@ -230,7 +253,7 @@ def build_solidification_microstructure_contract(seed: Mapping[str, str]) -> Mod
     )
     return _contract(
         seed,
-        (operation, gr_operation),
+        (operation, estimates_operation, gr_operation),
         notes=(
             "The worker returns lpbf-solidification-microstructure-2. Quantities are copied from the Python thermal "
             "front container with SI values, coded reasons and input provenance; no second estimate or flat-key fallback.",
@@ -240,6 +263,10 @@ def build_solidification_microstructure_contract(seed: Mapping[str, str]) -> Mod
             "or not-requested transport statuses. Cells carry a front envelope and CET/Laves envelopes. Default LPBF "
             "CET is unavailable with outside-source-model-domain; sourceChecks distinguish equation reading, algebra "
             "reproduction and printed-limit comparison. No Hunt morphology bands or analytic liquidus bypass are served.",
+            "The opt-in estimate channel returns lpbf-solidification-estimates-1, a quantity envelope v2 container: per "
+            "quantity estimateTier (Estimated, Physics estimate shown as Uncalibrated estimate, or no-value), display "
+            "precision, closed value warnings separate from blocking reasons, and an input sensitivity range that is "
+            "never an error bar. Default thermal results and Build Job read nothing from it.",
             "Evidence remains screening-only and Research. The response-level G/R evidence object is SDK-reserved; "
             "per-quantity source labels never imply experimental validation.",
         ),
@@ -247,12 +274,15 @@ def build_solidification_microstructure_contract(seed: Mapping[str, str]) -> Mod
             "src/components/SolidificationMicrostructureLab.tsx::SolidificationMicrostructureLab",
             "src/components/SolidificationMicrostructureLab.tsx::solidificationRequest",
             "src/services/pythonComputationService.ts::PythonComputationService.computeSolidificationMicrostructure",
-            "routes/lpbfSimulation.ts:22-36#solidification-microstructure",
-            "server/lpbfWorkerBridge.ts:58#requestTimeoutMs ?? 20000",
+            "routes/lpbfSimulation.ts:22-37#solidification-microstructure",
+            "routes/lpbfSimulation.ts:34#solidification-estimates",
+            "server/lpbfWorkerBridge.ts:59#requestTimeoutMs ?? 20000",
             "python/lpbf_worker_rpc.py::_rpc_solidification_microstructure",
             "python/lpbf_solidification_microstructure.py::compute_screening_field_microstructure",
             "python/lpbf_solidification_microstructure.py::project_build_job_microstructure",
             "python/lpbf_solidification_microstructure.py::compute_solidification_microstructure",
+            "python/lpbf_worker_rpc.py::_rpc_solidification_estimates",
+            "python/lpbf_solidification_estimates.py::compute_solidification_estimates",
             "python/lpbf_gr_solidification.py::run_gr_solidification",
             "src/components/GrSolidificationMapCard.tsx::GrSolidificationMapCard",
             "routes/physics.ts:93-93#60000",

@@ -10,6 +10,7 @@ import lpbf_worker_rpc
 # optical-tomography, toolpath-thermal-map, thermal-accumulation, thermomechanical-distortion,
 # industrial-fatigue and multilaser-plume were deleted
 # with their routes/views; toolpath-kinematics and adaptive-feedforward were deleted with scan path kinematics).
+# 2026-10-16: solidification-estimates added (SOL-C opt-in estimate channel, RC1).
 ORIGINAL_METHOD_NAMES = (
     "capabilities",
     "estimate",
@@ -21,6 +22,7 @@ ORIGINAL_METHOD_NAMES = (
     "get",
     "cancel",
     "solidification-microstructure",
+    "solidification-estimates",
     "fatigue-fracture",
     "keyhole-raytracing",
     "purge-unverified-artifacts",
@@ -34,7 +36,7 @@ def original_method_names():
 class WorkerDispatchTest(unittest.TestCase):
     def test_original_method_list_is_complete(self):
         names = original_method_names()
-        self.assertEqual(len(names), 13)
+        self.assertEqual(len(names), 14)
         self.assertEqual(len(names), len(set(names)))
 
     def test_every_original_method_has_a_handler(self):

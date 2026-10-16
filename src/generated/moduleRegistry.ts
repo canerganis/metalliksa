@@ -640,7 +640,7 @@ export const MODULE_REGISTRY = {
         "src/services/pythonComputationService.ts::PythonComputationService.runLpbfBayesianOptimization",
         "routes/physics.ts:73-74#120000",
         "python/lpbf_bayesian_optimizer.py::run_bayesian_optimization",
-        "python/lpbf_bayesian_optimizer.py:307-334#nIterations",
+        "python/lpbf_bayesian_optimizer.py:285-300#nIterations",
         "src/components/LpbfProcessWindowMap.tsx::LpbfProcessWindowMap",
         "src/services/pythonComputationService.ts::PythonComputationService.runLpbfProcessWindow",
         "routes/physics.ts:87-87#60000",
@@ -1090,6 +1090,61 @@ export const MODULE_REGISTRY = {
               "leafRole": "derived"
             }
           ],
+          "observations": []
+        },
+        {
+          "id": "solidification-estimates",
+          "method": "POST",
+          "route": "/api/python/lpbf-solidification-estimates",
+          "authority": {
+            "kind": "lpbf-worker",
+            "script": null,
+            "workerMethod": "solidification-estimates",
+            "timeoutMs": 20000,
+            "gpu": "none",
+            "warm": false,
+            "exceptionReason": null
+          },
+          "input": [],
+          "undeclaredInput": [
+            "params",
+            "options"
+          ],
+          "output": {
+            "fields": [
+              "schema",
+              "channelId",
+              "modelId",
+              "status",
+              "alloyId",
+              "materialName",
+              "heatSourceModel",
+              "request",
+              "options",
+              "surrogate",
+              "default",
+              "thermalParent",
+              "front",
+              "inputSensitivityRun",
+              "phaseContext",
+              "refusal",
+              "quantityEnvelopeSchema",
+              "moduleEvidenceCeiling",
+              "moduleMaturity",
+              "quantities",
+              "inputProvenance"
+            ],
+            "statusKey": null,
+            "transportValues": {
+              "status": [
+                "computed",
+                "partial",
+                "unavailable"
+              ]
+            },
+            "transportObjects": {}
+          },
+          "quantities": [],
           "observations": []
         },
         {
@@ -2104,18 +2159,22 @@ export const MODULE_REGISTRY = {
         "The worker returns lpbf-solidification-microstructure-2. Quantities are copied from the Python thermal front container with SI values, coded reasons and input provenance; no second estimate or flat-key fallback.",
         "At SOL-A1 every default front quantity is unavailable for Ti64, AlSi10Mg, 316L, IN718 and IN625 because no source-admitted liquidus is installed. The cfdResult branch is refused with quarantined-legacy-path.",
         "The independent G/R request returns lpbf-gr-solidification-2 with computed, partial, unavailable, failed or not-requested transport statuses. Cells carry a front envelope and CET/Laves envelopes. Default LPBF CET is unavailable with outside-source-model-domain; sourceChecks distinguish equation reading, algebra reproduction and printed-limit comparison. No Hunt morphology bands or analytic liquidus bypass are served.",
+        "The opt-in estimate channel returns lpbf-solidification-estimates-1, a quantity envelope v2 container: per quantity estimateTier (Estimated, Physics estimate shown as Uncalibrated estimate, or no-value), display precision, closed value warnings separate from blocking reasons, and an input sensitivity range that is never an error bar. Default thermal results and Build Job read nothing from it.",
         "Evidence remains screening-only and Research. The response-level G/R evidence object is SDK-reserved; per-quantity source labels never imply experimental validation."
       ],
       "sourceRefs": [
         "src/components/SolidificationMicrostructureLab.tsx::SolidificationMicrostructureLab",
         "src/components/SolidificationMicrostructureLab.tsx::solidificationRequest",
         "src/services/pythonComputationService.ts::PythonComputationService.computeSolidificationMicrostructure",
-        "routes/lpbfSimulation.ts:22-36#solidification-microstructure",
-        "server/lpbfWorkerBridge.ts:58#requestTimeoutMs ?? 20000",
+        "routes/lpbfSimulation.ts:22-37#solidification-microstructure",
+        "routes/lpbfSimulation.ts:34#solidification-estimates",
+        "server/lpbfWorkerBridge.ts:59#requestTimeoutMs ?? 20000",
         "python/lpbf_worker_rpc.py::_rpc_solidification_microstructure",
         "python/lpbf_solidification_microstructure.py::compute_screening_field_microstructure",
         "python/lpbf_solidification_microstructure.py::project_build_job_microstructure",
         "python/lpbf_solidification_microstructure.py::compute_solidification_microstructure",
+        "python/lpbf_worker_rpc.py::_rpc_solidification_estimates",
+        "python/lpbf_solidification_estimates.py::compute_solidification_estimates",
         "python/lpbf_gr_solidification.py::run_gr_solidification",
         "src/components/GrSolidificationMapCard.tsx::GrSolidificationMapCard",
         "routes/physics.ts:93-93#60000"
@@ -2533,8 +2592,8 @@ export const MODULE_REGISTRY = {
         "python/lpbf_keyhole_raytracing.py::_number",
         "python/lpbf_keyhole_raytracing.py::compute_keyhole_raytracing",
         "python/lpbf_worker_rpc.py::_rpc_keyhole_raytracing",
-        "routes/lpbfSimulation.ts:30#/api/python/lpbf-keyhole-raytracing",
-        "server/lpbfWorkerBridge.ts:58#requestTimeoutMs ?? 20000",
+        "routes/lpbfSimulation.ts:35#/api/python/lpbf-keyhole-raytracing",
+        "server/lpbfWorkerBridge.ts:59#requestTimeoutMs ?? 20000",
         "src/components/KeyholeRaytracingLab.tsx::KeyholeRaytracingLab",
         "docs/MODULE_EVIDENCE_INVENTORY.md:40#`keyhole-raytracing` /"
       ],
