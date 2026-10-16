@@ -405,6 +405,24 @@ class Channel(unittest.TestCase):
         self.assertIsNone(km["value"])
         self.assertEqual(km["reasons"][0]["code"], "missing-thermal-history")
 
+    def test_insufficient_interface_support_refuses_on_the_keyhole_leg_with_the_surrogate_on(self):
+        # Too few valid interface points (two of the required three) on a keyhole-leg case with the surrogate on.
+        # The Al eutectic gate is deliberately not forced onto the keyhole leg: it is not reachable at 370 to 500 W.
+        real = se.valid_samples
+        with mock.patch.object(se, "valid_samples", lambda front: real(front)[:2]):
+            few = se.compute_solidification_estimates({"params": {**BASE, "materialName": "Ti-6Al-4V",
+                                                                  "power_W": 280.0, "speed_mm_s": 940.0}})
+        self.assertTrue(few["thermalParent"]["keyholeLegSetsDepth"])
+        self.assertEqual(few["surrogate"], "conduction-field")
+        self.assertEqual(qe.container_problems(few, "c"), [])
+        for name in ("thermalGradient", "normalSpeed", "coolingRate", "gOverR"):
+            q = few["quantities"][name]
+            self.assertIsNone(q["value"], name)
+            self.assertEqual(q["reasons"][0]["code"], "insufficient-sample-support", name)
+        self.assertIsNone(few["quantities"]["pdas"]["value"])
+        self.assertEqual(few["quantities"]["thermalGradient"]["validity"]["noValueText"], se.FEW_POINTS_TEXT)
+        self.assertEqual(len(few["quantities"]["thermalGradient"]["validity"]["localPoints"]), 2)
+
     def test_constructive_no_value_texts(self):
         al = run(*CONDUCTION["alsi10mg"])
         self.assertEqual(al["quantities"]["equiaxedEnvelopeFraction"]["validity"]["noValueText"], se.AL_EUTECTIC_TEXT)

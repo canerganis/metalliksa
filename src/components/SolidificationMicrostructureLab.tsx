@@ -73,6 +73,18 @@ export function solidificationRequest(
   return { params: { materialName, ...process } };
 }
 
+/**
+ * Estimate options for the request. `conductionSurrogate` is sent only after the user touched the checkbox, so the
+ * server records surrogateIdentity.selection as "requested" only for an explicit choice and "default" otherwise.
+ */
+export function solidificationEstimateOptions(
+  inputSensitivity: boolean,
+  conductionSurrogate: boolean,
+  surrogateTouched: boolean,
+): { inputSensitivity: boolean; conductionSurrogate?: boolean } {
+  return surrogateTouched ? { inputSensitivity, conductionSurrogate } : { inputSensitivity };
+}
+
 const panelClass = 'rounded-2xl border border-white/10 bg-[#111b25]';
 
 interface Props {
@@ -102,6 +114,7 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
   const [inputSensitivity, setInputSensitivity] = useState(false);
   // On by default (maintainer decision 2026-10-16): a labelled conduction-only scenario, never a keyhole front.
   const [conductionSurrogate, setConductionSurrogate] = useState(true);
+  const [surrogateTouched, setSurrogateTouched] = useState(false);
   const [estimates, setEstimates] = useState<unknown>(null);
   const [estimatesLoading, setEstimatesLoading] = useState(false);
   const [estimatesError, setEstimatesError] = useState<string | null>(null);
@@ -168,13 +181,13 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
           power_W: laserPower, speed_mm_s: scanSpeed, hatch_um: hatch, layerThickness_um: layerThickness,
           beamDiameter_um: beamDiameter, preheat_C: preheat, heatSource,
         }).params,
-        options: { inputSensitivity, conductionSurrogate },
+        options: solidificationEstimateOptions(inputSensitivity, conductionSurrogate, surrogateTouched),
       }), {
         onSuccess: res => setEstimates(res),
         onError: (e: unknown) => setEstimatesError(e instanceof Error ? e.message : 'Estimate computation failed. Check the service and try again.'),
         onFinally: () => setEstimatesLoading(false),
       });
-  }, [laserPower, scanSpeed, hatch, layerThickness, beamDiameter, preheat, heatSource, selectedAlloy, inputSensitivity, conductionSurrogate]);
+  }, [laserPower, scanSpeed, hatch, layerThickness, beamDiameter, preheat, heatSource, selectedAlloy, inputSensitivity, conductionSurrogate, surrogateTouched]);
 
   const numberField = (label: string, value: number, min: number, max: number, step: number, unit: string, update: (value: number) => void) => (
     <label className="block min-w-0">
@@ -360,7 +373,7 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
             <span>Input sensitivity sweep (11 field runs, slower)</span>
           </label>
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={conductionSurrogate} onChange={e => { setConductionSurrogate(e.target.checked); invalidateResult(); }} />
+            <input type="checkbox" checked={conductionSurrogate} onChange={e => { setConductionSurrogate(e.target.checked); setSurrogateTouched(true); invalidateResult(); }} />
             <span>Conduction-field surrogate when the keyhole leg sets the depth (on by default)</span>
           </label>
         </div>

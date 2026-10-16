@@ -391,7 +391,7 @@ class PythonComputationService {
   // with checkedSolidificationEstimates so a rejected payload never shows numbers.
   async computeSolidificationEstimates(data: {
     params: Record<string, number | string>;
-    options: { inputSensitivity: boolean; conductionSurrogate: boolean };
+    options: { inputSensitivity: boolean; conductionSurrogate?: boolean };
   }): Promise<unknown> {
     const res = await fetch("/api/python/lpbf-solidification-estimates", {
       method: "POST",
