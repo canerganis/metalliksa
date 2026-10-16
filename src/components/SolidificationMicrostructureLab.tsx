@@ -100,7 +100,8 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
   const [degenerate, setDegenerate] = useState(false);
   const requestGate = useRef(createLatestRequestGate());
   const [inputSensitivity, setInputSensitivity] = useState(false);
-  const [conductionSurrogate, setConductionSurrogate] = useState(false);
+  // On by default (maintainer decision 2026-10-16): a labelled conduction-only scenario, never a keyhole front.
+  const [conductionSurrogate, setConductionSurrogate] = useState(true);
   const [estimates, setEstimates] = useState<unknown>(null);
   const [estimatesLoading, setEstimatesLoading] = useState(false);
   const [estimatesError, setEstimatesError] = useState<string | null>(null);
@@ -360,7 +361,7 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
           </label>
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={conductionSurrogate} onChange={e => { setConductionSurrogate(e.target.checked); invalidateResult(); }} />
-            <span>Conduction-field surrogate when the keyhole leg sets the depth</span>
+            <span>Conduction-field surrogate when the keyhole leg sets the depth (on by default)</span>
           </label>
         </div>
         <button type="button" onClick={handleComputeEstimates} disabled={estimatesLoading}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId, useState } from "react";
 import { QUANTITY_ENVELOPE } from "../generated/quantityEnvelope";
 import { checkedSolidificationEstimates, estimateLine, type SolidificationEstimates as EstimatePayload } from "../utils/solidificationEstimateDisplay";
 
@@ -10,6 +10,30 @@ const DOMAIN_PREFIXES = ["Outside the model's stated domain", "Alloy or family t
 function orderedNames(payload: EstimatePayload): string[] {
   const names = Object.keys(payload.quantities);
   return [...ORDER.filter(n => names.includes(n)), ...names.filter(n => !ORDER.includes(n))];
+}
+
+function warningLine(w: string) {
+  return <>{DOMAIN_PREFIXES.some(p => w.startsWith(p)) ? <strong className="mr-1">Out of domain:</strong> : null}{w}</>;
+}
+
+/** First warning visible; the rest folded under an accessible "More" disclosure (native button, keyboard operable). */
+export function EstimateWarnings({ warnings, initiallyOpen = false }: { warnings: readonly string[]; initiallyOpen?: boolean }) {
+  const [open, setOpen] = useState(initiallyOpen);
+  const id = useId();
+  if (!warnings.length) return null;
+  const rest = warnings.slice(1);
+  return <dd className="break-words text-amber-200" data-estimate-warnings>
+    <span className="block" data-estimate-warning>{warningLine(warnings[0])}</span>
+    {rest.length > 0 && <>
+      <button type="button" className="mt-1 text-[11px] text-cyan-200 underline focus:outline-none focus:ring-2 focus:ring-cyan-300/40"
+        aria-expanded={open} aria-controls={id} onClick={() => setOpen(value => !value)} data-estimate-warnings-toggle>
+        {open ? "Less" : `More (${rest.length} more warning${rest.length === 1 ? "" : "s"})`}
+      </button>
+      <span id={id} hidden={!open} className="block" data-estimate-warnings-more>
+        {rest.map(w => <span key={w} className="block" data-estimate-warning>{warningLine(w)}</span>)}
+      </span>
+    </>}
+  </dd>;
 }
 
 export function SolidificationEstimates({ payload }: { payload: unknown }) {
@@ -35,9 +59,7 @@ export function SolidificationEstimates({ payload }: { payload: unknown }) {
           <span className="block">{line.range}</span>
           {line.rangeInputs && <span className="block text-slate-400">Varied inputs: {line.rangeInputs}</span>}
         </dd>}
-        {line.warnings.map(w => <dd key={w} data-estimate-warning className="break-words text-amber-200">
-          {DOMAIN_PREFIXES.some(p => w.startsWith(p)) ? <strong className="mr-1">Out of domain:</strong> : null}{w}
-        </dd>)}
+        <EstimateWarnings warnings={line.warnings} />
         {line.text && <dd className="break-words text-slate-300">{line.text}</dd>}
         {line.sourceLabel && <dd className="break-words text-slate-400">{line.sourceLabel}</dd>}
       </div>)}
