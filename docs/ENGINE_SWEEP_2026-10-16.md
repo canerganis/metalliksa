@@ -1,5 +1,63 @@
 # Served engine sweep — 2026-10-16
 
+## SOL-T follow-up: software fixes and refusal triage
+
+Worktree `Metalliksa-1-wt-fixes`, branch `fix/engine-sweep-errors`, SOL-T base `9f939fcc`.
+Sweep commit `40488c95` was cherry-picked as `1abae077`; software fixes and regressions are in **`9f82daf3`**.
+The original sections below describe the earlier `ec14298d` sweep. This section records the current rerun and supersedes its preliminary bug classification.
+
+| Item | Class and root cause on SOL-T | Resolution / ownership |
+| --- | --- | --- |
+| calphad-minimize / Ti phase-model mismatch | **c: incompatible source/model representation.** The actual UI chemistry includes C (0.05 wt%), Fe and O. COST507 BCC_A2 has an active interstitial C+VA sublattice; BCC_B2 has VA only. pycalphad rejects their order/disorder pairing during model construction. The carbon-free Ti-Al-V subset constructs BCC_B2 successfully. | Unchanged; physics owner must establish a compatible, source-supported phase model for the full chemistry. Removing C, excluding BCC_B2, changing its constituents or substituting `mc_ti` changes the scientific request/model; `mc_ti` also lacks Fe/O. No heuristic phase profile is supplied. This refines the original report's preliminary software/data-integration label. |
+| estimate, IN625 | **b: correct admission refusal shown as a plain ValueError.** A full transient thermophysical table is absent; the bounded IN625 path does not supply it. | `9f82daf3`: unpinned request adapter raises `MISSING_THERMOPHYSICAL_TABLE`, field `properties`; RPC returns a structured HTTP 422. English message asks for a sourced table or a supported material. The missing table itself remains **c**, for the physics/source owner. |
+| keyhole-raytracing | **c / environment prerequisite**, rather than a diagnosed numerical defect: `ModuleNotFoundError: No module named 'warp'` persists. | Report only, as requested. Warp/CUDA availability and its missing-GPU message belong to `feat/docker-gpu`; no installation or engine change here. |
+| lpbf-bayesian-optimize, IN625 | **b: correct four-alloy admission refusal**, previously expressed using internal resolver names. | `9f82daf3`: `UNSUPPORTED_OPTIMIZER_ALLOY`, field `alloyId`, with an English list of supported selections. No IN625 objective is invented. |
+| lpbf-machine-calibrated-meltpool, all five probes | **b: missing machine-calibration selection.** These sweep probes omit `machineCalibration`; the mounted UI normally waits for selection. | `9f82daf3`: `MACHINE_CALIBRATION_REQUIRED`, field `machineCalibration`; asks the user to select a calibration, or import and fit their measurements in Machine calibration. No calibration is fitted in this lane. |
+| submit | **b: correct model-domain STOP** at the boiling limit for all four supported UI vectors; IN625 additionally lacks its full table. SOL-T changes some enthalpy values but does not remove these stops. | `9f82daf3`: the unpinned worker boundary translates known stops to `THERMAL_BOILING_LIMIT`, field `power_W`, and the missing-table code above. Failed jobs expose structured `refusal` details and an English message asking to reduce power or increase speed. Original numerical diagnostics and accepted-work summary remain in the log. Evaporation/free-surface closure and the IN625 table remain **c**, with the physics owner. |
+| submit:build-job, IN625 | **b: correct four-alloy refusal**, previously a generic error envelope and queued before admission was checked. | `9f82daf3`: `UNSUPPORTED_BUILD_JOB_ALLOY`, field `alloyId`; queue submission rejects it before allocating a job, and direct solver calls return the same coded refusal. Select a supported material. |
+| stl-slicer-build-time, IN625 | **a: software bug.** Failed property lookup silently selected IN718 density, producing an apparently successful mass estimate. | `9f82daf3`: remove that fallback. Unsupported identities return `UNSUPPORTED_SLICER_MATERIAL`, field `material`, before geometry/mass calculation. Four-alloy, CoCrMo and Scalmalloy paths keep their existing properties. New self-contained tests reproduce the false success and check supported-material masses. Additional IN625 property admission remains a physics/source decision. |
+
+### Before / after evidence
+
+Both full sweeps use the same 94-record catalog, payloads, audit guards and **120 s per-call budget**, with children sequential and BLAS/OpenMP/NumExpr threads limited to one.
+
+| Run | ok | error | skipped | Error operation families |
+| --- | ---: | ---: | ---: | ---: |
+| SOL-T baseline, before software fixes | 58 | 15 | 21 | 7 |
+| After `9f82daf3` | 57 | 16 | 21 | 8 |
+
+The extra error is the **IN625 slicer refusal replacing a false success**. All original 15 refusal/dependency/model-error records remain errors. The harness calls the pinned transient `lpbf_simulation.run` directly, so its `submit` records deliberately retain the original ValueError diagnostics; separate real-worker regression coverage verifies the new structured presentation. HTTP transport and browser rendering are not inferred from sweep counts.
+
+Raw evidence remains in the OS temp directory, outside Git:
+
+- `C:/Users/can02/AppData/Local/Temp/metalliksa-engine-fixes-before.json`, SHA-256 `ac7dd246bb610a2b6a24422b56fa72e1737c27dfcb0a1f8f0c20453bb0914e5c`.
+- `C:/Users/can02/AppData/Local/Temp/metalliksa-engine-fixes-after.json`, SHA-256 `4e21b6075a3f25b4098950a5d264b711948f6040307784d173828fd8bc0ca2a9`.
+
+For exact baseline admission messages, the before evidence replaces estimate/build-job/machine records and the IN625 optimizer record with clean `git archive 1abae077 python` replays: those calls finished after editing began in the worktree. Earlier numerical/slicer records had already completed before their relevant fixes. This replay preserves all 94 original case identities and outcomes; no supported optimizer or thermodynamic result is synthesized.
+
+```powershell
+$py = 'C:/Users/can02/Projects/metalliksaa/Metalliksa-1/.runtime/lpbf-win-py312/Scripts/python.exe'
+$env:OMP_NUM_THREADS='1'; $env:OPENBLAS_NUM_THREADS='1'; $env:MKL_NUM_THREADS='1'; $env:NUMEXPR_NUM_THREADS='1'
+& $py python/tools/engine_sweep.py --output "$env:TEMP/metalliksa-engine-fixes-after.json" --timeout 120
+npm run lint
+npm run test:unit -- --test-concurrency=1
+$env:PYTHONPATH='python'
+& $py -m unittest python.test_engine_sweep_errors python.test_lpbf_worker_validation_error python.test_lpbf_worker_failure_message python.test_lpbf_worker_run_progress python.test_lpbf_worker_auto_progress python.test_lpbf_worker_dispatch python.test_lpbf_bayesian_optimizer_eyewash python.test_lpbf_machine_calibrated_meltpool python.tools.test_engine_sweep
+& $py python/test_stl_live_triangles.py
+& $py python/test_lpbf_build_job.py
+& $py python/tools/lpbf_parity_check.py --check --slow
+```
+
+### Verification and boundaries
+
+- `npm run lint`: **PASS**. `npm run test:unit -- --test-concurrency=1`: **1,379 passed, 1 skipped, 0 failed** (1,380 total).
+- Targeted Python unittest group: **90/90 passed**, including eight new self-contained admission/worker regressions. The final eight-test rerun also covers rejection before queue allocation and a real boiling solve through `worker.main`, with no completed result written. Live-STL test: **PASS**.
+- `python/test_lpbf_build_job.py`: **FAIL** at the existing `tests/fixtures/build-job-microstructure-blocks.json is stale` assertion. The exact same assertion fails from a clean `1abae077` archive before these changes. The fixture/golden was not regenerated; this full script does not reach its later assertions. The focused unsupported-alloy regression passes independently.
+- `parity --check --slow`, using the specified interpreter: **25/25 PASS**, including G2 and NPZ determinism. Fingerprint and pin both remain `13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca`.
+- Chrome check: actual `LpbfEngineeringSimulation` component, isolated local fixture with injected HTTP 422. Keyboard Enter on Run simulation renders the visible plain-English boiling refusal in `role=alert`; the run button is enabled afterward. This checks UI presentation, with Python/backend semantics covered separately. Fixture tab/server were closed and the disposable HTML removed.
+- Independent read-only code review found no blocking issue. Source/path audit confirms **zero pinned manifest or protected-file edits**. No pin move is required for these software fixes. Full IN625 transient admission would require a separately reviewed material/source change involving pinned `lpbf_material_registry.py`; it is not part of this lane.
+- No golden, `ci.yml`, parity checker, GPU engine, measured-data fit, `.orchestra/external-data`, or external publication change. These checks establish software behavior and numerical parity, not experimental validity.
+
 ## Scope and reproducibility
 
 Checkout: `Metalliksa-1-wt-sweep`, branch `chore/engine-sweep`, base `ec14298d`. Inventory: **28 operation families**, including distinct submit engine branches and archive readers; **16 executed**, **12 wholly skipped**. Across five requested alloy identities and three P8 stages: **94 records = 58 ok + 15 error + 21 skipped**. **7 operation families have at least one error**. Aliases and repeat submissions are not additional physics engines.
