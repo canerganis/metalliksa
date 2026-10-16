@@ -34,7 +34,7 @@ def sibling_module(name):
 kernel = sibling_module("p8_cavity_kernel")
 provenance_data = sibling_module("p8_input_provenance")
 
-BASE = "835466fa"
+BASE = "8de9373d774236d8155aa84cfd00dfd616c92744"  # SOL-T re-pin (2026-10-16): the installed endpoints; was 835466fa
 P3 = "c4470b017cfe533c74b23dc5712a2df720ae00c4"
 REPO = Path(__file__).resolve().parents[3]
 FIXTURE = Path(__file__).with_name("p8_amendment1_synthetic.json")
@@ -526,6 +526,16 @@ def run():
                     row["inputScopeReasons"]=input_scope_reasons(module,row["inputProvenance"])
                     if module=="meltDepthLink":row["fieldShapeDiagnostics"]=field_shape_diagnostic(arm,output)
                     records[module].append(row)
+            # SOL-T re-pin (2026-10-16): the live manifest's exact-active-tuple dedup (first ID wins; same numbers with
+            # different source IDs stay distinct) now matters for surfaceBalance, where liquidus_872.15 equals the
+            # installed nominal liquidus; apply the same rule here instead of keeping a duplicate arm.
+            kept,seen=[],set()
+            for row in records.get("surfaceBalance",[]):
+                identity=tuple((k,provenance_data._exact(row["inputs"].get(k)),row["inputProvenance"][k]["sourceId"])
+                               for k in provenance_data.ACTIVE_INPUTS["surfaceBalance"])
+                if identity not in seen:
+                    seen.add(identity);kept.append(row)
+            if "surfaceBalance" in records:records["surfaceBalance"]=kept
             point=dict(alloy=alloy,power_W=power,values=nom,modules={})
             for module,rows in records.items():
                 module_band=band([(r["armId"],r["values"]) for r in rows],{k:nom[k] for k in sorted(modules[module])})

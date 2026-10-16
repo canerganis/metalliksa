@@ -48,7 +48,7 @@ class TupleLiterals(ResearchTestCase):  # R-CTX-1
         t = _context("AlSi10Mg").conduction
         self.assertEqual((t.conductivity_W_mK, t.specificHeat_J_kgK, t.density_kg_m3, t.diffusivity_m2_s,
                           t.wallAbsorptance, t.liquidus_K - 273.15),
-                         (152.52434782608697, 1020.0826086956522, 2696.0, 5.54605210495764e-05, 0.3, 595.0))
+                         (152.63126079447323, 1020.8488773747841, 2696.0, 5.545773756739041e-05, 0.3, 599.0))  # SOL-T re-pin
         self.assertEqual(t.propertyConvention, "kernel-ledger-kirchhoff")
 
     def test_context_is_immutable_and_hands_out_copies(self):
