@@ -235,6 +235,96 @@ SERVED_LIQUIDUS_INPUT_KINDS: Dict[str, str] = {
     "ti6al4v": "modelConvention", "in718": "modelConvention", "in625": "modelConvention",
 }
 
+# --- Envelope v2: SOL-C typed estimate fields (SPEC Amendment 7, emit schema; docs/research/sol_c_a7_emit_contract.md) --
+#
+# v1 above is unchanged and closed: no v2 definition, warning or tier field is admitted in a v1 container. A v2
+# container (schema metalliksa-quantity-envelope-2) is a v1 container whose quantity definitions also include the six
+# A7 prospective definitions and whose every quantity carries the typed estimate fields inside its open ``validity``
+# object: estimateTier, displaySignificantDigits, domainWarnings, estimateBand, inputSensitivity, uncertaintyStatement
+# (and nucleationScenarioNote on envelope fractions and CET classes). Value warnings and blocking reasons are separate
+# closed vocabularies: a warning never sits in reasons, a reason code never in domainWarnings. Tier and source label are
+# independent. Display labels and sentences are drafts pending the maintainer's wording round, except the Tier 1 and
+# Tier 2 labels and sentences of the maintainer's SOL-C decision (2026-10-16).
+ENVELOPE_SCHEMA_V2 = "metalliksa-quantity-envelope-2"
+ENVELOPE_SCHEMAS: Tuple[str, ...] = (ENVELOPE_SCHEMA, ENVELOPE_SCHEMA_V2)
+ESTIMATE_TIERS: Tuple[str, ...] = ("Estimated", "Physics estimate", "no-value")
+# Maintainer decision (SOL-C, 2026-10-16): Tier 2 shows as "Uncalibrated estimate"; the wire enum keeps the A7 value.
+ESTIMATE_TIER_LABELS: Dict[str, str] = {"Estimated": "Estimated", "Physics estimate": "Uncalibrated estimate",
+                                        "no-value": "No value"}
+VALUE_WARNING_CODES: Tuple[str, ...] = (
+    "domain-extrapolation", "alloy-family-transfer", "low-peclet-tip-law", "nucleation-scenario-unresolved",
+    "Ti-slope-closure", "binary-eutectic-omission", "equilibrium-limit-only", "microconstituent-not-phase",
+    "km-source-fit-uncertainty", "km-quench-reference-only")
+# Scenario/source-fit/observable-meaning notes; every other warning marks an out-of-domain or reference-domain limit
+# and caps the value at Physics estimate (A7 emit contract).
+NON_CAPPING_WARNING_CODES: Tuple[str, ...] = ("nucleation-scenario-unresolved", "microconstituent-not-phase",
+                                              "km-source-fit-uncertainty")
+TIER_CAPPING_WARNING_CODES: Tuple[str, ...] = tuple(code for code in VALUE_WARNING_CODES
+                                                    if code not in NON_CAPPING_WARNING_CODES)
+WARNING_LABELS: Dict[str, str] = {
+    "domain-extrapolation": "Outside the model's stated domain",
+    "alloy-family-transfer": "Alloy or family transfer",
+    "low-peclet-tip-law": "Low-Peclet tip law outside its screening range",
+    "nucleation-scenario-unresolved": "Declared nucleation scenario",
+    "Ti-slope-closure": "Ti binary slope closure",
+    "binary-eutectic-omission": "Eutectic competition omitted",
+    "equilibrium-limit-only": "Equilibrium limit only",
+    "microconstituent-not-phase": "Microconstituent, not a phase",
+    "km-source-fit-uncertainty": "Fitted source parameter",
+    "km-quench-reference-only": "Quench-limit reference only",
+}
+UNKNOWN_COMPONENTS: Tuple[str, ...] = ("model-error", "input-interactions", "alloy-transfer-error",
+                                       "source-parameter-uncertainty")
+RANGE_CONSTRUCTIONS: Tuple[str, ...] = ("ofat", "joint")
+RANGE_KEYS: Tuple[str, ...] = ("lower", "upper", "unit", "construction", "inputRanges", "armIds", "unknownComponents")
+INPUT_RANGE_KEYS: Tuple[str, ...] = ("name", "unit", "nominal", "lower", "upper")
+# The interval is always named "input sensitivity range" (A7 2 and 3), never an error bar or confidence interval.
+INPUT_SENSITIVITY_RANGE_NAME = "input sensitivity range"
+UNCERTAINTY_STATEMENT_TIER2 = "Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy."
+NUCLEATION_SCENARIO_NOTE = ("N0 and activation undercooling are declared scenarios with Unresolved provenance. The model "
+                            "class may change substantially with these scenarios. " + UNCERTAINTY_STATEMENT_TIER2)
+TIER1_RANGE_SENTENCE = ("The range shows how the result moves when each listed input is changed one at a time: "
+                        "{ranges}. It is not an error bar or confidence interval. It excludes model error, which for a "
+                        "conduction model without melt-pool flow can exceed this range, and input interactions and "
+                        "alloy transfer error. Calibrate to your machine for better accuracy.")
+VALIDITY_REQUIRED_KEYS: Tuple[str, ...] = ("estimateTier", "displaySignificantDigits", "domainWarnings",
+                                           "estimateBand", "inputSensitivity", "uncertaintyStatement")
+KM_EVALUATION_RULE = "finite-25K-above-preheat-v1"
+KM_EVALUATION_KEYS: Tuple[str, ...] = ("ruleId", "preheat_K", "offset_K", "temperature_K", "time_s",
+                                       "historyBracketIds", "timeInterpolation", "refinement")
+KM_RESIDUAL_KEYS: Tuple[str, ...] = ("untransformedAsymptote", "beta0", "preExistingConstituent")
+V2_VALUE_KINDS: Tuple[str, ...] = VALUE_KINDS + ("inventory",)
+V2_VALUE_RANGES: Tuple[str, ...] = VALUE_RANGES + ("nonnegative",)
+# The six A7 prospective definitions, typed for the SOL-C channel only (never in a v1 container).
+V2_NEW_DEFINITIONS: Dict[str, Dict[str, Any]] = {
+    "pdas-correlation": _definition("Primary dendrite arm spacing (single correlation)", "m", "number", "positive"),
+    "planar-stability-index": _definition("Planar stability index chi", "1", "number", "nonnegative"),
+    "equiaxed-envelope-fraction": _definition("Equiaxed grain-envelope fraction", "1", "number", "fraction",
+                                              fraction=True),
+    "km-alpha-m-fraction": _definition("Alpha martensite or massive alpha (KM progress)", "1", "number", "fraction",
+                                       fraction=True),
+    "terminal-equilibrium-phase-inventory": _definition("Terminal equilibrium phase inventory (reference limit)", "1",
+                                                        "inventory", "fraction", fraction=True,
+                                                        members=("alphaAl", "Si", "Mg2Si")),
+    "scheil-microconstituent-inventory": _definition("Scheil primary and eutectic microconstituents", "1", "inventory",
+                                                     "fraction", fraction=True,
+                                                     members=("primaryAlphaAl", "eutecticConstituent")),
+}
+V2_QUANTITY_DEFINITIONS: Dict[str, Dict[str, Any]] = {**QUANTITY_DEFINITIONS, **V2_NEW_DEFINITIONS}
+# Exact fraction basis of each value-carrying v2 fraction definition (A7 definition table).
+V2_FRACTION_BASIS: Dict[str, str] = {"equiaxed-envelope-fraction": "volume", "km-alpha-m-fraction": "reaction-progress",
+                                     "terminal-equilibrium-phase-inventory": "mass",
+                                     "scheil-microconstituent-inventory": "mass"}
+# A7 precision rule: thermal kinematics and spacing two significant figures; chi, fractions and CET one.
+DISPLAY_SIGNIFICANT_DIGITS: Dict[str, int] = {
+    "liquidus-front-thermal-gradient": 2, "liquidus-front-normal-speed": 2, "liquidus-front-cooling-rate": 2,
+    "liquidus-front-g-over-r": 2, "pdas-correlation": 2, "pdas-model-alternatives": 2, "sdas": 2,
+    "planar-stability-index": 1, "equiaxed-envelope-fraction": 1, "km-alpha-m-fraction": 1,
+    "terminal-equilibrium-phase-inventory": 1, "scheil-microconstituent-inventory": 1, "cet-class": 1,
+}
+# Quantity-relative keys that only the KM definition carries (A7 schema rows evaluation and residual).
+V2_EXTRA_QUANTITY_KEYS: Dict[str, Tuple[str, ...]] = {"km-alpha-m-fraction": ("evaluation", "residual")}
+
 _KEY = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
 
 
@@ -718,13 +808,16 @@ def quantity(definition: str, value: Any, *, inputs: Mapping[str, Any], depends_
              numerical: Optional[Mapping[str, Any]] = None, fraction_basis: Optional[str] = None,
              assumptions: Sequence[str] = (), validity: Optional[Mapping[str, Any]] = None,
              input_identity: Optional[str] = None, leaf_role: str = "derived",
-             quantities: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
-    """A non-null quantity; its label, named inputs, label sources and parent key come from the rule."""
+             quantities: Optional[Mapping[str, Any]] = None,
+             extra: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
+    """A non-null quantity; its label, named inputs, label sources and parent key come from the rule.
+
+    ``extra`` holds the v2 quantity-relative keys of V2_EXTRA_QUANTITY_KEYS (KM evaluation and residual) only."""
     if status not in VALUE_STATUSES:
         raise EnvelopeError(f"a value needs status computed or partial, not {status!r}")
     label = source_label(inputs, depends_on, quantities)
     return {
-        "status": status, "value": value, "unit": QUANTITY_DEFINITIONS[definition]["unit"],
+        "status": status, "value": value, "unit": V2_QUANTITY_DEFINITIONS[definition]["unit"],
         "quantityDefinition": definition, "leafRole": leaf_role,
         "sourceEvidenceKind": label["sourceEvidenceKind"], "dependsOn": list(depends_on),
         "weakestInputs": label["weakestInputs"], "labelSources": label["labelSources"],
@@ -736,7 +829,17 @@ def quantity(definition: str, value: Any, *, inputs: Mapping[str, Any], depends_
         "uncertainty": dict(uncertainty), "fractionBasis": fraction_basis,
         "identity": {"input": input_identity, "model": model_identity,
                      "parent": parent_key(inputs, depends_on, quantities)},
+        **_extra_keys(definition, extra),
     }
+
+
+def _extra_keys(definition: str, extra: Optional[Mapping[str, Any]]) -> Dict[str, Any]:
+    allowed = V2_EXTRA_QUANTITY_KEYS.get(definition, ())
+    extra = dict(extra or {})
+    unknown = sorted(set(extra) - set(allowed))
+    if unknown:
+        raise EnvelopeError(f"{definition} carries no extra quantity keys {unknown}")
+    return copy.deepcopy(extra)
 
 
 def unavailable(definition: str, reasons: Sequence[Mapping[str, Any]], *, status: str = "unavailable",
@@ -750,7 +853,7 @@ def unavailable(definition: str, reasons: Sequence[Mapping[str, Any]], *, status
     if not reasons:
         raise EnvelopeError("a null quantity needs at least one reason")
     return {
-        "status": status, "value": None, "unit": QUANTITY_DEFINITIONS[definition]["unit"],
+        "status": status, "value": None, "unit": V2_QUANTITY_DEFINITIONS[definition]["unit"],
         "quantityDefinition": definition, "leafRole": leaf_role, "sourceEvidenceKind": None,
         "dependsOn": list(depends_on), "weakestInputs": [], "labelSources": [],
         "reasons": [dict(item) for item in reasons],
@@ -772,9 +875,12 @@ def observation(observable: str, value: Any, unit: str, source_evidence_kind: st
 
 def container(quantities: Mapping[str, Any], *, module_maturity: str = "Research",
               input_provenance: Optional[Mapping[str, Any]] = None,
-              observations: Optional[Mapping[str, Any]] = None, default: Optional[bool] = None) -> Dict[str, Any]:
+              observations: Optional[Mapping[str, Any]] = None, default: Optional[bool] = None,
+              schema: str = ENVELOPE_SCHEMA) -> Dict[str, Any]:
     """Container keys (4.2, 4.1 item 7). Only an object holding a quantities map carries them."""
-    out: Dict[str, Any] = {"quantityEnvelopeSchema": ENVELOPE_SCHEMA, "moduleEvidenceCeiling": MODULE_EVIDENCE_CEILING,
+    if schema not in ENVELOPE_SCHEMAS:
+        raise EnvelopeError(f"unknown envelope schema {schema!r}")
+    out: Dict[str, Any] = {"quantityEnvelopeSchema": schema, "moduleEvidenceCeiling": MODULE_EVIDENCE_CEILING,
                            "moduleMaturity": module_maturity, "quantities": dict(quantities)}
     if observations is not None:
         out["observations"] = dict(observations)
@@ -797,6 +903,8 @@ def _value_problems(value: Any, definition: Dict[str, Any], where: str) -> List[
             return "must be positive"
         if value_range == "fraction" and not 0 <= item <= 1:
             return "must lie in [0, 1]"
+        if value_range == "nonnegative" and not item >= 0:
+            return "must be nonnegative"
         return None
 
     problems: List[str] = []
@@ -821,6 +929,17 @@ def _value_problems(value: Any, definition: Dict[str, Any], where: str) -> List[
                 problem = number_ok(item)
                 if problem:
                     problems.append(f"{where}.value.{key} {problem}")
+    elif kind == "inventory":
+        members = definition["members"]
+        if not isinstance(value, dict) or sorted(value) != sorted(members):
+            problems.append(f"{where}.value must be an object with exactly the members {members}")
+        else:
+            for member in members:
+                problem = number_ok(value[member])
+                if problem:
+                    problems.append(f"{where}.value.{member} {problem}")
+            if not problems and abs(sum(value.values()) - 1.0) > 1e-12:
+                problems.append(f"{where}.value members must sum to 1 (a closed inventory)")
     elif kind == "category":
         if value not in definition["categories"]:
             problems.append(f"{where}.value must be one of {definition['categories']} "
@@ -882,13 +1001,20 @@ def _reason_problems(reasons: Any, where: str, inputs: Mapping[str, Any],
 
 
 def quantity_problems(q: Any, where: str, inputs: Mapping[str, Any],
-                      quantities: Mapping[str, Any]) -> List[str]:
-    """Problems of one quantity in the context of its container (inputs and sibling quantities)."""
+                      quantities: Mapping[str, Any], schema: str = ENVELOPE_SCHEMA) -> List[str]:
+    """Problems of one quantity in the context of its container (inputs and sibling quantities).
+
+    ``schema`` v2 admits the six SOL-C definitions and their extra KM keys and adds estimate_problems."""
     if not isinstance(q, dict):
         return [f"{where} must be an object"]
+    v2 = schema == ENVELOPE_SCHEMA_V2
+    definitions = V2_QUANTITY_DEFINITIONS if v2 else QUANTITY_DEFINITIONS
     keys = set(q)
+    allowed = set(QUANTITY_KEYS)
+    if v2 and isinstance(q.get("quantityDefinition"), str):
+        allowed |= set(V2_EXTRA_QUANTITY_KEYS.get(q["quantityDefinition"], ()))
     missing = [key for key in QUANTITY_KEYS if key not in keys]
-    extra = sorted(keys - set(QUANTITY_KEYS))
+    extra = sorted(keys - allowed)
     problems: List[str] = []
     if missing:
         problems.append(f"{where}: missing keys {missing}")
@@ -899,7 +1025,7 @@ def quantity_problems(q: Any, where: str, inputs: Mapping[str, Any],
     status, value = q["status"], q["value"]
     if status not in QUANTITY_STATUSES:
         return problems + [f"{where}.status must be one of {QUANTITY_STATUSES}"]
-    definition = QUANTITY_DEFINITIONS.get(q["quantityDefinition"]) if isinstance(q["quantityDefinition"], str) else None
+    definition = definitions.get(q["quantityDefinition"]) if isinstance(q["quantityDefinition"], str) else None
     if definition is None:
         return problems + [f"{where}.quantityDefinition {q['quantityDefinition']!r} is not a registered definition"]
     if q["unit"] != definition["unit"]:
@@ -1022,6 +1148,211 @@ def quantity_problems(q: Any, where: str, inputs: Mapping[str, Any],
             elif identity["parent"] != expected_parent:
                 problems.append(f"{where}: parent identity {identity['parent']!r} is not the current parent "
                                 f"{expected_parent!r}; a stale-parent value is not current")
+    if v2:
+        problems += estimate_problems(q, where, inputs, quantities)
+    return problems
+
+
+def range_problems(band: Any, value: Any, unit: str, where: str) -> List[str]:
+    """Problems of one estimateBand or inputSensitivity record (A7 range object, inside validity)."""
+    if not isinstance(band, dict) or set(band) != set(RANGE_KEYS):
+        return [f"{where} must be exactly the keys {list(RANGE_KEYS)}"]
+    problems: List[str] = []
+    if band["unit"] != unit:
+        problems.append(f"{where}.unit must be the quantity unit {unit!r}")
+    if band["construction"] not in RANGE_CONSTRUCTIONS:
+        problems.append(f"{where}.construction must be one of {RANGE_CONSTRUCTIONS}")
+    low, high = band["lower"], band["upper"]
+    if isinstance(value, dict):
+        if not (isinstance(low, dict) and isinstance(high, dict) and set(low) == set(high) == set(value)):
+            problems.append(f"{where}: lower/upper must be maps with the value's members")
+        else:
+            for name, nominal in value.items():
+                if not (_is_number(low[name]) and _is_number(high[name]) and _is_number(nominal)
+                        and low[name] <= nominal <= high[name]):
+                    problems.append(f"{where}: member {name} range must be ordered and contain the value")
+    elif not (_is_number(value) and _is_number(low) and _is_number(high) and low <= value <= high):
+        problems.append(f"{where}: lower <= value <= upper with finite numbers (no categorical interval)")
+    rows = band["inputRanges"]
+    if not isinstance(rows, list) or not rows:
+        problems.append(f"{where}.inputRanges must be a non-empty list")
+    else:
+        names = []
+        for index, row in enumerate(rows):
+            at = f"{where}.inputRanges[{index}]"
+            if not isinstance(row, dict) or set(row) != set(INPUT_RANGE_KEYS):
+                problems.append(f"{at} must be exactly the keys {list(INPUT_RANGE_KEYS)}")
+                continue
+            names.append(str(row["name"]))
+            if not (_text(row["name"]) and _text(row["unit"])):
+                problems.append(f"{at}: name and unit must be non-empty")
+            if not (all(_is_number(row[key]) for key in ("lower", "nominal", "upper"))
+                    and row["lower"] <= row["nominal"] <= row["upper"]):
+                problems.append(f"{at}: finite ordered bounds containing the nominal")
+        if len(names) != len(set(names)):
+            problems.append(f"{where}.inputRanges names must be unique")
+    arms = band["armIds"]
+    if not (_str_list(arms) and arms and len(set(arms)) == len(arms)):
+        problems.append(f"{where}.armIds must be unique executed arm identities")
+    unknown = band["unknownComponents"]
+    if not (_str_list(unknown) and set(unknown) <= set(UNKNOWN_COMPONENTS) and "model-error" in unknown):
+        problems.append(f"{where}.unknownComponents must name model-error and only {UNKNOWN_COMPONENTS}")
+    elif band["construction"] == "ofat" and "input-interactions" not in unknown:
+        problems.append(f"{where}: a one-factor-at-a-time range names input-interactions as unknown")
+    return problems
+
+
+def inherited_warning_codes(name: str, inputs: Mapping[str, Any], quantities: Mapping[str, Any],
+                            stack: Tuple[str, ...] = ()) -> Tuple[set, bool]:
+    """(warning codes, null parent) over the dependency closure of one quantity (A7 emit contract).
+
+    An alloyTransfer input gives alloy-family-transfer, an extrapolated or out-of-range input gives
+    domain-extrapolation and a sibling quantity contributes its own domainWarnings, transitively through dependsOn.
+    The quantity's own warnings are not part of its inherited set."""
+    if name in stack:
+        return set(), True
+    if name in inputs:
+        record = inputs[name]
+    else:
+        record = quantities.get(name)
+    if not isinstance(record, dict):
+        return set(), True
+    warnings: set = set()
+    if name in inputs:
+        if record.get("kind") == "alloyTransfer":
+            warnings.add("alloy-family-transfer")
+        if record.get("status") in ("extrapolated", "outOfRange"):
+            warnings.add("domain-extrapolation")
+    elif stack:
+        validity = record.get("validity") if isinstance(record.get("validity"), dict) else {}
+        rows = validity.get("domainWarnings")
+        for item in rows if isinstance(rows, list) else []:
+            if isinstance(item, dict) and isinstance(item.get("code"), str):
+                warnings.add(item["code"])
+    null_parent = bool(stack) and name not in inputs and record.get("value") is None
+    deps = record.get("dependsOn")
+    for dep in deps if _str_list(deps) else []:
+        inherited, null = inherited_warning_codes(dep, inputs, quantities, stack + (name,))
+        warnings |= inherited
+        null_parent = null_parent or null
+    return warnings, null_parent
+
+
+def estimate_problems(q: Dict[str, Any], where: str, inputs: Mapping[str, Any],
+                      quantities: Mapping[str, Any]) -> List[str]:
+    """The v2 typed estimate fields of one quantity (the A7 prospective validator on v1 shapes)."""
+    problems: List[str] = []
+    definition_id = q.get("quantityDefinition")
+    definition = V2_QUANTITY_DEFINITIONS.get(definition_id)
+    if definition is None:
+        return problems
+    value = q.get("value")
+    has = value is not None
+    validity = q.get("validity")
+    if not isinstance(validity, dict):
+        return [f"{where}.validity must carry the typed estimate fields"]
+    missing = [key for key in VALIDITY_REQUIRED_KEYS if key not in validity]
+    if missing:
+        problems.append(f"{where}.validity misses {missing}")
+    tier = validity.get("estimateTier")
+    if tier not in ESTIMATE_TIERS:
+        problems.append(f"{where}.validity.estimateTier must be one of {ESTIMATE_TIERS}")
+    elif has == (tier == "no-value"):
+        problems.append(f"{where}: estimateTier is no-value exactly when the value is null")
+    digits = validity.get("displaySignificantDigits")
+    expected_digits = DISPLAY_SIGNIFICANT_DIGITS.get(definition_id) if has else None
+    if has and expected_digits is None:
+        problems.append(f"{where}: {definition_id} has no admitted display precision")
+    elif digits != expected_digits or (has and type(digits) is not int):
+        problems.append(f"{where}.validity.displaySignificantDigits must be {expected_digits}")
+    warnings = validity.get("domainWarnings")
+    codes: set = set()
+    if not isinstance(warnings, list):
+        problems.append(f"{where}.validity.domainWarnings must be a list")
+        warnings = []
+    for index, item in enumerate(warnings):
+        if not (isinstance(item, dict) and set(item) == {"code", "detail"} and item["code"] in VALUE_WARNING_CODES
+                and _text(item["detail"])):
+            problems.append(f"{where}.validity.domainWarnings[{index}] must be {{code, detail}} with a closed "
+                            "value-warning code and a detail naming the input or model")
+        else:
+            codes.add(item["code"])
+    reasons = q.get("reasons") if isinstance(q.get("reasons"), list) else []
+    for item in reasons:
+        if isinstance(item, dict) and item.get("code") in VALUE_WARNING_CODES:
+            problems.append(f"{where}: value warning {item['code']!r} is not a blocking reason")
+    if bool(reasons) == has:
+        problems.append(f"{where}: blocking reasons are present exactly when the value is null")
+    name = next((key for key, other in quantities.items() if other is q), None)
+    inherited, null_parent = (inherited_warning_codes(name, inputs, quantities) if name is not None
+                              else (set(), False))
+    if has:
+        if null_parent:
+            problems.append(f"{where}: a value cannot depend on a null parent")
+        lost = sorted(inherited - codes)
+        if lost:
+            problems.append(f"{where}: inherited warnings {lost} are missing from domainWarnings")
+    band, sensitivity = validity.get("estimateBand"), validity.get("inputSensitivity")
+    if tier == "Estimated":
+        if (inherited | codes) & set(TIER_CAPPING_WARNING_CODES):
+            problems.append(f"{where}: a transfer or out-of-domain dependency caps the value at Physics estimate")
+        if definition["valueKind"] in ("alternatives", "category"):
+            problems.append(f"{where}: {definition['valueKind']} values are never Estimated")
+        problems += range_problems(band, value, definition["unit"], f"{where}.validity.estimateBand")
+    elif band is not None:
+        problems.append(f"{where}: an estimateBand exists only at tier Estimated")
+    if sensitivity is not None:
+        if tier != "Physics estimate":
+            problems.append(f"{where}: inputSensitivity is auxiliary to a Physics estimate only")
+        problems += range_problems(sensitivity, value, definition["unit"], f"{where}.validity.inputSensitivity")
+    expected_statement = UNCERTAINTY_STATEMENT_TIER2 if tier == "Physics estimate" else None
+    if validity.get("uncertaintyStatement") != expected_statement:
+        problems.append(f"{where}.validity.uncertaintyStatement must be {expected_statement!r}")
+    uncertainty = q.get("uncertainty")
+    if has and isinstance(uncertainty, dict):
+        expected_kind = ("model-alternatives" if definition["valueKind"] == "alternatives"
+                         else "parameter-sensitivity" if tier == "Estimated" else "not-quantified")
+        if uncertainty.get("kind") != expected_kind:
+            problems.append(f"{where}.uncertainty.kind must be {expected_kind!r} at tier {tier}")
+        if not _text(uncertainty.get("construction")):
+            problems.append(f"{where}.uncertainty.construction must explain the construction")
+    if has and definition_id in V2_FRACTION_BASIS and q.get("fractionBasis") != V2_FRACTION_BASIS[definition_id]:
+        problems.append(f"{where}.fractionBasis must be {V2_FRACTION_BASIS[definition_id]!r}")
+    if has and definition_id in ("equiaxed-envelope-fraction", "cet-class"):
+        if validity.get("nucleationScenarioNote") != NUCLEATION_SCENARIO_NOTE:
+            problems.append(f"{where}.validity.nucleationScenarioNote must be the exact nucleation scenario note")
+    if has and definition_id == "km-alpha-m-fraction":
+        problems += km_problems(q, where)
+    return problems
+
+
+def km_problems(q: Mapping[str, Any], where: str) -> List[str]:
+    """KM evaluation record and progress conservation (A7 schema; the remainder is never retained beta)."""
+    problems: List[str] = []
+    ev, residual = q.get("evaluation"), q.get("residual")
+    if not isinstance(ev, dict) or set(ev) != set(KM_EVALUATION_KEYS):
+        return [f"{where}.evaluation must be exactly {list(KM_EVALUATION_KEYS)}"]
+    if ev["ruleId"] != KM_EVALUATION_RULE or ev["timeInterpolation"] != "linear-in-temperature":
+        problems.append(f"{where}.evaluation rule must be {KM_EVALUATION_RULE} with linear-in-temperature")
+    if not (all(_is_number(ev[k]) and ev[k] > 0 for k in ("preheat_K", "offset_K", "temperature_K"))
+            and ev["offset_K"] == 25 and abs(ev["temperature_K"] - ev["preheat_K"] - 25) <= 1e-9):
+        problems.append(f"{where}.evaluation temperature must be preheat + 25 K")
+    if not (_is_number(ev["time_s"]) and ev["time_s"] >= 0):
+        problems.append(f"{where}.evaluation.time_s must be finite and nonnegative")
+    ids = ev["historyBracketIds"]
+    if not (_str_list(ids) and len(ids) == 2 and ids[0] != ids[1]):
+        problems.append(f"{where}.evaluation.historyBracketIds must be two distinct node IDs")
+    ref = ev["refinement"]
+    if not (isinstance(ref, dict) and set(ref) == {"status", "timeTolerance_s", "temperatureTolerance_K"}
+            and ref["status"] == "refinement-passed"
+            and all(_is_number(ref[k]) and ref[k] > 0 for k in ("timeTolerance_s", "temperatureTolerance_K"))):
+        problems.append(f"{where}.evaluation.refinement must have passed with positive tolerances")
+    value = q.get("value")
+    if not (isinstance(residual, dict) and set(residual) == set(KM_RESIDUAL_KEYS)
+            and all(_is_number(x) and 0 <= x <= 1 for x in residual.values()) and _is_number(value)
+            and abs(value + residual["untransformedAsymptote"] - residual["beta0"]) <= 1e-12
+            and abs(residual["preExistingConstituent"] - (1 - residual["beta0"])) <= 1e-12):
+        problems.append(f"{where}.residual must conserve value + untransformedAsymptote = beta0 (no retained beta)")
     return problems
 
 
@@ -1062,8 +1393,10 @@ def container_problems(c: Any, where: str, module_maturity: Optional[str] = None
     for key in CONTAINER_REQUIRED_KEYS:
         if key not in c:
             problems.append(f"{where}: a container carries {key}")
-    if c.get("quantityEnvelopeSchema") != ENVELOPE_SCHEMA:
-        problems.append(f"{where}.quantityEnvelopeSchema must be {ENVELOPE_SCHEMA!r}")
+    schema = c.get("quantityEnvelopeSchema")
+    if schema not in ENVELOPE_SCHEMAS:
+        problems.append(f"{where}.quantityEnvelopeSchema must be one of {ENVELOPE_SCHEMAS!r}")
+        schema = ENVELOPE_SCHEMA
     if c.get("moduleEvidenceCeiling") != MODULE_EVIDENCE_CEILING:
         problems.append(f"{where}.moduleEvidenceCeiling must be {MODULE_EVIDENCE_CEILING!r} (decision 1)")
     if c.get("moduleMaturity") not in MODULE_MATURITIES:
@@ -1097,7 +1430,7 @@ def container_problems(c: Any, where: str, module_maturity: Optional[str] = None
     for name, q in quantities.items():
         if not (isinstance(name, str) and _KEY.match(name)):
             problems.append(f"{where}.quantities key {name!r} must be a plain name")
-        problems += quantity_problems(q, f"{where}.quantities.{name}", inputs, quantities)
+        problems += quantity_problems(q, f"{where}.quantities.{name}", inputs, quantities, schema)
     # Parent propagation: a dependent of a null sibling is null and names that parent in a reason.
     for name, q in quantities.items():
         if not isinstance(q, dict) or not _str_list(q.get("dependsOn")):
@@ -1261,4 +1594,32 @@ def typescript_document() -> Dict[str, Any]:
         "containerRequiredKeys": list(CONTAINER_REQUIRED_KEYS),
         "containerOptionalKeys": list(CONTAINER_OPTIONAL_KEYS),
         "canonicalAlloyIds": list(CANONICAL_ALLOY_IDS),
+        "estimates": {
+            "schema": ENVELOPE_SCHEMA_V2,
+            "schemas": list(ENVELOPE_SCHEMAS),
+            "tiers": list(ESTIMATE_TIERS),
+            "tierLabels": dict(ESTIMATE_TIER_LABELS),
+            "warningCodes": list(VALUE_WARNING_CODES),
+            "nonCappingWarningCodes": list(NON_CAPPING_WARNING_CODES),
+            "tierCappingWarningCodes": list(TIER_CAPPING_WARNING_CODES),
+            "warningLabels": dict(WARNING_LABELS),
+            "unknownComponents": list(UNKNOWN_COMPONENTS),
+            "rangeConstructions": list(RANGE_CONSTRUCTIONS),
+            "rangeKeys": list(RANGE_KEYS),
+            "inputRangeKeys": list(INPUT_RANGE_KEYS),
+            "inputSensitivityRangeName": INPUT_SENSITIVITY_RANGE_NAME,
+            "uncertaintyStatementTier2": UNCERTAINTY_STATEMENT_TIER2,
+            "nucleationScenarioNote": NUCLEATION_SCENARIO_NOTE,
+            "tier1RangeSentence": TIER1_RANGE_SENTENCE,
+            "validityRequiredKeys": list(VALIDITY_REQUIRED_KEYS),
+            "kmEvaluationRule": KM_EVALUATION_RULE,
+            "kmEvaluationKeys": list(KM_EVALUATION_KEYS),
+            "kmResidualKeys": list(KM_RESIDUAL_KEYS),
+            "valueKinds": list(V2_VALUE_KINDS),
+            "valueRanges": list(V2_VALUE_RANGES),
+            "quantityDefinitions": copy.deepcopy(V2_QUANTITY_DEFINITIONS),
+            "fractionBasis": dict(V2_FRACTION_BASIS),
+            "displaySignificantDigits": dict(DISPLAY_SIGNIFICANT_DIGITS),
+            "extraQuantityKeys": {key: list(value) for key, value in V2_EXTRA_QUANTITY_KEYS.items()},
+        },
     }

@@ -4,7 +4,7 @@
     "python/four_alloy_materials.py": "d25cf15d3cd312118406a260f48e555d0888fab926776630221f43bffe027e10",
     "python/lpbf_thermal_solver.py": "053d653b061b459c8b7b528ce30f0b65db3ef8a7f342c7f7f0822b3d71ff3ff6",
     "python/lpbf_material_registry.py": "6e194ced1314739647bfd0c62126819cb583ef2145e94416344a60af4e0e1a40",
-    "python/quantity_envelope.py": "b33946479001ac7640c1f0a4eddd7ecc5015ac4287a536d0bd672858b772cae0",
+    "python/quantity_envelope.py": "081590d8816c975a347dd2ff8edb52484116a3dc99d649472c5498710b89ea67",
     "data/benchmark/spent-ledger-v1.json": "844870bd55f89354e934dc5a6eaad66fe849f131115c9e29e7e8bab9731a3827",
     "data/benchmark/nist-amb2022-03-optical/table4-aggregate-v2.json": "d1b36dfa2e01a3537093c481e249ce52df6b8879c1c67480ddb9aa10799133da",
     "data/benchmark/ku-leuven-316l-ti64-2021/conditions.csv": "e031aead71bf64c70a35ae05d64c0c576d33c2ae757a1e5bda68b5da532ac831",

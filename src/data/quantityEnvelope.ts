@@ -29,6 +29,10 @@ import {
   type ReadLevel,
   type ReasonCode,
   type UncertaintyKind,
+  type EstimateTier,
+  type ValueWarningCode,
+  type UnknownComponent,
+  type EstimateQuantityDefinitionId,
 } from "../generated/quantityEnvelope";
 import type { ContractObservationDeclaration, ContractQuantityDeclaration } from "../generated/moduleRegistry";
 
@@ -411,13 +415,23 @@ export function parentKey(inputs: Records, dependsOn: readonly string[], quantit
 
 // --- Quantity, observation and container --------------------------------------------------------------------------
 
-function valueProblems(value: unknown, id: QuantityDefinitionId, where: string): string[] {
-  const definition = V.quantityDefinitions[id];
+interface DefinitionShape {
+  readonly unit: string; readonly valueKind: string; readonly valueRange: string | null; readonly fraction: boolean;
+  readonly members: readonly string[]; readonly memberUnits: Readonly<Record<string, string>>;
+  readonly categories: readonly string[];
+}
+const V2 = V.estimates;
+const V2_DEFINITIONS = V2.quantityDefinitions as unknown as Readonly<Record<string, DefinitionShape>>;
+const V1_DEFINITIONS = V.quantityDefinitions as unknown as Readonly<Record<string, DefinitionShape>>;
+
+function valueProblems(value: unknown, id: string, where: string, table: Readonly<Record<string, DefinitionShape>> = V1_DEFINITIONS): string[] {
+  const definition = table[id];
   const range: string | null = definition.valueRange;
   const numberProblem = (item: unknown): string | null => {
     if (!isNumber(item)) return "must be a finite number";
     if (range === "positive" && !(item > 0)) return "must be positive";
     if (range === "fraction" && !(item >= 0 && item <= 1)) return "must lie in [0, 1]";
+    if (range === "nonnegative" && !(item >= 0)) return "must be nonnegative";
     return null;
   };
   const problems: string[] = [];
@@ -442,6 +456,19 @@ function valueProblems(value: unknown, id: QuantityDefinitionId, where: string):
       for (const [key, item] of Object.entries(value)) {
         const problem = numberProblem(item);
         if (problem) problems.push(`${where}.value.${key} ${problem}`);
+      }
+    }
+  } else if (kind === "inventory") {
+    const members = definition.members;
+    if (!isObject(value) || !sameKeys(value, members)) {
+      problems.push(`${where}.value must be an object with exactly the members ${members.join(", ")}`);
+    } else {
+      for (const member of members) {
+        const problem = numberProblem(value[member]);
+        if (problem) problems.push(`${where}.value.${member} ${problem}`);
+      }
+      if (!problems.length && Math.abs(members.reduce((sum, member) => sum + (value[member] as number), 0) - 1) > 1e-12) {
+        problems.push(`${where}.value members must sum to 1 (a closed inventory)`);
       }
     }
   } else if (kind === "category") {
@@ -506,22 +533,27 @@ function reasonProblems(reasons: unknown, where: string, inputs: Records, quanti
 }
 
 /** Problems of one quantity in its container context (mirrors quantity_envelope.quantity_problems). */
-export function quantityProblems(raw: unknown, where: string, inputs: Records, quantities: Records): string[] {
+export function quantityProblems(raw: unknown, where: string, inputs: Records, quantities: Records,
+  schema: string = V.schema): string[] {
   if (!isObject(raw)) return [`${where} must be an object`];
   const problems: string[] = [];
+  const v2 = schema === V2.schema;
+  const table = v2 ? V2_DEFINITIONS : V1_DEFINITIONS;
+  const extraKeys: readonly string[] = v2 && typeof raw.quantityDefinition === "string"
+    ? ((V2.extraQuantityKeys as Readonly<Record<string, readonly string[]>>)[raw.quantityDefinition] ?? []) : [];
   const missing = V.quantityKeys.filter((key: string) => !Object.hasOwn(raw, key));
-  const extra = Object.keys(raw).filter((key) => !has(V.quantityKeys, key)).sort();
+  const extra = Object.keys(raw).filter((key) => !has(V.quantityKeys, key) && !extraKeys.includes(key)).sort();
   if (missing.length) problems.push(`${where}: missing keys ${missing.join(", ")}`);
   if (extra.length) problems.push(`${where}: unknown keys ${extra.join(", ")}`);
   if (missing.length) return problems;
   const status = raw.status;
   const value = raw.value;
   if (!has(V.statuses, status)) return [...problems, `${where}.status must be one of ${V.statuses.join(", ")}`];
-  if (typeof raw.quantityDefinition !== "string" || !Object.hasOwn(V.quantityDefinitions, raw.quantityDefinition)) {
+  if (typeof raw.quantityDefinition !== "string" || !Object.hasOwn(table, raw.quantityDefinition)) {
     return [...problems, `${where}.quantityDefinition ${String(raw.quantityDefinition)} is not a registered definition`];
   }
-  const id = raw.quantityDefinition as QuantityDefinitionId;
-  const definition = V.quantityDefinitions[id];
+  const id = raw.quantityDefinition;
+  const definition = table[id];
   if (raw.unit !== definition.unit) problems.push(`${where}.unit must be ${definition.unit} for ${id}`);
   const role = raw.leafRole;
   if (!has(V.leafRoles, role)) problems.push(`${where}.leafRole must be one of ${V.leafRoles.join(", ")}`);
@@ -529,7 +561,7 @@ export function quantityProblems(raw: unknown, where: string, inputs: Records, q
   const hasValue = value !== null;
   if (has(V.valueStatuses, status) && !hasValue) problems.push(`${where}: status ${String(status)} needs a value`);
   if (!has(V.valueStatuses, status) && hasValue) problems.push(`${where}: status ${String(status)} must carry value null`);
-  if (hasValue) problems.push(...valueProblems(value, id, where));
+  if (hasValue) problems.push(...valueProblems(value, id, where, table));
   const evidence = raw.sourceEvidenceKind;
   if (evidence === "Measured") problems.push(`${where}: Measured never labels a quantity; transcribed measurements are observation records`);
   else if (evidence !== null && !isLabel(evidence)) problems.push(`${where}.sourceEvidenceKind must be one of ${V.quantitySourceEvidenceKinds.join(", ")} or null`);
@@ -614,6 +646,167 @@ export function quantityProblems(raw: unknown, where: string, inputs: Records, q
       else if (identity.parent !== expectedParent) problems.push(`${where}: parent identity is not the current parent ${String(expectedParent)}; a stale-parent value is not current`);
     }
   }
+  if (v2) problems.push(...estimateProblems(raw, where, inputs, quantities));
+  return problems;
+}
+
+// --- Envelope v2: SOL-C typed estimate fields (mirrors quantity_envelope.estimate_problems) -----------------------
+
+/** One estimateBand or inputSensitivity record (A7 range object inside validity). */
+export function rangeProblems(band: unknown, value: unknown, unit: string, where: string): string[] {
+  if (!isObject(band) || !sameKeys(band, V2.rangeKeys)) return [`${where} must be exactly the keys ${V2.rangeKeys.join(", ")}`];
+  const problems: string[] = [];
+  if (band.unit !== unit) problems.push(`${where}.unit must be the quantity unit ${unit}`);
+  if (!has(V2.rangeConstructions, band.construction)) problems.push(`${where}.construction must be one of ${V2.rangeConstructions.join(", ")}`);
+  const low = band.lower, high = band.upper;
+  if (isObject(value)) {
+    if (!(isObject(low) && isObject(high) && sameKeys(low, Object.keys(value)) && sameKeys(high, Object.keys(value)))) {
+      problems.push(`${where}: lower/upper must be maps with the value's members`);
+    } else {
+      for (const [name, nominal] of Object.entries(value)) {
+        if (!(isNumber(low[name]) && isNumber(high[name]) && isNumber(nominal) && (low[name] as number) <= nominal && nominal <= (high[name] as number))) {
+          problems.push(`${where}: member ${name} range must be ordered and contain the value`);
+        }
+      }
+    }
+  } else if (!(isNumber(value) && isNumber(low) && isNumber(high) && low <= value && value <= high)) {
+    problems.push(`${where}: lower <= value <= upper with finite numbers (no categorical interval)`);
+  }
+  const rows = band.inputRanges;
+  if (!Array.isArray(rows) || rows.length === 0) problems.push(`${where}.inputRanges must be a non-empty list`);
+  else {
+    const names: string[] = [];
+    rows.forEach((row, index) => {
+      const at = `${where}.inputRanges[${index}]`;
+      if (!isObject(row) || !sameKeys(row, V2.inputRangeKeys)) { problems.push(`${at} must be exactly the keys ${V2.inputRangeKeys.join(", ")}`); return; }
+      names.push(String(row.name));
+      if (!isText(row.name) || !isText(row.unit)) problems.push(`${at}: name and unit must be non-empty`);
+      if (!(isNumber(row.lower) && isNumber(row.nominal) && isNumber(row.upper) && row.lower <= row.nominal && row.nominal <= row.upper)) {
+        problems.push(`${at}: finite ordered bounds containing the nominal`);
+      }
+    });
+    if (new Set(names).size !== names.length) problems.push(`${where}.inputRanges names must be unique`);
+  }
+  const arms = band.armIds;
+  if (!(isStrList(arms) && arms.length > 0 && new Set(arms).size === arms.length)) problems.push(`${where}.armIds must be unique executed arm identities`);
+  const unknown = band.unknownComponents;
+  if (!(isStrList(unknown) && unknown.every((item) => has(V2.unknownComponents, item)) && unknown.includes("model-error"))) {
+    problems.push(`${where}.unknownComponents must name model-error and only ${V2.unknownComponents.join(", ")}`);
+  } else if (band.construction === "ofat" && !unknown.includes("input-interactions")) {
+    problems.push(`${where}: a one-factor-at-a-time range names input-interactions as unknown`);
+  }
+  return problems;
+}
+
+/** Warning codes and null-parent state over a quantity's dependency closure (A7 emit contract). */
+export function inheritedWarningCodes(name: string, inputs: Records, quantities: Records, stack: readonly string[] = []): { codes: Set<string>; nullParent: boolean } {
+  if (stack.includes(name)) return { codes: new Set(), nullParent: true };
+  const isInput = Object.hasOwn(inputs, name);
+  const record = isInput ? inputs[name] : quantities[name];
+  if (!isObject(record)) return { codes: new Set(), nullParent: true };
+  const codes = new Set<string>();
+  if (isInput) {
+    if (record.kind === "alloyTransfer") codes.add("alloy-family-transfer");
+    if (record.status === "extrapolated" || record.status === "outOfRange") codes.add("domain-extrapolation");
+  } else if (stack.length) {
+    const validity = isObject(record.validity) ? record.validity : {};
+    for (const item of Array.isArray(validity.domainWarnings) ? validity.domainWarnings : []) {
+      if (isObject(item) && typeof item.code === "string") codes.add(item.code);
+    }
+  }
+  let nullParent = stack.length > 0 && !isInput && record.value === null;
+  for (const dep of isStrList(record.dependsOn) ? record.dependsOn : []) {
+    const inner = inheritedWarningCodes(dep, inputs, quantities, [...stack, name]);
+    inner.codes.forEach((code) => codes.add(code));
+    nullParent = nullParent || inner.nullParent;
+  }
+  return { codes, nullParent };
+}
+
+function estimateProblems(q: Json, where: string, inputs: Records, quantities: Records): string[] {
+  const problems: string[] = [];
+  const id = String(q.quantityDefinition);
+  const definition = V2_DEFINITIONS[id];
+  if (!definition) return problems;
+  const value = q.value;
+  const hasValue = value !== null;
+  const validity = q.validity;
+  if (!isObject(validity)) return [`${where}.validity must carry the typed estimate fields`];
+  const missing = V2.validityRequiredKeys.filter((key: string) => !Object.hasOwn(validity, key));
+  if (missing.length) problems.push(`${where}.validity misses ${missing.join(", ")}`);
+  const tier = validity.estimateTier;
+  if (!has(V2.tiers, tier)) problems.push(`${where}.validity.estimateTier must be one of ${V2.tiers.join(", ")}`);
+  else if (hasValue === (tier === "no-value")) problems.push(`${where}: estimateTier is no-value exactly when the value is null`);
+  const digitsTable = V2.displaySignificantDigits as Readonly<Record<string, number>>;
+  const expectedDigits = hasValue ? digitsTable[id] ?? null : null;
+  if (hasValue && expectedDigits === null) problems.push(`${where}: ${id} has no admitted display precision`);
+  else if (validity.displaySignificantDigits !== expectedDigits) problems.push(`${where}.validity.displaySignificantDigits must be ${String(expectedDigits)}`);
+  const codes = new Set<string>();
+  const warnings = Array.isArray(validity.domainWarnings) ? validity.domainWarnings : null;
+  if (!warnings) problems.push(`${where}.validity.domainWarnings must be a list`);
+  (warnings ?? []).forEach((item, index) => {
+    if (!(isObject(item) && sameKeys(item, ["code", "detail"]) && has(V2.warningCodes, item.code) && isText(item.detail))) {
+      problems.push(`${where}.validity.domainWarnings[${index}] must be {code, detail} with a closed value-warning code`);
+    } else codes.add(item.code as string);
+  });
+  const reasons = Array.isArray(q.reasons) ? q.reasons : [];
+  for (const item of reasons) if (isObject(item) && has(V2.warningCodes, item.code)) problems.push(`${where}: value warning ${String(item.code)} is not a blocking reason`);
+  if ((reasons.length > 0) === hasValue) problems.push(`${where}: blocking reasons are present exactly when the value is null`);
+  const name = Object.keys(quantities).find((key) => quantities[key] === q);
+  const inherited = name === undefined ? { codes: new Set<string>(), nullParent: false } : inheritedWarningCodes(name, inputs, quantities);
+  if (hasValue) {
+    if (inherited.nullParent) problems.push(`${where}: a value cannot depend on a null parent`);
+    const lost = [...inherited.codes].filter((code) => !codes.has(code)).sort();
+    if (lost.length) problems.push(`${where}: inherited warnings ${lost.join(", ")} are missing from domainWarnings`);
+  }
+  const all = new Set([...inherited.codes, ...codes]);
+  if (tier === "Estimated") {
+    if (V2.tierCappingWarningCodes.some((code: string) => all.has(code))) problems.push(`${where}: a transfer or out-of-domain dependency caps the value at Physics estimate`);
+    if (definition.valueKind === "alternatives" || definition.valueKind === "category") problems.push(`${where}: ${definition.valueKind} values are never Estimated`);
+    problems.push(...rangeProblems(validity.estimateBand, value, definition.unit, `${where}.validity.estimateBand`));
+  } else if (validity.estimateBand !== null && validity.estimateBand !== undefined) problems.push(`${where}: an estimateBand exists only at tier Estimated`);
+  if (validity.inputSensitivity !== null && validity.inputSensitivity !== undefined) {
+    if (tier !== "Physics estimate") problems.push(`${where}: inputSensitivity is auxiliary to a Physics estimate only`);
+    problems.push(...rangeProblems(validity.inputSensitivity, value, definition.unit, `${where}.validity.inputSensitivity`));
+  }
+  const statement = tier === "Physics estimate" ? V2.uncertaintyStatementTier2 : null;
+  if (validity.uncertaintyStatement !== statement) problems.push(`${where}.validity.uncertaintyStatement must be ${String(statement)}`);
+  const uncertainty = q.uncertainty;
+  if (hasValue && isObject(uncertainty)) {
+    const expected = definition.valueKind === "alternatives" ? "model-alternatives" : tier === "Estimated" ? "parameter-sensitivity" : "not-quantified";
+    if (uncertainty.kind !== expected) problems.push(`${where}.uncertainty.kind must be ${expected} at tier ${String(tier)}`);
+    if (!isText(uncertainty.construction)) problems.push(`${where}.uncertainty.construction must explain the construction`);
+  }
+  const basis = (V2.fractionBasis as Readonly<Record<string, string>>)[id];
+  if (hasValue && basis !== undefined && q.fractionBasis !== basis) problems.push(`${where}.fractionBasis must be ${basis}`);
+  if (hasValue && (id === "equiaxed-envelope-fraction" || id === "cet-class") && validity.nucleationScenarioNote !== V2.nucleationScenarioNote) {
+    problems.push(`${where}.validity.nucleationScenarioNote must be the exact nucleation scenario note`);
+  }
+  if (hasValue && id === "km-alpha-m-fraction") problems.push(...kmProblems(q, where));
+  return problems;
+}
+
+function kmProblems(q: Json, where: string): string[] {
+  const problems: string[] = [];
+  const ev = q.evaluation, residual = q.residual;
+  if (!isObject(ev) || !sameKeys(ev, V2.kmEvaluationKeys)) return [`${where}.evaluation must be exactly ${V2.kmEvaluationKeys.join(", ")}`];
+  if (ev.ruleId !== V2.kmEvaluationRule || ev.timeInterpolation !== "linear-in-temperature") problems.push(`${where}.evaluation rule must be ${V2.kmEvaluationRule}`);
+  if (!(isNumber(ev.preheat_K) && isNumber(ev.offset_K) && isNumber(ev.temperature_K) && ev.preheat_K > 0 && ev.offset_K === 25
+    && Math.abs(ev.temperature_K - ev.preheat_K - 25) <= 1e-9)) problems.push(`${where}.evaluation temperature must be preheat + 25 K`);
+  if (!(isNumber(ev.time_s) && ev.time_s >= 0)) problems.push(`${where}.evaluation.time_s must be finite and nonnegative`);
+  const ids = ev.historyBracketIds;
+  if (!(isStrList(ids) && ids.length === 2 && ids[0] !== ids[1])) problems.push(`${where}.evaluation.historyBracketIds must be two distinct node IDs`);
+  const ref = ev.refinement;
+  if (!(isObject(ref) && sameKeys(ref, ["status", "timeTolerance_s", "temperatureTolerance_K"]) && ref.status === "refinement-passed"
+    && isNumber(ref.timeTolerance_s) && ref.timeTolerance_s > 0 && isNumber(ref.temperatureTolerance_K) && ref.temperatureTolerance_K > 0)) {
+    problems.push(`${where}.evaluation.refinement must have passed with positive tolerances`);
+  }
+  const value = q.value;
+  if (!(isObject(residual) && sameKeys(residual, V2.kmResidualKeys) && Object.values(residual).every((x) => isNumber(x) && x >= 0 && x <= 1)
+    && isNumber(value) && Math.abs(value + (residual.untransformedAsymptote as number) - (residual.beta0 as number)) <= 1e-12
+    && Math.abs((residual.preExistingConstituent as number) - (1 - (residual.beta0 as number))) <= 1e-12)) {
+    problems.push(`${where}.residual must conserve value + untransformedAsymptote = beta0 (no retained beta)`);
+  }
   return problems;
 }
 
@@ -674,6 +867,8 @@ export interface ContainerOptions {
   /** Declarations keyed by quantity name; when given, the container holds exactly these quantities. */
   readonly quantityDeclarations?: Readonly<Record<string, ContractQuantityDeclaration>>;
   readonly observationDeclarations?: Readonly<Record<string, ContractObservationDeclaration>>;
+  /** Envelope schema the container must carry (v1 by default; the SOL-C estimate channel uses v2). */
+  readonly schema?: string;
 }
 
 /** Problems of one container (an object holding a quantities map), mirroring quantity_envelope.container_problems. */
@@ -681,7 +876,8 @@ export function containerProblems(raw: unknown, where = "container", options: Co
   if (!isObject(raw)) return [`${where} must be an object`];
   const problems: string[] = [];
   for (const key of V.containerRequiredKeys) if (!Object.hasOwn(raw, key)) problems.push(`${where}: a container carries ${key}`);
-  if (raw.quantityEnvelopeSchema !== V.schema) problems.push(`${where}.quantityEnvelopeSchema must be ${V.schema}`);
+  const schema = options.schema ?? V.schema;
+  if (raw.quantityEnvelopeSchema !== schema) problems.push(`${where}.quantityEnvelopeSchema must be ${schema}`);
   if (raw.moduleEvidenceCeiling !== V.moduleEvidenceCeiling) problems.push(`${where}.moduleEvidenceCeiling must be ${V.moduleEvidenceCeiling} (decision 1)`);
   if (!has(V.moduleMaturities, raw.moduleMaturity)) problems.push(`${where}.moduleMaturity must be one of ${V.moduleMaturities.join(", ")}`);
   else if (options.moduleMaturity !== undefined && raw.moduleMaturity !== options.moduleMaturity) problems.push(`${where}.moduleMaturity must echo the registry label ${options.moduleMaturity}`);
@@ -720,7 +916,7 @@ export function containerProblems(raw: unknown, where = "container", options: Co
   for (const [name, q] of Object.entries(quantities)) {
     const at = `${where}.quantities.${name}`;
     if (!KEY.test(name)) problems.push(`${where}.quantities key ${name} must be a plain name`);
-    const quantityProblemList = quantityProblems(q, at, inputs, quantities);
+    const quantityProblemList = quantityProblems(q, at, inputs, quantities, schema);
     problems.push(...quantityProblemList);
     const declaration = options.quantityDeclarations?.[name];
     if (options.quantityDeclarations && !declaration) problems.push(`${at}: not declared`);
@@ -752,4 +948,47 @@ export function checkedQuantityContainer(raw: unknown, options: ContainerOptions
   const problems = containerProblems(raw, "container", options);
   if (problems.length) rejected("quantity container", problems);
   return raw as unknown as QuantityContainer;
+}
+
+export interface EstimateRange {
+  readonly lower: number | Readonly<Record<string, number>>;
+  readonly upper: number | Readonly<Record<string, number>>;
+  readonly unit: string;
+  readonly construction: "ofat" | "joint";
+  readonly inputRanges: readonly { readonly name: string; readonly unit: string; readonly nominal: number; readonly lower: number; readonly upper: number }[];
+  readonly armIds: readonly string[];
+  readonly unknownComponents: readonly UnknownComponent[];
+}
+
+export interface EstimateValidity {
+  readonly estimateTier: EstimateTier;
+  readonly tierLabel?: string;
+  readonly displaySignificantDigits: number | null;
+  readonly domainWarnings: readonly { readonly code: ValueWarningCode; readonly detail: string }[];
+  readonly estimateBand: EstimateRange | null;
+  readonly inputSensitivity: EstimateRange | null;
+  readonly uncertaintyStatement: string | null;
+  readonly nucleationScenarioNote?: string;
+  readonly explanation?: string | null;
+  readonly noValueText?: string | null;
+  readonly [key: string]: unknown;
+}
+
+export interface EstimateQuantity extends Omit<Quantity, "validity" | "quantityDefinition"> {
+  readonly quantityDefinition: EstimateQuantityDefinitionId;
+  readonly validity: EstimateValidity;
+  readonly evaluation?: Readonly<Record<string, unknown>>;
+  readonly residual?: Readonly<Record<string, number>>;
+}
+
+export interface EstimateContainer extends Omit<QuantityContainer, "quantityEnvelopeSchema" | "quantities"> {
+  readonly quantityEnvelopeSchema: typeof QUANTITY_ENVELOPE.estimates.schema;
+  readonly quantities: Readonly<Record<string, EstimateQuantity>>;
+}
+
+/** A quantity envelope v2 container (SOL-C estimate channel), or an Error naming every problem. */
+export function checkedEstimateContainer(raw: unknown, options: Omit<ContainerOptions, "schema"> = {}): EstimateContainer {
+  const problems = containerProblems(raw, "container", { ...options, schema: V2.schema });
+  if (problems.length) rejected("estimate container", problems);
+  return raw as unknown as EstimateContainer;
 }

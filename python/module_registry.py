@@ -325,8 +325,8 @@ def _keyhole_contract(row: Dict[str, str]) -> ModuleContract:
                       "python/lpbf_keyhole_raytracing.py::_number",
                       "python/lpbf_keyhole_raytracing.py::compute_keyhole_raytracing",
                       "python/lpbf_worker_rpc.py::_rpc_keyhole_raytracing",
-                      "routes/lpbfSimulation.ts:30#/api/python/lpbf-keyhole-raytracing",
-                      "server/lpbfWorkerBridge.ts:58#requestTimeoutMs ?? 20000",
+                      "routes/lpbfSimulation.ts:35#/api/python/lpbf-keyhole-raytracing",
+                      "server/lpbfWorkerBridge.ts:59#requestTimeoutMs ?? 20000",
                       "src/components/KeyholeRaytracingLab.tsx::KeyholeRaytracingLab",
                       "docs/MODULE_EVIDENCE_INVENTORY.md:40#`keyhole-raytracing` /",
                   ))
@@ -369,7 +369,7 @@ def _worker_contract_op(op_id: str, fields, output: OutputSchema, undeclared=())
 
 
 _WORKER_SOURCES = (
-    "server/lpbfWorkerBridge.ts:58#requestTimeoutMs ?? 20000",
+    "server/lpbfWorkerBridge.ts:59#requestTimeoutMs ?? 20000",
     "python/lpbf_worker_rpc.py::dispatch",
 )
 
@@ -979,6 +979,10 @@ def render_envelope_ts(document: dict) -> str:
         "export type FollowState = (typeof QUANTITY_ENVELOPE.followStates)[number];",
         "export type Comparability = (typeof QUANTITY_ENVELOPE.comparability)[number];",
         "export type ModuleMaturityEcho = (typeof QUANTITY_ENVELOPE.moduleMaturities)[number];",
+        "export type EstimateTier = (typeof QUANTITY_ENVELOPE.estimates.tiers)[number];",
+        "export type ValueWarningCode = (typeof QUANTITY_ENVELOPE.estimates.warningCodes)[number];",
+        "export type UnknownComponent = (typeof QUANTITY_ENVELOPE.estimates.unknownComponents)[number];",
+        "export type EstimateQuantityDefinitionId = keyof typeof QUANTITY_ENVELOPE.estimates.quantityDefinitions;",
         "",
     ]
     return "\n".join(lines)

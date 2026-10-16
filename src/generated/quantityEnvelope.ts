@@ -600,7 +600,398 @@ export const QUANTITY_ENVELOPE = {
     "in718",
     "in625",
     "ss316l"
-  ]
+  ],
+  "estimates": {
+    "schema": "metalliksa-quantity-envelope-2",
+    "schemas": [
+      "metalliksa-quantity-envelope-1",
+      "metalliksa-quantity-envelope-2"
+    ],
+    "tiers": [
+      "Estimated",
+      "Physics estimate",
+      "no-value"
+    ],
+    "tierLabels": {
+      "Estimated": "Estimated",
+      "Physics estimate": "Uncalibrated estimate",
+      "no-value": "No value"
+    },
+    "warningCodes": [
+      "domain-extrapolation",
+      "alloy-family-transfer",
+      "low-peclet-tip-law",
+      "nucleation-scenario-unresolved",
+      "Ti-slope-closure",
+      "binary-eutectic-omission",
+      "equilibrium-limit-only",
+      "microconstituent-not-phase",
+      "km-source-fit-uncertainty",
+      "km-quench-reference-only"
+    ],
+    "nonCappingWarningCodes": [
+      "nucleation-scenario-unresolved",
+      "microconstituent-not-phase",
+      "km-source-fit-uncertainty"
+    ],
+    "tierCappingWarningCodes": [
+      "domain-extrapolation",
+      "alloy-family-transfer",
+      "low-peclet-tip-law",
+      "Ti-slope-closure",
+      "binary-eutectic-omission",
+      "equilibrium-limit-only",
+      "km-quench-reference-only"
+    ],
+    "warningLabels": {
+      "domain-extrapolation": "Outside the model's stated domain",
+      "alloy-family-transfer": "Alloy or family transfer",
+      "low-peclet-tip-law": "Low-Peclet tip law outside its screening range",
+      "nucleation-scenario-unresolved": "Declared nucleation scenario",
+      "Ti-slope-closure": "Ti binary slope closure",
+      "binary-eutectic-omission": "Eutectic competition omitted",
+      "equilibrium-limit-only": "Equilibrium limit only",
+      "microconstituent-not-phase": "Microconstituent, not a phase",
+      "km-source-fit-uncertainty": "Fitted source parameter",
+      "km-quench-reference-only": "Quench-limit reference only"
+    },
+    "unknownComponents": [
+      "model-error",
+      "input-interactions",
+      "alloy-transfer-error",
+      "source-parameter-uncertainty"
+    ],
+    "rangeConstructions": [
+      "ofat",
+      "joint"
+    ],
+    "rangeKeys": [
+      "lower",
+      "upper",
+      "unit",
+      "construction",
+      "inputRanges",
+      "armIds",
+      "unknownComponents"
+    ],
+    "inputRangeKeys": [
+      "name",
+      "unit",
+      "nominal",
+      "lower",
+      "upper"
+    ],
+    "inputSensitivityRangeName": "input sensitivity range",
+    "uncertaintyStatementTier2": "Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "nucleationScenarioNote": "N0 and activation undercooling are declared scenarios with Unresolved provenance. The model class may change substantially with these scenarios. Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "tier1RangeSentence": "The range shows how the result moves when each listed input is changed one at a time: {ranges}. It is not an error bar or confidence interval. It excludes model error, which for a conduction model without melt-pool flow can exceed this range, and input interactions and alloy transfer error. Calibrate to your machine for better accuracy.",
+    "validityRequiredKeys": [
+      "estimateTier",
+      "displaySignificantDigits",
+      "domainWarnings",
+      "estimateBand",
+      "inputSensitivity",
+      "uncertaintyStatement"
+    ],
+    "kmEvaluationRule": "finite-25K-above-preheat-v1",
+    "kmEvaluationKeys": [
+      "ruleId",
+      "preheat_K",
+      "offset_K",
+      "temperature_K",
+      "time_s",
+      "historyBracketIds",
+      "timeInterpolation",
+      "refinement"
+    ],
+    "kmResidualKeys": [
+      "untransformedAsymptote",
+      "beta0",
+      "preExistingConstituent"
+    ],
+    "valueKinds": [
+      "number",
+      "alternatives",
+      "map",
+      "record",
+      "category",
+      "inventory"
+    ],
+    "valueRanges": [
+      "positive",
+      "fraction",
+      "finite",
+      "nonnegative"
+    ],
+    "quantityDefinitions": {
+      "liquidus-front-thermal-gradient": {
+        "label": "Thermal gradient G at the liquidus front",
+        "unit": "K/m",
+        "valueKind": "number",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "liquidus-front-normal-speed": {
+        "label": "Normal speed R of the liquidus front",
+        "unit": "m/s",
+        "valueKind": "number",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "liquidus-front-cooling-rate": {
+        "label": "Cooling rate G R at the liquidus front",
+        "unit": "K/s",
+        "valueKind": "number",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "liquidus-front-g-over-r": {
+        "label": "G/R at the liquidus front",
+        "unit": "K*s/m^2",
+        "valueKind": "number",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "pdas-model-alternatives": {
+        "label": "Primary dendrite arm spacing (two model alternatives)",
+        "unit": "m",
+        "valueKind": "alternatives",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [
+          "hunt",
+          "kurzFisher"
+        ],
+        "memberUnits": {},
+        "categories": []
+      },
+      "sdas": {
+        "label": "Secondary dendrite arm spacing",
+        "unit": "m",
+        "valueKind": "number",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "front-morphology": {
+        "label": "Solidification front morphology",
+        "unit": "1",
+        "valueKind": "category",
+        "valueRange": null,
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "solid-state-transformation": {
+        "label": "Solid-state transformation",
+        "unit": "1",
+        "valueKind": "category",
+        "valueRange": null,
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "cet-class": {
+        "label": "Columnar-to-equiaxed class",
+        "unit": "1",
+        "valueKind": "category",
+        "valueRange": null,
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": [
+          "columnar",
+          "mixed",
+          "equiaxed"
+        ]
+      },
+      "laves-trapped-scheil-fraction": {
+        "label": "Laves fraction, trapped Scheil bound",
+        "unit": "1",
+        "valueKind": "number",
+        "valueRange": "fraction",
+        "fraction": true,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "scheil-phase-inventory": {
+        "label": "Scheil phase inventory",
+        "unit": "1",
+        "valueKind": "map",
+        "valueRange": "fraction",
+        "fraction": true,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "scheil-residual-liquid": {
+        "label": "Scheil residual liquid",
+        "unit": "1",
+        "valueKind": "number",
+        "valueRange": "fraction",
+        "fraction": true,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "critical-temperature": {
+        "label": "Critical temperature",
+        "unit": "K",
+        "valueKind": "number",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "lsw-mean-radius": {
+        "label": "LSW mean precipitate radius",
+        "unit": "m",
+        "valueKind": "number",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "precipitation-strengthening": {
+        "label": "Precipitation strengthening",
+        "unit": "Pa",
+        "valueKind": "number",
+        "valueRange": "finite",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "user-threshold-isotherm-kinematics": {
+        "label": "Kinematics of a user-defined threshold isotherm (software diagnostic)",
+        "unit": "per-member-SI",
+        "valueKind": "record",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {
+          "thermalGradient": "K/m",
+          "normalSpeed": "m/s",
+          "coolingRate": "K/s",
+          "gOverR": "K*s/m^2"
+        },
+        "categories": []
+      },
+      "pdas-correlation": {
+        "label": "Primary dendrite arm spacing (single correlation)",
+        "unit": "m",
+        "valueKind": "number",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "planar-stability-index": {
+        "label": "Planar stability index chi",
+        "unit": "1",
+        "valueKind": "number",
+        "valueRange": "nonnegative",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "equiaxed-envelope-fraction": {
+        "label": "Equiaxed grain-envelope fraction",
+        "unit": "1",
+        "valueKind": "number",
+        "valueRange": "fraction",
+        "fraction": true,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "km-alpha-m-fraction": {
+        "label": "Alpha martensite or massive alpha (KM progress)",
+        "unit": "1",
+        "valueKind": "number",
+        "valueRange": "fraction",
+        "fraction": true,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "terminal-equilibrium-phase-inventory": {
+        "label": "Terminal equilibrium phase inventory (reference limit)",
+        "unit": "1",
+        "valueKind": "inventory",
+        "valueRange": "fraction",
+        "fraction": true,
+        "members": [
+          "alphaAl",
+          "Si",
+          "Mg2Si"
+        ],
+        "memberUnits": {},
+        "categories": []
+      },
+      "scheil-microconstituent-inventory": {
+        "label": "Scheil primary and eutectic microconstituents",
+        "unit": "1",
+        "valueKind": "inventory",
+        "valueRange": "fraction",
+        "fraction": true,
+        "members": [
+          "primaryAlphaAl",
+          "eutecticConstituent"
+        ],
+        "memberUnits": {},
+        "categories": []
+      }
+    },
+    "fractionBasis": {
+      "equiaxed-envelope-fraction": "volume",
+      "km-alpha-m-fraction": "reaction-progress",
+      "terminal-equilibrium-phase-inventory": "mass",
+      "scheil-microconstituent-inventory": "mass"
+    },
+    "displaySignificantDigits": {
+      "liquidus-front-thermal-gradient": 2,
+      "liquidus-front-normal-speed": 2,
+      "liquidus-front-cooling-rate": 2,
+      "liquidus-front-g-over-r": 2,
+      "pdas-correlation": 2,
+      "pdas-model-alternatives": 2,
+      "sdas": 2,
+      "planar-stability-index": 1,
+      "equiaxed-envelope-fraction": 1,
+      "km-alpha-m-fraction": 1,
+      "terminal-equilibrium-phase-inventory": 1,
+      "scheil-microconstituent-inventory": 1,
+      "cet-class": 1
+    },
+    "extraQuantityKeys": {
+      "km-alpha-m-fraction": [
+        "evaluation",
+        "residual"
+      ]
+    }
+  }
 } as const;
 
 export type QuantityEnvelopeVocabulary = typeof QUANTITY_ENVELOPE;
@@ -622,3 +1013,7 @@ export type InputPhase = (typeof QUANTITY_ENVELOPE.inputPhases)[number];
 export type FollowState = (typeof QUANTITY_ENVELOPE.followStates)[number];
 export type Comparability = (typeof QUANTITY_ENVELOPE.comparability)[number];
 export type ModuleMaturityEcho = (typeof QUANTITY_ENVELOPE.moduleMaturities)[number];
+export type EstimateTier = (typeof QUANTITY_ENVELOPE.estimates.tiers)[number];
+export type ValueWarningCode = (typeof QUANTITY_ENVELOPE.estimates.warningCodes)[number];
+export type UnknownComponent = (typeof QUANTITY_ENVELOPE.estimates.unknownComponents)[number];
+export type EstimateQuantityDefinitionId = keyof typeof QUANTITY_ENVELOPE.estimates.quantityDefinitions;
