@@ -63,3 +63,6 @@ docs/**/worker.lock
 
 # Static demo build output
 dist-demo/
+
+# Local source archive: commit INDEX/hash manifests, never PDF bytes.
+/papers/**/*.[pP][dD][fF]

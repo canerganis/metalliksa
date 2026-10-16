@@ -1,0 +1,269 @@
+{
+  "sources": [
+    {
+      "id": "SOLT-GAN-TI",
+      "path": "papers/gan2021_SI.pdf",
+      "sha256": "22a8d2dc870bbd83f6bd3330899437911733f9335d52758d95a328bd6993d6e5",
+      "checks": [
+        {
+          "id": "SOLT-GAN-TI-PAIR",
+          "page": 20,
+          "regex": "Solidus temperature\\s+Ts\\s+\\(K\\)\\s+(?P<Ts>1877)\\s+873\\s+1658\\s+Liquidus temperature\\s+Tl\\s+\\(K\\)\\s+(?P<Tl>1933)\\s+915\\s+1723",
+          "expected": {
+            "Ts": "1877",
+            "Tl": "1933"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "SOLT-GAN-TI-COLUMNS",
+          "page": 20,
+          "regex": "Properties & units\\s+Ti64\\s+Al6061\\s+SS316",
+          "expected": {},
+          "unit": "none"
+        },
+        {
+          "id": "SOLT-GAN-TI-REFERENCE",
+          "page": 23,
+          "regex": "13\\.\\s+J\\. J\\. Valencia, N\\. Q\\. Peter, Thermophysical properties\\.\\s*\\((?P<year>2013)\\)",
+          "expected": {
+            "year": "2013"
+          },
+          "unit": "year"
+        }
+      ]
+    },
+    {
+      "id": "SOLT-BRANDT-AL",
+      "path": "papers/brandt2007.pdf",
+      "sha256": "505f04de097d31d97ca92a35821233f198ac59aca8ff3ffc27c4ce9cb011d0f7",
+      "checks": [
+        {
+          "id": "SOLT-BRANDT-AL-HEATING",
+          "page": 14,
+          "regex": "Heating cycle(?:(?!Cooling cycle).)*?Solidus\\s+567[^\\d\\s]?C\\s+569[^\\d\\s]?C\\s+(?P<Ts>567)[^\\d\\s]?C\\s+569[^\\d\\s]?C\\s+580[^\\d\\s]?C(?:(?!Cooling cycle).)*?Liquidus\\s+634[^\\d\\s]?C\\s+621[^\\d\\s]?C\\s+(?P<Tl>599)[^\\d\\s]?C\\s+609[^\\d\\s]?C\\s+590[^\\d\\s]?C",
+          "expected": {
+            "Ts": "567",
+            "Tl": "599"
+          },
+          "unit": "degC"
+        },
+        {
+          "id": "SOLT-BRANDT-AL-COOLING",
+          "page": 14,
+          "regex": "Cooling cycle.*?Liquidus\\s+624[^\\d\\s]?C\\s+609[^\\d\\s]?C\\s+(?P<Tl>596)[^\\d\\s]?C\\s+576[^\\d\\s]?C\\s+579[^\\d\\s]?C.*?Solidus\\s+538[^\\d\\s]?C\\s+542[^\\d\\s]?C\\s+(?P<Ts>549)[^\\d\\s]?C\\s+548[^\\d\\s]?C\\s+545[^\\d\\s]?C",
+          "expected": {
+            "Ts": "549",
+            "Tl": "596"
+          },
+          "unit": "degC"
+        },
+        {
+          "id": "SOLT-BRANDT-AL-CHEMISTRY",
+          "page": 14,
+          "regex": "Sample No\\.\\s+AlSi-6\\s+AlSi-8\\s+AlSi-10\\s+AlSi-11\\s+AlSi-12\\s+Si \\(mass%\\)\\s+5\\s+7\\s+(?P<Si>9)\\s+12\\s+12\\s+Mg \\(mass%\\)\\s+0\\.6\\s+0\\.6\\s+(?P<Mg>0\\.6)\\s+0\\.3\\s+0\\.6",
+          "expected": {
+            "Si": "9",
+            "Mg": "0.6"
+          },
+          "unit": "mass%"
+        },
+        {
+          "id": "SOLT-BRANDT-AL-HEATING-LIQUIDUS-SENSITIVITY",
+          "page": 14,
+          "regex": "Heating cycle.*?Liquidus\\s+(?P<Si5Mg06>634)[^\\d\\s]?C\\s+(?P<Si7Mg06>621)[^\\d\\s]?C\\s+(?P<Si9Mg06>599)[^\\d\\s]?C\\s+(?P<Si12Mg03>609)[^\\d\\s]?C\\s+(?P<Si12Mg06>590)[^\\d\\s]?C",
+          "expected": {
+            "Si5Mg06": "634",
+            "Si7Mg06": "621",
+            "Si9Mg06": "599",
+            "Si12Mg03": "609",
+            "Si12Mg06": "590"
+          },
+          "unit": "degC"
+        },
+        {
+          "id": "SOLT-BRANDT-AL-RATE",
+          "page": 8,
+          "regex": "during melting and solidification\\s+the heating/cooling rate was reduced to about (?P<rate>100) K.{0,5}h[-−]1",
+          "expected": {
+            "rate": "100"
+          },
+          "unit": "K/h"
+        },
+        {
+          "id": "SOLT-BRANDT-AL-OUTSIDE-RATE",
+          "page": 7,
+          "regex": "All measurements were performed under high vacuum conditions\\. A\\s+heating rate of (?P<rate>360) K.{0,5}h[-−]1 was applied in the solid and liquid states",
+          "expected": {
+            "rate": "360"
+          },
+          "unit": "K/h"
+        },
+        {
+          "id": "SOLT-BRANDT-AL-METHOD",
+          "page": 3,
+          "regex": "The electrical resistivity was measured by using the four-probe tech-\\s*nique",
+          "expected": {},
+          "unit": "none"
+        },
+        {
+          "id": "SOLT-BRANDT-AL-LAG",
+          "page": 5,
+          "regex": "temperature is not measured directly\\s+in the specimen but in the wall of the crucible",
+          "expected": {},
+          "unit": "none"
+        }
+      ]
+    },
+    {
+      "id": "SOLT-CEZAIRLIYAN-TI",
+      "path": "papers/cezairliyan1977_ti64_thermophysical_pulse.pdf",
+      "sha256": "a699c83fd95b17d4425c6d8a73066bd96deb39a461dd1778e9292c501cfb5fa2",
+      "checks": [
+        {
+          "id": "SOLT-CEZAIRLIYAN-TI-DEFINITION",
+          "page": 1,
+          "regex": "work the solidus point of the alloy is referred to as the melting point",
+          "expected": {},
+          "unit": "none"
+        },
+        {
+          "id": "SOLT-CEZAIRLIYAN-TI-SOLIDUS",
+          "page": 3,
+          "regex": "average melting\\s+point of the four specimens is (?P<Ts>1942\\.6) K with an average\\s+absolute deviation from the mean of (?P<meanAbsoluteDeviation>0\\.4) K and a maximum\\s+absolute deviation of (?P<maxAbsoluteDeviation>0\\.8) K",
+          "expected": {
+            "Ts": "1942.6",
+            "meanAbsoluteDeviation": "0.4",
+            "maxAbsoluteDeviation": "0.8"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "SOLT-CEZAIRLIYAN-TI-PLATEAUS",
+          "page": 3,
+          "regex": "Melting point\\s*\\(K\\)\\s*(?P<Ts1>1942\\.7)\\s+(?P<Ts2>1943\\.5)\\s+(?P<Ts3>1942\\.0)\\s+(?P<Ts4>1942\\.4)\\s+Standard",
+          "expected": {
+            "Ts1": "1942.7",
+            "Ts2": "1943.5",
+            "Ts3": "1942.0",
+            "Ts4": "1942.4"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "SOLT-CEZAIRLIYAN-TI-INACCURACY",
+          "page": 1,
+          "regex": "(?P<inaccuracy>8) K for melting point and radiance temperature at\\s+the melting point",
+          "expected": {
+            "inaccuracy": "8"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "SOLT-CEZAIRLIYAN-TI-RATE",
+          "page": 2,
+          "regex": "tube-shape specimens ranged from (?P<pulseMin>400) to (?P<pulseMax>500) ms, with\\s+heating rales ranging from (?P<rateMin>2600) to (?P<rateMax>3800) K",
+          "expected": {
+            "pulseMin": "400",
+            "pulseMax": "500",
+            "rateMin": "2600",
+            "rateMax": "3800"
+          },
+          "unit": "ms and K/s"
+        },
+        {
+          "id": "SOLT-CEZAIRLIYAN-TI-CHEMISTRY",
+          "page": 2,
+          "regex": "Form\\s+Rod\\s+Plate\\s+in wt\\. %\\s+Ti\\s+(?P<Ti>89\\.2)\\s+89\\.2\\s+Al\\s+(?P<Al>6\\.1)\\s+6\\.1\\s+V\\s+(?P<V>4\\.2)\\s+4\\.2\\s+B\\s+10\\s+30\\s+Ca\\s+50\\s+150\\s+Cr\\s+15\\s+30\\s+Cu\\s+30\\s+80\\s+Fe\\s+(?P<Fe>1500)\\s+1500\\s+Mg\\s+50\\s+30\\s+Mn\\s+30\\s+60\\s+Mo\\s+150\\s+80\\s+Ni\\s+15\\s+30\\s+in ppm\\s+Nb\\s+100\\s+Pb\\s+50\\s+15\\s+Si\\s+300\\s+80\\s+Sn\\s+300\\s+80\\s+Ta\\s+100\\s+100\\s+W\\s+50\\s+15\\s+Zr\\s+30\\s+30\\s+C\\s+220\\s+390\\s+H\\s+80\\s+30\\s+N\\s+120\\s+90\\s+0\\s+(?P<O>1700)\\s+1500",
+          "expected": {
+            "Ti": "89.2",
+            "Al": "6.1",
+            "V": "4.2",
+            "Fe": "1500",
+            "O": "1700"
+          },
+          "unit": "major wt%; trace ppm"
+        },
+        {
+          "id": "SOLT-CEZAIRLIYAN-TI-NO-LIQUIDUS",
+          "page": 5,
+          "regex": "not possible to follow the entire melting process because the\\s+specimen collapsed and opened the main electrical circuit\\s+prior to the completion of melting",
+          "expected": {},
+          "unit": "none"
+        }
+      ]
+    },
+    {
+      "id": "SOLT-BOIVINEAU-TI",
+      "path": "papers/boivineau2006.pdf",
+      "sha256": "9f3fc2c89798ea17020e02d762ca93e8432743a6f3c022814ec8d26b15f2e5d8",
+      "checks": [
+        {
+          "id": "SOLT-BOIVINEAU-TI-SUPPLIER",
+          "page": 3,
+          "regex": "melting ranges from (?P<Ts>1873) to (?P<Tl>1923) K \\(Goodfellow Cam-\\s*bridge Ltd\\. data\\)",
+          "expected": {
+            "Ts": "1873",
+            "Tl": "1923"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "SOLT-BOIVINEAU-TI-INFERRED",
+          "page": 16,
+          "regex": "transition \\(which is assumed\\s+to be here the liquidus line.*?TR\\s*= (?P<radiance>1788) K\\. Furthermore, by using the\\s+extrapolated emissivity at the liquidus, a true temperature value of Tm\\s*=\\s*(?P<Tl>1928) K",
+          "expected": {
+            "radiance": "1788",
+            "Tl": "1928"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "SOLT-BOIVINEAU-TI-DOI",
+          "page": 1,
+          "regex": "DOI: (?P<doi>10\\.1007/s10765-005-0001-6)",
+          "expected": {
+            "doi": "10.1007/s10765-005-0001-6"
+          },
+          "unit": "none"
+        }
+      ]
+    },
+    {
+      "id": "SOLT-3DS-AL",
+      "path": "papers/3dsystems_alsi10mg_revd.pdf",
+      "sha256": "bbdb825f1427a30bafdda1974be98f81734930535997fd3209a0f6349edb8613",
+      "checks": [
+        {
+          "id": "SOLT-3DS-AL-PAIR",
+          "page": 2,
+          "regex": "Melting range16.*?typical (?P<Ts>557) - (?P<Tl>596)",
+          "expected": {
+            "Ts": "557",
+            "Tl": "596"
+          },
+          "unit": "degC"
+        },
+        {
+          "id": "SOLT-3DS-AL-CHEMISTRY",
+          "page": 2,
+          "regex": "Si (?P<SiMin>9\\.00)-(?P<SiMax>11\\.00) Zn [\\u2264]?0\\.10\\s+Mg (?P<MgMin>0\\.20)-(?P<MgMax>0\\.45) Pb [\\u2264]?0\\.05",
+          "expected": {
+            "SiMin": "9.00",
+            "SiMax": "11.00",
+            "MgMin": "0.20",
+            "MgMax": "0.45"
+          },
+          "unit": "wt%"
+        },
+        {
+          "id": "SOLT-3DS-AL-LITERATURE",
+          "page": 2,
+          "regex": "16 Values based on literature",
+          "expected": {},
+          "unit": "none"
+        }
+      ]
+    }
+  ]
+}

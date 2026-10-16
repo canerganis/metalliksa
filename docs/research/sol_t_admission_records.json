@@ -1,0 +1,437 @@
+{
+  "schema": "sol-t-amendment-4-v1",
+  "date": "2026-10-16",
+  "installed": false,
+  "baseRevision": "ec14298db15789a34a6a6c49b421d958bfa447f3",
+  "servedPin": "dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5",
+  "records": [
+    {
+      "id": "ti6al4v",
+      "decision": "admit-nominal-research-convention",
+      "sourceId": "SOLT-GAN-TI",
+      "sourceCheck": "SOLT-GAN-TI-PAIR",
+      "original": {
+        "values": [
+          1877,
+          1933
+        ],
+        "unit": "K"
+      },
+      "endpoint_K": [
+        1877.15,
+        1933.15
+      ],
+      "baseline_C": [
+        1604,
+        1660
+      ],
+      "delta_K": [
+        0,
+        0
+      ],
+      "admissionClass": "fixed-front-literature-model",
+      "chemistryMatch": "not-established",
+      "uncertainty": {
+        "type": "not-quantified",
+        "coverage": "No statistical coverage; unknown model, rate, chemistry/state-transfer biases"
+      },
+      "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. USER-VISIBLE LABEL: Cezairliyan reports solidus 1942.6 K with estimated total inaccuracy 8 K (coverage unspecified), 9.45 K above this convention liquidus 1933.15 K; unresolved batch/observable/rate/temperature-scale contradiction.",
+      "refusedScope": "Measured or assessed exact-specimen endpoints; automatic user-composition admission; physical validation; restoration of local SOL-A1 quantities before SOL-C",
+      "sourceChemistry": "Named Ti64 only; batch assay and state unknown; Fe/O not silently removed",
+      "solidusDefinition": "Source-model solidus isotherm; unknown; no measured endpoint criterion published for this model input",
+      "liquidusDefinition": "Source-model liquidus isotherm; unknown; no measured endpoint criterion published for this model input",
+      "method": "Gan2021 compiled thermal-model prescription; upstream numeric lineage unresolved",
+      "rate": "not applicable to adopted model; upstream measurement rate unknown",
+      "cycle": "not applicable to adopted model; upstream experimental cycle unknown",
+      "direction": "not applicable to adopted model; upstream direction unknown",
+      "pairingStatus": "same source model/table; no same-cycle measurement claim",
+      "transfer": "Gan nominal Ti64 convention to nominal Ti64 screening; exact chemistry match not established; Cezairliyan solidus contradiction unresolved; integer-273 conversion interpretation disclosed, not a verified upstream Celsius pair",
+      "parentIdentity": {
+        "recordId": "SOL-T-A4-ti6al4v",
+        "endpoint_K": [
+          1877.15,
+          1933.15
+        ],
+        "sourceSha256": "22a8d2dc870bbd83f6bd3330899437911733f9335d52758d95a328bd6993d6e5",
+        "requiredRuntimeBindings": [
+          "complete original and solved chemistry with units",
+          "material state",
+          "source locator and transfer scope",
+          "field/model/solver revision and full process vector",
+          "threshold-dependent property convention and numerical settings",
+          "admission-record canonical hash"
+        ],
+        "conversion": {
+          "rule": "compiled-K-integer-273-interpretation",
+          "offset_K": 0.15,
+          "interpreted_C": [
+            1604,
+            1660
+          ],
+          "sameLineageKChecks": [],
+          "interpretation": "Inferred Celsius pair from the cross-checkable IN718, SS316 and IN625 integer-273 pattern; Ti64 upstream Celsius row not read. Original Gan K text retained; no physical accuracy claim."
+        }
+      },
+      "conversion": {
+        "rule": "compiled-K-integer-273-interpretation",
+        "offset_K": 0.15,
+        "interpreted_C": [
+          1604,
+          1660
+        ],
+        "sameLineageKChecks": [],
+        "interpretation": "Inferred Celsius pair from the cross-checkable IN718, SS316 and IN625 integer-273 pattern; Ti64 upstream Celsius row not read. Original Gan K text retained; no physical accuracy claim."
+      }
+    },
+    {
+      "id": "alsi10mg",
+      "decision": "admit-nominal-research-convention",
+      "sourceId": "SOLT-BRANDT-AL",
+      "sourceCheck": "SOLT-BRANDT-AL-HEATING",
+      "original": {
+        "values": [
+          567,
+          599
+        ],
+        "unit": "degC"
+      },
+      "endpoint_K": [
+        840.15,
+        872.15
+      ],
+      "baseline_C": [
+        557,
+        595
+      ],
+      "delta_K": [
+        10,
+        4
+      ],
+      "admissionClass": "fixed-front-explicit-family-transfer",
+      "chemistryMatch": "not-established",
+      "uncertainty": {
+        "type": "not-quantified",
+        "coverage": "No statistical coverage; unknown model, rate, chemistry/state-transfer biases"
+      },
+      "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance.",
+      "refusedScope": "Measured or assessed exact-specimen endpoints; automatic user-composition admission; physical validation; restoration of local SOL-A1 quantities before SOL-C",
+      "sourceChemistry": {
+        "Si_wt_pct": 9,
+        "Mg_wt_pct": 0.6,
+        "balance": "Al",
+        "otherElements": "unreported, not zero",
+        "state": "Hydro MEBSP alloy; complete prior treatment unknown"
+      },
+      "solidusDefinition": "Source-labelled resistivity transition solidus boundary; onset/peak/end construction unknown",
+      "liquidusDefinition": "Source-labelled resistivity transition liquidus boundary; onset/peak/end construction unknown",
+      "method": "Brandt2007 four-probe resistivity, furnace/tubular ceramic crucible; heating row",
+      "rate": "about 100 K/h in phase-change region; prescribed apparatus rate, not LPBF rate",
+      "cycle": "source Table II Heating cycle; individual run/cycle number unknown",
+      "direction": "heating",
+      "pairingStatus": "same named sample and source-labelled Heating cycle pair; same individual trace not established",
+      "transfer": "Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction",
+      "parentIdentity": {
+        "recordId": "SOL-T-A4-alsi10mg",
+        "endpoint_K": [
+          840.15,
+          872.15
+        ],
+        "sourceSha256": "505f04de097d31d97ca92a35821233f198ac59aca8ff3ffc27c4ce9cb011d0f7",
+        "requiredRuntimeBindings": [
+          "complete original and solved chemistry with units",
+          "material state",
+          "source locator and transfer scope",
+          "field/model/solver revision and full process vector",
+          "threshold-dependent property convention and numerical settings",
+          "admission-record canonical hash"
+        ],
+        "conversion": {
+          "rule": "degC-plus-273.15",
+          "offset_K": 273.15,
+          "sameLineageKChecks": []
+        }
+      },
+      "conversion": {
+        "rule": "degC-plus-273.15",
+        "offset_K": 273.15,
+        "sameLineageKChecks": []
+      }
+    },
+    {
+      "id": "in718",
+      "decision": "admit-nominal-research-convention",
+      "sourceId": "SMC718",
+      "sourceCheck": "smc718-celsius-pair",
+      "original": {
+        "values": [
+          1260,
+          1336
+        ],
+        "unit": "degC"
+      },
+      "endpoint_K": [
+        1533.15,
+        1609.15
+      ],
+      "baseline_C": [
+        1260,
+        1336
+      ],
+      "delta_K": [
+        0,
+        0
+      ],
+      "admissionClass": "fixed-front-literature-model",
+      "chemistryMatch": "not-established",
+      "uncertainty": {
+        "type": "not-quantified",
+        "coverage": "No statistical coverage; unknown model, rate, chemistry/state-transfer biases"
+      },
+      "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance.",
+      "refusedScope": "Measured or assessed exact-specimen endpoints; automatic user-composition admission; physical validation; restoration of local SOL-A1 quantities before SOL-C",
+      "sourceChemistry": "Named nominal IN718; endpoint-batch assay and state unknown; not Pottlacher Mo4.34 batch",
+      "solidusDefinition": "Lower compiled melting-range boundary; experimental signal criterion unknown; Mills tentative 1170 C eutectic solidus remains an unselected alternative",
+      "liquidusDefinition": "Upper compiled melting-range boundary; experimental signal criterion unknown",
+      "method": "SMC-045 September2007 PDF1 Table2 compiled melting-range prescription; Mills2002 PDF1 agrees at 1260/1336 C but tentatively adopts 1170 C solidus separately",
+      "rate": "not applicable to adopted model; underlying measurement rate unknown",
+      "cycle": "not applicable to adopted model; underlying measurement cycle unknown",
+      "direction": "not applicable to adopted model; upstream direction unknown",
+      "pairingStatus": "same manufacturer compiled range; no same-cycle measurement claim",
+      "transfer": "SMC-045 nominal IN718 compiled convention to nominal IN718 screening; Knapp1533/1609 K recorded as same-lineage integer-273 rendering (interpretation, not independently verified ancestry). Pottlacher DTA transfer refused.",
+      "parentIdentity": {
+        "recordId": "SOL-T-A4-in718",
+        "endpoint_K": [
+          1533.15,
+          1609.15
+        ],
+        "sourceSha256": "6c9c60dc272cb4f7275091e02779879760afcb1801fc9bd04fbfca239907da90",
+        "requiredRuntimeBindings": [
+          "complete original and solved chemistry with units",
+          "material state",
+          "source locator and transfer scope",
+          "field/model/solver revision and full process vector",
+          "threshold-dependent property convention and numerical settings",
+          "admission-record canonical hash"
+        ],
+        "conversion": {
+          "rule": "degC-plus-273.15",
+          "offset_K": 273.15,
+          "sameLineageKChecks": [
+            "knapp718-pair"
+          ]
+        }
+      },
+      "conversion": {
+        "rule": "degC-plus-273.15",
+        "offset_K": 273.15,
+        "sameLineageKChecks": [
+          "knapp718-pair"
+        ]
+      }
+    },
+    {
+      "id": "ss316l",
+      "decision": "admit-nominal-research-convention",
+      "sourceId": "MILLS316",
+      "sourceCheck": "mills316-adopted-pair",
+      "original": {
+        "values": [
+          1385,
+          1450
+        ],
+        "unit": "degC"
+      },
+      "endpoint_K": [
+        1658.15,
+        1723.15
+      ],
+      "baseline_C": [
+        1375,
+        1400
+      ],
+      "delta_K": [
+        10,
+        50
+      ],
+      "admissionClass": "fixed-front-transferred-literature-model",
+      "chemistryMatch": "not-established",
+      "uncertainty": {
+        "type": "not-quantified",
+        "coverage": "No statistical coverage; unknown model, rate, chemistry/state-transfer biases"
+      },
+      "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance.",
+      "refusedScope": "Measured or assessed exact-specimen endpoints; automatic user-composition admission; physical validation; restoration of local SOL-A1 quantities before SOL-C",
+      "sourceChemistry": "Mills nominal SS316 wt% C0.08, Cr17, Cu0.3, Fe65, Mn2, Mo2.5, Ni12, Si1; not a measured316L batch; adopted NPL endpoint-batch assay/state unknown",
+      "solidusDefinition": "Mills/NPL DPSC adopted solidus; exact onset construction unknown",
+      "liquidusDefinition": "Mills/NPL DPSC adopted liquidus peak, not return-to-baseline",
+      "method": "Mills2002 PDF1/printed135 adopted NPL DPSC compilation; same source as served316L k/cp",
+      "rate": "not applicable to adopted model; underlying measurement rate unknown",
+      "cycle": "not applicable to adopted model; underlying measurement cycle unknown",
+      "direction": "not applicable to adopted model; upstream direction unknown",
+      "pairingStatus": "same adopted DPSC compiled pair; no authenticated individual same-cycle measurement claim",
+      "transfer": "EXPLICIT SS316 -> nominal316L transfer including C0.08 nominal compilation and other chemistry/state differences; not exact316L liquidus. Gan1658/1723 K is same-lineage integer-273 rendering (interpretation, not independently verified ancestry).",
+      "parentIdentity": {
+        "recordId": "SOL-T-A4-ss316l",
+        "endpoint_K": [
+          1658.15,
+          1723.15
+        ],
+        "sourceSha256": "1acda1c90a17df10b33fff9437a1b60bd728460b39b9bb558b57f99f9a265ad6",
+        "requiredRuntimeBindings": [
+          "complete original and solved chemistry with units",
+          "material state",
+          "source locator and transfer scope",
+          "field/model/solver revision and full process vector",
+          "threshold-dependent property convention and numerical settings",
+          "admission-record canonical hash"
+        ],
+        "conversion": {
+          "rule": "degC-plus-273.15",
+          "offset_K": 273.15,
+          "sameLineageKChecks": [
+            "gan316-pair"
+          ]
+        }
+      },
+      "conversion": {
+        "rule": "degC-plus-273.15",
+        "offset_K": 273.15,
+        "sameLineageKChecks": [
+          "gan316-pair"
+        ]
+      }
+    },
+    {
+      "id": "in625",
+      "decision": "admit-nominal-research-convention",
+      "sourceId": "MP04",
+      "sourceCheck": "sabau2020-paired-prescription",
+      "original": {
+        "values": [
+          1290,
+          1350
+        ],
+        "unit": "degC"
+      },
+      "endpoint_K": [
+        1563.15,
+        1623.15
+      ],
+      "baseline_C": [
+        1290,
+        1350
+      ],
+      "delta_K": [
+        0,
+        0
+      ],
+      "admissionClass": "fixed-front-literature-model",
+      "chemistryMatch": "not-established",
+      "uncertainty": {
+        "type": "not-quantified",
+        "coverage": "No statistical coverage; unknown model, rate, chemistry/state-transfer biases"
+      },
+      "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance.",
+      "refusedScope": "Measured or assessed exact-specimen endpoints; automatic user-composition admission; physical validation; restoration of local SOL-A1 quantities before SOL-C",
+      "sourceChemistry": "Named IN625; endpoint-model batch assay and state unknown",
+      "solidusDefinition": "Lower boundary of source linear-fraction-solid constitutive interval; experimental criterion unknown",
+      "liquidusDefinition": "Upper boundary of source linear-fraction-solid constitutive interval; experimental criterion unknown",
+      "method": "Sabau2020 source constitutive-model prescription; literature OR JMatPro grouped origin unresolved for these endpoints",
+      "rate": "not applicable to adopted model; upstream measurement rate unknown",
+      "cycle": "not applicable to adopted model; upstream experimental cycle unknown",
+      "direction": "not applicable to adopted model; upstream direction unknown",
+      "pairingStatus": "same source constitutive interval; no same-cycle measurement claim",
+      "transfer": "Source IN625 constitutive interval to nominal IN625 screening; no primary-measurement claim; independence from CALPHAD not established",
+      "parentIdentity": {
+        "recordId": "SOL-T-A4-in625",
+        "endpoint_K": [
+          1563.15,
+          1623.15
+        ],
+        "sourceSha256": "726e52b0b58ee77bed424101d4111a0813b7bcce9de0225b346c0c2a065e7377",
+        "requiredRuntimeBindings": [
+          "complete original and solved chemistry with units",
+          "material state",
+          "source locator and transfer scope",
+          "field/model/solver revision and full process vector",
+          "threshold-dependent property convention and numerical settings",
+          "admission-record canonical hash"
+        ],
+        "conversion": {
+          "rule": "degC-plus-273.15",
+          "offset_K": 273.15,
+          "sameLineageKChecks": [
+            "gan625-paired-inputs"
+          ]
+        }
+      },
+      "conversion": {
+        "rule": "degC-plus-273.15",
+        "offset_K": 273.15,
+        "sameLineageKChecks": [
+          "gan625-paired-inputs"
+        ]
+      }
+    }
+  ],
+  "sourceCodeBindings": [
+    {
+      "path": "python/four_alloy_materials.py",
+      "canonicalSha256": "b5aedb24b5261c7ef8dfd7bcb80c723ca1eb32c9be4e94a6519f06db951c90a9"
+    },
+    {
+      "path": "python/in625_thermal_material.py",
+      "canonicalSha256": "735b27b3a6bb0de7a3ff14257dc4e67f27aae0950b5fabf94fd51a73d77bd174"
+    },
+    {
+      "path": "python/lpbf_material_registry.py",
+      "canonicalSha256": "6fb3200863155e51d8d46cce8bcb750491bc1c1272cb10cb899392f690775c42"
+    },
+    {
+      "path": "python/lpbf_thermal_solver.py",
+      "canonicalSha256": "cf6f1fef61398ba3c852f98baca7d70fa3f29819cbdda8be4462a737592cb4ea"
+    },
+    {
+      "path": "python/lpbf_simulation.py",
+      "canonicalSha256": "e9b42209917e39d112dd5f869c4f6fe83ce714abb1bfc3c6fb13e055775f9b85"
+    },
+    {
+      "path": "python/lpbf_openfoam.py",
+      "canonicalSha256": "12a6d4017539c5f3bcb9e848ca64262d298bda61a7aaea188072d171a831de97"
+    },
+    {
+      "path": "python/calphad_solver.py",
+      "canonicalSha256": "d87aed459505efd23ad703e4634160288a354ad1c2a300a8a6271a450ec2784c"
+    },
+    {
+      "path": "python/tools/lpbf_parity_check.py",
+      "canonicalSha256": "516b86348a466d4742ea31acd66411d17c8f92b9fe9ed66e1660c30f9fc8fbf8"
+    },
+    {
+      "path": "docs/research/SPEC_solidification_integration_2026-10-15.md",
+      "canonicalSha256": "1f81524856b9f5ccd29bb109ba63405687336d4f8d1ac34ef1959a3e3aa6f724"
+    },
+    {
+      "path": "docs/research/SPEC_p8_research_arm_2026-10-14.md",
+      "canonicalSha256": "a06e8c0b593ed73104ff06c6e270bd1b7b09268ec503940295dca17f9a5f6847"
+    },
+    {
+      "path": "PROOF.md",
+      "canonicalSha256": "e33c0bc12043e78c0f27932b5bafe895871414e8518f2a3be6362d6939c8417f"
+    }
+  ],
+  "conversionPatternChecks": [
+    [
+      "knapp718-pair",
+      "smc718-celsius-pair"
+    ],
+    [
+      "gan316-pair",
+      "mills316-adopted-pair"
+    ],
+    [
+      "gan625-paired-inputs",
+      "sabau2020-paired-prescription"
+    ]
+  ]
+}

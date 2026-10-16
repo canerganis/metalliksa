@@ -1,0 +1,99 @@
+{
+  "sources": [
+    {
+      "id": "MP04",
+      "path": "papers/sabau2020_melt_properties_dnb.pdf",
+      "sha256": "726e52b0b58ee77bed424101d4111a0813b7bcce9de0225b346c0c2a065e7377",
+      "checks": [
+        {
+          "id": "sabau2020-paired-prescription",
+          "page": 7,
+          "crop": {
+            "x_min": 60,
+            "x_max": 320,
+            "y_min": 225,
+            "y_max": 300
+          },
+          "regex": "solidification range\\s+of\\s*\\[\\s*(?P<Ts>1290)\\s*:\\s*(?P<Tl>1350)\\s*\\]",
+          "expected": {
+            "Ts": "1290",
+            "Tl": "1350"
+          },
+          "unit": "degC"
+        },
+        {
+          "id": "sabau2020-origin-group",
+          "page": 7,
+          "crop": {
+            "x_min": 60,
+            "x_max": 320,
+            "y_min": 225,
+            "y_max": 300
+          },
+          "regex": "literature review or were\\s+calculated based on thermodynamic simulations using\\s+JMatPro",
+          "expected": {},
+          "unit": "text"
+        }
+      ]
+    },
+    {
+      "id": "SMC625-2013",
+      "path": "papers/specialmetals_inconel625_bulletin_2013.pdf",
+      "sha256": "f5379cccfe1fe760ebdc20e3f590e709e5acd1c0063d212d4ae5fd6568496d98",
+      "checks": [
+        {
+          "id": "smc625-melting-range",
+          "page": 2,
+          "regex": "Melting Range[^\\n]*2350\\s*[-–]\\s*2460\\s*\\n[^\\n]*?C[^\\n]*?(?P<Ts>1290)\\s*[-–]\\s*(?P<Tl>1350)",
+          "expected": {
+            "Ts": "1290",
+            "Tl": "1350"
+          },
+          "unit": "degC"
+        }
+      ]
+    },
+    {
+      "id": "GAN625-2019",
+      "path": "papers/gan2019_in625_benchmark_thermal_fluid_vaporization.pdf",
+      "sha256": "91dfb844d59ea50f44ade37dc8c44caecfb343b6ccc07fb8d665712b27c5604d",
+      "checks": [
+        {
+          "id": "gan625-paired-inputs",
+          "page": 7,
+          "crop": {
+            "x_min": 45,
+            "x_max": 300,
+            "y_min": 640,
+            "y_max": 669
+          },
+          "regex": "Solidus temperature\\s*(?:Ts\\s*)?\\(K\\)\\s*(?P<Ts>1563)\\s*\\[44\\]\\s*Liquidus temperature\\s*(?:Tl\\s*)?\\(K\\)\\s*(?P<Tl>1623)\\s*\\[44\\]",
+          "expected": {
+            "Ts": "1563",
+            "Tl": "1623"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "gan625-ref44",
+          "page": 17,
+          "crop": {
+            "x_min": 300,
+            "x_max": 594,
+            "y_min": 410,
+            "y_max": 430
+          },
+          "regex": "44\\. Pawel R, Williams R \\(1985\\) Survey of physical property data for\\s*several alloys, Technical Report, Oak Ridge National Lab",
+          "expected": {},
+          "unit": "text"
+        }
+      ]
+    },
+    {
+      "id": "ORNL2018-LINEAGE-ONLY",
+      "path": "papers/sabau2018_in625_jmatpro_properties.pdf",
+      "sha256": "2affc131f9e8be886beb85aff6ea615fcd6ef82e570522486efbc8e3cc6cb8e4",
+      "checks": []
+    }
+  ]
+}

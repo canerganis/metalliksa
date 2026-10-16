@@ -1,0 +1,391 @@
+{
+  "sources": [
+    {
+      "id": "KNAPP718",
+      "path": "papers/knapp2019_in718_ebpbf_solidification_manuscript.pdf",
+      "sha256": "9439116db13fcca96f808d9ee49bebe6624992df74a4bb5ee5d8f13a4688284c",
+      "checks": [
+        {
+          "id": "knapp718-pair",
+          "page": 21,
+          "regex": "Solidus[^\\n]* (?P<Ts>\\d+) K\\s+Liquidus[^\\n]* (?P<Tl>\\d+) K",
+          "expected": {
+            "Ts": "1533",
+            "Tl": "1609"
+          },
+          "unit": "K"
+        }
+      ]
+    },
+    {
+      "id": "GAN316",
+      "path": "papers/gan2021_SI.pdf",
+      "sha256": "22a8d2dc870bbd83f6bd3330899437911733f9335d52758d95a328bd6993d6e5",
+      "checks": [
+        {
+          "id": "gan316-pair",
+          "page": 20,
+          "regex": "Solidus temperature\\s+Ts\\s+\\(K\\)\\s+1877\\s+873\\s+(?P<Ts>\\d+)\\s+Liquidus temperature\\s+Tl\\s+\\(K\\)\\s+1933\\s+915\\s+(?P<Tl>\\d+)",
+          "expected": {
+            "Ts": "1658",
+            "Tl": "1723"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "gan316-upstream",
+          "page": 23,
+          "regex": "13\\. J\\. J\\. Valencia, N\\. Q\\. Peter, Thermophysical properties\\. \\(2013\\)",
+          "expected": {}
+        }
+      ]
+    },
+    {
+      "id": "POT718",
+      "path": "papers/pottlacher2002.pdf",
+      "sha256": "4a200f08e598a1457e1597a254e194fd2b37e63ee7f21b8e9af2829772a5422a",
+      "checks": [
+        {
+          "id": "pott718-dta-pair",
+          "page": 3,
+          "regex": "a solidus temperature\\s+of (?P<Ts>\\d+)\\s*K and a liquidus temperature of (?P<Tl>\\d+)\\s*K were\\s+determined by DTA \\(NETZSCH STA 509\\)",
+          "expected": {
+            "Ts": "1528",
+            "Tl": "1610"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "pott718-bouse",
+          "page": 3,
+          "regex": "Bouse \\[5\\]\\s+reports (?P<Ts>\\d+)\\s*K as solidus temperature and (?P<Tl>\\d+)\\s*K as\\s+liquidus temperature",
+          "expected": {
+            "Ts": "1513",
+            "Tl": "1603"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "pott718-dahotre",
+          "page": 3,
+          "regex": "Dahotre et\\s+al\\. \\[4\\] report as solidus temperature (?P<Ts>\\d+)\\s*K",
+          "expected": {
+            "Ts": "1516"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "pott718-quoted-cieslak",
+          "page": 3,
+          "regex": "Cieslak et al\\. \\[8\\] report (?P<Ts>\\d+)\\s+K as solidus temperature and (?P<Tl>\\d+)\\s*K as liquidus tem-",
+          "expected": {
+            "Ts": "1533",
+            "Tl": "1609"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "pott718-pulse",
+          "page": 3,
+          "regex": "Fast pulse heating.*?perature to about (?P<Ts>\\d+)\\s*K, whereas the liquidus tem-\\s+perature stays the same \\((?P<Tl>\\d+)\\s*K\\)",
+          "expected": {
+            "Ts": "1580",
+            "Tl": "1610"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "pott718-first-chemistry",
+          "page": 1,
+          "regex": "Al, 0\\.59; C, \\u03fd0\\.01; Co,\\s*0\\.51; Cr, 17\\.27; Cu, \\u03fd0\\.01; Fe, 16\\.78; Mn, 0\\.18; Mo, (?P<Mo>\\d+\\.\\d+)",
+          "expected": {
+            "Mo": "4.34"
+          }
+        },
+        {
+          "id": "pott718-commercial-mo",
+          "page": 1,
+          "regex": "Mo, 2\\.80\\u20133\\.30",
+          "expected": {}
+        },
+        {
+          "id": "pott718-remaining-chemistry",
+          "page": 2,
+          "regex": "Nb, 5\\.09; Ni, 54\\.29; S, 0\\.00; Si, 0\\.18; Ti, 0\\.76",
+          "expected": {}
+        },
+        {
+          "id": "pott718-pulse-time",
+          "page": 2,
+          "regex": "Melting\\s+was reached in less than (?P<ms>\\d+)\\s*ms",
+          "expected": {
+            "ms": "30"
+          }
+        },
+        {
+          "id": "pott718-uncertainty",
+          "page": 7,
+          "regex": "temperature measurements the uncertainty is \\u222b(?P<percent>\\d+)% in\\s+the melting region, increasing to about \\u222b(?P<liquidPercent>\\d+)% in the\\s+liquid phase",
+          "expected": {
+            "percent": "3",
+            "liquidPercent": "6"
+          }
+        },
+        {
+          "id": "pott718-reference-identity",
+          "page": 8,
+          "regex": "8\\. Quested PN, Mills KC, Brooks RF, Day AP, Szelagowski H\\.\\s+NPL work\\. NPL, London 1998\\..*?9\\. Cieslak MJ, Headley TJ, Knorovsky GA, Roming AD, Kollie\\s+T\\. Metall Trans A 1990: 21A: 479",
+          "expected": {}
+        }
+      ]
+    },
+    {
+      "id": "MILLS718",
+      "path": "papers/mills2002_b.pdf",
+      "sha256": "c8386d2383a0d6260a8722396d638793646897447dcfe1ce2653318d11a23b59",
+      "checks": [
+        {
+          "id": "mills718-inco-pair",
+          "page": 1,
+          "regex": "Transitions\\s+Tsoi = (?P<Ts>\\d+) .C : Tii\\s*q\\s*= (?P<Tl>\\d+) .C \\[1\\]",
+          "expected": {
+            "Ts": "1260",
+            "Tl": "1336"
+          },
+          "unit": "degC"
+        },
+        {
+          "id": "mills718-tentative-solidus",
+          "page": 1,
+          "regex": "was probably caused by eutectic melting, so a T\\s+s o l\\s+of (?P<Ts>\\d+) .C has been tentatively adopted",
+          "expected": {
+            "Ts": "1170"
+          },
+          "unit": "degC"
+        },
+        {
+          "id": "mills718-chemistry",
+          "page": 1,
+          "regex": "Al C Co Cr Cu Fe Mn Mo Nb Ni Si Ti\\s+0\\.5 0\\.08 1 19 0\\.3 16\\.7 0\\.35 3\\.1 5\\.2 52\\.5 0\\.35 0\\.9",
+          "expected": {}
+        },
+        {
+          "id": "mills718-inco-lineage",
+          "page": 9,
+          "regex": "1\\. Inco Alloys Intl: Product Handbook, Publ\\. No\\. IAL-38 \\(1988\\)",
+          "expected": {}
+        }
+      ]
+    },
+    {
+      "id": "SMC718",
+      "path": "papers/specialmetals_inconel718_smc045.pdf",
+      "sha256": "6c9c60dc272cb4f7275091e02779879760afcb1801fc9bd04fbfca239907da90",
+      "checks": [
+        {
+          "id": "smc718-celsius-pair",
+          "page": 1,
+          "regex": "Melting Range, .F[^\\n]*2300-2437\\s+.C [\\.\\s]*(?P<Ts>\\d+)-(?P<Tl>\\d+)",
+          "expected": {
+            "Ts": "1260",
+            "Tl": "1336"
+          },
+          "unit": "degC"
+        },
+        {
+          "id": "smc718-molybdenum",
+          "page": 1,
+          "regex": "Molybdenum[^\\n]*2\\.80-3\\.30",
+          "expected": {}
+        },
+        {
+          "id": "smc718-typical",
+          "page": 1,
+          "regex": "They are typical but are not suitable\\s+for specification purposes",
+          "expected": {}
+        }
+      ]
+    },
+    {
+      "id": "CIES718",
+      "path": "papers/cieslak1990.pdf",
+      "sha256": "1e2d6337507f04ced317c5b3782a5ed490ff0ec807085411bf35117938f5f3ab",
+      "checks": [
+        {
+          "id": "cies718-heating-events",
+          "page": 2,
+          "regex": "nation of INCONEL 718\\. Upon heating, an event occurs\\s+at (?P<first>\\d+) ~ a second event is observed at (?P<second>\\d+) ~ and\\s+the alloy liquidus is reached at (?P<Tl>\\d+) ~",
+          "expected": {
+            "first": "1230",
+            "second": "1297",
+            "Tl": "1351"
+          },
+          "unit": "degC"
+        },
+        {
+          "id": "cies718-method",
+          "page": 1,
+          "regex": "Netsch Thermal Analyzer STA 429.*?weighed ~0\\.8 g.*?heated\\s+and cooled at a rate of (?P<rate>\\d+) ~.*?deviations from the local baseline.*?reproducibility in reaction temperatures of ~(?P<repeat>\\d+) ~",
+          "expected": {
+            "rate": "20",
+            "repeat": "2"
+          }
+        },
+        {
+          "id": "cies718-chemistry",
+          "page": 2,
+          "regex": "Fe 40\\.89 18\\.10.*?Ni 38\\.83 53\\.20.*?Cr -- 18\\.18.*?Co 12\\.61 0\\.11.*?Nb 5\\.13 5\\.25.*?Mo -- (?P<Mo>\\d+\\.\\d+).*?Ti 1\\.50 0\\.95.*?A1 0\\.02 0\\.56.*?Si 0\\.48 0\\.21.*?C 0\\.003 0\\.04.*?S 0\\.003 0\\.002",
+          "expected": {
+            "Mo": "3.12"
+          }
+        },
+        {
+          "id": "cies718-cooling-nucleation",
+          "page": 2,
+          "regex": "On cooling from\\s+(?P<from>\\d+) ~ the alloy nucleates solid at (?P<nucleation>\\d+) ~",
+          "expected": {
+            "from": "1500",
+            "nucleation": "1328"
+          }
+        },
+        {
+          "id": "cies718-cooling-reactions",
+          "page": 2,
+          "regex": "second\\s+solidification reaction is observed at (?P<second>\\d+) ~ A terminal\\s+solidification reaction is then observed beginning at\\s+(?P<terminal>\\d+) ~",
+          "expected": {
+            "second": "1257",
+            "terminal": "1185"
+          }
+        }
+      ]
+    },
+    {
+      "id": "MILLS316",
+      "path": "papers/mills2002_a.pdf",
+      "sha256": "1acda1c90a17df10b33fff9437a1b60bd728460b39b9bb558b57f99f9a265ad6",
+      "checks": [
+        {
+          "id": "mills316-adopted-pair",
+          "page": 1,
+          "regex": "DPSC:.*?= (?P<Ts>\\d+) .C \\[1\\]:.*?\\(peak\\) = (?P<Tl>\\d+) .C \\[1\\]",
+          "expected": {
+            "Ts": "1385",
+            "Tl": "1450"
+          },
+          "unit": "degC"
+        },
+        {
+          "id": "mills316-alternative-pair",
+          "page": 1,
+          "regex": "T\\s+s o l\\s*= (?P<Ts>\\d+) .C \\[2\\]:.*?= (?P<Tl>\\d+) .C \\[2\\]",
+          "expected": {
+            "Ts": "1360",
+            "Tl": "1410"
+          },
+          "unit": "degC"
+        },
+        {
+          "id": "mills316-nominal-chemistry",
+          "page": 1,
+          "regex": "c Cr Cu Fe Mn Mo Ni Si\\s+0\\.08 17 0\\.3 65 2\\.0 2\\.5 12 1",
+          "expected": {}
+        },
+        {
+          "id": "mills316-npl-lineage",
+          "page": 7,
+          "regex": "1\\. Richardson, M J; Hayes, D; Day, A P; Mills, K C\\. MTS Programme on processability\\s+thermophysical property data for commercial alloys measured in PMP1, 2 and 3,\\s+April 23 - Mar 96, Final Report, NPL, Chapter 3",
+          "expected": {}
+        },
+        {
+          "id": "mills316-definition-alternative",
+          "page": 8,
+          "regex": "The difference in T.*?peak temperature whereas the temperature where the endotherm on\\s+heating returns to the baseline is used when calculating f",
+          "expected": {}
+        },
+        {
+          "id": "mills316-cooling-table",
+          "page": 8,
+          "regex": "range when cooling at (?P<rate>\\d+)K min.*?T.C (?P<Tl>\\d+) 1423 1422\\.5 1422 1421 1420 1419 1418 1417 1416 1413 (?P<Ts>\\d+)",
+          "expected": {
+            "rate": "10",
+            "Tl": "1424",
+            "Ts": "1401"
+          },
+          "unit": "degC"
+        }
+      ]
+    },
+    {
+      "id": "PICH316",
+      "path": "papers/solidification_pichler2020_srm316l.pdf",
+      "sha256": "ae90ec5c55b1e4145ad8f70f3b77d3656ec6cbcc83c0684bc33e4cfef57266ff",
+      "checks": [
+        {
+          "id": "pich316-pair",
+          "page": 6,
+          "regex": "Table 2 Solidus and liquidus.*?Ts\\s+(?P<Ts>\\d+) (?P<dTs>\\d+)\\s+Tl\\s+(?P<Tl>\\d+) (?P<dTl>\\d+)",
+          "expected": {
+            "Ts": "1675",
+            "dTs": "15",
+            "Tl": "1708",
+            "dTl": "30"
+          },
+          "unit": "K"
+        },
+        {
+          "id": "pich316-instrument",
+          "page": 6,
+          "regex": "NETZSCH DSC 404 C Pegasus",
+          "expected": {}
+        },
+        {
+          "id": "pich316-bias",
+          "page": 10,
+          "regex": "liquidus\\s+temperature determined by identifying the\\s+endothermal peak in the DSC heating curve is not the\\s+true liquidus temperature of the initial material",
+          "expected": {}
+        },
+        {
+          "id": "pich316-repeat-bias",
+          "page": 10,
+          "regex": "the initial heating, altering the solidus temperature\\s+by approx\\. (?P<shift>\\d+) K",
+          "expected": {
+            "shift": "20"
+          }
+        },
+        {
+          "id": "pich316-chemistry",
+          "page": 5,
+          "regex": "Carbon \\(C\\).*?0:0260.*?Cobalt \\(Co\\).*?0:225.*?Chromium \\(Cr\\).*?17:803.*?Copper \\(Cu\\).*?0:2431.*?Iron \\(Fe\\).*?64:71.*?Manganese \\(Mn\\).*?1:593.*?Molybdenum \\(Mo\\).*?2:188.*?Niobium \\(Nb\\).*?0:0082.*?Nickel \\(Ni\\).*?12:471.*?Phosphorus \\(P\\).*?0:0271.*?Silicon \\(Si\\).*?0:521.*?Titanium \\(Ti\\).*?0:0039.*?Vanadium \\(V\\).*?0:0725.*?Tungsten \\(W\\).*?0:0809.*?Oxygen \\(O\\).*?0\\.003",
+          "expected": {}
+        }
+      ]
+    },
+    {
+      "id": "ARES316",
+      "path": "papers/solidification_ferrandini2005_afa316l.pdf",
+      "sha256": "7225197d0d452afe377a723e582367a31ef721e3db8f9742b2369d2c430774cf",
+      "checks": [
+        {
+          "id": "ares316-method-rates",
+          "page": 3,
+          "regex": "5 , 10 y 20oC/min",
+          "expected": {}
+        },
+        {
+          "id": "ares316-third-rate-conflict",
+          "page": 4,
+          "regex": "Figura 3\\..*?\\(a\\) 5 .C/min, \\(b\\) 10 .C/min e \\(c\\) 20 .C/min\\..*?Velocidad de enfriamiento \\(.C/min\\).*?5 10 (?P<tableThirdRate>\\d+)",
+          "expected": {
+            "tableThirdRate": "15"
+          }
+        },
+        {
+          "id": "ares316-table-endpoints",
+          "page": 4,
+          "regex": "Velocidad de enfriamiento.*?TL.*?1\\.434 1\\.395 1\\.394\\s+TS.*?1\\.387 1\\.323 1\\.365",
+          "expected": {}
+        }
+      ]
+    }
+  ]
+}

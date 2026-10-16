@@ -1,0 +1,18 @@
+# SOL-T Amendment 4 verification receipt
+
+Date: 2026-10-16. Source head `ec14298db15789a34a6a6c49b421d958bfa447f3`; served fingerprint remains `dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5`. Revised after the Opus narrow check (APPROVE_WITH_CHANGES); all seven requested revisions are applied. All commands below ran on the revised documentation/source-record tree before the replacement commit, with exit code0. No served code is installed.
+
+| Command | Observed result |
+|---|---|
+| `python -I docs/research/scripts/check_sol_t_sources.py --check` | 18 source identities (17 PDF objects; Gan has two independently bound alloy entries), 69 source-PDF assertions, five limited nominal-convention admissions, 79 negative controls |
+| `python -I docs/research/scripts/check_sol_t_dependencies.py --check` | 45 source-AST/Decimal scalar checks, three negative controls |
+| `python -I docs/research/scripts/check_sol_t_p8_reference.py --check` | Five default tuples, 99 AST-enumerated pre-deduplication input arms, 201 changed arm-input leaves, four negative controls |
+| `git diff --check` | No whitespace errors |
+
+Source checks extract archived property/method/reference text rather than regenerating typed endpoint data. Negative controls include source-text corruption, changed proposed endpoints, original-unit mislabelling, source/check reassignment, missing/empty cycle metadata, parent-hash mismatch, changed property coefficients, stale liquidus, altered arm records, missing/changed conversion declarations and missing/renamed AST arm IDs. Metadata semantic interpretation remains human-reviewed; a regex is not proof of a physical model or an unpublished cycle/assay. PDF raw hashes and source-code canonical UTF8/LF hashes have distinct roles. The Gan2019 pypdf crop reads emit an xref-index correction warning; there is no clean PDF structural-certification claim.
+
+The SPEC change is append-only against the complete original Git blob; local links, JSON parseability and Python syntax were also checked. Only Amendment4 in the user-authorized SPEC, research scripts/`sol_t_*` records, papers/INDEX.md and .gitignore are changed in the replacement commit. The17 archive PDFs remain on disk, ignored and removed from the branch history; `git ls-files papers/` lists no PDF. INDEX hash rows are unchanged. Lawful hash-matching local archive copies are a prerequisite for the PDF checker, not a repository-distributed dependency. Possible redistribution candidates (3D Systems data sheet and OSTI Knapp manuscript) are listed for maintainer rights review; neither is committed. Source graph tools were not needed for the bounded documentation/AST review; no graph-coverage claim is made.
+
+No served solver, parity/golden replay, fingerprint bump, measured-row loader, bands tool or physical-validation suite was run. No forbidden named paper content was read. Historical A2/MP04 exposure and new contextual Knapp source-discovery prose are explicitly retained in the access records. There is no claim of a clean blind physical-validation run, independent experimental accuracy, transferable endpoint uncertainty or an implemented exception to the reference harness.
+
+Continuation: return the revisions for narrow review; the integration owner installs only after the required concrete protected-key decision, IN718 exceptions are restricted to D13 containment and identity keys, exact-key and installation-head-bound; P8's owner coordinates context/arm identity updates, and the R-lane runs full bands on the installation head. This receipt grants none of those actions and contains no approval trailer.
