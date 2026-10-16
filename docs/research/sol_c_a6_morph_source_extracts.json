@@ -1,0 +1,60 @@
+{
+  "retrieval_date": "2026-10-16",
+  "authentication_limit": "Bounded normalized transcriptions of primary publisher or author-manuscript browser/search extraction; these are not authenticated original PDF bytes or raw HTML. Numeric tables/equations are retained without surrounding prose.",
+  "sources": {
+    "ti64": {
+      "url": "https://arxiv.org/html/1809.01056",
+      "locator": "Table 6",
+      "method": "web open/find primary author manuscript",
+      "excerpt": "Alloy Mass Fraction (c0) | 10 %\nEquilibrium Partition Coefficient (ke) | 0.838\nLiquidus Slope (ml) | -0.088 K %^-1\nEquilibrium Freezing Range (DeltaT0) | 50 K\nLiquid Diffusion Coefficient (Dl) | 9.5 × 10^-9 m2 s^-1\nGibbs-Thomson coefficient (Gamma) | 2.2 × 10^-7 K m"
+    },
+    "alsi10mg": {
+      "url": "https://arxiv.org/html/2003.09757v1",
+      "locator": "Table 2",
+      "method": "web open/find primary author manuscript",
+      "excerpt": "Chemical composition (wt. %) | Al:99.5,Si:0.5\nLiquids slope (C wt.%^-1) | 6.5\nPartition coefficient, ke | 0.13\nSolute diffusivity (liquid; m2 s^-1) | 3 × 10^-9\nGibbs-Thomson coefficient(K m) | 9 × 10^-8\nInoculant density, Np (m^-3) | 2 × 10^15"
+    },
+    "ni5nb": {
+      "url": "https://arxiv.org/html/1705.06669",
+      "locator": "Table 2",
+      "method": "web open/find primary author manuscript",
+      "excerpt": "Initial alloy mass fraction, c0 | 5 %\nEquilibrium Partition Coefficient, ke | 0.48\nLiquidus Slope, ml | -10.5 K %^-1\nLiquid Diffusion Coefficient, Dl | 3 × 10^-9 m2 s^-1\nGibbs-Thomson coefficient, Gamma | 3.65 × 10^-7 K m"
+    },
+    "316l": {
+      "url": "https://doi.org/10.1016/j.matdes.2020.109395",
+      "locator": "Table 7",
+      "method": "primary publisher table returned by web search extraction; direct DOI fetch failed",
+      "excerpt": "equilibrium concentration | C0 [wt%] | 0.029\nslope of liquidus line | mLe [C/wt%] | -84.3\npartition coefficient at equilibrium | ke [-] | 0.17\nliquid diffusivity | DL [m2/s] | 2 × 10^-9\nGibbs-Thomson coefficient | Gamma [Km] | 1.9 × 10^-7"
+    },
+    "ti_nucleation": {
+      "url": "https://doi.org/10.1016/j.jmrt.2025.02.019",
+      "locator": "Table 2",
+      "method": "primary publisher table returned by web search extraction; direct DOI fetch failed",
+      "excerpt": "Average nucleation undercooling (C) | DeltaTN | 8.0\nMaximum density of nucleation sites (m^-3) | nmax | 5.0 × 10^14"
+    },
+    "km": {
+      "url": "https://www.mdpi.com/2075-4701/8/8/633",
+      "locator": "section 3.2.2 equation 19; section 4.1 paragraph before Figure 7",
+      "method": "primary publisher equations/parameters returned by web search extraction; direct publisher fetch HTTP429",
+      "excerpt": "alpha_m = (1-exp[-km(Tm-T)]) beta_m0\nTm = 575 C\nkm = 0.005\nT_beta_trans = 998 C\ncooling rates slower than 410 C/s"
+    },
+    "hunt": {
+      "url": "https://doi.org/10.1016/j.addma.2023.103802",
+      "locator": "section 2.1 equations 2,3,7,8; paragraph after equation 9",
+      "method": "primary publisher equations returned by web search extraction; direct DOI fetch failed",
+      "excerpt": "phi_e = (4/3) pi r^3 N0\nphi = 1-exp(-phi_e)\nr = DeltaTc/((n+1)G) [1-(DeltaTn/DeltaTc)^(n+1)]\nn = 2\nphi = 0.49\nphi = 0.0049"
+    },
+    "al_eutectic": {
+      "url": "https://www.mdpi.com/2075-4701/12/10/1711",
+      "locator": "Table 1 eutectic composition row",
+      "method": "primary publisher table returned by web search extraction; direct publisher fetch HTTP429",
+      "excerpt": "Eutectic composition wE (wt.%) | 12.6"
+    },
+    "atomic_weights": {
+      "url": "https://ciaaw.org/abridged-atomic-weights.htm",
+      "locator": "2024 abridged table rows magnesium and silicon",
+      "method": "official CIAAW table returned by web search extraction",
+      "excerpt": "12 | Mg | magnesium | 24.305 ± 0.002\n14 | Si | silicon | 28.085 ± 0.001"
+    }
+  }
+}

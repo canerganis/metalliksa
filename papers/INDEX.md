@@ -44,3 +44,15 @@ Source objects below are local-only downloads, not Git deliverables. Restore law
 | `sol_c_timet_ti64_datasheet.pdf` | TIMET TMC-0150, PDF1 Table2 Density; distinct source alternative, density checker | `824684f7d5603af19e0d0862e1af1289f4ea64ae7fac7f54e649ae0f80040822` |
 
 The scalar checks authenticate source bytes/located declarations and their binding to code, not measurement quality or high-temperature accuracy. Unquantified physical/transfer error remains explicit. SOL-C exports only source notes/check scripts and this index, never PDFs or full article objects.
+
+## SOL-C Amendment 6 local source additions (2026-10-16)
+
+Local-only source objects for [A6 spacing models](../docs/research/sol_c_a6_spacing.md). PDFs and article objects are not staged or redistributed. Missing or changed archives fail the associated `python -I -B ... --check`; no checker downloads or silently skips a source. Existing Ti and Ni-Nb sources retain the A5 hashes above, with new disclosed extrapolation/transfer contracts rather than new measurements.
+
+| Local filename | Source / exact checked locator | Raw SHA256 |
+|---|---|---|
+| `solc_a6_spacing_al.pdf` | Gandolfi2021, DOI10.3390/met11071019, PDF6 rate definition and PDF13 Eqs1/2 conclusions | `e8bc8ab8b029b5bc9aaf217f5aef167481610b1f04ad30820a6329370d32b1e4` |
+| `solc_a6_spacing_steel.pdf` | Bunaziv2023, DOI10.1007/s00170-023-11567-y, SINTEF NVA archive, PDF16 Eq2 and PDF17 Eq6/cooling definition | `7fb5f22ed956c764f2079431101387ef792a86d426335ae4ce202a982ad6ec34` |
+| `solc_a6_spacing_ni.pdf` | Mitchell2005, DOI10.7449/2005/Superalloys_2005_299_310, PDF4 Eq1 | `9ceee36095cd4363239a0457f305e65970deeb1c813c2114546c7b63848f9569` |
+
+The separate [A6 morphology/phase source record](../docs/research/sol_c_a6_morph_source_extracts.json) stores bounded normalized primary-browser/table transcriptions, with exact URLs/locators and retrieval limitations. It is committed as a small numeric/equation research record, not a PDF archive or raw source-byte authentication. Its source/transcription checks and independent physical-model arithmetic are described in [sol_c_a6_morph_phase.md](../docs/research/sol_c_a6_morph_phase.md).
