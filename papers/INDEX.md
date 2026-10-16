@@ -1,5 +1,21 @@
 # SOL-T property-source archive
 
+## Engine-estimate research additions, 2026-10-17
+
+For [SPEC_engine_estimates_2026-10-17.md](../docs/research/SPEC_engine_estimates_2026-10-17.md). These source PDFs are local, ignored and never committed. Checkers fail when a required source is absent or its bytes differ. Only the bounded property/method locators were used; no measured melt-pool rows or forbidden measured-depth/width content was read. Equation checks do not establish experimental validity.
+
+| Local PDF | Open primary source | SHA256 | Used locator |
+|---|---|---|---|
+| `engine_est_gan2021_SI.pdf` | [Gan2021 supplementary information](https://static-content.springer-cdn.com/esm/art%3A10.1038%2Fs41467-021-22704-0/MediaObjects/41467_2021_22704_MOESM1_ESM.pdf) | `22a8d2dc870bbd83f6bd3330899437911733f9335d52758d95a328bd6993d6e5` | PDF2-4 Methods1, PDF20 Table1 |
+| `engine_est_fabbro2020.pdf` | [Fabbro2020](https://doi.org/10.3390/app10041487) | `9e7c396b9e4a32f56aad26571a062e50434a889c86a65815551d69e5306ddf1e` | Section3.1, PDF18-20 AppendixA |
+| `engine_est_mondal2023.pdf` | [Mondal2023](https://doi.org/10.3390/ma16010050) | `ba9382cea6aec334dafc3f6a9c8350a9b5cca693d980fbe237b2bb704e98d1ce` | PDF3 Table1 pure-Al vapor constants |
+| `engine_est_gan2019_in625.pdf` | [Gan2019 primary author full text](https://www.researchgate.net/publication/332389300_Benchmark_Study_of_Thermal_Behavior_Surface_Topography_and_Dendritic_Microstructure_in_Selective_Laser_Melting_of_Inconel_625), [DOI](https://doi.org/10.1007/s40192-019-00130-x) | `91dfb844d59ea50f44ade37dc8c44caecfb343b6ccc07fb8d665712b27c5604d` | PDF5-6 methods, PDF7 Table1 thermophysical functions |
+| `engine_est_salsi2018.pdf` | [Salsi2018 author-hosted copy](https://www.scipedia.com/wd/images/1/1b/Draft_Samper_906462519_4543_metals-08-00633-v2.pdf), [publisher](https://doi.org/10.3390/met8080633) | `afd81903615318de59b3f0b853e88c1dde87eab075f9aab0624d0cedccebbc94` | PDF5/9 equations, PDF12 KM parameters, PDF14 Table3 dissolution |
+
+The Salsi author copy has overlapping old/publisher text layers. The final Table3 layer was selected and visually checked; it differs in bytes from the previous A7 publisher PDF and is not passed off as that object. Inherited CET source objects and their exact locators/hashes remain in [sol_c_a7_source_audit.md](../docs/research/sol_c_a7_source_audit.md). Its six PDF/two XML-HTML prerequisites were restored from the existing local SOL-C worktree and replayed successfully. Durga/Gao original-PDF gaps remain explicit; Murakami equation evidence is normalized primary-web text rather than authenticated PDF bytes.
+
+## Earlier SOL-T archive
+
 Added 2026-10-16 for SPEC Amendment 4. Unchanged local-library copies except the separately recorded open downloads. Full PDFs are retained **locally, untracked and ignored**, for byte reproducibility; the check manifests restrict extraction to property/method/reference pages and coordinate crops. This is a subset of the shared workspace library in `../papers/INDEX.md`, not a replacement for that catalogue. No measured-pool validation is admitted.
 
 | File | Source IDs | Raw SHA256 | Verification locator |
