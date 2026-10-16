@@ -20,6 +20,9 @@ import uuid
 from contextlib import contextmanager
 from lpbf_material_registry import catalog
 from lpbf_simulation import run, validate, fingerprint
+from lpbf_request_errors import (LpbfRequestRefusal, validate_thermal_request,
+                                 validate_build_job_request, run_thermal_request,
+                                 refusal_frame, execution_refusal as _execution_refusal)
 from lpbf_openfoam import BINARY
 from lpbf_evidence import enforce_thermal_balances
 from lpbf_run_capture import capture_run
@@ -789,6 +792,10 @@ class Queue:
                 out.update(status="failed", error=f"Saved result integrity failed: {error}")
                 self.update(job, status=out["status"], error=out["error"])
         if out["status"] in ("failed", "cancelled", "timed_out"):
+            if out["status"] == "failed":
+                refused = _execution_refusal(out["log"])
+                if refused is not None:
+                    out.update(error=refused["message"], errorKind="validation", refusal=refused)
             out["partialArtifacts"] = self._partial_artifact_summary(self.root/job)
             if out["partialArtifacts"] is None:
                 del out["partialArtifacts"]
@@ -918,6 +925,7 @@ class Queue:
             raise ValueError("Invalid execution scope")
         job_type = raw.get("jobType")
         if job_type == "build-job":
+            validate_build_job_request(raw)
             p, m = raw, raw
         elif job_type == "gpu-thermal-pilot":
             if raw.get("executionEngine") == "warp":
@@ -935,7 +943,7 @@ class Queue:
             from in625_thermal_material import in625_lpbf_thermal_snapshot
             m = in625_lpbf_thermal_snapshot()
         else:
-            p, m = validate(raw)
+            p, m = validate_thermal_request(raw)
         # A rebuilt binary must invalidate a long-lived worker's cache identity.
         self.caps["binaryHash"] = hashlib.sha256(BINARY.read_bytes()).hexdigest() if BINARY.is_file() else None
         self.caps["openfoamThermal"] = bool(self.caps["openfoamVersion"] and self.caps["binaryHash"])
@@ -1086,6 +1094,9 @@ class Queue:
 
 def _execution_failure_message(final_log, returncode):
     """Keep diagnostic lines verbatim; omit only typed child progress frames."""
+    refused = _execution_refusal(final_log)
+    if refused is not None:
+        return refused["message"]
     def unique_object(pairs):
         value = dict(pairs)
         if len(value) != len(pairs):
@@ -1205,8 +1216,8 @@ def main():
                 execution_capabilities = json.loads((folder/"capabilities.json").read_text())
                 run_progress = _cpu_run_progress_for(input_data, execution_capabilities)
                 options = {"run_progress": run_progress} if run_progress is not None else {}
-                result = run(input_data, report, folder,
-                             execution_capabilities, **options)
+                result = run_thermal_request(input_data, report, folder,
+                             execution_capabilities, solver=run, **options)
 
             run_kind = _archive_run_kind(job_type, result)
             if run_kind is not None:
@@ -1228,6 +1239,8 @@ def main():
                     run_progress.fail(e, failure_stage=(
                         "postprocessing" if state["stage"] == "completed" else None))
             print(str(e), flush=True)
+            if isinstance(e, LpbfRequestRefusal):
+                print(refusal_frame(e), flush=True)
             detail = _cpu_failure_progress_message(e)
             if detail is not None:
                 print(detail, flush=True)
@@ -1281,6 +1294,8 @@ def rpc_error_response(request, error):
     sys.modules: such an error can only exist once that module is loaded, so this adds
     no import to the worker."""
     response = dict(id=request.get("id") if isinstance(request, dict) else None, error=str(error))
+    if isinstance(error, LpbfRequestRefusal):
+        response.update(errorKind="validation", validation=error.envelope())
     validation = sys.modules.get("input_validation")
     if validation is not None and isinstance(error, validation.ValidationError):
         response.update(errorKind="validation", validation=validation.validation_envelope(error))

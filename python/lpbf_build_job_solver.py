@@ -872,13 +872,9 @@ def _solve_lpbf_build_job_core(data):
     else:
         alloy_id = resolve_alloy_id(requested_alloy)
         if alloy_id is None:
-            return {
-                "success": False,
-                "error": (
-                    f"Unsupported LPBF alloy identity: {requested_alloy!r}. "
-                    "No surrogate alloy was submitted."
-                ),
-            }
+            from lpbf_request_errors import refusal, SUPPORTED_ALLOYS_TEXT
+            return refusal("UNSUPPORTED_BUILD_JOB_ALLOY", "alloyId",
+                           f"This material is not supported by Build Job. Select {SUPPORTED_ALLOYS_TEXT}.")
     mats = ALLOY_MATERIALS[alloy_id]
     for field, canonical_name in (
         ("thermalMaterial", mats["thermal"]),

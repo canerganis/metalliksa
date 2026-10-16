@@ -24,6 +24,20 @@ export function isPythonValidationError(err: unknown): err is PythonValidationEr
   return err instanceof PythonValidationError;
 }
 
+/** Read either the legacy string error or the typed worker envelope exactly once. */
+export async function pythonRequestError(res: Pick<Response, 'status' | 'json'>, fallback: string): Promise<Error> {
+  let body: any;
+  try { body = await res.json(); } catch { return new Error(fallback); }
+  const error = body?.error;
+  const fields = error && typeof error === 'object' ? error : body;
+  const message = typeof error === 'string' ? error : typeof error?.message === 'string' ? error.message : fallback;
+  if (body?.errorKind === 'validation') {
+    return new PythonValidationError(message, typeof fields?.code === 'string' ? fields.code : 'VALIDATION',
+      typeof fields?.field === 'string' ? fields.field : '', fields?.detail ?? {});
+  }
+  return new Error(message);
+}
+
 /**
  * Returns a PythonValidationError when `res` is a 422 carrying the validation
  * envelope, otherwise null (the body is only read for 422 responses).

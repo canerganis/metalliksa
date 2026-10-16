@@ -852,8 +852,9 @@ def main():
 
     unsupported = run_job({"alloyId": "Inconel 625", "bypassCache": True})
     assert unsupported["success"] is False
-    assert "Unsupported LPBF alloy identity" in unsupported["error"]
-    assert "No surrogate alloy" in unsupported["error"]
+    assert unsupported["code"] == "UNSUPPORTED_BUILD_JOB_ALLOY"
+    assert unsupported["field"] == "alloyId"
+    assert "Select" in unsupported["error"]
 
     thermal_mismatch = run_job(
         {"alloyId": "ss316l", "thermalMaterial": "Inconel 718", "bypassCache": True}

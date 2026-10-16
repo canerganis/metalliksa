@@ -1,4 +1,5 @@
 import { parseGpuPilotArtifactDescriptor } from '../types/lpbfGpuArtifacts';
+import { pythonRequestError } from '../utils/pythonValidationError';
 import type { GpuPilotArtifactDescriptor } from '../types/lpbfGpuArtifacts';
 
 export type SimulationMode = "screening" | "standard" | "high-fidelity" | "calibration";
@@ -363,8 +364,8 @@ export function parseSimulationJob(value: unknown): SimulationJob {
 }
 async function request(url: string, options?: RequestInit): Promise<unknown> {
   const res = await fetch(url, { ...options, signal: AbortSignal.timeout(25000), headers: { "Content-Type": "application/json" } });
+  if (!res.ok) throw await pythonRequestError(res, `LPBF request failed (HTTP ${res.status}).`);
   const data: unknown = await res.json();
-  if (!res.ok) throw new Error(object(data) && typeof data.error === "string" ? data.error : `LPBF HTTP ${res.status}`);
   return data;
 }
 export const simulationApi = {

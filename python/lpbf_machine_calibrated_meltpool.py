@@ -132,8 +132,10 @@ def _validate(data: Any) -> Optional[Dict[str, Any]]:
         return _refuse("The payload must be a JSON object.")
     mcid = data.get("machineCalibration")
     if not isinstance(mcid, str) or not ID_PATTERN.match(mcid):
-        return _refuse("machineCalibration must be a machine calibration id like 'mc-0123456789ab' "
-                       "(see GET /api/python/lpbf-machine-calibration/status).")
+        from lpbf_request_errors import refusal
+        return refusal("MACHINE_CALIBRATION_REQUIRED", "machineCalibration",
+                       "Select a machine calibration before running this model. "
+                       "If none is available, import and fit your machine measurements in Machine calibration.")
     material = data.get("material")
     if not isinstance(material, str) or not material.strip():
         return _refuse("material is required (for example '316L Stainless Steel'); no substitute alloy is used.")

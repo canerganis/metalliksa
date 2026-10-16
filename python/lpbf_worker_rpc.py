@@ -1,7 +1,7 @@
 """RPC dispatch table for the LPBF worker (method name -> handler)."""
 
 from lpbf_evidence import resource_estimate
-from lpbf_simulation import validate
+from lpbf_request_errors import validate_thermal_request as validate
 from lpbf_fatigue_fracture import MurakamiFatigueEngine
 from lpbf_solidification_microstructure import (
     compute_screening_field_microstructure,

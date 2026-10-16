@@ -345,7 +345,12 @@ def solve_slicer(data):
     material = data.get("material", "Inconel 718")
     mat_info = data.get("_materialPropertiesSnapshot")
     if mat_info is None:
-        mat_info = slicer_props(material) or SECONDARY_ALLOY_DB.get(material) or slicer_props("Inconel 718")
+        mat_info = slicer_props(material) or SECONDARY_ALLOY_DB.get(material)
+        if mat_info is None:
+            from lpbf_request_errors import refusal, SUPPORTED_ALLOYS_TEXT
+            return refusal("UNSUPPORTED_SLICER_MATERIAL", "material",
+                           f"Slicer properties are unavailable for this material. Select {SUPPORTED_ALLOYS_TEXT}, "
+                           "CoCrMo or Scalmalloy.")
 
     laser_power_w = float(data.get("laserPower_W", 285.0))
     scan_speed_mms = float(data.get("scanSpeed_mms", data.get("scanSpeed_mm_s", 960.0)))

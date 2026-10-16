@@ -213,7 +213,9 @@ def run_bayesian_optimization(alloy_id, param_bounds=None, n_iter=20, n_warmup=5
         return _refuse('validation', 'alloyId is required; no default alloy is assumed.')
     resolved = resolve_alloy_id(alloy_id)
     if resolved is None:
-        return _refuse('validation', f"Unknown alloy '{alloy_id}': not resolvable by four_alloy_materials; no fallback alloy is used.")
+        from lpbf_request_errors import refusal, SUPPORTED_ALLOYS_TEXT
+        return refusal("UNSUPPORTED_OPTIMIZER_ALLOY", "alloyId",
+                       f"This material is not supported by the optimizer. Select {SUPPORTED_ALLOYS_TEXT}.")
     try:
         n_iter = _as_int(n_iter, 'nIterations'); n_warmup = _as_int(n_warmup, 'nWarmup')
         seed = _as_int(seed, 'seed')

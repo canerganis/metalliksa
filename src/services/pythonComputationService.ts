@@ -15,7 +15,7 @@ import {
 } from "../physics/calphadMultiComponentSolver";
 import { parseTDBFile, PRELOADED_MULTI_COMPONENT_TDB } from "../physics/tdbParser";
 import { createSeededRandom } from "../utils/seededRandom";
-import { PythonValidationError, validationErrorFromResponse } from "../utils/pythonValidationError";
+import { PythonValidationError, validationErrorFromResponse, pythonRequestError } from "../utils/pythonValidationError";
 import type { ResearchOutcome, ResearchRequest } from "../types/lpbfResearchModels";
 import {
   CLIENT_DATABASE_LABEL,
@@ -365,9 +365,7 @@ class PythonComputationService {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      let detail = "";
-      try { const b = await res.json(); detail = b?.error ? `: ${b.error}` : ""; } catch { /* body not JSON */ }
-      throw new Error(`HTTP ${res.status}${detail}`);
+      throw await pythonRequestError(res, `Optimizer request failed (HTTP ${res.status}).`);
     }
     return res.json();
   }
@@ -758,7 +756,7 @@ class PythonComputationService {
       }),
     });
     if (!res.ok) {
-      throw new Error(`STL slicer / build-time proxy error: HTTP ${res.status}`);
+      throw await pythonRequestError(res, `Slicer request failed (HTTP ${res.status}).`);
     }
     return await res.json();
   }
@@ -805,12 +803,7 @@ class PythonComputationService {
       body: JSON.stringify({ jobType: "build-job", ...payload }),
     });
     if (!res.ok) {
-      let detail = `LPBF build-job proxy error: HTTP ${res.status}`;
-      try {
-        const failed = await res.json();
-        if (failed?.error) detail = String(failed.error);
-      } catch { /* keep HTTP status text */ }
-      throw new Error(detail);
+      throw await pythonRequestError(res, `Build Job request failed (HTTP ${res.status}).`);
     }
     const jobInfo = await res.json();
     const jobId = jobInfo.id;
@@ -921,7 +914,7 @@ class PythonComputationService {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    if (!res.ok) throw new Error(`Machine calibration proxy error: HTTP ${res.status}`);
+    if (!res.ok) throw await pythonRequestError(res, `Machine calibration request failed (HTTP ${res.status}).`);
     const parsed = parseMachineCalibratedResult(await res.json());
     if (!parsed) throw new Error("Machine calibration response had no machineCalibrated block.");
     return parsed;
