@@ -66,3 +66,8 @@ dist-demo/
 
 # Local source archive: commit INDEX/hash manifests, never PDF bytes.
 /papers/**/*.[pP][dD][fF]
+# Local-only SOL-C source copies (lawfully downloaded, never redistributed); papers/INDEX.md stays tracked.
+/papers/solc_a6_*
+/papers/solc_a7_*
+/papers/mizukami2020_solc_*
+/papers/sol_c_*

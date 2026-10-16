@@ -111,3 +111,5 @@
 /python/databases/mc_fe_v2062_repaired.tdb -text
 /python/databases/mc_ti_v203_repaired.tdb -text
 /demo/snapshots/** -text
+# SOL-C morphology source receipt: sol_c_a6_morph_phase_check.py pins its raw bytes (sha256), so no EOL conversion.
+/docs/research/sol_c_a6_morph_source_extracts.json -text
