@@ -27,3 +27,40 @@ Added 2026-10-16 for SPEC Amendment 4. Unchanged local-library copies except the
 Git distributes this index and hash/locator manifests only, not the17 PDF objects. Before `check_sol_t_sources.py --check`, restore lawful local copies under these paths matching the raw SHA256 values above; a missing archive is a hard prerequisite failure, never a skip. The other two source-AST checks do not need PDF bytes. No source checker downloads files.
 
 Possible redistribution candidates for **maintainer review only**: `3dsystems_alsi10mg_revd.pdf` (public manufacturer data sheet) and `knapp2019_in718_ebpbf_solidification_manuscript.pdf` (OSTI1494899 author manuscript). Public access does not establish permission; the maintainer must check the applicable rights/terms. Neither candidate nor any publisher PDF is committed. All existing hashes remain unchanged.
+
+## SOL-C local source archive (2026-10-16)
+
+Source objects below are local-only downloads, not Git deliverables. Restore lawful matching copies for the two source checks; neither script downloads missing files. No source here supplies measured melt-pool depth/width. Exact URLs, version/page locators, physical scope and transcription limits are in [spacing sources](../docs/research/sol_c_spacing_sources.md) and [density sources](../docs/research/sol_c_density_sources.md). The HTML and figure also stay local-only; their presence does not imply redistribution permission.
+
+| Local filename | Source / locator | Raw SHA256 |
+|---|---|---|
+| `ghosh2017_solc_spacing.pdf` | Ghosh2017 arXiv1705.06669v2; PDF8 Table2, PDF9 fixedG, PDF12 Eq7, PDF13 Eq8, PDF14 Fig6; spacing checker | `446c2a8e16af32377d070d81a5ccf71e6059a58f3b38481951ecafd36463a5dd` |
+| `mizukami2020_solc_spacing.html` | Mizukami2020 J-STAGE, sections4.6-4.7 Eq4/5; documentary candidate, not admitted LPBF law | `aa03cefa2f447d68b266bfec4f9787b53854d6590f9633d77d1c1eb0033fdd51` |
+| `mizukami2020_solc_fig11.jpg` | Same article Fig11, visually inspected; no coefficient admission | `d06719cce64aff7c1d5f723582428adff6f1836f8b04cf238051f56d4665ed2f` |
+| `sol_c_timet_ti64_properties.pdf` | TIMETAL6-4 Properties, PDF6 Density; density checker | `f9bcc879445c07259d5388598bea8b69f667d9180269b40b12dce28b57a7c507` |
+| `sol_c_ati718_bar.pdf` | ATI718 NI-105v2, PDF1 Density; density checker | `234b2bc76e5f92e8d98b75f9231949236234fcf35f7c168afaceec82ad2b5855` |
+| `sol_c_aksteel316l.pdf` | AKSteel316/316L 2007, PDF2 Density; density checker | `0b3d06f93a882e882822b18ef8aacff30ee6c3448d2ce56627a1332234f2f152` |
+| `sol_c_smc625.pdf` | SpecialMetals625 Aug2013, PDF2 Table2 Density; same bytes as SOL-T archive above | `f5379cccfe1fe760ebdc20e3f590e709e5acd1c0063d212d4ae5fd6568496d98` |
+| `sol_c_timet_ti64_datasheet.pdf` | TIMET TMC-0150, PDF1 Table2 Density; distinct source alternative, density checker | `824684f7d5603af19e0d0862e1af1289f4ea64ae7fac7f54e649ae0f80040822` |
+
+The scalar checks authenticate source bytes/located declarations and their binding to code, not measurement quality or high-temperature accuracy. Unquantified physical/transfer error remains explicit. SOL-C exports only source notes/check scripts and this index, never PDFs or full article objects.
+
+## SOL-C Amendment 6 local source additions (2026-10-16)
+
+Local-only source objects for [A6 spacing models](../docs/research/sol_c_a6_spacing.md). PDFs and article objects are not staged or redistributed. Missing or changed archives fail the associated `python -I -B ... --check`; no checker downloads or silently skips a source. Existing Ti and Ni-Nb sources retain the A5 hashes above, with new disclosed extrapolation/transfer contracts rather than new measurements.
+
+| Local filename | Source / exact checked locator | Raw SHA256 |
+|---|---|---|
+| `solc_a6_spacing_al.pdf` | Gandolfi2021, DOI10.3390/met11071019, PDF6 rate definition and PDF13 Eqs1/2 conclusions | `e8bc8ab8b029b5bc9aaf217f5aef167481610b1f04ad30820a6329370d32b1e4` |
+| `solc_a6_spacing_steel.pdf` | Bunaziv2023, DOI10.1007/s00170-023-11567-y, SINTEF NVA archive, PDF16 Eq2 and PDF17 Eq6/cooling definition | `7fb5f22ed956c764f2079431101387ef792a86d426335ae4ce202a982ad6ec34` |
+| `solc_a6_spacing_ni.pdf` | Mitchell2005, DOI10.7449/2005/Superalloys_2005_299_310, PDF4 Eq1 | `9ceee36095cd4363239a0457f305e65970deeb1c813c2114546c7b63848f9569` |
+
+The separate [A6 morphology/phase source record](../docs/research/sol_c_a6_morph_source_extracts.json) stores bounded normalized primary-browser/table transcriptions, with exact URLs/locators and retrieval limitations. It is committed as a small numeric/equation research record, not a PDF archive or raw source-byte authentication. Its source/transcription checks and independent physical-model arithmetic are described in [sol_c_a6_morph_phase.md](../docs/research/sol_c_a6_morph_phase.md).
+
+## SOL-C Amendment 7 local source additions (2026-10-16)
+
+The [A7 source audit](../docs/research/sol_c_a7_source_audit.md) contains exact download URLs, page locators, SHA256 identities and failed-access limits. Six complete PDFs were obtained and their selected pages inspected as text and rendered images: `solc_a7_salsi2018.pdf`, `solc_a7_ghosh2018.pdf`, `solc_a7_azizi2020.pdf`, `solc_a7_gerstgrasser2021.pdf`, `solc_a7_yaokawa2023.pdf`, `solc_a7_eutectic2022.pdf`. The executable pins are in `docs/research/scripts/sol_c_a7_sources_check.py`; missing or changed source objects fail rather than skip.
+
+Brooke's complete primary JATS XML and PMC HTML are local `solc_a7_brooke_jats.xml` and `solc_a7_brooke_pmc.html`; their hashes and selected MathML agree. This is source-byte authentication of those representations, not of an absent PDF. DOI103802 is Durga and Lindwall (2023), not Mishra; primary indexed text verifies the .0049/.49 true-fraction convention, with no PDF authentication claim. Gao2025's original PDF and the content of its 2026 corrigendum remain unverified. Nucleation assumptions retain Unresolved provenance. Hunt1984/MS1964 originals were sought but not obtained.
+
+All PDFs, XML/HTML objects, metadata, text extracts and page renders remain local-only and are never staged; the commit contains only source notes, specification and checks. No measured-pool validation or redistribution rights are inferred. The preserved A6 transcription JSON is historical and explicitly hash-pinned; new primary verification does not silently rewrite it.
