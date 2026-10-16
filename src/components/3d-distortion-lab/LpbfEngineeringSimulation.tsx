@@ -1,6 +1,8 @@
 import { SOLIDIFICATION_WORDING, TRANSIENT_FRONT_METRICS } from "../../utils/solidificationDisplay";
 import { SolidificationQuantities } from "../SolidificationQuantities";
 import { canonicalLpbfMaterialName } from "../../utils/lpbfMaterialIdentity";
+import { warpCapabilityFromInventory } from '../../utils/gpuCapability';
+import { GpuCapabilityNotice } from '../GpuCapabilityNotice';
 import { isResultStale, resultSignatureOnSubmit } from "../../utils/lpbfResultStaleness";
 import { Badge, ResultHeader, StaleResultBanner, ThermalHistory, ConvergencePanel, MeasurementPanel, surface, number } from "./LpbfResultPresentation";
 import { LpbfPhysicsDiagnostics } from "./LpbfPhysicsDiagnostics";
@@ -366,6 +368,7 @@ function GpuThermalPilotPanel({input, settings, material, properties, strategy, 
   const result = job?.status === "completed" ? job.result : undefined;
   useEffect(() => setDeviceCaps(caps), [caps]);
   const devices = gpuDevicesForEngine(deviceCaps, engine);
+  const unavailableCapability = engine === 'warp' ? warpCapabilityFromInventory(deviceCaps) : null;
   const selectedDevice = devices.find(candidate => candidate.device === device);
   useEffect(() => {
     if (devices.length && !devices.some(candidate => candidate.device === device)) setDevice(devices[0].device);
@@ -469,6 +472,7 @@ function GpuThermalPilotPanel({input, settings, material, properties, strategy, 
       <button type="submit" disabled={blocked||submitting||active||!selectedDevice} className="rounded-lg border border-sky-400/50 bg-sky-950/50 px-4 py-2.5 text-sm disabled:opacity-40">{submitting?"Checking device…":engine === 'warp' ? "Run Warp parity pilot" : "Run CUDA parity pilot"}</button>
       {active&&<button type="button" disabled={cancelling} onClick={cancel} className="rounded-lg border border-slate-500 px-4 py-2.5 text-sm disabled:opacity-40">{cancelling?"Cancelling…":"Cancel CUDA pilot"}</button>}
     </form>
+    {unavailableCapability && <GpuCapabilityNotice capability={unavailableCapability} />}
     <p id="cuda-pilot-help" className="mt-2 text-xs text-slate-400">{selectedDevice
       ? `Listed by the ${engine === 'warp' ? 'Warp' : 'PyTorch CUDA'} runtime · ordinal ${selectedDevice.ordinal} · ${selectedDevice.memoryBytes.toLocaleString(DISPLAY_LOCALE)} bytes. Device and engine availability are refreshed before submission.`
       : `No ${engine === 'warp' ? 'Warp' : 'PyTorch CUDA'} runtime device is currently available. Refresh the device list or select another engine.`} The worker rechecks the exact CUDA ordinal during submission. No CPU fallback is used.</p>

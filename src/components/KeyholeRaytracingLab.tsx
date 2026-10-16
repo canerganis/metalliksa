@@ -3,6 +3,8 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { useMaterialSpecimenStore } from '../store/useMaterialSpecimenStore';
+import { gpuCapability, GpuCapabilityError, type GpuCapability } from '../utils/gpuCapability';
+import { GpuCapabilityNotice } from './GpuCapabilityNotice';
 
 interface RaytracingResult {
   status: string;
@@ -49,6 +51,7 @@ export const KeyholeRaytracingLab: React.FC = () => {
   const [optics, setOptics] = useState({ keyhole_depth_um: 120, base_absorption: 0.35, max_bounces: 5, num_rays: 4096, seed: 0, device: 'cpu' });
   const [reply, setReply] = useState<{ request: string; data: RaytracingResult } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [capability, setCapability] = useState<GpuCapability | null>(null);
   const [loading, setLoading] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const beamRadius_um = process.beamDiameter_um / 2;
@@ -61,6 +64,7 @@ export const KeyholeRaytracingLab: React.FC = () => {
     let active = true;
     setReply(null);
     setError(null);
+    setCapability(null);
     setLoading(true);
     const timer = setTimeout(async () => {
       try {
@@ -69,10 +73,15 @@ export const KeyholeRaytracingLab: React.FC = () => {
           body: request, signal: controller.signal,
         });
         const data = await response.json();
+        const unavailable = gpuCapability(data.capability);
+        if (!response.ok && unavailable) throw new GpuCapabilityError(unavailable);
         if (!response.ok || data.status !== 'success') throw new Error(data.error || 'Ray tracing failed');
         if (active) setReply({ request, data });
       } catch (failure) {
-        if (active) setError(failure instanceof Error ? failure.message : 'Ray tracing failed');
+        if (active) {
+          if (failure instanceof GpuCapabilityError) setCapability(failure.capability);
+          else setError(failure instanceof Error ? failure.message : 'Ray tracing failed');
+        }
       } finally {
         if (active) setLoading(false);
       }
@@ -121,6 +130,7 @@ export const KeyholeRaytracingLab: React.FC = () => {
           </label>
         </div>
         <p role="status" className="text-sm text-gray-400">{loading ? 'Computing ray paths…' : result ? `Computed on ${result.device}` : 'No computed result'}</p>
+        {capability && <GpuCapabilityNotice capability={capability} />}
         {error && <div role="alert" className="rounded border border-red-700 p-3 text-sm text-red-300">{error}<button className="ml-3 underline" onClick={() => setAttempt(value => value + 1)}>Retry</button></div>}
         {result && <>
           <dl className="grid grid-cols-2 gap-2 text-sm">

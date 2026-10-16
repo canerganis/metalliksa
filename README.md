@@ -54,6 +54,9 @@ npm run dev
 
 Needs Node >= 22.13 and Python 3.11 or 3.12. Details are in [Quick start](#quick-start) below.
 
+For the optional NVIDIA Warp GPU thermal solver, use `docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build` on a host with an NVIDIA GPU and Docker GPU passthrough (Docker Desktop on Windows requires WSL2 and a compatible NVIDIA driver).
+The default `docker compose up` remains CPU-only; the GPU option installs hash-pinned Warp 1.17.0 and requires an explicit `cuda:N` device, with no CPU fallback for GPU solves.
+
 ## Honest results
 
 - **Keyhole benchmark:** screening compared with published X-ray measurements shows substantial regime and depth mismatches. It is a comparison, not a validation. [Benchmark and methods](docs/LPBF_KEYHOLE_BENCHMARK_2026-10-07.md).

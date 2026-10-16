@@ -363,6 +363,8 @@ def gpu_device_inventories():
         inventories["warp"] = dict(runtimeAvailable=bool(devices), devices=devices)
     except Exception as exc:
         inventories["warp"] = dict(runtimeAvailable=False, devices=[], unavailableReason=str(exc)[:240])
+    from gpu_capability import warp_capability
+    inventories["warp"]["capability"] = warp_capability()
     return inventories
 
 
@@ -929,6 +931,8 @@ class Queue:
             p, m = raw, raw
         elif job_type == "gpu-thermal-pilot":
             if raw.get("executionEngine") == "warp":
+                from gpu_capability import require_warp
+                require_warp(raw.get("backend"))
                 from lpbf_gpu_warp_pilot import validate_warp_pilot_request
                 p, m = validate_warp_pilot_request(raw)
             elif "executionEngine" in raw:
@@ -1296,6 +1300,9 @@ def rpc_error_response(request, error):
     response = dict(id=request.get("id") if isinstance(request, dict) else None, error=str(error))
     if isinstance(error, LpbfRequestRefusal):
         response.update(errorKind="validation", validation=error.envelope())
+    from gpu_capability import GpuCapabilityError
+    if isinstance(error, GpuCapabilityError):
+        response.update(errorKind="capability", capability=error.capability)
     validation = sys.modules.get("input_validation")
     if validation is not None and isinstance(error, validation.ValidationError):
         response.update(errorKind="validation", validation=validation.validation_envelope(error))

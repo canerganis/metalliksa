@@ -3,6 +3,7 @@ import path from "node:path";
 import { createInterface } from "node:readline";
 import { getHostPython, loadPythonEnvironment, lpbfWorkerCommand } from "./pythonRuntime.ts";
 import { archiveJobRoot } from './lpbfArchivePaths';
+import { gpuCapability, GpuCapabilityError } from '../src/utils/gpuCapability';
 
 type WorkerCommand = { cmd: string; args: string[]; env?: Record<string, string | undefined> };
 interface WorkerBridgeOptions {
@@ -141,7 +142,9 @@ export class LpbfWorkerBridge {
         clearTimeout(wait.timer); this.pending.delete(reply.id);
         if (reply.error) {
           const envelope = validationEnvelope(reply);
-          wait.reject(envelope ? new LpbfWorkerValidationError(envelope) : new Error(reply.error));
+          const capability = reply.errorKind === 'capability' ? gpuCapability(reply.capability) : null;
+          wait.reject(capability ? new GpuCapabilityError(capability)
+            : envelope ? new LpbfWorkerValidationError(envelope) : new Error(reply.error));
         } else wait.resolve(reply.data);
       } catch { stdoutNoise.push(line.slice(0, 500)); if (stdoutNoise.length > 20) stdoutNoise.shift(); }
     });

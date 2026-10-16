@@ -1,5 +1,6 @@
 import { parseGpuPilotArtifactDescriptor } from '../types/lpbfGpuArtifacts';
 import { pythonRequestError } from '../utils/pythonValidationError';
+import { gpuCapability, GpuCapabilityError } from '../utils/gpuCapability';
 import type { GpuPilotArtifactDescriptor } from '../types/lpbfGpuArtifacts';
 
 export type SimulationMode = "screening" | "standard" | "high-fidelity" | "calibration";
@@ -364,7 +365,13 @@ export function parseSimulationJob(value: unknown): SimulationJob {
 }
 async function request(url: string, options?: RequestInit): Promise<unknown> {
   const res = await fetch(url, { ...options, signal: AbortSignal.timeout(25000), headers: { "Content-Type": "application/json" } });
-  if (!res.ok) throw await pythonRequestError(res, `LPBF request failed (HTTP ${res.status}).`);
+  if (!res.ok) {
+    // Read the body once: a GPU capability refusal is shown as such, every other error goes through pythonRequestError.
+    const body: unknown = await res.json().catch(() => null);
+    const capability = object(body) ? gpuCapability(body.capability) : null;
+    if (capability) throw new GpuCapabilityError(capability);
+    throw await pythonRequestError({ status: res.status, json: async () => body }, `LPBF request failed (HTTP ${res.status}).`);
+  }
   const data: unknown = await res.json();
   return data;
 }
