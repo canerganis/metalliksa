@@ -75,6 +75,30 @@ def bar_cycle(temperatures, imposed, E, alpha, sy):
     return stress, p
 
 
+def zero_traction_release(E, area, length, plastic, thermal=0.0):
+    """Solve the free end displacement from the bar's assembled end reaction.
+
+    The plastic state is frozen during elastic unloading. A nonzero initial
+    reaction is required in the fixture; displacement is an unknown, not a
+    preassigned copy of the eigenstrain.
+    """
+    E, area, length = positive(E), positive(area), positive(length)
+    if not all(math.isfinite(x) for x in (plastic, thermal)):
+        raise ValueError("finite release state required")
+    def reaction(displacement):
+        return E * area * (displacement / length - thermal - plastic)
+    span = length * (abs(plastic) + abs(thermal) + 0.01)
+    lo, hi = -span, span
+    for _ in range(70):
+        mid = (lo + hi) / 2
+        if reaction(mid) > 0:
+            hi = mid
+        else:
+            lo = mid
+    displacement = (lo + hi) / 2
+    return displacement, reaction(displacement)
+
+
 def fatigue(s_um, hv, location):
     c = {"surface": 1.43, "internal": 1.56}
     if location not in c:
@@ -119,10 +143,19 @@ class MechanicalChecks(unittest.TestCase):
     def test_free_release_is_not_constrained_residual(self):
         stress, plastic = bar_cycle([300, 550, 300], [0, 0, 0],
                                     100e9, 1e-5, 100e6)
-        # Equilibrium under zero traction chooses total strain = plastic strain.
         self.assertGreater(stress, 0)
-        self.assertAlmostEqual(100e9 * (plastic - plastic), 0)
-        self.assertNotEqual(plastic, 0)
+        self.assertAlmostEqual(stress, 100e6)
+        displacement, force = zero_traction_release(100e9, 1e-6, .01, plastic)
+        self.assertAlmostEqual(displacement, -1e-5)
+        self.assertAlmostEqual(force, 0, delta=1e-10)
+        self.assertAlmostEqual(displacement / .01, plastic)
+        # The old constrained displacement must fail the traction condition.
+        self.assertGreater(abs(100e9 * 1e-6 * -plastic), 1)
+        # Distinct eigenstrains prevent an always-zero-displacement fake solve.
+        for eigen in (-.002, .0003):
+            displacement, force = zero_traction_release(70e9, 2e-6, .02, eigen)
+            self.assertAlmostEqual(force, 0, delta=1e-10)
+            self.assertAlmostEqual(displacement, .02 * eigen)
 
     def test_two_layer_beam_independent_section_equilibrium(self):
         # Numerical midpoint quadrature against closed-form half-section strain.

@@ -36,6 +36,11 @@ def read_parameters():
     p12, p14 = source_page(12), source_page(14)
     ms = float(re.search(r"Tm = (\d+)\s*\u25e6C and km = ([\d.]+)", p12)[1])
     km = float(re.search(r"Tm = (\d+)\s*\u25e6C and km = ([\d.]+)", p12)[2])
+    # Source provenance check: adopted assumptions, not a fit by Salsi.
+    normalized = " ".join(p12.split())
+    assert re.search(r"assuming Tm = 575\s*\u25e6C and km = 0\.005 as in \[10\]", normalized)
+    references = " ".join(source_page(20).split())
+    assert re.search(r"10\. Charles Murgau, C\.; Pederson, R\.; Lindgren, L\.", references)
     # This author copy contains an old, overlapping text layer. Select the final
     # publisher Table 3 layer, whose visible rows were also checked in a render.
     table = p14.split("Table 3.", 1)[1].split("The model has been tested", 1)[0]
@@ -185,6 +190,7 @@ def check():
     for t, eq, t30, t90 in points:
         k, p = fit_jmak(t30, t90)
         assert 0 < eq <= 1 and p > .5 and k > 0
+        # Parameter round-trip smoke checks, not independent model evidence.
         for secs, progress in ((t30, .3), (t90, .9)):
             assert math.isclose(dissolution(points, t, secs), eq * progress, rel_tol=2e-14)
         # Off-fit-point numerical ODE check and mesh refinement.
@@ -198,7 +204,7 @@ def check():
         assert not math.isclose(dissolution(points, t, secs / 3600) / eq, exact, rel_tol=.01)
         assert dissolution(points, t, 0) == 0
         report["dissolvedAtOneHour"][str(t)] = dissolution(points, t, 3600.)
-    # Unit-independent 50-digit reference for the KM first-pass convention.
+    # Precision smoke comparison of the SAME KM expression in Decimal.
     for preheat in (25., 150., 300., 550.):
         evaluation = preheat + 25.
         with localcontext() as ctx:
@@ -223,13 +229,10 @@ def check():
         except ValueError:
             continue
         raise AssertionError("Invalid input incorrectly admitted")
-    # A true fraction must not be confused with an extended envelope fraction.
-    true = -math.expm1(-.0066)
-    assert .0049 < true < .0066
-    assert .0049 < .0055 < .49
     report["kmAtPreheat150_plus25C"] = km_fraction(ms, km, 175.)
     report["cetBoundaryChecks"] = check_cet()
-    report["checks"] = "PASS: source extraction, JMAK inverse, independent ODE/refinement, unit/exponent mutations, KM Decimal, hold restart, refusal inputs, fraction convention, five-alloy CET radius quadrature and boundary inversion with activation/chi/tip/eutectic gates"
+    report["checks"] = "PASS: source extraction and adopted-[10] attribution, independent JMAK hazard ODE/refinement, unit/exponent mutations, hold restart, refusal inputs, five-alloy CET radius quadrature and boundary inversion with activation/chi/tip/eutectic gates"
+    report["smokeOnly"] = "JMAK fitted-point round trips; KM Decimal precision comparison. Literal fraction asserts removed."
     print(json.dumps(report, indent=2))
 
 

@@ -7,6 +7,7 @@ The in-memory extension is a structural experiment, NOT a repaired assessment.
 import argparse
 import hashlib
 import json
+import math
 import re
 from pathlib import Path
 
@@ -71,9 +72,78 @@ def construction(text, extended):
             x = float(m.GM.subs(substitutions(m)))
             y = float(a.GM.subs(substitutions(a)))
             assert abs(x-y) < 1.e-7 * max(1., abs(y)), (temp, carbon_sites, x, y)
+    ordering = carbon_ordering_checks(db, patched, comps)
     return {"version": pycalphad.__version__, "originalFailure": failure,
             "carbonFreeConstruction": "pass", "declarationExtensionConstruction": "pass",
-            "disorderedLimitStates": 6, "scientificRepair": False}
+            "disorderedLimitStates": 6, "carbonOrdering": ordering,
+            "scientificRepair": False}
+
+
+def carbon_ordering_checks(original, extended, comps):
+    """Off-order probe of the declaration-only extension, never an assessment.
+
+    Derive its vacancy weighting/atom normalization and compare with the real
+    library expression. Equal-sublattice zero limits alone cannot reveal this.
+    """
+    from pycalphad import Model, variables as v
+    m0 = Model(original, [c for c in comps if c != "C"], "BCC_B2")
+    m = Model(extended, comps, "BCC_B2")
+    # The admitted Ti-Al-V-Fe subset has only vacancy energetic parameters.
+    for parameter in extended._parameters.all():
+        if parameter["phase_name"] != "BCC_B2":
+            continue
+        species = {s.name for lattice in parameter["constituent_array"] for s in lattice}
+        if species <= set(comps):
+            assert parameter["parameter_type"] == "G"
+            assert {s.name for s in parameter["constituent_array"][-1]} == {"VA"}
+
+    def value(model, fractions, c, temperature):
+        subs = {v.T: temperature, v.P: 101325.}
+        for symbol in model.models["ord"].free_symbols:
+            if isinstance(symbol, v.SiteFraction):
+                subs[symbol] = (c if symbol.species.name == "C" else 1-c
+                                if symbol.species.name == "VA" else
+                                fractions[symbol.sublattice_index].get(symbol.species.name, 0.))
+        return float(model.models["ord"].subs(subs))
+
+    # Independently summed configurational entropy, not m.models['ord'] at c=0.
+    gas = 8.3145  # COST507/pycalphad TDB R convention, J/(mol K).
+    samples = 0
+    max_shift = 0.
+    for temperature in (900., 1400., 1900.):
+        for first, second in (({"TI": .92, "AL": .04, "V": .03, "FE": .01},
+                               {"TI": .76, "AL": .20, "V": .03, "FE": .01}),
+                              ({"TI": .70, "AL": .25, "V": .04, "FE": .01},
+                               {"TI": .90, "AL": .05, "V": .04, "FE": .01})):
+            mean = {s: (first[s] + second[s]) / 2 for s in first}
+            entropy = gas * temperature * sum(
+                .5*first[s]*math.log(first[s]) + .5*second[s]*math.log(second[s])
+                - mean[s]*math.log(mean[s]) for s in first)
+            carbon_free = value(m0, (first, second), 0., temperature)
+            energetic = carbon_free - entropy
+            assert abs(carbon_free) > 1., "Off-order control is too close to zero"
+            # xC is atomic fraction, c is interstitial occupancy: xC=3c/(1+3c).
+            for xcarbon in (.0001, .001, .01):
+                c = xcarbon / (3*(1-xcarbon))
+                expected = ((1-c)*energetic + entropy)/(1+3*c)
+                actual = value(m, (first, second), c, temperature)
+                assert math.isclose(actual, expected, rel_tol=1e-10, abs_tol=1e-7)
+                assert not math.isclose(actual, carbon_free, rel_tol=1e-6)
+                # Centered finite difference versus derived carbon derivative.
+                step = 1e-7
+                numeric = (value(m, (first, second), c+step, temperature)
+                           - value(m, (first, second), c-step, temperature))/(2*step)
+                derivative = (-4*energetic-3*entropy)/(1+3*c)**2
+                assert math.isclose(numeric, derivative, rel_tol=2e-7, abs_tol=1e-4)
+                max_shift = max(max_shift, abs(actual-carbon_free))
+                samples += 1
+            # Continuity from positive C; no equal-sublattice cancellation oracle.
+            near_zero = value(m, (first, second), 1e-10, temperature)
+            assert math.isclose(near_zero, carbon_free, rel_tol=1e-8, abs_tol=1e-6)
+    return {"offOrderStates": samples, "carbonDerivative": "finite-difference pass",
+            "declarationOnlyIsCarbonIndependent": False,
+            "maxOrderingShift_J_mol_atoms_in_manufactured_states": max_shift,
+            "status": "derived-unreviewed; not equilibrium or experimental validation"}
 
 
 def main():

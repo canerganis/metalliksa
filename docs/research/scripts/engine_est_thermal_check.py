@@ -202,9 +202,9 @@ def numerical_checks():
         except ValueError:
             continue
         close(s["incoming"], s["liquid"] + s["vapor"], 2e-12)
+        # Definition/smoke checks ONLY: power and pv were constructed above
+        # from these same terms. They are not independent energy verification.
         close(s["af"] * s["power"], s["pm"] + s["pv"] + s["pc"] + s["pk"])
-        # A latent-only sink would fail this independent full outgoing enthalpy
-        # ledger. This catches precisely the missing sensible/fusion-energy bug.
         latent_only = s["vapor"] * TI["Lv"]
         assert s["pv"] > latent_only
         assert abs(s["pv"] - latent_only) > 0.05 * s["pv"]
@@ -219,7 +219,7 @@ def numerical_checks():
     dm = j * area * dt
     mnew = mass - dm
     enew = mass * enthalpy + power * dt - dm * (enthalpy + lv)
-    # Same temperature-state equation after subtracting h_l dm consistently.
+    # Algebraic ledger smoke check, not a numerical moving-boundary solve.
     close((enew / mnew - enthalpy) * mnew, power * dt - dm * lv)
     assert enew < mass * enthalpy + power * dt
     for bad in (0.0, -1.0, float("nan"), float("inf")):
@@ -238,8 +238,8 @@ def main():
     parser.parse_args()
     files = source_checks()
     states = numerical_checks()
-    print(f"PASS: {files} page-bounded source/hash replays; CC ODE and Maxwellian quadrature; {states} conical mass/energy states; optical identity; receding energy ledger; invalid inputs")
-    print("Research consistency checks only. No served calculation or experimental validation.")
+    print(f"PASS: {files} page-bounded source/hash replays; CC ODE and Maxwellian quadrature; {states} conical mass-balance checks; independent normal-incidence optical identity; invalid inputs")
+    print("SMOKE ONLY: conical power/enthalpy by construction and receding ledger algebra. No independent energy solver, served calculation or experimental validation.")
 
 
 if __name__ == "__main__":
