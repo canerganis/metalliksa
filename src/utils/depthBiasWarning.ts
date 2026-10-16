@@ -16,13 +16,13 @@ export const MIN_ABS_MEDIAN_FOR_DIRECTION = 0.05;
 /** Error-band class edges on the normalized enthalpy index dH/hs (summary config.thresholds): < lo conduction, < hi transition, else keyhole. */
 export const DEPTH_BIAS_ENTHALPY_EDGES: readonly [number, number] = [15.0, 20.0];
 
-export const DEPTH_BIAS_BANDS_ID = "lpbf-meltpool-error-bands-2026-10-15-c7251cb59484";
+export const DEPTH_BIAS_BANDS_ID = "lpbf-meltpool-error-bands-2026-10-16-b37692769673";
 
 /** "alloy|kernel|regime" -> [median relative error, n tracks, n sources]. */
 export const DEPTH_BIAS_CELLS: Record<string, readonly [number, number, number]> = {
-  "316L Stainless Steel|eagar-tsai|conduction": [-0.205, 166, 2],
-  "316L Stainless Steel|eagar-tsai|keyhole": [-0.505, 442, 3],
-  "316L Stainless Steel|eagar-tsai|transition": [-0.612, 122, 2],
+  "316L Stainless Steel|eagar-tsai|conduction": [-0.241, 178, 2],
+  "316L Stainless Steel|eagar-tsai|keyhole": [-0.505, 432, 3],
+  "316L Stainless Steel|eagar-tsai|transition": [-0.706, 120, 2],
   "Inconel 625|eagar-tsai|conduction": [-0.14, 23, 2],
   "Inconel 625|eagar-tsai|keyhole": [-0.272, 1, 1],
   "Inconel 625|eagar-tsai|transition": [-0.618, 6, 1],
@@ -30,9 +30,9 @@ export const DEPTH_BIAS_CELLS: Record<string, readonly [number, number, number]>
   "Ti-6Al-4V|eagar-tsai|conduction": [0.477, 8, 1],
   "Ti-6Al-4V|eagar-tsai|keyhole": [-0.129, 80, 2],
   "Ti-6Al-4V|eagar-tsai|transition": [-0.43, 6, 1],
-  "316L Stainless Steel|goldak|conduction": [-0.061, 124, 2],
-  "316L Stainless Steel|goldak|keyhole": [-0.504, 442, 3],
-  "316L Stainless Steel|goldak|transition": [-0.565, 122, 2],
+  "316L Stainless Steel|goldak|conduction": [-0.123, 132, 2],
+  "316L Stainless Steel|goldak|keyhole": [-0.505, 432, 3],
+  "316L Stainless Steel|goldak|transition": [-0.674, 120, 2],
   "Inconel 625|goldak|conduction": [-0.364, 7, 2],
   "Inconel 625|goldak|keyhole": [-0.204, 1, 1],
   "Inconel 625|goldak|transition": [-0.572, 6, 1],
@@ -40,9 +40,9 @@ export const DEPTH_BIAS_CELLS: Record<string, readonly [number, number, number]>
   "Ti-6Al-4V|goldak|conduction": [0.674, 8, 1],
   "Ti-6Al-4V|goldak|keyhole": [-0.129, 80, 2],
   "Ti-6Al-4V|goldak|transition": [-0.37, 6, 1],
-  "316L Stainless Steel|rosenthal|conduction": [-0.1, 131, 2],
-  "316L Stainless Steel|rosenthal|keyhole": [-0.504, 442, 3],
-  "316L Stainless Steel|rosenthal|transition": [-0.583, 122, 2],
+  "316L Stainless Steel|rosenthal|conduction": [-0.136, 139, 2],
+  "316L Stainless Steel|rosenthal|keyhole": [-0.505, 432, 3],
+  "316L Stainless Steel|rosenthal|transition": [-0.687, 120, 2],
   "Inconel 625|rosenthal|conduction": [0.112, 12, 2],
   "Inconel 625|rosenthal|keyhole": [-0.231, 1, 1],
   "Inconel 625|rosenthal|transition": [-0.59, 6, 1],
