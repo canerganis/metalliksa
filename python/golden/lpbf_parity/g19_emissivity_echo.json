@@ -4,9 +4,9 @@
  "group": "G19",
  "description": "Registry emissivity literal 0.35 echoed into p/m per alloy; accepted overrides including 0.36",
  "slow": false,
- "recordedImplementationHash": "dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5",
+ "recordedImplementationHash": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "c6ec6dbf5fdbcbfff58056285596c290eaf0b517",
+ "recordedGitHead": "c5712223e1d4105ef1f7fd50b1e8a03383d561ce",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,8 +68,8 @@
   }
  },
  "recordedRuns_s": [
-  5.9,
-  5.9
+  6.0,
+  5.7
  ],
  "recordedTwice": true,
  "observations": {
@@ -261,8 +261,8 @@
   "validate.override.True.emissivity": {
    "error": "ValueError: emissivity must be in [0,1]"
   },
-  "implicit.canonicalSha256": "a61ee378b4034b15fa8b55755961692cb7753ba31b46f54b470e13cda94e9b74",
-  "implicit.orderedTypedSha256": "22a2bb3c742a823cbbdde6c3faf3685adbab051f92a37b3958b5643a0e353dc3",
+  "implicit.canonicalSha256": "840b9eec79200a3fad7f9bd88eb74007c37e93c33b4a195ddc8d9db561bb7fdd",
+  "implicit.orderedTypedSha256": "d70d2a47fedbf5e13d6f498601ebe48b0b58e6f87d515816b2bf1dd2317baee9",
   "implicit.topLevelKeys": [
    "schemaVersion",
    "requestedMode",
@@ -280,6 +280,7 @@
    "assumptions",
    "fallbackReason",
    "metrics",
+   "transientFrontDiagnostics",
    "thermalHistory",
    "fieldSeries",
    "peakInterpolatedMeltPool",
@@ -308,7 +309,7 @@
   "implicit.key.effectiveMode": "cb2842d6687d19c69a6c0d4eb6a0f1af02951cef170de56ab331046ea5baac08",
   "implicit.key.solver": "379da9f17510ad5e9f42d7be64eda2f553ada427d6a389bd3552f81dbe7cd97d",
   "implicit.key.settings": "387e7427100a76aaac99672076a944605bd7978a42aa553a140912a7f76ab43a",
-  "implicit.key.material": "977951f9ec826255f143d24b8997760a961eba6af2f0b5e102963e061fb651c2",
+  "implicit.key.material": "5058e6e61e393a813e46a6b7061c277cdd6004227926783bfcfffe0041cc24e8",
   "implicit.key.requestedBackend": "86a3d4125c91d4621cfc34f7d2ac1f2fb7df908cae63aef232d0b9e0713171db",
   "implicit.key.confidence": "364bb7082249ee9fbc5247ee49735c4246f271b82c2745a35107ddda0d7cabcc",
   "implicit.key.validationStatus": "034d24b06221faeb3860b36b4069fe6436aeadc3db62a687efe73615cfb2541d",
@@ -319,6 +320,7 @@
   "implicit.key.assumptions": "5f79bae5f08d4c592445b07af436541a91841e2f8a9212688f95cef3d3e1a104",
   "implicit.key.fallbackReason": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
   "implicit.key.metrics": "def1ff706d3d725dca646cd93cb8eeefeb9a2ff7b21c928398e597a5650401fd",
+  "implicit.key.transientFrontDiagnostics": "990cc6bb5a269b9e14e9a67aae4b1a02a117d84f21b906713fcedafcf23ae8c3",
   "implicit.key.thermalHistory": "5cb3817637bd1aae251fad5ee02532ce42c1ea721b2880a57a0442b14bedd768",
   "implicit.key.fieldSeries": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
   "implicit.key.peakInterpolatedMeltPool": "fea90b4014a5fd5b5f1c3b56c628d8b4aef6825d011b2ea91b9de708da8a713c",
@@ -340,12 +342,12 @@
   "implicit.key.resourceEstimate": "3ba8bb7b1be206d20f7fa936f8c80d1f03c716c5e219dafddfd57cb35b5baef9",
   "implicit.key.unresolvedPhysics": "e56903d893f881cd5a1e576df18872eed3708168d7a13e2e07afd6fc3734d9d1",
   "implicit.key.confidenceReason": "906944d2c579df879c4987a7d07a4e032bf053927f6b33f8e6c954537ac1f1e0",
-  "implicit.key.coreContract": "5bb09b69bd4edfec79e18712f67e8f3bdc55d7110e996016d63c640184c5ea91",
+  "implicit.key.coreContract": "1cde9c27394b3d4fc3ac9ddecf09e267d235dbaf3e16130dd494a6b16681cac2",
   "implicit.coreContract.inputSha256": "b4329bccc4a01f4fba2c3c7429fe23e0c151bc8595ce01ffe28fdc23cc39dab0",
-  "implicit.coreContract.materialSha256": "24add765f3931e780d1a65b62888c4ae765cecc83314374bac713af3f70a6edf",
+  "implicit.coreContract.materialSha256": "1aaab644e813174edbd6e16e0cdc8484bf24965a74b3715422a2879865cb804f",
   "implicit.coreContract.solverId": "enthalpy-fv-6",
   "implicit.coreContract.modelId": "stationary-enthalpy-conduction-layer-conforming-v1",
-  "implicit.material.materialRevisionSha256": "8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8",
+  "implicit.material.materialRevisionSha256": "4562ad022349e2dcff1681c1aca43da44aebb1dbe7ceed4dcb1f8f6b84e66fbb",
   "implicit.validationStatus": "unvalidated",
   "implicit.productionReady": false,
   "implicit.effectiveMode": "standard",
@@ -353,7 +355,7 @@
   "implicit.confidence": "low",
   "implicit.implementationHashOccurrencesAfterStrip": 0,
   "explicit0.35.canonicalEqualsImplicit": true,
-  "run.override0.36": "67ec805c5ae1a23e76f06eabca995395b615e11bbd1d75ae28295bb1245c19cc"
+  "run.override0.36": "74394c0a2dc799d9d2489fa274c7687572c8a8313579fa718fdb8b08ba9234be"
  },
  "rawValues": {
   "implicit.key.analyticalComparison": {
@@ -403,7 +405,7 @@
    "effectiveMode": "standard",
    "solverId": "enthalpy-fv-6",
    "inputSha256": "b4329bccc4a01f4fba2c3c7429fe23e0c151bc8595ce01ffe28fdc23cc39dab0",
-   "materialSha256": "24add765f3931e780d1a65b62888c4ae765cecc83314374bac713af3f70a6edf",
+   "materialSha256": "1aaab644e813174edbd6e16e0cdc8484bf24965a74b3715422a2879865cb804f",
    "units": {
     "power": "W",
     "speed": "mm/s",
@@ -520,53 +522,6 @@
    "final_kg": 5.393358185389219e-07,
    "relativeError": 0.0,
    "scope": "Stationary reference mass accounting; no continuity, evaporation or shrinkage solved"
-  },
-  "implicit.key.material": {
-   "solidus_K": 1533.15,
-   "liquidus_K": 1609.15,
-   "boiling_K": 3123.15,
-   "latentHeat_J_kg": 270000.0,
-   "absorptivity": 0.32,
-   "emissivity": 0.35,
-   "dGamma_dT": -0.0004,
-   "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-   "quality": "estimated",
-   "table": [
-    [
-     273.15,
-     8190.0,
-     11.4,
-     435.0,
-     0.0055
-    ],
-    [
-     1609.15,
-     7450.0,
-     29.0,
-     730.0,
-     0.0055
-    ],
-    [
-     3123.15,
-     7450.0,
-     29.0,
-     730.0,
-     0.0055
-    ]
-   ],
-   "name": "Inconel 718",
-   "version": "lpbf-materials-1",
-   "temperatureCoverage_K": [
-    273.15,
-    3123.15
-   ],
-   "uncertaintyNote": "Property uncertainties not quantified; source string does not establish validation.",
-   "materialId": "in718",
-   "provenanceClass": "estimated-legacy",
-   "materialIdentitySchemaVersion": 1,
-   "materialAuthority": "four_alloy_materials.py",
-   "materialAuthorityRevisionSha256": "114ed51b8b0262ea1bcfa1eca7b0b9eeb95e1bd46756ee73dc1308cbd5d8ad75",
-   "materialRevisionSha256": "8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8"
   },
   "implicit.key.metrics": {
    "length_um": 80.0,

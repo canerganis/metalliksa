@@ -4,9 +4,9 @@
  "group": "G17",
  "description": "evaporationModel=True AlSi10Mg 500 W: L_v passed to the inversion (today IN718's 6.4e6)",
  "slow": false,
- "recordedImplementationHash": "dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5",
+ "recordedImplementationHash": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "c6ec6dbf5fdbcbfff58056285596c290eaf0b517",
+ "recordedGitHead": "c5712223e1d4105ef1f7fd50b1e8a03383d561ce",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,13 +68,13 @@
   }
  },
  "recordedRuns_s": [
-  16.8,
-  16.6
+  16.0,
+  16.0
  ],
  "recordedTwice": true,
  "observations": {
-  "result.canonicalSha256": "cc9d0827bedfe31b5fec33a7be153812517ae3e4fd986743dd7f33acfc9f33e2",
-  "result.orderedTypedSha256": "1264eb220c71f83e187272356416c13e994dde4dca5a766a7360bdf38d13fe84",
+  "result.canonicalSha256": "f628e2c9092591c8dce064120693736220cb6f5203322c4b387f44f3b7a5793c",
+  "result.orderedTypedSha256": "cf0bd24f32656af980d692426a8b01b46db1292546da059bd902c5cd150b4bad",
   "result.topLevelKeys": [
    "schemaVersion",
    "requestedMode",
@@ -92,6 +92,7 @@
    "assumptions",
    "fallbackReason",
    "metrics",
+   "transientFrontDiagnostics",
    "thermalHistory",
    "fieldSeries",
    "boilingCap",
@@ -124,7 +125,7 @@
   "result.key.effectiveMode": "cb2842d6687d19c69a6c0d4eb6a0f1af02951cef170de56ab331046ea5baac08",
   "result.key.solver": "379da9f17510ad5e9f42d7be64eda2f553ada427d6a389bd3552f81dbe7cd97d",
   "result.key.settings": "a6ceca42a6c489e687fbd71cd53e53ecabc91e25947466d582ab87b651a7c68c",
-  "result.key.material": "d5c0aecc5795b11c0ff5b6aa3651e19445a14062ad06fd0ae2bfd0b083b578fb",
+  "result.key.material": "558ed55dba54174c43362d090bf809d372051815b92b9010ff6ccbee50626c74",
   "result.key.requestedBackend": "86a3d4125c91d4621cfc34f7d2ac1f2fb7df908cae63aef232d0b9e0713171db",
   "result.key.confidence": "364bb7082249ee9fbc5247ee49735c4246f271b82c2745a35107ddda0d7cabcc",
   "result.key.validationStatus": "034d24b06221faeb3860b36b4069fe6436aeadc3db62a687efe73615cfb2541d",
@@ -134,21 +135,22 @@
   "result.key.analyticalComparison": "042ce1096979fa467dfcd8c8c5cc51053bcf21172763f7e54220c9e24a87dcd9",
   "result.key.assumptions": "9f4013d95f9d3c4ebb2a4b006a3b0682da2ec96dc578dba7b85acb0bdbcaa303",
   "result.key.fallbackReason": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
-  "result.key.metrics": "bae13e4b6d7ecd2f85f87aeae2c47476eb588aa388d768c46d12a8bc649265ca",
-  "result.key.thermalHistory": "4a70b7339e0ee28d081fe81cbaa337784cfd9c70ab8bbbc23eaace9eb47c1f5c",
+  "result.key.metrics": "e0af5baa3af6f8590ccf969b339bbdbc535b4214792ef4c451c9c372e5bd1d78",
+  "result.key.transientFrontDiagnostics": "b7369e75eb4c24ec62abda9d3c5e06decb4a708db26486e4c963d67a46342e46",
+  "result.key.thermalHistory": "01ddfbbb8123c03ca12c48abee183f42c5c50abd1dd145115b480bd2f0b51d67",
   "result.key.fieldSeries": "7e5d844a6929e466a78a570e89bba38f7aca29004a88e1b5afc69fa25fa7c8e3",
-  "result.key.boilingCap": "da71eb8fd992b0b7734d93d1e8a9991b4e2feb6511a90f307a20323cdc678058",
-  "result.key.peakInterpolatedMeltPool": "efa81db7781af6b78af73138de069c5b8bcb7c01f26546205f50d932c3f50397",
-  "result.key.fieldOverlapDiagnostics": "2fe80561e684803451c3c833988ec4f144c302660cdb1de5df101de3052d6a99",
+  "result.key.boilingCap": "69f42481e1e2ba2d1af626bd406d92cd5487267ca5a3694233196344dbffce63",
+  "result.key.peakInterpolatedMeltPool": "17de92af3e847931737aff13c2067b71988e174819a06f4c306f0ebc13d581bb",
+  "result.key.fieldOverlapDiagnostics": "4a43b60a1b6e5d1a90fc87377656daa915d3761335df90697ea291502d506e52",
   "result.key.midTrackCrossSection": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
   "result.key.midTrackInterpolatedCrossSection": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
   "result.key.solidificationResolution": "5a64561fa6843fcb4218e390a6554f95c5d7fe9b668c05626930957f0e986bcb",
-  "result.key.numericalDiagnostics": "d3b78b12e1b6a2fb5b266022dddc8565db0bad794b2d8335ca81f1d513009236",
-  "result.key.energyBalance": "636b8321f3a437111ddd5c7b8173d3779e303331954d63ff7bcae847beb1f04b",
-  "result.key.discretization": "21f83cf251966d3828da8e11f600b23592c754748af6ecd90d57dadcfa9d14a6",
+  "result.key.numericalDiagnostics": "266324b9692ff92867a47370fbe8efb992db716edd83efcf91efc07331cdab11",
+  "result.key.energyBalance": "066a7d24bf30fdfd64a9ef0325f1574be6d65eb6a658e77945660cf45263c6df",
+  "result.key.discretization": "09ab18d73c52c1f5aff672a147c08d36978aa91324bb0ffb66d18c208a0704c5",
   "result.key.scanPath": "dc3e33ed474765b3e39a505f1c66a57f2edc24dbbce56e8bf39fb3727e217e9c",
-  "result.key.massBalance": "9d900bbfd330880c8360af70c7a85735f87a28178790047a815d0b44807ef0e9",
-  "result.key.phaseAudit": "0c89a49611d527fe5365451b1fc0dbb8204541d97cc767f932222b4adece3b43",
+  "result.key.massBalance": "692ea340d3e6c43ece1d9ed7f95c3d9169d0ef3c93693e1ce30bea4334404609",
+  "result.key.phaseAudit": "c2e17af613c0a6959ee9f97f80e925a4d90beab1fad26ef4fee0bf37bd7794a5",
   "result.key.geometricDefectScreen": "382b1dd7789b413f4a402ad98d479d16d8bdb643ad1fa76c89bb15782d10a222",
   "result.key.regime": "8402f9dee3219d19f615e013b48c1880ccf31bc2e1badfb4e04de65d76e2547e",
   "result.key.mainRisk": "e41166513bee88e218627842ae69030e5c223d8e673ebb24f2ee9c705d3d2f55",
@@ -157,15 +159,15 @@
   "result.key.resourceEstimate": "3ba8bb7b1be206d20f7fa936f8c80d1f03c716c5e219dafddfd57cb35b5baef9",
   "result.key.unresolvedPhysics": "e56903d893f881cd5a1e576df18872eed3708168d7a13e2e07afd6fc3734d9d1",
   "result.key.confidenceReason": "906944d2c579df879c4987a7d07a4e032bf053927f6b33f8e6c954537ac1f1e0",
-  "result.key.coreContract": "772f854b767310862c9ade2147e80ea9f74812865eed66902b3220cfbf4432d3",
+  "result.key.coreContract": "be0d6e31dea96519023b0df1e3690aab38b433df4da77f8ac7909ad6c208a3a0",
   "result.key.fieldPreviews": "063bd617bcf8a2240843fb42b737f1c1faedb1825e5ea306d6f222dba9726bf5",
-  "result.key.artifacts": "5ca67bdadae0ff85348541596335c43ea74c66c91349adc9ff1236fc05148014",
+  "result.key.artifacts": "8bce84c82cb88116e913d3e7adf4d5c7ba1a3d1c5a8de9a1c010a92618b6f53f",
   "result.key.retentionPolicy": "ab930f19e2eab573860fa3ee488c98026d2867e0b2408442da3c3d6415a31807",
   "result.coreContract.inputSha256": "cdb68c8bfc75423703223a83487a2346b1c1586f8bda3b9bde402a7902ccb28c",
-  "result.coreContract.materialSha256": "e440c583050be1bc06de32e061fc3f6f2f0c21297b217162f4fd53069892f42b",
+  "result.coreContract.materialSha256": "3721504d610fcb1fc924080fda6238fabf635f88663cf450d88343a8f10727b0",
   "result.coreContract.solverId": "enthalpy-fv-6",
   "result.coreContract.modelId": "stationary-enthalpy-conduction-layer-conforming-v1",
-  "result.material.materialRevisionSha256": "7a0457b766d4c4ceaf7295a2188809f6a9b8e8aafb7fcc83a211269ef7bc290f",
+  "result.material.materialRevisionSha256": "14d74c27f61233107d75cd5ad96c08560d1e29ac2b565cb9a2911cd195a7db71",
   "result.validationStatus": "unvalidated",
   "result.productionReady": false,
   "result.effectiveMode": "standard",
@@ -247,255 +249,255 @@
   ],
   "artifact.field-frame-000.bin": [
    4356,
-   "22370dfdcb4d8e13e4c27e53f760d1756cddb5292bc4eb4409b905a73506157c"
+   "1e31412623e82222c7ad09621dad08566b547a0299ff9bc2f31787d5599f488b"
   ],
   "artifact.field-frame-001.bin": [
    4356,
-   "c95d55d0f131ab95c97de4977394af3259e5d64d36dd17d473636026bbbbea14"
+   "0c208395669be9390bfb852a649616b2f5f1c8dee5b247266688c8f6a1a876ac"
   ],
   "artifact.field-frame-002.bin": [
    4356,
-   "fbf8650fc97f047b44630b0aebee53c44706446bf6ef359dc79719ecd44e449e"
+   "80d0e2b300a0f744a3bafa86a2b79895d3725e96e59dec2d78286b94be762db6"
   ],
   "artifact.field-frame-003.bin": [
    4356,
-   "b45d61c3373bbe888fedb6775f0adcdaa29d15cafc0b05112a71be6e70ceb577"
+   "e0a4f62def642e21059c2b1aa26451727daf4b176a43eab9a08e472c6176fdb5"
   ],
   "artifact.field-frame-004.bin": [
    4356,
-   "18813d611dbb2632afa9890bd0c69504e287eef478133b51c590739744c59897"
+   "11e23b0c32fb81c892b4d829462a32b17592ba5d4655af1d23073a28768304f5"
   ],
   "artifact.field-frame-005.bin": [
    4356,
-   "853d3c95fbf267f6c538639971b5ffb0727a25952b6cb8743b6b50856f6b4325"
+   "d5bb49ac9cae6264b600ee741254f1c45001c6942de86005b162c161afa55af5"
   ],
   "artifact.field-frame-006.bin": [
    4356,
-   "d1704a36f5081864c3954ea535b93a5ecdf0f3ad9db63447423132138e141c42"
+   "c7dfc68dacaad2b5edeb0c8c932bd2b702565ca5d583bab628a47d1618ce1a11"
   ],
   "artifact.field-frame-007.bin": [
    4356,
-   "aca0665a2201b0674b679683f446b138c527f506f2a205075d8d41910cce92fd"
+   "1f945e7cebdad50eca3c974ab2b0690da4f737bd026f22a686f7707543f81437"
   ],
   "artifact.field-frame-008.bin": [
    4356,
-   "0d37c08b6a19ac2daee93ccf90e787d75f3c77e242ded984048560b99e7d2e22"
+   "1e3551aa4488bdc1e5c3210e44409419af675e3d00922dbe3f421921b973c694"
   ],
   "artifact.field-frame-009.bin": [
    4356,
-   "d6dc7c2a60e9adf5149d81063a85c7a04f866d40d936adf5eb75b4209407e56f"
+   "15c9539a73b526db1344817f9a129278843673a49102f2b6b9939a13f072ed0a"
   ],
   "artifact.field-frame-010.bin": [
    4356,
-   "5a1bdb5b37698aa69c0bcb075c2fca3baac9713a913790414c551294e43216e5"
+   "da1d2ffd07b3df76b6f4079b1a83f337e00c348d60d76381ac69f389f2fd7926"
   ],
   "artifact.field-frame-011.bin": [
    4356,
-   "ea209f36a648170e6dbdf600e9f6baf45b2c4bad3db8ddc80b2a30963c1b1d7c"
+   "80b78200e1bc4cb4c5cfd1783dbd274a5fdf202403b47a733c73903dc15c903d"
   ],
   "artifact.field-frame-012.bin": [
    4356,
-   "1bb9a6a3a5e05f4a4a3ffd6960db131d58037ac9a4ed1e41acd3de31d1ffd7c3"
+   "a84402a480070e616727ee8575c42065c6892b168ab9efdf932b406e5b9ee6e9"
   ],
   "artifact.field-frame-013.bin": [
    4356,
-   "f2e9f0a954c86d9e5c169ae6807081245cce6a690654d9b89f80ef439a3d20bb"
+   "9abdae1d98532f8a7970409e3b70745776200d52b5f1c2a4b15a80b4e99da5e9"
   ],
   "artifact.field-frame-014.bin": [
    4356,
-   "bcc89edcdb295c6bae7363a8e01d7580ad0683a1a22c0ec87c9f5937347f71ca"
+   "344a30805789adb829509b2e175182666c4a7dab95757333aae1030c5e227bbb"
   ],
   "artifact.field-frame-015.bin": [
    4356,
-   "00068b4a6b6eeb8ba42cf611798bf0eeedeca913be3df78cc0d6d977d3628069"
+   "6c0a40121ef460de68dec9ac448dd151eba8195b90d4faccda27f2bb0da9bad1"
   ],
   "artifact.field-frame-016.bin": [
    4356,
-   "2cd0f6394d428abb9ac5b504fd5cc1776a8c3409cac93b8c0ed86ccccbd1daf8"
+   "7e0f69eb5207f739665ed81691a25ef6b8395edd08349348d2f6930a829d3635"
   ],
   "artifact.field-frame-017.bin": [
    4356,
-   "df097029cdceca3e30b16f5e95e912fd5eeb73345548681afba8439718b1dd2b"
+   "94190e3677c3e46e1ebada44e2df8870f201e1f1c11f16ded2b5f078538bd1c9"
   ],
   "artifact.field-frame-018.bin": [
    4356,
-   "30353489837bc8412af7db453600bf2f014d74926af5160477d0c10cc3fb1d60"
+   "daf8a105b54be309ecf651d39ee0c6d75b62b3583432ff5512aac7e30790d619"
   ],
   "artifact.field-frame-019.bin": [
    4356,
-   "351cf2019e8340c505cddc68a5c7ce1a5b7e188a6a5e4711b6d1d81fe9387c12"
+   "8a489451f58a0adc5a8083475b827c39263c10a60140dbb732c64d810a5c64be"
   ],
   "artifact.field-frame-020.bin": [
    4356,
-   "6bc7db49f2bf9c53e4037c204412bb0c89e5457caba81b81bff69b6cf34dd732"
+   "f2eeba1fac87c679cc97ea3a4ac9fa16a150c3f6ffa786c389721e0bbd068d6e"
   ],
   "artifact.field-frame-021.bin": [
    4356,
-   "b7ba216df6b01dd49bada64aefeb1553bea47a3492f9bdf119cf1dd855085525"
+   "6d7211e8325f758232213716f9de6a1ab4b22a1a9e0a9fb957e5cbd0004460d9"
   ],
   "artifact.field-frame-022.bin": [
    4356,
-   "3da3e39506ee4716ec0a5a2894193fa29b392d1a57a96b5db0a88aaf9dba9c96"
+   "f53857ca0b3b07c5a79e6478f9e154931cfc34d6c9501e55de929e8d1632ca33"
   ],
   "artifact.field-frame-023.bin": [
    4356,
-   "ef682f39e4270da0e5a2e9e51e91ea53f2f5e0954b1c1b4766aee334f92bb006"
+   "5bf3c1925a79e018afdca0e9b2353aaae78ee272ad8c16d2cf988ad92525ec65"
   ],
   "artifact.field-frame-024.bin": [
    4356,
-   "8f33e56b59b79544b71281bf676487c932c752f903c2d56cc46e038009fd5c23"
+   "b049a9a89669efa852c8172674253a0b530697be6bdce4cb91fd3c17dd09794b"
   ],
   "artifact.field-frame-025.bin": [
    4356,
-   "c483dfa21908a03f2df5f64ee94acb98c611e4c4dee6364a326221696a9e46e4"
+   "9e5920879428f6280eb9de87efdb386f2fe110fbf0e8875611b0d324666c1d4e"
   ],
   "artifact.field-frame-026.bin": [
    4356,
-   "c3c26665aac753a90898aec1302e94b624fa046acae54db6e280488c849f0676"
+   "543f2af3530a524709ce4bdb2c78848ea42410906f8acb2c2acb1629d7ec482b"
   ],
   "artifact.field-frame-027.bin": [
    4356,
-   "6d2a92adf17716c6d1a022b60f0f7b52b6f8129e865dbd6e8637f099323874d7"
+   "bebf8c792cf7579703f7c0b57728ddc32d2a28318a92d38c3c843d3249ad6354"
   ],
   "artifact.field-frame-028.bin": [
    4356,
-   "d2b2227a1177762df1fac0e9c0d662ae9a85f351bbaa6e12c731474e87331564"
+   "b09af9045fdaf871e18a22553c01058243d611b5ddbab78a29fc3b19eed600e7"
   ],
   "artifact.field-frame-029.bin": [
    4356,
-   "8d5c246ca3a9238a6a5e700759d299ab64dc5e92059a18a9c6dc25734a5f80f5"
+   "209db37048e9f339d7e529eab0ab95dc6024bb96a61bf6cf19bfbf525c85d461"
   ],
   "artifact.field-frame-030.bin": [
    4356,
-   "e3390a3e37c8b74eb0da7dea57e8d80925152b8f53ffdb22140f7411d24a4395"
+   "bdff4f604032c2cf42504850b3d70107292e31d2feb0333731b9b2fc71c80384"
   ],
   "artifact.field-frame-031.bin": [
    4356,
-   "a916cc23096c412ecd22e74f88a3ab238095ebc68df5d822a029fd876a4aa4d7"
+   "31e3f0e9be33e91028933e9a9d2a7ea22a040e68db27dc655d85519d3fe3aa08"
   ],
   "artifact.field-frame-032.bin": [
    4356,
-   "a28c2f98082e5b92782f3b9973a1d48bc119d0301bfc04f6b1314dcc5e2a7e0c"
+   "7605cbdbcac67a64cf3b4e1f2ec013a815fad1023c3c8859c45239634b326ca5"
   ],
   "artifact.field-frame-033.bin": [
    4356,
-   "d5c8c8e52bb0d96232fad5096998752eebbcf7b496c5ef5da1d2c5fdbee7a1b3"
+   "dbfa4d5232b830be06679ea77d35c27811f5d5f7ac59e84029d057d57ed5ea16"
   ],
   "artifact.field-frame-034.bin": [
    4356,
-   "76a115dd9ada939abdbb83ead04f0e51c6f2f3c15c62db85c6585972c12ff9e4"
+   "c20d444afd90ef57c91cb6768df564a607fcd2a66ab02de576af0510d858213c"
   ],
   "artifact.field-frame-035.bin": [
    4356,
-   "d02e5ec07c37c8884fa29063dc3df62b2ffc0eb012a664b1787df648705c85f4"
+   "7094f37cdb7179b0aeaedfd4ad862b7aa0d1f0fece9c3f39ec4154e445a76bf4"
   ],
   "artifact.field-frame-036.bin": [
    4356,
-   "9f0a1ed47a037c84a8c35e9d99824195b58012c6b08a99cf29fa239d25061080"
+   "ac335afb375358abc269a398a137b9ac1bc222e5f56308b5bbcd1bcdb8b2ef43"
   ],
   "artifact.field-frame-037.bin": [
    4356,
-   "c6ea9e6446de0b549ab126094d4ac70df8b540bebbef9fc0844e1bf8c4169f85"
+   "22e5eb43b45b5f305a660df5d5b7eed50bb2930074586735c42011e7391f5ed9"
   ],
   "artifact.field-frame-038.bin": [
    4356,
-   "e13995404b9fe83eec36c809e4d29fd2328dfa7c186ce14495cd6ae1f70c032e"
+   "c351465f9c867283dc3f083c680ef90b40b0f33fd27b1de05bdc44c0eabc168b"
   ],
   "artifact.field-frame-039.bin": [
    4356,
-   "52f6567521e40ce667b766a65f3f328c8eebe9b66906faaa17ba996be4548d8c"
+   "ed7fdc31009476f63803690ffa5e53e237b5b007a8e416ea6e746af6d50463b2"
   ],
   "artifact.field-frame-040.bin": [
    4356,
-   "5aabda3e2272a4fc47576b81284e334e7a0451c3557e9d201dd980fce21e16ba"
+   "8a6e1effeaeec982089ac2a78faf46e6520830422291b2f7362ab64242787c75"
   ],
   "artifact.field-frame-041.bin": [
    4356,
-   "c99c621cd89d27d33cd66d4a0aa5cd5cb2c2c99780ee3419f13caae862fddead"
+   "8d01534514ba24fe8cffdca2c070d741d73aa1a99ab56c6c478dbf2d33203089"
   ],
   "artifact.field-frame-042.bin": [
    4356,
-   "2a9e93d475bd090436a2c1b925bb24d00b879f4620c2b0331aa49e569d1e6ffb"
+   "24a14d4cd254f4ad86efc227f97a03c4a747046da1df64146518f93219fcf1d8"
   ],
   "artifact.field-frame-043.bin": [
    4356,
-   "f3f5536f483a0637ef5a2be7458a4bc24d96081f7f8302522bb9ae13e1e9c68b"
+   "d4b08addfa4bfc5abdde5929611939fbf0611aa8f14d6359ded7c83bc7d6f1a8"
   ],
   "artifact.field-frame-044.bin": [
    4356,
-   "ad09fc3e54b8ec4cdd61848dc96b5b4fd02b6fe259b6ec2d6d3129330bef309b"
+   "f0a2ac5e2ae3e56ef0a29653c025bd3bc4fee33b4092a15499ee939891129e8a"
   ],
   "artifact.field-frame-045.bin": [
    4356,
-   "6571c4e78bafd679d1734b7d52f6ae622ea8cf19285b2bcebe85028509490e98"
+   "d47cef2019953fe14489945d25c31b01a1433ee3c5c3ff6c627ecf097643280d"
   ],
   "artifact.field-frame-046.bin": [
    4356,
-   "2ba1793566e947d44dbbc1ba6f19be7a1ea976c7e346234b700c2ae81e68254c"
+   "1dac6e7ebcec1e886866f01a43089bb6898e0a598a7af4debfe193f8f5821810"
   ],
   "artifact.field-frame-047.bin": [
    4356,
-   "fc91bee848c53a15c190cad72f799477e1f135ad4a5fe864b2bfcca2964a8b32"
+   "c64aceb2afaee1657f7a88e56b8ec463c558c35b5618ff3042679268630c1270"
   ],
   "artifact.field-frame-048.bin": [
    4356,
-   "528169231c494b56a99e2a3b7cab38119439ebf09da992cf9953abff9d61956a"
+   "cc739d356564fcb961968577e8e5803b8257307215cdcf79932736d85d6fbeb8"
   ],
   "artifact.field-frame-049.bin": [
    4356,
-   "0dd44fd338be30da63d1a24248d4fae59fb016f93282e4878e5256120a92fd01"
+   "33ec701a421503bfc942482f5dbaa69610115357c04e20894a4715f88e72be1e"
   ],
   "artifact.field-frame-050.bin": [
    4356,
-   "f5c219e6b68c15260e1e7b7fa3d98ac0c1a90dc828a71396a885a6c043c3fb19"
+   "8b63c0502f4c6602689fee63c41e6bab37addf7c916353d0ce0a8f66b39bcb5e"
   ],
   "artifact.field-frame-051.bin": [
    4356,
-   "5f29cd013dec5698d64d8bf9a1a6cea204af2c8b7dd6c1de567cd5df64043078"
+   "ebf7906ee61c67836ed20a274c70f797e718c0e9264a7162299f87d8beb86622"
   ],
   "artifact.field-frame-052.bin": [
    4356,
-   "0e715baadd146a01c7db64d17d228cfcbb8ea707f68fcbb32e1961c2869a5517"
+   "a6e5bfe2b3d7123dd7f9ab1ee6b4157018f17378107244ac9b6fcb76218d76a7"
   ],
   "artifact.field-frame-053.bin": [
    4356,
-   "8fda189d369765ed4c34e397b8c15b80712dd12610057e587abe1e92d7e670ee"
+   "c13e17184ce52b95738707e7e40e0900270a5a157abc276a113baf30af2f6f9e"
   ],
   "artifact.field-frame-054.bin": [
    4356,
-   "8b78aaba6919ff77d8beb308f82b1d1eefdff7695400598c4d51928b8b9c2153"
+   "ef24fac1d8169a400946c4511a2d999bc68c76294fb327157d8eb40a67a023ff"
   ],
   "artifact.field-frame-055.bin": [
    4356,
-   "12454dcb3a6fe7a38ea5025da0042346d2f558a676f6c13128fd43d787fb6131"
+   "f51caeb59c5fe8d6a9d8e18c4792542209087b691fcc4db35794548b7f29bb8e"
   ],
   "artifact.field-frame-056.bin": [
    4356,
-   "649ebe527ccacf916c6f7669bce479c26c9fac8f73c9261ef1a16de9f4cbcc90"
+   "974d109a46584d18bea69edc7bf28db09021c0cd54703985f84117c9d2c45b2a"
   ],
   "artifact.field-frame-057.bin": [
    4356,
-   "36f99d80e6aa708133a34ed422200e7e1755f1d0f1260e945331c8df47586a3b"
+   "36f478d143894121fd0eb14b22b8d6ef83f6b3e01d51202acf735c2d87167ed6"
   ],
   "artifact.field-frame-058.bin": [
    4356,
-   "f4bed6bd9052b4001efeb8f0ec3391920ecf15bcadb13707bb242d0cd42f77b8"
+   "e78400b34380103c2a54e0b377c1470baf4856e509ff1a3189da91649b3e3acf"
   ],
   "artifact.field-frame-059.bin": [
    4356,
-   "33fa06f2068c5c02d45c2fe0638f221662cc39492e0ec9c662e56c89b440216a"
+   "85e0a91585fa9bda709bf0a31328dd32d29adb9e533f9585d7cf19f94bd570fb"
   ],
   "artifact.field-frame-060.bin": [
    4356,
-   "7e413c6d24787ab69c90075920ae9df0bd30dcedc24d161cbb73bac4d4767bac"
+   "5e11d6029f0787d6f4bb51ff4c65d258c1edaf3ee3cc4d99bf49cfe197eea63b"
   ],
   "artifact.field-series.json": [
-   26702,
-   "b54c450060e8f2c784b314148bf6ce9a4efdacb6adeede755279d7464be58960"
+   26678,
+   "63f722c9e879a2ebf1336db5f5776023e03d8c0141dbdbfa525011fe9c556bc9"
   ],
   "artifact.peak-field.npz": [
-   9811,
-   "fdbf1587e168105ca58dcbc56b7256c698cf5255fb099afd9ec41f0dc094073a"
+   9818,
+   "06d0ee2b185c970f24081a7228aed64d26fa74625f2f371eec9a2afe9795f663"
   ],
   "npz.peak-field.npz.arrayNames": [
    "coordinates_m",
@@ -522,7 +524,7 @@
    [
     1089
    ],
-   "02fd0cbda3e4ea96290d2f4dd7ff2c5eed989d5064ffa1e63d78c4f7a46d7cb6"
+   "d113877af8847cc7df93191dbc1ec3180194f7f6ac62123c8390f4e4ba331924"
   ],
   "npz.peak-field.npz.array.active": [
    "|b1",
@@ -536,7 +538,7 @@
    [
     1089
    ],
-   "464fecc37300622a45bee17e3ae81b9905c0883925508e67b3e3da3e9a9094f4"
+   "c4044e37a8252bd6789f683622256242f8d2e3ac2bd8dccf80904ba9ea7cf52c"
   ],
   "npz.peak-field.npz.array.surface_m": [
    "<f8",
@@ -557,21 +559,21 @@
    [
     1
    ],
-   "43a9b9a746fc3eab23aec9f68ee38d2a3f577b682c78131ee814bb143123de2a"
+   "eddc2282450390c9ef03e6af3d7cfac020758120b9af906c937966eb9963406a"
   ],
   "npz.peak-field.npz.array.step": [
    "<i8",
    [
     1
    ],
-   "bbc1fb92c8918b43a1001af501a36e2727079a814b3ad93bbf81fd238a1e9687"
+   "cc1e478766eca193983d4f28b728b8c7e481305d2e0f662c422d5b9633d5628a"
   ],
   "npz.peak-field.npz.array.liquidus_K": [
    "<f8",
    [
     1
    ],
-   "9c38983a39b3d9a565b8867162e8bd4ac4dddccdb777f438dc830aaf3a183737"
+   "826dbebcda727d7bd1c7388a0fc29345f94a2bf2a19bb051556d44e01e72414c"
   ],
   "npz.peak-field.npz.array.mesh_m": [
    "<f8",
@@ -581,20 +583,20 @@
    "211fadb6688583d4950cc21a825e98e1a2b18fabc1092d8bbf65c69d77f5163c"
   ],
   "artifact.phase-slice.svg": [
-   8675,
-   "97407d5f6dc3dc771887133f990993da69397ca89cf2fb45bf4f22fd1d8f0bce"
+   8674,
+   "29b4edc22268e927e809ea0966773039f99b4b126e89d67d5713a53e9f88e6ba"
   ],
   "artifact.temperature-slice.svg": [
    8692,
-   "446fd039c6d89f630e99b7b87e5fda599eeda0866ad8df2f8944f60edd5e6da3"
+   "25c35d11a9d4dfbe177fa8f0a57757a0464b23abfd4ce4d36d6dfcf7fdf38e5b"
   ],
   "artifact.thermal-history.csv": [
-   6550,
-   "dd058d9d45b50b084b186f7101d307c1e311b704b1eb010354d2721ab5cab577"
+   6544,
+   "4127dd7913c975d7769a284be989cfac7396706d2538a44c5cc0ba5fa03f5c33"
   ],
   "result.artifactsListedMatchDisk": true,
   "result.artifactsImplementationHashOccurrences": 0,
-  "evaporation.inversionCalls": 5085,
+  "evaporation.inversionCalls": 5087,
   "evaporation.latentHeatVapUsed_J_kg": [
    [
     10500000.0,
@@ -664,8 +666,8 @@
   "result.key.boilingCap": {
    "modelId": "boiling-cap-v1",
    "active": true,
-   "cappedSteps": 5085,
-   "maxExcessEnthalpy_J_kg": 31765941.695828706,
+   "cappedSteps": 5087,
+   "maxExcessEnthalpy_J_kg": 31820371.45769596,
    "maxVaporFractionProxy": 1.0,
    "latentHeatVap_J_kg": 10500000.0,
    "energyLeavesDomain": false,
@@ -683,7 +685,7 @@
    "effectiveMode": "standard",
    "solverId": "enthalpy-fv-6",
    "inputSha256": "cdb68c8bfc75423703223a83487a2346b1c1586f8bda3b9bde402a7902ccb28c",
-   "materialSha256": "e440c583050be1bc06de32e061fc3f6f2f0c21297b217162f4fd53069892f42b",
+   "materialSha256": "3721504d610fcb1fc924080fda6238fabf635f88663cf450d88343a8f10727b0",
    "units": {
     "power": "W",
     "speed": "mm/s",
@@ -708,16 +710,16 @@
   "result.key.discretization": {
    "cells": 1089,
    "mesh_m": 3.9999999999999996e-05,
-   "minimumDt_s": 3.197567729449095e-08,
-   "meanDt_s": 6.729475100942125e-08,
-   "steps": 5201
+   "minimumDt_s": 3.8859344584209286e-08,
+   "meanDt_s": 6.72688833365366e-08,
+   "steps": 5203
   },
   "result.key.effectiveMode": "standard",
   "result.key.energyBalance": {
-   "input_J": 0.03750000000000007,
-   "losses_J": 0.0012476747429956754,
-   "stored_J": 0.03625232525700439,
-   "relativeError": 0.0
+   "input_J": 0.03749999999999998,
+   "losses_J": 0.001251151628887704,
+   "stored_J": 0.0362488483711123,
+   "relativeError": 7.401486830834381e-16
   },
   "result.key.fallbackReason": null,
   "result.key.fieldOverlapDiagnostics": {
@@ -732,9 +734,9 @@
    "hasInterTrackGap": false,
    "interTrackLackOfFusion": false,
    "interLayerPenetrationDepth_um": 80.0,
-   "interLayerRemeltRatio": 0.5125,
+   "interLayerRemeltRatio": 0.5256410256410257,
    "globalRemeltRatio": 0.0,
-   "totalMeltVolume_um3": 5119999.999999998,
+   "totalMeltVolume_um3": 4991999.999999998,
    "totalRemeltVolume_um3": 0.0,
    "status": "single-track-evaluated",
    "note": "Single track simulation; inter-track overlap requires >= 2 tracks."
@@ -799,79 +801,25 @@
   "result.key.label": "Unvalidated transient thermal (boiling-capped: temperature clipped at T_boil, excess enthalpy retained in-cell; not an evaporation model)",
   "result.key.mainRisk": "keyhole (screening)",
   "result.key.massBalance": {
-   "initial_kg": 1.7489816451226887e-07,
+   "initial_kg": 1.749151785455759e-07,
    "deposited_kg": 0.0,
-   "final_kg": 1.7489816451226887e-07,
+   "final_kg": 1.749151785455759e-07,
    "relativeError": 0.0,
    "scope": "Stationary reference mass accounting; no continuity, evaporation or shrinkage solved"
-  },
-  "result.key.material": {
-   "solidus_K": 830.15,
-   "liquidus_K": 868.15,
-   "boiling_K": 2743.15,
-   "latentHeat_J_kg": 397000.0,
-   "absorptivity": 0.3,
-   "emissivity": 0.35,
-   "dGamma_dT": -0.000103,
-   "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-   "quality": "estimated",
-   "table": [
-    [
-     273.15,
-     2680.0,
-     130.0,
-     910.0,
-     0.0013
-    ],
-    [
-     830.15,
-     2412.078319327731,
-     130.0,
-     1162.7563025210084,
-     0.0013
-    ],
-    [
-     868.15,
-     2393.8,
-     64.0,
-     1180.0,
-     0.0013
-    ],
-    [
-     2743.15,
-     2393.8,
-     64.0,
-     1180.0,
-     0.0013
-    ]
-   ],
-   "name": "AlSi10Mg",
-   "version": "lpbf-materials-1",
-   "temperatureCoverage_K": [
-    273.15,
-    2743.15
-   ],
-   "uncertaintyNote": "Property uncertainties not quantified; source string does not establish validation.",
-   "materialId": "alsi10mg",
-   "provenanceClass": "estimated-legacy",
-   "materialIdentitySchemaVersion": 1,
-   "materialAuthority": "four_alloy_materials.py",
-   "materialAuthorityRevisionSha256": "4e2139cbf2f209da5092a5782ab9ec06501f15b5e85576b6a6460fe1b2c3169a",
-   "materialRevisionSha256": "7a0457b766d4c4ceaf7295a2188809f6a9b8e8aafb7fcc83a211269ef7bc290f"
   },
   "result.key.metrics": {
    "length_um": 320.0,
    "width_um": 199.99999999999997,
    "depth_um": 119.99999999999999,
-   "volume_um3": 4799999.999999998,
+   "volume_um3": 4671999.999999999,
    "crossSectionArea_um2": 20799.999999999993,
    "peakTemperature_K": 2743.15,
-   "thermalGradient_K_m": 5215799.283719809,
-   "solidificationRate_m_s": 0.05544046364744505,
-   "coolingRate_K_s": 263984.0108826275,
+   "thermalGradient_K_m": 5494934.18220749,
+   "solidificationRate_m_s": 0.11072376954392343,
+   "coolingRate_K_s": 576650.9650953152,
    "keyholeDepth_um": null,
    "recoilPressure_Pa": null,
-   "marangoniNumber": 1311.3391766826921,
+   "marangoniNumber": 1308.541653105769,
    "pecletNumber": 7.06171,
    "aspectRatio": 0.6,
    "trackOverlapRatio": null,
@@ -881,41 +829,41 @@
   "result.key.midTrackInterpolatedCrossSection": null,
   "result.key.numericalDiagnostics": {
    "meltPoolExtraction": "accepted-step-molten-volume-v1",
-   "peakMeltTime_s": 0.00028765984785749684,
-   "peakMeltStep": 4558,
-   "meltPoolObservedSteps": 5201,
-   "peakMeltCellCount": 75,
-   "equalMaximumEndpointCount": 67,
-   "firstEqualMaximumTime_s": 0.00028765984785749684,
-   "lastEqualMaximumTime_s": 0.00029427984918017983,
-   "sampledPeakMeltVolume_um3": 4799999.999999998,
+   "peakMeltTime_s": 0.00029048552946107,
+   "peakMeltStep": 4590,
+   "meltPoolObservedSteps": 5203,
+   "peakMeltCellCount": 73,
+   "equalMaximumEndpointCount": 73,
+   "firstEqualMaximumTime_s": 0.00029048552946107,
+   "lastEqualMaximumTime_s": 0.0002976732575953121,
+   "sampledPeakMeltVolume_um3": 4671999.999999999,
    "peakMeltSamplingLossFraction": 0.0,
    "overlapExtraction": "field-inter-track-overlap-v1",
    "sourceIntegration": "cell-integrated-gaussian-adaptive-gl-v2",
    "solidificationExtraction": "linear-liquidus-crossing-v1",
    "stabilityLimit": "local-conductance-row-sum",
-   "minimumCapturedSourceFraction": 0.9999999990156779,
-   "maximumSourceRenormalization": 1.0000000009843222,
+   "minimumCapturedSourceFraction": 0.9999999990154063,
+   "maximumSourceRenormalization": 1.0000000009845937,
    "maximumSurfaceOffset_um": 0.0,
-   "maximumTimestep_s": 1.2512560925153868e-07,
-   "maximumEnthalpyIncrement_K": 24.436626636905476,
-   "sourceTimestepRetries": 5199,
+   "maximumTimestep_s": 1.2774308298946896e-07,
+   "maximumEnthalpyIncrement_K": 24.436600323197425,
+   "sourceTimestepRetries": 5201,
    "acceptedTimestepDistribution": {
     "methodId": "accepted-timestep-distribution-v1",
-    "count": 5201,
-    "total_s": 0.0003500000000000003,
-    "sumSquared_s2": 2.5348157543018543e-11,
-    "mean_s": 6.729475100942133e-08,
-    "minimum_s": 3.197567729449095e-08,
-    "p50_s": 5.911705259771721e-08,
-    "p90_s": 9.759189756070348e-08,
-    "p99_s": 1.1407153027524552e-07,
-    "maximum_s": 1.2512560925153868e-07,
-    "eulerFirstOrderWeightedDt_s": 7.24233072657672e-08,
+    "count": 5203,
+    "total_s": 0.00035000000000000016,
+    "sumSquared_s2": 2.5366267706075964e-11,
+    "mean_s": 6.726888333653665e-08,
+    "minimum_s": 3.8859344584209286e-08,
+    "p50_s": 5.9033180984147075e-08,
+    "p90_s": 9.78662319933347e-08,
+    "p99_s": 1.1520664908128744e-07,
+    "maximum_s": 1.2774308298946896e-07,
+    "eulerFirstOrderWeightedDt_s": 7.247505058878843e-08,
     "requestedMaxDt_s": 1e-06,
     "requestedMaxDtHitFraction": 0.0,
-    "sourceLimitedStepCount": 5199,
-    "sourceTimestepRetries": 5199
+    "sourceLimitedStepCount": 5201,
+    "sourceTimestepRetries": 5201
    }
   },
   "result.key.peakInterpolatedMeltPool": {
@@ -924,15 +872,15 @@
    "temporalSelection": "accepted-step-molten-volume-v1",
    "contour": "linear liquidus crossings between neighboring active cell centers",
    "surfaceTreatment": "No temperature extrapolation to the model surface",
-   "width_um": 236.72802215814187,
-   "depth_um": 121.84654985215622,
+   "width_um": 237.01049686135232,
+   "depth_um": 121.40312439703646,
    "evidenceScope": "Numerical thermal proxy; no experimental validation",
-   "sampleCells": 75,
-   "crossingCount": 102
+   "sampleCells": 73,
+   "crossingCount": 100
   },
   "result.key.phaseAudit": {
-   "liquidVolume_m3": 5.285626856079384e-12,
-   "solidVolume_m3": 6.44103731439206e-11,
+   "liquidVolume_m3": 5.20117528845234e-12,
+   "solidVolume_m3": 6.449482471154763e-11,
    "activeVolume_m3": 6.969599999999997e-11,
    "minFraction": 0.0,
    "maxFraction": 1.0,

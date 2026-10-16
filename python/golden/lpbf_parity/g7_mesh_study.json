@@ -4,9 +4,9 @@
  "group": "G7",
  "description": "Smallest layer-aligned three-grid mesh study",
  "slow": false,
- "recordedImplementationHash": "dc6f5fddfa40c38b24128284e0baf2e13990d034d17e5e0cff9095b1d03398d5",
+ "recordedImplementationHash": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "c6ec6dbf5fdbcbfff58056285596c290eaf0b517",
+ "recordedGitHead": "c5712223e1d4105ef1f7fd50b1e8a03383d561ce",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,13 +68,13 @@
   }
  },
  "recordedRuns_s": [
-  4.4,
-  4.2
+  3.7,
+  4.0
  ],
  "recordedTwice": true,
  "observations": {
-  "result.canonicalSha256": "c223ecdfd71d1f675088c75f903dda65203562836048b04e1cdca3e042f8e342",
-  "result.orderedTypedSha256": "15164f2dd8d1564fb2f7977cf2b7b06b91edbbaece114aaa75d9deca00795b92",
+  "result.canonicalSha256": "5ca1dfd67ad174a3430cc0047f623c82d5ba843e2e8eba48b381d186e1b8d82b",
+  "result.orderedTypedSha256": "a31122ee918285528b2532c32d20b2727bcab2a3113f26bee2d38d59b8ca9d25",
   "result.topLevelKeys": [
    "schemaVersion",
    "requestedMode",
@@ -92,6 +92,7 @@
    "assumptions",
    "fallbackReason",
    "metrics",
+   "transientFrontDiagnostics",
    "thermalHistory",
    "fieldSeries",
    "peakInterpolatedMeltPool",
@@ -123,7 +124,7 @@
   "result.key.effectiveMode": "cb2842d6687d19c69a6c0d4eb6a0f1af02951cef170de56ab331046ea5baac08",
   "result.key.solver": "379da9f17510ad5e9f42d7be64eda2f553ada427d6a389bd3552f81dbe7cd97d",
   "result.key.settings": "4699075217ced80911da545c4eb67787e57dbd65c8e3b318cc0bc9e86fc6207f",
-  "result.key.material": "977951f9ec826255f143d24b8997760a961eba6af2f0b5e102963e061fb651c2",
+  "result.key.material": "5058e6e61e393a813e46a6b7061c277cdd6004227926783bfcfffe0041cc24e8",
   "result.key.requestedBackend": "86a3d4125c91d4621cfc34f7d2ac1f2fb7df908cae63aef232d0b9e0713171db",
   "result.key.confidence": "364bb7082249ee9fbc5247ee49735c4246f271b82c2745a35107ddda0d7cabcc",
   "result.key.validationStatus": "034d24b06221faeb3860b36b4069fe6436aeadc3db62a687efe73615cfb2541d",
@@ -134,6 +135,7 @@
   "result.key.assumptions": "5f79bae5f08d4c592445b07af436541a91841e2f8a9212688f95cef3d3e1a104",
   "result.key.fallbackReason": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
   "result.key.metrics": "69759aa10fdf5e0ac2a03aa1f102bfaaf3daf6d87e76ba442ac9905617fe2f74",
+  "result.key.transientFrontDiagnostics": "fa8a30df7e65ecca4edfb91fe864f4b857447be0ca5f76db996a0e1a5a4cf462",
   "result.key.thermalHistory": "8b437d6c84e5355c66a5e6341764f3dfe992b13dcd09b8ba13fbd7814ca88a7a",
   "result.key.fieldSeries": "7e5d844a6929e466a78a570e89bba38f7aca29004a88e1b5afc69fa25fa7c8e3",
   "result.key.peakInterpolatedMeltPool": "4de6e2a50bed9e985efae22563b470d5a18b24debddf444177347f6c871e3b12",
@@ -156,14 +158,14 @@
   "result.key.resourceEstimate": "69e0742d182249739fbe16d214f6a67a70fbe09f4fdfe6ce2cf880dc684cf451",
   "result.key.unresolvedPhysics": "e56903d893f881cd5a1e576df18872eed3708168d7a13e2e07afd6fc3734d9d1",
   "result.key.confidenceReason": "906944d2c579df879c4987a7d07a4e032bf053927f6b33f8e6c954537ac1f1e0",
-  "result.key.coreContract": "7a3da9608565abcda79800396034f3878f2d7762587b8e2da536a283f55064b3",
+  "result.key.coreContract": "3c2234f9ee4a037ab7bd16e060148144812e86d065c55520690bab7c32ebb7c2",
   "result.key.artifacts": "1bd5c501170508e224e7dda94f3c4bd62c71c0c0c6c49e405899586ec3b7d683",
   "result.key.retentionPolicy": "ab930f19e2eab573860fa3ee488c98026d2867e0b2408442da3c3d6415a31807",
   "result.coreContract.inputSha256": "f542e90a84ea9d7d7e220844a549974da30d0804efd73439f4d069ff8c93e547",
-  "result.coreContract.materialSha256": "24add765f3931e780d1a65b62888c4ae765cecc83314374bac713af3f70a6edf",
+  "result.coreContract.materialSha256": "1aaab644e813174edbd6e16e0cdc8484bf24965a74b3715422a2879865cb804f",
   "result.coreContract.solverId": "enthalpy-fv-6",
   "result.coreContract.modelId": "stationary-enthalpy-conduction-layer-conforming-v1",
-  "result.material.materialRevisionSha256": "8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8",
+  "result.material.materialRevisionSha256": "4562ad022349e2dcff1681c1aca43da44aebb1dbe7ceed4dcb1f8f6b84e66fbb",
   "result.validationStatus": "unvalidated",
   "result.productionReady": false,
   "result.effectiveMode": "standard",
@@ -641,7 +643,7 @@
    "effectiveMode": "standard",
    "solverId": "enthalpy-fv-6",
    "inputSha256": "f542e90a84ea9d7d7e220844a549974da30d0804efd73439f4d069ff8c93e547",
-   "materialSha256": "24add765f3931e780d1a65b62888c4ae765cecc83314374bac713af3f70a6edf",
+   "materialSha256": "1aaab644e813174edbd6e16e0cdc8484bf24965a74b3715422a2879865cb804f",
    "units": {
     "power": "W",
     "speed": "mm/s",
@@ -753,53 +755,6 @@
    "final_kg": 5.393358185389219e-07,
    "relativeError": 0.0,
    "scope": "Stationary reference mass accounting; no continuity, evaporation or shrinkage solved"
-  },
-  "result.key.material": {
-   "solidus_K": 1533.15,
-   "liquidus_K": 1609.15,
-   "boiling_K": 3123.15,
-   "latentHeat_J_kg": 270000.0,
-   "absorptivity": 0.32,
-   "emissivity": 0.35,
-   "dGamma_dT": -0.0004,
-   "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
-   "quality": "estimated",
-   "table": [
-    [
-     273.15,
-     8190.0,
-     11.4,
-     435.0,
-     0.0055
-    ],
-    [
-     1609.15,
-     7450.0,
-     29.0,
-     730.0,
-     0.0055
-    ],
-    [
-     3123.15,
-     7450.0,
-     29.0,
-     730.0,
-     0.0055
-    ]
-   ],
-   "name": "Inconel 718",
-   "version": "lpbf-materials-1",
-   "temperatureCoverage_K": [
-    273.15,
-    3123.15
-   ],
-   "uncertaintyNote": "Property uncertainties not quantified; source string does not establish validation.",
-   "materialId": "in718",
-   "provenanceClass": "estimated-legacy",
-   "materialIdentitySchemaVersion": 1,
-   "materialAuthority": "four_alloy_materials.py",
-   "materialAuthorityRevisionSha256": "114ed51b8b0262ea1bcfa1eca7b0b9eeb95e1bd46756ee73dc1308cbd5d8ad75",
-   "materialRevisionSha256": "8bbceb4e810fd1554ff14ab72fbb8801fd7b5aa7bdc388f5af505e8da3d0ebd8"
   },
   "result.key.metrics": {
    "length_um": 0.0,
