@@ -51,3 +51,15 @@ test("PDAS displays two named SI-to-micrometre alternatives, without interval wo
   assert.equal(text, "Hunt: 2.000; Kurz-Fisher: 3.000 µm");
   assert.doesNotMatch(text, / to |–/);
 });
+
+test("quantityReason states a repeated parent-unavailable sentence once and maps the SOL-C gate", async () => {
+  const { quantityReason, SOL_C_CHANNEL_TEXT } = await import("../src/utils/solidificationDisplay");
+  const parent = (input: string) => ({ input, kind: "derived" });
+  const twice = { reasons: [
+    { code: "parent-unavailable", params: {}, parent: parent("a") },
+    { code: "parent-unavailable", params: {}, parent: parent("b") },
+  ] };
+  assert.equal(quantityReason(twice as never), "A parent value this quantity depends on is unavailable.");
+  const gated = { reasons: [{ code: "parent-unavailable", params: { gate: "sol-c-local-samples-not-installed" }, parent: parent("a") }] };
+  assert.equal(quantityReason(gated as never), SOL_C_CHANNEL_TEXT);
+});

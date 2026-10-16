@@ -43,8 +43,8 @@ test("available (IN718): label chip as text, k with citation, Nb band, risk clas
   assert.ok(t.includes("core k·C 0 = 0.45"), t);
   assert.ok(t.includes("capped at the γ/Laves composition"), t);
   assert.match(markup, /data-solidification-envelope/);
-  // After SOL-T the liquidus is admitted; the front stays null until SOL-C installs local samples.
-  assert.match(t, /Too few valid interface samples support this value/);
+  // The SOL-T head front container stays null; SOL-C serves local values on its own opt-in estimate channel.
+  assert.match(t, /computed on request on the solidification estimate channel/);
   // Validity warning and the upper-bound wording.
   assert.match(markup, /data-seg-validity/);
   assert.ok(t.includes("Outside the source regime"), t);

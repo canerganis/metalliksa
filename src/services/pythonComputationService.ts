@@ -387,6 +387,21 @@ class PythonComputationService {
     return res.json();
   }
 
+  // SOL-C solidification estimate channel (quantity envelope v2). Returns the raw JSON; the component parses it
+  // with checkedSolidificationEstimates so a rejected payload never shows numbers.
+  async computeSolidificationEstimates(data: {
+    params: Record<string, number | string>;
+    options: { inputSensitivity: boolean; conductionSurrogate: boolean };
+  }): Promise<unknown> {
+    const res = await fetch("/api/python/lpbf-solidification-estimates", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+    return res.json();
+  }
+
   /**
    * Check whether the configured Python runtime is reachable
    */

@@ -11,8 +11,13 @@ export const FRONT_LABELS: Readonly<Record<string, string>> = {
   gOverR: "G/R", pdas: "PDAS", sdas: "SDAS", morphology: "Morphology",
   solidStateTransformation: "Phase note",
 };
+// SOL-T head containers carry this gate while local front values are served on the SOL-C estimate channel only.
+export const SOL_C_CHANNEL_GATE = "sol-c-local-samples-not-installed";
+export const SOL_C_CHANNEL_TEXT = "Front estimates are computed on request on the solidification estimate channel (Solidification atlas).";
+/** Reason sentences of one quantity, each sentence once (several null parents share one sentence). */
 export function quantityReason(q: Quantity): string {
-  return q.reasons.map(r => reasonText(r.code, r.params)).join(" ");
+  const sentences = q.reasons.map(r => r.params?.gate === SOL_C_CHANNEL_GATE ? SOL_C_CHANNEL_TEXT : reasonText(r.code, r.params));
+  return [...new Set(sentences)].join(" ");
 }
 export function quantityText(q: Quantity): string {
   if (q.value === null) return quantityReason(q);

@@ -13,6 +13,7 @@ import { SolidificationQuantities } from './SolidificationQuantities';
 import { useMaterialSpecimenStore } from '../store/useMaterialSpecimenStore';
 import { pythonComputationService } from '../services/pythonComputationService';
 import type { SolidificationMicrostructureAvailable } from '../services/pythonComputationService';
+import { SolidificationEstimates } from './SolidificationEstimates';
 import { GrSolidificationMapCard } from './GrSolidificationMapCard';
 import { solidificationOutcome } from '../utils/solidificationOutcome';
 import { createLatestRequestGate, settleLatestRequest } from '../utils/solidificationRequest';
@@ -98,8 +99,14 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
   const [unavailableReason, setUnavailableReason] = useState<string | null>(null);
   const [degenerate, setDegenerate] = useState(false);
   const requestGate = useRef(createLatestRequestGate());
+  const [inputSensitivity, setInputSensitivity] = useState(false);
+  const [conductionSurrogate, setConductionSurrogate] = useState(false);
+  const [estimates, setEstimates] = useState<unknown>(null);
+  const [estimatesLoading, setEstimatesLoading] = useState(false);
+  const [estimatesError, setEstimatesError] = useState<string | null>(null);
+  const estimateGate = useRef(createLatestRequestGate());
 
-  useEffect(() => () => requestGate.current.invalidate(), []);
+  useEffect(() => () => { requestGate.current.invalidate(); estimateGate.current.invalidate(); }, []);
 
   const alloyProps = solidificationPresetInputs(selectedAlloy);
   const alloyQuality = authorityThermalProvenance(SOLIDIFICATION_PRESETS[selectedAlloy as keyof typeof SOLIDIFICATION_PRESETS]).quality;
@@ -110,6 +117,10 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
     setError(null);
     setUnavailableReason(null);
     setDegenerate(false);
+    estimateGate.current.invalidate();
+    setEstimatesLoading(false);
+    setEstimates(null);
+    setEstimatesError(null);
   };
 
   useEffect(() => { invalidateResult(); }, [laserPower, scanSpeed, hatch, layerThickness, beamDiameter, preheat]);
@@ -144,6 +155,25 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
         onFinally: () => setIsLoading(false),
       });
   }, [laserPower, scanSpeed, hatch, layerThickness, beamDiameter, preheat, heatSource, selectedAlloy]);
+
+  const handleComputeEstimates = useCallback(async () => {
+    const generation = estimateGate.current.begin();
+    setEstimatesLoading(true);
+    setEstimatesError(null);
+    setEstimates(null);
+    await settleLatestRequest(estimateGate.current, generation, () =>
+      pythonComputationService.computeSolidificationEstimates({
+        params: solidificationRequest(selectedAlloy, {
+          power_W: laserPower, speed_mm_s: scanSpeed, hatch_um: hatch, layerThickness_um: layerThickness,
+          beamDiameter_um: beamDiameter, preheat_C: preheat, heatSource,
+        }).params,
+        options: { inputSensitivity, conductionSurrogate },
+      }), {
+        onSuccess: res => setEstimates(res),
+        onError: (e: unknown) => setEstimatesError(e instanceof Error ? e.message : 'Estimate computation failed. Check the service and try again.'),
+        onFinally: () => setEstimatesLoading(false),
+      });
+  }, [laserPower, scanSpeed, hatch, layerThickness, beamDiameter, preheat, heatSource, selectedAlloy, inputSensitivity, conductionSurrogate]);
 
   const numberField = (label: string, value: number, min: number, max: number, step: number, unit: string, update: (value: number) => void) => (
     <label className="block min-w-0">
@@ -320,6 +350,29 @@ export const SolidificationMicrostructureLab: React.FC<Props> = () => {
       {result && !isLoading && <section aria-label="Analysis summary" data-solidification-status={result.status} className={panelClass}>
         <SolidificationQuantities container={result} />
       </section>}
+      <section className={`${panelClass} p-4 sm:p-5`} aria-labelledby="estimates-heading">
+        <h2 id="estimates-heading" className="text-lg font-semibold tracking-tight text-slate-100">Solidification estimates</h2>
+        <p className="mt-1 text-xs leading-5 text-slate-400">Opt-in estimate channel. Values are uncalibrated physics-model estimates unless marked Estimated; nothing here changes the Build Job or the process verdict.</p>
+        <div className="mt-3 flex flex-col gap-2 text-xs text-slate-300">
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={inputSensitivity} onChange={e => { setInputSensitivity(e.target.checked); invalidateResult(); }} />
+            <span>Input sensitivity sweep (11 field runs, slower)</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={conductionSurrogate} onChange={e => { setConductionSurrogate(e.target.checked); invalidateResult(); }} />
+            <span>Conduction-field surrogate when the keyhole leg sets the depth</span>
+          </label>
+        </div>
+        <button type="button" onClick={handleComputeEstimates} disabled={estimatesLoading}
+          className="mt-3 inline-flex min-h-11 items-center justify-center rounded-lg border border-cyan-100/20 bg-cyan-200/10 px-5 text-sm font-semibold text-cyan-50 transition hover:border-cyan-100/40 disabled:cursor-wait disabled:opacity-60">
+          {estimatesLoading ? 'Computing estimates…' : 'Compute solidification estimates'}
+        </button>
+        {estimatesLoading && <p role="status" aria-live="polite" className="mt-3 text-xs text-slate-400">Evaluating the estimate channel…</p>}
+        {estimatesError && <div role="alert" className="mt-3 rounded-xl border border-rose-300/20 bg-rose-400/[.07] px-4 py-3 text-sm text-rose-100">
+          <h3 className="font-semibold">Estimates could not be computed</h3><p className="mt-1 break-words text-xs leading-5 text-rose-100/70">{estimatesError}</p>
+        </div>}
+        {estimates !== null && !estimatesLoading && <div className="mt-3"><SolidificationEstimates payload={estimates} /></div>}
+      </section>
       <GrSolidificationMapCard />
     </div>
   );
