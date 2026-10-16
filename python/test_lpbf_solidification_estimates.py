@@ -344,19 +344,66 @@ class Channel(unittest.TestCase):
             codes = {w["code"] for w in r["quantities"]["thermalGradient"]["validity"]["domainWarnings"]}
             self.assertIn("alloy-family-transfer", codes, alloy)
 
-    def test_keyhole_leg_refuses_by_default_and_the_surrogate_is_opt_in(self):
-        default = run("Ti-6Al-4V", 200.0, 1000.0)
-        self.assertEqual(qe.container_problems(default, "c"), [])
-        g = default["quantities"]["thermalGradient"]
+    def test_keyhole_leg_default_is_the_labelled_conduction_surrogate(self):
+        # Ti64 specimen default case (280 W, 940 mm/s, 80 um, preheat 200 C): the Fabbro leg sets the served depth.
+        r = se.compute_solidification_estimates({"params": {**BASE, "materialName": "Ti-6Al-4V", "power_W": 280.0,
+                                                            "speed_mm_s": 940.0, "preheat_C": 200.0}})
+        self.assertEqual(qe.container_problems(r, "c"), [])
+        self.assertTrue(r["thermalParent"]["keyholeLegSetsDepth"])
+        self.assertEqual(r["surrogate"], "conduction-field")
+        self.assertEqual(r["surrogateIdentity"]["id"], se.SURROGATE_ID)
+        self.assertEqual(r["surrogateIdentity"]["selection"], "default")
+        self.assertIs(r["default"], False)  # never the default physical arm, never a computed keyhole front
+        self.assertTrue(r["inputProvenance"]["frontSamples"]["sourceId"].startswith(f"front-samples-{se.SURROGATE_ID}:"))
+        for name, q in r["quantities"].items():
+            with self.subTest(name):
+                if name in ("thermalGradient", "normalSpeed", "coolingRate", "gOverR", "pdas", "sdas",
+                            "planarStabilityIndex", "equiaxedEnvelopeFraction", "cetClass", "kmAlphaMFraction"):
+                    self.assertIsNotNone(q["value"])
+                if q["value"] is not None:
+                    self.assertEqual(q["validity"]["estimateTier"], "Physics estimate")
+                    details = [w["detail"] for w in q["validity"]["domainWarnings"]]
+                    self.assertEqual(details[0], se.KEYHOLE_SURROGATE_WARNING)
+        stripped = copy.deepcopy(r)
+        stripped["quantities"]["pdas"]["validity"]["domainWarnings"] = [
+            w for w in stripped["quantities"]["pdas"]["validity"]["domainWarnings"] if w["code"] != "domain-extrapolation"]
+        self.assertTrue(qe.container_problems(stripped, "c"))
+
+    def test_the_surrogate_can_be_turned_off(self):
+        off = run("Ti-6Al-4V", 200.0, 1000.0, conductionSurrogate=False)
+        self.assertEqual(qe.container_problems(off, "c"), [])
+        g = off["quantities"]["thermalGradient"]
         self.assertIsNone(g["value"])
         self.assertEqual(g["reasons"][0]["code"], "keyhole-field-inconsistent")
         self.assertIn("conduction-field surrogate", g["validity"]["noValueText"])
-        surrogate = run("Ti-6Al-4V", 200.0, 1000.0, conductionSurrogate=True)
-        self.assertEqual(qe.container_problems(surrogate, "c"), [])
-        self.assertEqual(surrogate["surrogate"], "conduction-field")
-        self.assertIs(surrogate["default"], False)
-        q = surrogate["quantities"]["thermalGradient"]
+        self.assertIsNone(off["surrogate"])
+        explicit = run("Ti-6Al-4V", 200.0, 1000.0, conductionSurrogate=True)
+        self.assertEqual(explicit["surrogateIdentity"]["selection"], "requested")
+        q = explicit["quantities"]["thermalGradient"]
         self.assertTrue(q["validity"]["explanation"].startswith("Uncalibrated estimate from a conduction-field"))
+
+    def test_refusals_still_refuse_with_the_surrogate_on(self):
+        # Microstructure gate: IN718 SDAS fails the capillary gate on a keyhole-leg case with the surrogate on.
+        ni = se.compute_solidification_estimates({"params": {**BASE, "materialName": "Inconel 718", "power_W": 280.0,
+                                                             "speed_mm_s": 940.0}})
+        self.assertTrue(ni["thermalParent"]["keyholeLegSetsDepth"])
+        self.assertEqual(ni["surrogate"], "conduction-field")
+        self.assertIsNone(ni["quantities"]["sdas"]["value"])
+        self.assertEqual(ni["quantities"]["sdas"]["reasons"][0]["code"], "outside-source-model-domain")
+        self.assertEqual(ni["quantities"]["phaseInventory"]["reasons"][0]["code"], "missing-source-bound-model")
+        # Invalid derivatives: a zero-gradient field gives no eligible tuple and no summary, keyhole warning or not.
+        with mock.patch.object(se, "gradient", lambda *args: (0.0, 0.0, 0.0)):
+            bad = se.compute_solidification_estimates({"params": {**BASE, "materialName": "Ti-6Al-4V",
+                                                                  "power_W": 280.0, "speed_mm_s": 940.0}})
+        self.assertEqual(qe.container_problems(bad, "c"), [])
+        for name in ("thermalGradient", "pdas", "kmAlphaMFraction"):
+            self.assertIsNone(bad["quantities"][name]["value"], name)
+        # Missing phase history: a slow scan fails the KM cooling-history gate under the surrogate.
+        slow = se.compute_solidification_estimates({"params": {**BASE, "materialName": "Ti-6Al-4V", "power_W": 200.0,
+                                                               "speed_mm_s": 200.0}})
+        km = slow["quantities"]["kmAlphaMFraction"]
+        self.assertIsNone(km["value"])
+        self.assertEqual(km["reasons"][0]["code"], "missing-thermal-history")
 
     def test_constructive_no_value_texts(self):
         al = run(*CONDUCTION["alsi10mg"])
@@ -439,6 +486,48 @@ class Channel(unittest.TestCase):
                            for side in ("low", "high"))
         self.assertNotEqual(tl_low, tl_high)  # the threshold arm recomputed its own branch
         self.assertEqual(qe.container_problems(r, "c"), [])
+
+
+def _builder_with_rows(G, R, n=5):
+    b = se.Builder()
+    b.add_input("frontSamples", qe.input_record("derived", "front-samples:manufactured", status="inRange",
+                                                source_locator="manufactured tuples", source_evidence_kind="Literature estimate"))
+    rows = [{"valid": True, "weight_m": 1.0, "G_K_m": G * (1 + 0.01 * i), "R_m_s": R, "coolingRate_K_s": G * R,
+             "gOverR_K_s_m2": G / R, "sampleId": f"m:{i}"} for i in range(n)]
+    return b, rows
+
+
+class DirectWarnings(unittest.TestCase):
+    def test_spacing_family_transfer_warning_is_emitted(self):
+        for alloy in ("alsi10mg", "ss316l"):
+            with self.subTest(alloy=alloy):
+                b, rows = _builder_with_rows(5e6, 0.5)
+                se._spacing_quantities(b, alloy, rows, True, None)
+                expected = f"{se.SPACING[alloy]['domain']} transferred to {se.ALLOY_NAMES[alloy]}"
+                for name in ("pdas", "sdas"):
+                    q = b.quantities[name]
+                    self.assertIsNotNone(q["value"], name)
+                    self.assertIn({"code": "alloy-family-transfer", "detail": expected}, q["validity"]["domainWarnings"])
+        b, rows = _builder_with_rows(5e6, 0.5)
+        se._spacing_quantities(b, "ti6al4v", rows, True, None)
+        self.assertFalse(any(w["detail"].endswith("transferred to Ti-6Al-4V")
+                             for w in b.quantities["pdas"]["validity"]["domainWarnings"]))
+
+    def test_peclet_warning_is_emitted_only_above_the_screening_trigger(self):
+        b, rows = _builder_with_rows(1e6, 0.01)
+        se._morphology_quantities(b, "in718", rows, True, None)
+        q = b.quantities["equiaxedEnvelopeFraction"]
+        self.assertIsNotNone(q["value"])
+        pe = max(se.morphology("in718", r["G_K_m"], r["R_m_s"])["peclet"] for r in rows)
+        self.assertGreaterEqual(pe, 0.1)
+        codes = [w["code"] for w in q["validity"]["domainWarnings"]]
+        self.assertIn("low-peclet-tip-law", codes)
+        self.assertIn("low-peclet-tip-law", [w["code"] for w in b.quantities["cetClass"]["validity"]["domainWarnings"]])
+        b, rows = _builder_with_rows(1e6, 1e-3)
+        se._morphology_quantities(b, "in718", rows, True, None)
+        q = b.quantities["equiaxedEnvelopeFraction"]
+        self.assertIsNotNone(q["value"])
+        self.assertNotIn("low-peclet-tip-law", [w["code"] for w in q["validity"]["domainWarnings"]])
 
 
 class Fixtures(unittest.TestCase):

@@ -1040,6 +1040,7 @@
               "request",
               "options",
               "surrogate",
+              "surrogateIdentity",
               "default",
               "thermalParent",
               "front",

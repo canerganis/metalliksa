@@ -24,8 +24,30 @@ test("Ti64 and AlSi10Mg conduction fixtures carry uncalibrated thermal estimates
   }
 });
 
-test("Ti64 keyhole default has no values and names the keyhole reason", () => {
-  const p = checkedSolidificationEstimates(load("ti64-keyhole-default"));
+const KEYHOLE_WARNING = "Keyhole regime. These estimates use the rear solidifying front of a conduction-only temperature field. The field does not include keyhole energy deposition, melt flow or cavity motion and is not coupled to the served melt-pool depth. Spacing, morphology and phase estimates inherit this assumption.";
+
+test("Ti64 keyhole default returns conduction-surrogate values with the keyhole warning first", () => {
+  const raw = load("ti64-keyhole-default");
+  const p = checkedSolidificationEstimates(raw);
+  assert.equal(p.surrogate, "conduction-field");
+  assert.equal(raw.surrogateIdentity.selection, "default");
+  assert.equal(raw.default, false);
+  for (const [name, q] of Object.entries(p.quantities)) {
+    if (q.value === null) continue;
+    assert.equal(q.validity.estimateTier, "Physics estimate", name);
+    assert.equal(q.validity.domainWarnings[0].detail, KEYHOLE_WARNING, name);
+  }
+  for (const name of ["thermalGradient", "normalSpeed", "coolingRate", "gOverR", "pdas", "sdas"]) assert.notEqual(p.quantities[name].value, null, name);
+});
+
+test("the keyhole warning cannot be dropped from a derived quantity", () => {
+  const raw = structuredClone(load("ti64-keyhole-default"));
+  raw.quantities.pdas.validity.domainWarnings = raw.quantities.pdas.validity.domainWarnings.filter((w: any) => w.code !== "domain-extrapolation");
+  assert.throws(() => checkedSolidificationEstimates(raw));
+});
+
+test("Ti64 keyhole with the surrogate turned off has no values and names the keyhole reason", () => {
+  const p = checkedSolidificationEstimates(load("ti64-keyhole-surrogate-off"));
   for (const [name, q] of Object.entries(p.quantities)) assert.equal(q.value, null, name);
   assert.ok(p.quantities.thermalGradient.reasons.some(r => r.code === "keyhole-field-inconsistent"));
 });

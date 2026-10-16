@@ -1122,6 +1122,7 @@ export const MODULE_REGISTRY = {
               "request",
               "options",
               "surrogate",
+              "surrogateIdentity",
               "default",
               "thermalParent",
               "front",

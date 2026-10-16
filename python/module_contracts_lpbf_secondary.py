@@ -222,7 +222,7 @@ def build_solidification_microstructure_contract(seed: Mapping[str, str]) -> Mod
         undeclared_input=("params", "options"),
         output=OutputSchema(
             fields=("schema", "channelId", "modelId", "status", "alloyId", "materialName", "heatSourceModel",
-                    "request", "options", "surrogate", "default", "thermalParent", "front", "inputSensitivityRun",
+                    "request", "options", "surrogate", "surrogateIdentity", "default", "thermalParent", "front", "inputSensitivityRun",
                     "phaseContext", "refusal", "quantityEnvelopeSchema", "moduleEvidenceCeiling", "moduleMaturity",
                     "quantities", "inputProvenance"),
             status_key=None,

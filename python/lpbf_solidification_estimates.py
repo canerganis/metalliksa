@@ -87,8 +87,15 @@ FEW_POINTS_TEXT = "Only these local points were computed. A front summary needs 
 NO_FRONT_TEXT = ("A solidification estimate needs a compatible cooling side front with finite positive gradient and "
                  "growth rate.")
 KEYHOLE_TEXT = ("The served depth comes from the keyhole leg, and this conduction temperature field does not include "
-                "the keyhole cavity. Request the conduction-field surrogate to see an uncalibrated estimate of the "
-                "conduction field's own front.")
+                "the keyhole cavity. The conduction-field surrogate is turned off for this request; turn it on (the "
+                "default) to see an uncalibrated estimate of the conduction field's own rear front.")
+# Maintainer-approved warning (2026-10-16, Astra keyhole consult docs/research/SOL_C_TI64_KEYHOLE_CONSULT_2026-10-16.md
+# section 4): attached to the conduction-surrogate front parent, so every thermal and derived quantity inherits it.
+KEYHOLE_SURROGATE_WARNING = ("Keyhole regime. These estimates use the rear solidifying front of a conduction-only "
+                             "temperature field. The field does not include keyhole energy deposition, melt flow or "
+                             "cavity motion and is not coupled to the served melt-pool depth. Spacing, morphology and "
+                             "phase estimates inherit this assumption.")
+SURROGATE_ID = "conduction-field-surrogate-v1"
 SURROGATE_TEXT = (f"{TIER2_LABEL} from a conduction-field surrogate. The temperature field does not include the "
                   f"keyhole cavity. {UNKNOWN}")
 CAPILLARY_TEXT = ("This correlation predicts a scale below the capillary screening limit of its stated binary model. "
@@ -928,7 +935,12 @@ def parse_request(payload: Any) -> Tuple[Optional[Dict[str, Any]], Optional[Dict
         return None, _refusal("nonphysical-input", "The preheat must be above absolute zero and below the liquidus.")
     return {"alloy": alloy, "material": material, "process": process, "heatSource": heat_source,
             "inputSensitivity": bool(options.get("inputSensitivity", False)),
-            "conductionSurrogate": bool(options.get("conductionSurrogate", False)), "props": props}, None
+            # Default ON (maintainer decision 2026-10-16 on the Astra consult): when the Fabbro keyhole leg controls the
+            # served geometry, the conduction-only rear front is shown as a labelled Tier 2 surrogate scenario unless the
+            # request turns it off. It never becomes a computed keyhole front.
+            "conductionSurrogate": bool(options.get("conductionSurrogate", True)),
+            "surrogateSelection": "requested" if "conductionSurrogate" in options else "default",
+            "props": props}, None
 
 
 def _thermal_inputs(b: Builder, request: Mapping[str, Any], thermal: Mapping[str, Any],
@@ -1080,15 +1092,14 @@ def compute_solidification_estimates(payload: Any) -> Dict[str, Any]:
     rows = valid_samples(front)
     sample_digest = _digest([{k: s[k] for k in ("sampleId", "position_m", "gradient_K_m", "weight_m")} for s in rows])
     b.add_input("frontSamples", _record(
-        "derived", f"front-samples:{SAMPLER_ID}:{sample_digest}", status="inRange",
+        "derived", (f"front-samples-{SURROGATE_ID}:" if surrogate else "front-samples:") + f"{SAMPLER_ID}:{sample_digest}",
+        status="inRange",
         locator=SRC_GHOSH_KINEMATICS["locator"], depends_on=front_inputs,
         evidence=qe.source_label(b.inputs, front_inputs)["sourceEvidenceKind"],
         scope=("local tuples of the rear solidifying centre-plane liquidus branch of the served conduction field "
                f"({thermal.get('heatSourceModel')})"
                + ("; conduction-field surrogate: the field does not include the keyhole cavity" if surrogate else ""))),
-        warnings=[_warn("domain-extrapolation", "conduction-field surrogate: the served depth comes from the "
-                        "keyhole leg and this temperature field does not include the keyhole cavity")]
-        if surrogate else [])
+        warnings=[_warn("domain-extrapolation", KEYHOLE_SURROGATE_WARNING)] if surrogate else [])
     summary = thermal_summary(front)
     resolved = bool(rows) and all(s["numericallyResolved"] for s in rows)
     numerical = qe.numerical_status(
@@ -1175,6 +1186,12 @@ def compute_solidification_estimates(payload: Any) -> Dict[str, Any]:
         "options": {"inputSensitivity": request["inputSensitivity"],
                     "conductionSurrogate": request["conductionSurrogate"]},
         "surrogate": "conduction-field" if surrogate else None,
+        # Distinct surrogate identity: default selection does not change the model's status. "default" above keeps its
+        # contract meaning (false: not the default physical arm of the served field).
+        "surrogateIdentity": ({"id": SURROGATE_ID, "selection": request["surrogateSelection"],
+                               "field": thermal.get("heatSourceModel"), "observable": "conduction-only rear liquidus front",
+                               "notCoupledTo": "served melt-pool depth (Fabbro keyhole leg)",
+                               "warning": KEYHOLE_SURROGATE_WARNING} if surrogate else None),
         "thermalParent": {
             "thermalModelId": thermal.get("modelId"),
             "servedFrontModelId": (thermal.get("solidificationKinetics") or {}).get("modelId"),

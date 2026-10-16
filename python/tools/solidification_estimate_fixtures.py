@@ -19,7 +19,10 @@ BASE = {"beamDiameter_um": 80.0, "preheat_C": 80.0, "layerThickness_um": 40.0, "
         "heatSource": "rosenthal"}
 CASES = {
     # Ti64 at 200 W / 1000 mm/s: the Fabbro keyhole leg sets the served depth, so the default refuses Q-T.
+    # The conduction-field surrogate is on by default there (maintainer decision on the Astra keyhole consult).
     "ti64-keyhole-default": ({"materialName": "Ti-6Al-4V", "power_W": 200.0, "speed_mm_s": 1000.0}, {}),
+    "ti64-keyhole-surrogate-off": ({"materialName": "Ti-6Al-4V", "power_W": 200.0, "speed_mm_s": 1000.0},
+                                   {"conductionSurrogate": False}),
     "ti64-surrogate-sensitivity": ({"materialName": "Ti-6Al-4V", "power_W": 200.0, "speed_mm_s": 1000.0},
                                    {"conductionSurrogate": True, "inputSensitivity": True}),
     "ti64-conduction": ({"materialName": "Ti-6Al-4V", "power_W": 120.0, "speed_mm_s": 1200.0}, {}),

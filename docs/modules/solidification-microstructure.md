@@ -50,7 +50,7 @@ All keys are optional at the authority, which applies the listed default when a 
 
 Undeclared input keys (read by the authority, not describable by the Field schema): `params`, `options`.
 
-Output fields (no status key, so the output carries no evidence status): `schema`, `channelId`, `modelId`, `status`, `alloyId`, `materialName`, `heatSourceModel`, `request`, `options`, `surrogate`, `default`, `thermalParent`, `front`, `inputSensitivityRun`, `phaseContext`, `refusal`, `quantityEnvelopeSchema`, `moduleEvidenceCeiling`, `moduleMaturity`, `quantities`, `inputProvenance`.
+Output fields (no status key, so the output carries no evidence status): `schema`, `channelId`, `modelId`, `status`, `alloyId`, `materialName`, `heatSourceModel`, `request`, `options`, `surrogate`, `surrogateIdentity`, `default`, `thermalParent`, `front`, `inputSensitivityRun`, `phaseContext`, `refusal`, `quantityEnvelopeSchema`, `moduleEvidenceCeiling`, `moduleMaturity`, `quantities`, `inputProvenance`.
 
 `status` is a transport field, not an evidence status; values: `computed`, `partial`, `unavailable`.
 
