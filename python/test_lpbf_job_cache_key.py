@@ -44,6 +44,9 @@ class CacheKeyCoverageTests(unittest.TestCase):
 
     def test_every_other_request_field_changes_the_key(self):
         generic = cache.generically_keyed_fields()
+        # Independent of the helper: a filter added inside generically_keyed_fields() must not drop a field.
+        self.assertEqual(set(generic), set(cache.request_field_names()) - set(cache.EXPLICITLY_KEYED_FIELDS)
+                         - {"bypassCache"})
         for name in ("defectSqrtArea_um", "defectEvidence", "defectLocation", "hardnessEvidence", "loadRatio",
                      "cycleTarget", "specimenOrientation", "defectIsLongCrack", "defectSampling",
                      "ctDetectionMethod", "kineticsCoolingInterval_C", "isothermalHold", "mechanicsScenario",
