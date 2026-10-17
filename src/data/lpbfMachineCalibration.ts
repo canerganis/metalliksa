@@ -140,6 +140,8 @@ export interface MachineCalibratedBlock {
   readonly usedForBuildJobVerdict?: boolean;
   readonly screeningDepth_um?: number | null;
   readonly experimentalValidation?: boolean;
+  /** Width is not calibrated for the machine; this sentence comes from the endpoint. */
+  readonly widthText?: string;
 }
 
 export interface MachineCalibratedResult {

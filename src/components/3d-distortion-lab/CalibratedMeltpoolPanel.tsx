@@ -11,6 +11,7 @@ import {
   isMachineCalibratedBadge, machineEvidenceBadge, methodFieldText,
   type MachineArtefactSummary, type MachineCalibratedBlock, type MachineCalibrationStatus,
 } from "../../data/lpbfMachineCalibration";
+import { CalibrationStatusDisplay } from "../CalibrationStatusDisplay";
 import { useMachineCalibrationStore } from "../../store/useMachineCalibrationStore";
 import { refusedBlockFor, useMachineDepth, type MachineSolve } from "./useMachineDepth";
 
@@ -80,6 +81,7 @@ export function CalibratedResultView({ result }: { result: LPBFCalibratedMeltpoo
       )}
       {c.available ? <p data-testid="cal-regime" className="text-[11px] text-slate-400">Regime label (screening, at the default absorptivity, unchanged): <strong className="text-slate-200">{c.regimeLabel ?? "—"}</strong></p> : null}
       {c.available ? <DepthBiasNotice geometry={result.screening?.meltPoolGeometry} material={result.screening?.material} heatSource={result.screening?.processParameters?.heatSource} enthalpy={result.screening?.processParameters?.normalizedEnthalpy} className="mt-1" /> : null}
+      <CalibrationStatusDisplay status={result.calibrationStatus} parent={result.uncalibratedParent} />
       {result.outsideTrainingEnvelope ? <p data-testid="envelope-warning" className="text-amber-300">Outside the training envelope, calibrated numbers greyed: {result.envelopeNotes.join("; ")}.</p> : null}
     </div>
   );
@@ -94,9 +96,40 @@ interface PublishedPanelProps {
   readonly solve?: (payload: CalibratedRequest, signal?: AbortSignal) => Promise<LPBFCalibratedMeltpoolResult>;
 }
 
+const defaultCalibratedSolve: NonNullable<PublishedPanelProps["solve"]> = (p, s) => pythonComputationService.solveLPBFCalibratedMeltpool(p, s);
+
+/** No enabled cell: no toggle. An explicit button requests the status only; no calibrated number is ever shown from it. */
+export function CalibrationStatusCheck({ heatSource, material, request, solve = defaultCalibratedSolve, initialResult = null }: {
+  readonly heatSource: PublishedPanelProps["heatSource"];
+  readonly material: string;
+  readonly request: PublishedPanelProps["request"];
+  readonly solve?: PublishedPanelProps["solve"];
+  /** test seam: a response to render without clicking */
+  readonly initialResult?: LPBFCalibratedMeltpoolResult | null;
+}) {
+  const [result, setResult] = useState<LPBFCalibratedMeltpoolResult | null>(initialResult);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const check = () => {
+    setBusy(true); setError(null);
+    solve!({ ...request, heatSource, material }).then(setResult).catch((e: unknown) => setError(e instanceof Error ? e.message : "Calibration status request failed.")).finally(() => setBusy(false));
+  };
+  return (
+    <div className="space-y-2">
+      <p data-testid="calibration-link-only" className="text-[11px] text-slate-400">
+        No calibrated mode is offered for this kernel and alloy: no cell passes the held-out gate. <a className="underline" href={SCORECARD_HASH}>Calibration scorecard</a>
+      </p>
+      <button type="button" data-testid="calibration-status-check" disabled={busy} onClick={check}
+        className="rounded border border-slate-600 px-2 py-1 text-xs text-slate-100 focus-visible:outline-2 focus-visible:outline-sky-300">Check calibration status</button>
+      {error ? <p role="alert" className="text-xs text-rose-300">{error}</p> : null}
+      {result ? <CalibrationStatusDisplay status={result.calibrationStatus} parent={result.uncalibratedParent} /> : null}
+    </div>
+  );
+}
+
 function PublishedCalibratedMeltpoolPanel({
   heatSource, material, request, summary = COMMITTED_CALIBRATION_ARTEFACT,
-  solve = (p, s) => pythonComputationService.solveLPBFCalibratedMeltpool(p, s),
+  solve = defaultCalibratedSolve,
 }: PublishedPanelProps) {
   const cells = enabledCellsFor(summary, heatSource, material);
   const [optedIn, setOptedIn] = useState(false); // default OFF; never persisted beyond this component's lifetime
@@ -116,11 +149,7 @@ function PublishedCalibratedMeltpoolPanel({
   }, [active, requestKey]);
 
   if (cells.length === 0) {
-    return (
-      <p data-testid="calibration-link-only" className="text-[11px] text-slate-400">
-        No calibrated mode is offered for this kernel and alloy: no cell passes the held-out gate. <a className="underline" href={SCORECARD_HASH}>Calibration scorecard</a>
-      </p>
-    );
+    return <CalibrationStatusCheck heatSource={heatSource} material={material} request={request} solve={solve} />;
   }
   return (
     <section data-testid="calibrated-panel" aria-label="Calibrated mode" className="space-y-2 rounded-xl border border-[#162032] bg-[#090e18] p-3">
@@ -175,6 +204,7 @@ export function MachineResultView({ artefact, kernel, block, screeningDepth }: {
             </span>
           ) : null}
           {screeningDepth !== null ? <span data-testid="machine-screening" className="block text-[10px] text-slate-400">{MACHINE_SCREENING_DEPTH_LABEL}: {screeningDepth.toFixed(1)} µm</span> : null}
+          {block.widthText ? <span data-testid="machine-width-text" className="block text-[10px] text-slate-300">{block.widthText}</span> : null}
           <span className="block text-[10px] text-slate-500">{MACHINE_BAND_SENTENCE}</span>
         </div>
       ) : (

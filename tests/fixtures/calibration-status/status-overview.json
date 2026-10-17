@@ -1,0 +1,225 @@
+{
+ "status": "stale",
+ "calibrationAvailable": false,
+ "reason": "calibration stale for this physics version (artefact d92d1a3ae85c, live 13203cac19bf)",
+ "enabledCells": [],
+ "overview": {
+  "state": "stale",
+  "detail": "calibration stale for this physics version (artefact d92d1a3ae85c, live 13203cac19bf)",
+  "text": "This calibration was fitted to an earlier physics version. The uncalibrated model result is shown separately. Refit the calibration with the current engine before using calibrated dimensions.",
+  "calibrationId": "lpbf-meltpool-calib-2026-10-07-965590d6ecf1",
+  "enabledCellCount": 0,
+  "cells": [
+   {
+    "kernel": "eagar-tsai",
+    "material": "316L Stainless Steel",
+    "quantity": "width",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "eagar-tsai",
+    "material": "316L Stainless Steel",
+    "quantity": "depth",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "eagar-tsai",
+    "material": "Ti-6Al-4V",
+    "quantity": "width",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "eagar-tsai",
+    "material": "Ti-6Al-4V",
+    "quantity": "depth",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "eagar-tsai",
+    "material": "Inconel 625",
+    "quantity": "width",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "eagar-tsai",
+    "material": "Inconel 625",
+    "quantity": "depth",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "eagar-tsai",
+    "material": "Inconel 718",
+    "quantity": "width",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   },
+   {
+    "kernel": "eagar-tsai",
+    "material": "Inconel 718",
+    "quantity": "depth",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   },
+   {
+    "kernel": "eagar-tsai",
+    "material": "AlSi10Mg",
+    "quantity": "width",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   },
+   {
+    "kernel": "eagar-tsai",
+    "material": "AlSi10Mg",
+    "quantity": "depth",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   },
+   {
+    "kernel": "goldak",
+    "material": "316L Stainless Steel",
+    "quantity": "width",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "goldak",
+    "material": "316L Stainless Steel",
+    "quantity": "depth",
+    "status": "within-source-only",
+    "statusText": "fitted within one source only, not across sources"
+   },
+   {
+    "kernel": "goldak",
+    "material": "Ti-6Al-4V",
+    "quantity": "width",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "goldak",
+    "material": "Ti-6Al-4V",
+    "quantity": "depth",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "goldak",
+    "material": "Inconel 625",
+    "quantity": "width",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "goldak",
+    "material": "Inconel 625",
+    "quantity": "depth",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "goldak",
+    "material": "Inconel 718",
+    "quantity": "width",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   },
+   {
+    "kernel": "goldak",
+    "material": "Inconel 718",
+    "quantity": "depth",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   },
+   {
+    "kernel": "goldak",
+    "material": "AlSi10Mg",
+    "quantity": "width",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   },
+   {
+    "kernel": "goldak",
+    "material": "AlSi10Mg",
+    "quantity": "depth",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   },
+   {
+    "kernel": "rosenthal",
+    "material": "316L Stainless Steel",
+    "quantity": "width",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "rosenthal",
+    "material": "316L Stainless Steel",
+    "quantity": "depth",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "rosenthal",
+    "material": "Ti-6Al-4V",
+    "quantity": "width",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "rosenthal",
+    "material": "Ti-6Al-4V",
+    "quantity": "depth",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "rosenthal",
+    "material": "Inconel 625",
+    "quantity": "width",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "rosenthal",
+    "material": "Inconel 625",
+    "quantity": "depth",
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates"
+   },
+   {
+    "kernel": "rosenthal",
+    "material": "Inconel 718",
+    "quantity": "width",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   },
+   {
+    "kernel": "rosenthal",
+    "material": "Inconel 718",
+    "quantity": "depth",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   },
+   {
+    "kernel": "rosenthal",
+    "material": "AlSi10Mg",
+    "quantity": "width",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   },
+   {
+    "kernel": "rosenthal",
+    "material": "AlSi10Mg",
+    "quantity": "depth",
+    "status": "no-data",
+    "statusText": "no published measurements were available for this fit"
+   }
+  ]
+ }
+}

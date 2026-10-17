@@ -109,6 +109,10 @@ def discover(root: Optional[Path] = None, *, expected_impl_hash: Optional[str] =
     return summaries, verified
 
 
+MACHINE_WIDTH_TEXT = ("This machine calibration estimates depth only. A width calibration with suitable measurements is "
+                      "needed to estimate width.")
+
+
 def status(root: Optional[Path] = None, *, expected_impl_hash: Optional[str] = None) -> Dict[str, Any]:
     summaries, _ = discover(root, expected_impl_hash=expected_impl_hash)
     ready = [s for s in summaries if s["state"] == "ready"]
@@ -176,6 +180,8 @@ def run(data: Dict[str, Any], *, root: Optional[Path] = None, solver: Optional[C
             (match["reason"] if match else "machine calibration artefact not found on this computer")]
         out["machineCalibrated"]["stale"] = bool(match and match["state"] == "stale")
     out.update({"success": True, "engine": ENGINE, "schema": SCHEMA, "privacy": PRIVACY})
+    # Group 9: the machine model corrects depth only; width needs its own fit and gate.
+    out["machineCalibrated"]["widthText"] = MACHINE_WIDTH_TEXT
     return out
 
 

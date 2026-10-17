@@ -1,0 +1,47 @@
+{
+ "calibrated": {
+  "available": false,
+  "reason": "calibration stale for this physics version",
+  "width_um": null,
+  "depth_um": null
+ },
+ "calibrationStatus": {
+  "artifact": {
+   "state": "stale",
+   "detail": "calibration stale for this physics version (artefact d92d1a3ae85c, live 13203cac19bf)",
+   "calibrationId": "lpbf-meltpool-calib-2026-10-07-965590d6ecf1",
+   "text": "This calibration was fitted to an earlier physics version. The uncalibrated model result is shown separately. Refit the calibration with the current engine before using calibrated dimensions."
+  },
+  "cells": {
+   "width": {
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates",
+    "eligible": false,
+    "text": "This calibration has no eligible width fit for Ti-6Al-4V and goldak. Import suitable measurements and fit a new calibration."
+   },
+   "depth": {
+    "status": "rejected",
+    "statusText": "the fit did not pass its predeclared gates",
+    "eligible": false,
+    "text": "This calibration has no eligible depth fit for Ti-6Al-4V and goldak. Import suitable measurements and fit a new calibration."
+   }
+  },
+  "enabledCellCount": 0
+ },
+ "uncalibratedParent": {
+  "estimateTier": "Physics estimate",
+  "tierLabel": "Uncalibrated estimate",
+  "width_um": 114.4,
+  "depth_um": 77.3,
+  "displaySignificantDigits": 2,
+  "domainWarnings": [
+   "Keyhole regime: this conduction screening model does not resolve the vapor cavity. Depth may be strongly misestimated.",
+   "Transferred inputs: the thermophysical, absorptivity and endpoint inputs of this screening model are transfers, so the result is not calibrated to any machine."
+  ],
+  "uncertaintyStatement": "Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+  "explanation": "Uncalibrated estimate: about 110 micrometres wide and 77 micrometres deep from the goldak screening model. Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+  "noValueText": null,
+  "regime": "Keyhole Mode (melt-pool D/W > 0.5 screening onset)"
+ },
+ "evidenceKind": "screening-only"
+}

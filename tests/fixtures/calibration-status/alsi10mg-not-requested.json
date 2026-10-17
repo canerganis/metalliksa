@@ -1,0 +1,31 @@
+{
+ "calibrated": {
+  "available": false,
+  "reason": "calibrationMode was not requested",
+  "width_um": null,
+  "depth_um": null
+ },
+ "calibrationStatus": {
+  "artifact": {
+   "state": "not-requested",
+   "text": "Calibrated dimensions were not requested. Turn on calibration mode to see the calibration status."
+  },
+  "cells": {},
+  "enabledCellCount": null
+ },
+ "uncalibratedParent": {
+  "estimateTier": "Physics estimate",
+  "tierLabel": "Uncalibrated estimate",
+  "width_um": 205.6,
+  "depth_um": 102.2,
+  "displaySignificantDigits": 2,
+  "domainWarnings": [
+   "Transferred inputs: the thermophysical, absorptivity and endpoint inputs of this screening model are transfers, so the result is not calibrated to any machine."
+  ],
+  "uncertaintyStatement": "Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+  "explanation": "Uncalibrated estimate: about 210 micrometres wide and 100 micrometres deep from the goldak screening model. Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+  "noValueText": null,
+  "regime": "Transition Mode"
+ },
+ "evidenceKind": "screening-only"
+}
