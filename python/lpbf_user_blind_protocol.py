@@ -419,6 +419,9 @@ REFUSALS = {
                          "cannot be scored by this build."),
     "STORE_READ_ONLY": "This installation is read-only.",
     "STORE_FULL": "The blind test store is full; see the guide for manual archiving.",
+    "STORE_LEDGER_BROKEN": ("The blind test ledger on this computer does not verify, so nothing new is written. The "
+                            "store may have been edited outside the app; see the guide. Existing tests can still be "
+                            "read and exported."),
     "STORE_LOCKED": "Another blind job holds the store. Try again when it finishes.",
     "STORE_SHARED_HOST": ("This server is reachable by other users, so blind tests are switched off. An operator can "
                           "declare a single-user install (see the guide)."),

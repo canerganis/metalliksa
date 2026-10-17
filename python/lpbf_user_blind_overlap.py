@@ -11,7 +11,7 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from lpbf_user_blind_store import REPO_ROOT, Store, tuples_match
+from lpbf_user_blind_store import REPO_ROOT, Store, parse_time, tuples_match, utc_iso
 
 
 def _alloy_of(material):
@@ -52,8 +52,7 @@ def _calibration_roots():
 
 
 def _mtime_iso(path):
-    return datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).isoformat(timespec="seconds").replace(
-        "+00:00", "Z")
+    return utc_iso(datetime.fromtimestamp(path.stat().st_mtime, timezone.utc))
 
 
 def calibration_exposures(alloy, tuples, roots=None):
@@ -72,7 +71,9 @@ def calibration_exposures(alloy, tuples, roots=None):
             sources[doc.get("sourceId") or p.parent.name] = (mat, rows)
             k = _matches(alloy, tuples, mat, rows)
             if k:
-                out.append({"storeId": p.parent.name, "kind": "user-calibration", "at": _mtime_iso(p),
+                imported = utc_iso((doc.get("provenance") or {}).get("importedAt"))
+                out.append({"storeId": p.parent.name, "kind": "user-calibration", "at": imported or _mtime_iso(p),
+                            "timeBasis": "import time" if imported else "file modification time (no import time)",
                             "nConditions": k})
     if mc_root.is_dir():
         for p in sorted(mc_root.glob("*/machine-calibration.json")):
@@ -89,8 +90,11 @@ def calibration_exposures(alloy, tuples, roots=None):
                         rows.append(tuple(float(x) for x in key))
             k = _matches(alloy, tuples, mat, rows)
             if k:
+                generated = utc_iso(art.get("generatedAt"))
                 out.append({"storeId": art.get("machineCalibrationId") or p.parent.name, "kind": "machine-calibration",
-                            "at": art.get("generatedAt") or _mtime_iso(p), "nConditions": k})
+                            "at": generated or _mtime_iso(p),
+                            "timeBasis": "artefact time" if generated else "file modification time",
+                            "nConditions": k})
     return out
 
 
@@ -108,7 +112,7 @@ def spent_set_exposures(alloy, tuples):
 _BUILD_JOB_ALLOY = {"ti6al4v": "Ti-6Al-4V", "alsi10mg": "AlSi10Mg", "ss316l": "316L", "in718": "IN718"}
 
 
-def build_job_history(alloy, tuples, before_iso=None, job_root=None):
+def build_job_history(alloy, tuples, before=None, job_root=None):
     """Completed Build Jobs on this workstation with the same setting (partial check, Build Job history only)."""
     root = Path(job_root) if job_root else Path(os.environ.get("METALLIKSA_JOB_ROOT",
                                                                str(REPO_ROOT / ".lpbf-jobs")))
@@ -131,7 +135,7 @@ def build_job_history(alloy, tuples, before_iso=None, job_root=None):
         if a != alloy:
             continue
         at = _mtime_iso(res)
-        if before_iso is not None and at >= before_iso:
+        if before is not None and parse_time(at) >= before:
             continue
         try:
             t = (float(p.get("laserPower_W", 285.0)), float(p.get("scanSpeed_mm_s") or p.get("scanSpeed_mms") or 960.0),

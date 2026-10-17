@@ -227,49 +227,108 @@ def cmd_bundle(a):
 
 
 def verify_bundle(path):
-    """Checks of a bundle: member hashes, freezeKey, sidecars, and a byte-for-byte re-score when the scorer matches."""
-    import io
+    """Checks of a bundle. Each check is {id, ok (True, False or None), note}. A missing member is ok False, never an
+    exception. Statistics are re-computed from the frozen predictions and the targets file: byte for byte when numpy
+    and scipy equal the versions recorded at freeze, otherwise compared at a stated relative tolerance and reported
+    as a different numerical environment (never as a tamper)."""
     import tarfile
+    import numpy
+    import scipy
     from lpbf_user_blind_freeze import freeze_key_of, scorer_identity
+    from lpbf_user_blind_score import predictions_sha256
     from lpbf_user_blind_store import sha256_bytes
     checks = []
+
+    def check(cid, ok, note=None, **extra):
+        checks.append({"id": cid, "ok": ok, **({"note": note} if note else {}), **extra})
+
     members = {}
-    with tarfile.open(path, mode="r:") as tar:
-        for m in tar.getmembers():
-            if not m.isreg() or "/" in m.name or m.name.startswith(".") or m.name in members:
-                return [{"id": "members", "ok": False, "note": "unsafe or duplicate member"}]
-            members[m.name] = tar.extractfile(m).read()
-    manifest = json.loads(members.pop("bundle-manifest.json"))
-    files_ok = all(sha256_bytes(members.get(f["name"], b"")) == f["sha256"] for f in manifest["files"]) and \
-        set(members) == {f["name"] for f in manifest["files"]}
-    checks.append({"id": "member-hashes", "ok": files_ok})
-    freeze = json.loads(members["freeze.json"])
-    key_ok = freeze_key_of(freeze["metadata"], freeze["rows"], freeze["predictorIdentity"]) == freeze["freezeKey"]
-    side_ok = members["freeze.json.sha256"].decode().strip() == sha256_bytes(members["freeze.json"])
-    checks.append({"id": "freeze-key", "ok": key_ok and side_ok})
-    checks.append({"id": "inputs-hash", "ok": sha256_bytes(members["inputs.csv"]) == freeze["inputsSha256"]})
-    same_scorer = scorer_identity()["scoreSourcesSha256"] == freeze["scorerIdentity"]["scoreSourcesSha256"]
+    try:
+        with tarfile.open(path, mode="r:") as tar:
+            for m in tar.getmembers():
+                if not m.isreg() or "/" in m.name or "\\" in m.name or m.name.startswith(".") or m.name in members:
+                    check("members", False, "unsafe or duplicate member")
+                    return checks
+                members[m.name] = tar.extractfile(m).read()
+    except (tarfile.TarError, OSError):
+        check("members", False, "not a readable tar file")
+        return checks
+    needed = ("bundle-manifest.json", "freeze.json", "freeze.json.sha256", "inputs.csv", "metadata.json")
+    missing = [n for n in needed if n not in members]
+    if missing:
+        check("members", False, "missing members: " + ", ".join(missing))
+        return checks
+    try:
+        manifest = json.loads(members.pop("bundle-manifest.json"))
+        freeze = json.loads(members["freeze.json"])
+    except ValueError:
+        check("members", False, "a JSON member does not parse")
+        return checks
+    listed = {f["name"] for f in manifest.get("files", [])}
+    files_ok = set(members) == listed and all(sha256_bytes(members[f["name"]]) == f["sha256"]
+                                              for f in manifest["files"])
+    check("member-hashes", files_ok)
+    freeze_sha = sha256_bytes(members["freeze.json"])
+    check("freeze-sha256", members["freeze.json.sha256"].decode("ascii", "replace").strip() == freeze_sha,
+          "compare this value with the freezeSha256 you shared outside this computer", freezeSha256=freeze_sha)
+    try:
+        key_ok = freeze_key_of(freeze["metadata"], freeze["rows"], freeze["predictorIdentity"]) == freeze["freezeKey"]
+        pred_ok = predictions_sha256(freeze) == freeze["predictionsSha256"]
+    except (KeyError, TypeError):
+        key_ok = pred_ok = False
+    check("freeze-key", key_ok)
+    check("predictions-sha256", pred_ok, "recomputed from the frozen conditions")
+    check("inputs-hash", sha256_bytes(members["inputs.csv"]) == freeze.get("inputsSha256"))
+    recorded = freeze.get("scorerIdentity") or {}
+    live = scorer_identity()
+    same_sources = live["scoreSourcesSha256"] == recorded.get("scoreSourcesSha256")
+    same_numerics = numpy.__version__ == recorded.get("numpy") and scipy.__version__ == recorded.get("scipy")
     n = 1
     while f"score-{n}.json" in members:
-        if not same_scorer:
-            checks.append({"id": f"rescore-{n}", "ok": None, "note": "re-score skipped: different scorer"})
-        else:
+        try:
             rep = json.loads(members[f"score-{n}.json"])
-            checks.append({"id": f"targets-hash-{n}", "ok": sha256_bytes(members[f"targets-{n}.csv"]) ==
-                           rep["targetsSha256"]})
-            checks.append({"id": f"rescore-statistics-{n}", "ok": _rescore_matches(freeze, members, n, rep),
-                           "note": ("statistics, per-condition rows, resolution and leverage recomputed from the "
-                                    "frozen predictions and the targets file and compared byte for byte; the "
-                                    "blindness status depends on this computer's history and is not recomputed; "
-                                    "bootstrap reproducibility holds for the same numpy version")})
+        except ValueError:
+            check(f"report-{n}", False, "the report does not parse")
+            n += 1
+            continue
+        check(f"report-freeze-{n}", rep.get("freezeSha256") == freeze_sha, "the report names this freeze record")
+        targets = members.get(f"targets-{n}.csv")
+        if targets is None:
+            check(f"targets-hash-{n}", False, f"targets-{n}.csv is missing")
+            n += 1
+            continue
+        check(f"targets-hash-{n}", sha256_bytes(targets) == rep.get("targetsSha256"))
+        if not same_sources:
+            check(f"rescore-statistics-{n}", None, "re-score skipped: different scorer source")
+        else:
+            ok = _rescore_matches(freeze, members, n, rep, exact=same_numerics)
+            env = ("same numerical environment, compared byte for byte" if same_numerics else
+                   f"different numerical environment (numpy {numpy.__version__}, scipy {scipy.__version__} here; "
+                   f"numpy {recorded.get('numpy')}, scipy {recorded.get('scipy')} at freeze), compared at a relative "
+                   f"{RESCORE_REL_TOL:g}")
+            check(f"rescore-statistics-{n}", ok, "statistics, per-condition rows, resolution and leverage recomputed "
+                  "from the frozen predictions and the targets file; " + env + "; the blindness status depends on "
+                  "this computer's history and is not recomputed")
         n += 1
     return checks
 
 
 STAT_SECTIONS = ("ledger", "resolution", "leverage", "exclusions", "excluded", "notFormed")
+RESCORE_REL_TOL = 1e-9
 
 
-def _rescore_matches(freeze, members, n, rep):
+def _close(a, b):
+    import math
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_close(a[k], b[k]) for k in a)
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_close(x, y) for x, y in zip(a, b))
+    if isinstance(a, float) and isinstance(b, (int, float)) or isinstance(b, float) and isinstance(a, (int, float)):
+        return math.isclose(float(a), float(b), rel_tol=RESCORE_REL_TOL, abs_tol=1e-12)
+    return a == b
+
+
+def _rescore_matches(freeze, members, n, rep, exact=True):
     import tempfile
     from lpbf_user_blind_protocol import canonical_bytes
     import lpbf_user_blind_score as sc
@@ -278,19 +337,21 @@ def _rescore_matches(freeze, members, n, rep):
         st = Store(Path(tmp) / "store")
         earlier = [json.loads(members[f"score-{k}.json"])["targetsSha256"] for k in range(1, n)]
         job = {"declarations": {"viewedPredictionsBeforeFinalisingTargets": "no"}}
-        matched = rep["commitment"]["matched"]
         new = sc.score(st, job, freeze, members["freeze.json"], members[f"targets-{n}.csv"], rep["targetsSha256"],
-                       matched, n, earlier, None, [])
-    same = all(canonical_bytes(new[k]) == canonical_bytes(rep[k]) for k in STAT_SECTIONS)
+                       rep["commitment"]["matched"], n, earlier, None, [])
+    pairs = [(new[k], rep[k]) for k in STAT_SECTIONS]
     for arm, a in rep["arms"].items():
-        same = same and canonical_bytes(new["arms"][arm]["stats"]) == canonical_bytes(a["stats"])
-        same = same and canonical_bytes(new["arms"][arm].get("bootstrap95")) == canonical_bytes(a.get("bootstrap95"))
-    return bool(same)
+        pairs.append((new["arms"][arm]["stats"], a["stats"]))
+        pairs.append((new["arms"][arm].get("bootstrap95"), a.get("bootstrap95")))
+    if exact:
+        return all(canonical_bytes(x) == canonical_bytes(y) for x, y in pairs)
+    return all(_close(x, y) for x, y in pairs)
 
 
 def cmd_verify(a):
     checks = verify_bundle(a.bundle)
-    print(json.dumps({"checks": checks}, indent=1))
+    freeze_sha = next((c.get("freezeSha256") for c in checks if c["id"] == "freeze-sha256"), None)
+    print(json.dumps({"freezeSha256": freeze_sha, "checks": checks}, indent=1))
     return 0 if all(c["ok"] is not False for c in checks) else 1
 
 

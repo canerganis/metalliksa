@@ -21,7 +21,7 @@ from lpbf_user_blind_protocol import (
     SERVED_SOURCE_LOCATOR, SERVED_SOURCE_REASON, STATS_ALLOY_KEY, THRESHOLDS, USER_TIER, WORDING, BlindRefusal,
     canonical_bytes, canonical_sha256, protocol_sha256, text_cell_safe, wording_sha256,
 )
-from lpbf_user_blind_store import sha256_bytes
+from lpbf_user_blind_store import parse_time, sha256_bytes
 from lpbf_user_blind_targets import parse_targets
 
 STATUS_MAP = {"PASS": "thresholds-met", "FAIL": "threshold-not-met", "INCONCLUSIVE": "inconclusive",
@@ -40,7 +40,14 @@ def load_freeze(store, key):
     from lpbf_user_blind_freeze import freeze_key_of
     if doc.get("freezeKey") != key or freeze_key_of(doc["metadata"], doc["rows"], doc["predictorIdentity"]) != key:
         raise BlindRefusal("FREEZE_ALTERED")
+    if predictions_sha256(doc) != doc.get("predictionsSha256"):
+        raise BlindRefusal("FREEZE_ALTERED")
     return doc, data
+
+
+def predictions_sha256(freeze):
+    """Recomputed hash of the frozen predictions (the freeze key covers inputs and identity; this covers values)."""
+    return canonical_sha256({c["condition"]: c["pred"] for c in freeze["conditions"]})
 
 
 def _num(x):
@@ -66,7 +73,7 @@ def blindness(store, freeze, md, declarations, commitment_matched, attempt_n, fi
     key = freeze["freezeKey"]
     tuples = [(c["P_W"], c["v_mm_s"], c["d_1e2_um"]) for c in freeze["conditions"]]
     frozen_seq = frozen_entry["seq"] if frozen_entry else 0
-    frozen_at = frozen_entry["at"] if frozen_entry else freeze["createdAt"]
+    frozen_at = parse_time(frozen_entry["at"] if frozen_entry else freeze["createdAt"])
     committed = commitment_matched is True
     reasons, statuses, after = [], [], []
 
@@ -102,7 +109,7 @@ def blindness(store, freeze, md, declarations, commitment_matched, attempt_n, fi
     for e in spent_set_exposures(md["alloy"], tuples):
         statuses.append("not-blind-data-already-used-by-app")
         reasons.append(f"{e['nConditions']} conditions match the published set {e['datasetId']}")
-    for e in build_job_history(md["alloy"], tuples, before_iso=frozen_at):
+    for e in build_job_history(md["alloy"], tuples, before=frozen_at):
         statuses.append("not-blind-app-history")
         reasons.append(f"{e['nConditions']} conditions match Build Job history before the freeze (partial check, "
                        "Build Job history only)")
@@ -110,8 +117,9 @@ def blindness(store, freeze, md, declarations, commitment_matched, attempt_n, fi
         statuses.append("not-blind-used-for-calibration")
         reasons.append("you declared that these conditions were used for machine calibration")
     for e in calibration_exposures(md["alloy"], tuples):
+        at = parse_time(e["at"])
         exposure("not-blind-used-for-calibration", f"tuple overlap with calibration store {e['storeId']}",
-                 str(e["at"]) < str(frozen_at), 7)
+                 at is None or frozen_at is None or at < frozen_at, 7)
     labels = []
     if statuses:
         status = statuses[0]
@@ -296,7 +304,8 @@ def score(store, job, freeze, freeze_bytes, targets_bytes, targets_sha, commitme
     scorer_now = scorer_identity()
     pred_changed = canonical_sha256(predictor_now) != canonical_sha256(freeze["predictorIdentity"])
     scorer_changed = scorer_now["scoreSourcesSha256"] != freeze["scorerIdentity"]["scoreSourcesSha256"] or (
-        scorer_now["numpy"] != freeze["scorerIdentity"]["numpy"])
+        scorer_now["numpy"] != freeze["scorerIdentity"]["numpy"]) or (
+        scorer_now.get("scipy") != freeze["scorerIdentity"].get("scipy"))
     if pred_changed:
         labels.append("predictor changed since freeze; this result scores the frozen predictions")
     if scorer_changed:

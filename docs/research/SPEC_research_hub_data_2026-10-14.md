@@ -329,7 +329,8 @@ honesty block of 2.1.
 This table is the one authoritative list of request types (Part P, ENG-16). Budgets for the estimate RPC types, all
 measured in phase 1 and again in phase 4 with every type present: preview 300 ms at the condition cap, list 100 ms and
 get 100 ms at the store cap (Part S adds sealed precheck 300 ms and predictions check 100 ms). RPC reads take no
-blocking lock: they try the store lock once without waiting (at most 50 ms) and otherwise read committed records only.
+lock: they read committed records only (renamed record directories and complete ledger lines). (Gate of
+2026-10-17, item 8: the one-shot lock attempt was removed from the implementation and from this text.)
 In Part P the freeze payload has no `research` member; a request carrying one is refused with `METADATA_FIELD`
 (unknown key) until protocol 2 (7.6).
 

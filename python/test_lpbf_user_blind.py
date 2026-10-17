@@ -663,6 +663,156 @@ class Exports(BlindCase):
         self.assertTrue(any(c["ok"] is False for c in cli.verify_bundle(out)))
 
 
+class GateFollowUps(BlindCase):
+    """Gate of 2026-10-17: scipy in the scorer identity, verify checks, staging cleanup, chain refusal, times."""
+
+    def _cli(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("lpbf_user_blind_cli", PY / "tools" / "lpbf_user_blind.py")
+        cli = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cli)
+        return cli
+
+    def _bundle(self):
+        conds = conditions()
+        rec = self.freeze(conds=conds)
+        self.score(rec["freezeKey"], targets_csv(conds))
+        r = self.job({"jobType": "user-blind-bundle", "schema": S, "freezeKey": rec["freezeKey"]})
+        st = ub.Store()
+        data = st.read_record(st.record_dir(rec["freezeKey"], "bundle", r["bundleN"]), "bundle.tar")
+        return rec, data
+
+    @staticmethod
+    def _retar(members):
+        return ub._tar_bytes(members)
+
+    @staticmethod
+    def _members(data):
+        with tarfile.open(fileobj=io.BytesIO(data)) as tar:
+            return {m.name: tar.extractfile(m).read() for m in tar.getmembers()}
+
+    def test_scorer_identity_records_scipy(self):
+        import scipy
+        self.assertEqual(ufreeze.scorer_identity()["scipy"], scipy.__version__)
+
+    def test_verify_prints_freeze_sha_and_flags_tampered_predictions_and_missing_members(self):
+        cli = self._cli()
+        rec, data = self._bundle()
+        out = self.tmp / "b.tar"
+        out.write_bytes(data)
+        checks = {c["id"]: c for c in cli.verify_bundle(out)}
+        self.assertEqual(checks["freeze-sha256"]["freezeSha256"], rec["freezeSha256"])
+        self.assertTrue(checks["predictions-sha256"]["ok"])
+        self.assertTrue(checks["report-freeze-1"]["ok"])
+        # Tampered prediction with every hash rewritten to match: only the recomputed predictions hash catches it.
+        m = self._members(data)
+        freeze = json.loads(m["freeze.json"])
+        freeze["conditions"][0]["pred"]["served"]["value_um"] = 1.0
+        fb = proto.canonical_bytes(freeze)
+        m["freeze.json"], m["freeze.json.sha256"] = fb, (ub.sha256_bytes(fb) + "\n").encode()
+        man = json.loads(m.pop("bundle-manifest.json"))
+        man["files"] = [{"name": k, "sha256": ub.sha256_bytes(v), "size": len(v)} for k, v in sorted(m.items())]
+        m["bundle-manifest.json"] = proto.canonical_bytes(man)
+        out.write_bytes(self._retar(m))
+        checks = {c["id"]: c for c in cli.verify_bundle(out)}
+        self.assertFalse(checks["predictions-sha256"]["ok"])
+        self.assertFalse(checks["report-freeze-1"]["ok"])
+        # A missing member is ok False, not an exception.
+        m = self._members(data)
+        m.pop("targets-1.csv")
+        out.write_bytes(self._retar(m))
+        checks = {c["id"]: c for c in cli.verify_bundle(out)}
+        self.assertFalse(checks["targets-hash-1"]["ok"])
+        m = self._members(data)
+        m.pop("inputs.csv")
+        out.write_bytes(self._retar(m))
+        self.assertEqual([c["ok"] for c in cli.verify_bundle(out)], [False])
+
+    def test_verify_in_a_different_numerical_environment_uses_the_tolerance(self):
+        import numpy
+        cli = self._cli()
+        _rec, data = self._bundle()
+        out = self.tmp / "b.tar"
+        out.write_bytes(data)
+        with mock.patch.object(numpy, "__version__", "0.0.0-synthetic"):
+            checks = {c["id"]: c for c in cli.verify_bundle(out)}
+        c = checks["rescore-statistics-1"]
+        self.assertIs(c["ok"], True)
+        self.assertIn("different numerical environment", c["note"])
+
+    def test_loaded_freeze_with_altered_predictions_is_refused(self):
+        conds = conditions()
+        rec = self.freeze(conds=conds)
+        st = ub.Store()
+        d = st.freeze_dir(rec["freezeKey"])
+        doc = json.loads(st.read_record(d, "freeze.json"))
+        doc["conditions"][0]["pred"]["served"]["value_um"] = 1.0
+        fb = proto.canonical_bytes(doc)
+        for name, data in (("freeze.json", fb), ("freeze.json.sha256", (ub.sha256_bytes(fb) + "\n").encode())):
+            os.chmod(d / name, 0o666)
+            (d / name).write_bytes(data)
+        with self.assertRaises(proto.BlindRefusal) as cm:
+            self.score(rec["freezeKey"], targets_csv(conds))
+        self.assertEqual(cm.exception.code, "FREEZE_ALTERED")
+
+    def test_staging_is_cleaned_on_the_already_frozen_path_and_on_a_refusal(self):
+        self.freeze()
+        self.freeze()                                                   # already frozen
+        self.assertEqual(ub.Store().incomplete_staging(), [])
+        conds = conditions()
+        other = self.freeze(md=metadata(blockLabel="Other synthetic block"), conds=conds,
+                            raw=inputs_csv(conds).replace(b"t2,", b"t2x,"))
+        md = metadata(blockLabel="Refused synthetic block")
+        raw = inputs_csv(conds).replace(b"t1,", b"t1y,")
+        pv = self.preview(md, raw)
+        staged = ub.stage_request(ub.validate_request({
+            "jobType": "user-blind-freeze", "schema": S, "metadata": md, "inputsCsvBase64": b64(raw),
+            "inputsFileName": "inputs.csv", "previewSha256": pv["previewSha256"], "overlapSha256": pv["overlapSha256"],
+            "acknowledgements": {a: True for a in pv["acknowledgementsRequired"]}}))
+        self.reveal(other["freezeKey"])
+        folder = self.tmp / "jobs" / ("c" * 32)
+        folder.mkdir()
+        with self.assertRaises(proto.BlindRefusal):
+            ub.run_job(staged, folder)
+        self.assertEqual(ub.Store().incomplete_staging(), [])
+
+    def test_broken_chain_refuses_mutations(self):
+        rec = self.freeze()
+        st = ub.Store()
+        raw = st.ledger_path.read_bytes()
+        st.ledger_path.write_bytes(raw.replace(b'"seq":1', b'"seq":9', 1))
+        with self.assertRaises(proto.BlindRefusal) as cm:
+            self.reveal(rec["freezeKey"])
+        self.assertEqual(cm.exception.code, "STORE_LEDGER_BROKEN")
+        ub.rpc({"jobType": "user-blind-list", "schema": S})               # reads still work
+
+    def test_times_are_compared_in_one_utc_format(self):
+        from lpbf_user_blind_store import parse_time, utc_iso
+        self.assertEqual(utc_iso("2026-10-17T10:00:00+03:00"), "2026-10-17T07:00:00.000Z")
+        self.assertEqual(utc_iso("2026-10-17T07:00:00Z"), "2026-10-17T07:00:00.000Z")
+        self.assertLess(parse_time("2026-10-17T07:00:00.5Z"), parse_time("2026-10-17T07:00:01Z"))
+
+    def test_calibration_import_time_is_used_when_recorded(self):
+        conds = conditions()
+        d = self.tmp / "user-cal" / "user-synthetic-t"
+        d.mkdir(parents=True)
+        (d / "rows.json").write_text(json.dumps({"sourceId": "user-synthetic-t", "material": "Ti-6Al-4V",
+                                                 "provenance": {"importedAt": "2030-01-01T00:00:00Z"},
+                                                 "rows": [{"power_W": conds[0][1], "speed_mm_s": conds[0][2],
+                                                           "beamDiameter_um": 80.0}]}))
+        found = uover.calibration_exposures("Ti-6Al-4V", [(conds[0][1], conds[0][2], 80.0)])
+        self.assertEqual(found[0]["at"], "2030-01-01T00:00:00.000Z")
+        self.assertEqual(found[0]["timeBasis"], "import time")
+        md = metadata(mode="post-measurement", targetCommitment={"sha256": __import__("hashlib").sha256(
+            targets_csv(conds)).hexdigest()})
+        rec = self.freeze(md=md, conds=conds)
+        self.score(rec["freezeKey"], targets_csv(conds))
+        rep = self.report(rec["freezeKey"])
+        # The import is dated after the frozen event, so the matched commitment keeps the test blind-committed.
+        self.assertEqual(rep["blindness"]["status"], "blind-committed")
+        self.assertEqual(rep["blindness"]["exposuresAfterCommitment"][0]["status"], "not-blind-used-for-calibration")
+
+
 class Enforcer(unittest.TestCase):
     def test_enforcer_refuses_prediction_keys_and_honesty_changes(self):
         good = {"freezeKey": "a" * 64, "revealN": 1, "ledgerSeq": 2, "documents": [], "honesty": proto.HONESTY,

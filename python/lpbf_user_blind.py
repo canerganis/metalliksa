@@ -34,6 +34,7 @@ BLIND_SUBMIT_ERROR_CODES = ("BLIND_SUBMIT_INTERNAL",)
 BLIND_CHILD_ERROR_CODES = ("PREVIEW_DRIFT", "ACK_REQUIRED", "OVERLAP_CHANGED", "PREDICTOR_NOT_PINNED",
                            "PROTOCOL_CHANGED", "FREEZE_ALTERED", "FREEZE_UNKNOWN", "REVEAL_REQUIRED",
                            "STORE_READ_ONLY", "STORE_FULL", "STORE_LOCKED", "STORE_SHARED_HOST", "STORE_LOCK_DOMAIN",
+                           "STORE_LEDGER_BROKEN",
                            "DOCUMENT_UNAVAILABLE", "SOLVER_EXCEPTION", "INTERNAL_ERROR")
 PROGRESS_STAGES = ("predict", "score", "reveal", "bundle", "open")
 _HEX = re.compile(r"^[0-9a-f]{64}$")
@@ -359,7 +360,11 @@ def reveal(store, key, job_id, via):
                "via": via, "jobId": job_id}
         data = canonical_bytes(doc)
         staging = store.stage({"reveal.json": data})
-        store.commit(staging, store.record_dir(key, "reveal", n))
+        try:
+            store.commit(staging, store.record_dir(key, "reveal", n))
+        finally:
+            if staging.exists():
+                store.discard(staging)
         entry = store.append("revealed", freeze_key=key, job_id=job_id, record=f"freezes/{key}/reveal-{n}",
                              hashes={"reveal": sha256_bytes(data)})
     emit_progress("reveal", 1, 1)
@@ -385,20 +390,26 @@ def run_score(store, job):
         n = earlier.index(job["targetsSha256"]) + 1
         return _score_result(store, key, n, already=True)
     emit_progress("score", 0, 1)
-    report = score(store, job, freeze, freeze_bytes, targets, job["targetsSha256"], matched, len(earlier) + 1,
-                   earlier, frozen_entry, ledger)
     with store.lock():
+        # Attempt number, earlier targets and blindness are always computed under the lock, from the store as it
+        # is at the commit point (gate item 6).
         earlier_now = [_score_doc(store, key, n)["targetsSha256"] for n in store.numbered(key, "score")]
         if job["targetsSha256"] in earlier_now:
             return _score_result(store, key, earlier_now.index(job["targetsSha256"]) + 1, already=True)
         n = len(earlier_now) + 1
-        if n != report["attempt"]["n"]:
-            report = score(store, job, freeze, freeze_bytes, targets, job["targetsSha256"], matched, n, earlier_now,
-                           frozen_entry, store.ledger())
+        ledger_now = store.ledger()
+        frozen_now = next((e for e in ledger_now if e.get("event") == "frozen" and e.get("freezeKey") == key),
+                          frozen_entry)
+        report = score(store, job, freeze, freeze_bytes, targets, job["targetsSha256"], matched, n, earlier_now,
+                       frozen_now, ledger_now)
         rep_bytes = canonical_bytes(report)
         csv_bytes = comparison_csv(report, sha256_bytes(rep_bytes))
         staging = store.stage({"score.json": rep_bytes, "comparison.csv": csv_bytes})
-        store.commit(staging, store.record_dir(key, "score", n))
+        try:
+            store.commit(staging, store.record_dir(key, "score", n))
+        finally:
+            if staging.exists():
+                store.discard(staging)
         store.append("scored", freeze_key=key, job_id=job["jobId"], record=f"freezes/{key}/score-{n}",
                      hashes={"report": sha256_bytes(rep_bytes), "targets": job["targetsSha256"],
                              "comparison": sha256_bytes(csv_bytes)})
@@ -469,7 +480,11 @@ def run_bundle(store, job):
     with store.lock():
         n = (store.numbered(key, "bundle") or [0])[-1] + 1
         staging = store.stage({"bundle.tar": data})
-        store.commit(staging, store.record_dir(key, "bundle", n))
+        try:
+            store.commit(staging, store.record_dir(key, "bundle", n))
+        finally:
+            if staging.exists():
+                store.discard(staging)
         store.append("bundle-exported", freeze_key=key, job_id=job["jobId"],
                      record=f"freezes/{key}/bundles/bundle-{n}", hashes={"bundle": sha256_bytes(data)})
     emit_progress("bundle", 1, 1)

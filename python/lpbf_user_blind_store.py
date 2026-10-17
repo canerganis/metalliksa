@@ -49,6 +49,28 @@ def now_iso():
     return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
+def parse_time(value):
+    """An ISO 8601 time (Z or an offset, with or without fractions) as an aware UTC datetime, or None."""
+    if not isinstance(value, str) or not value:
+        return None
+    text = value.strip().replace("Z", "+00:00")
+    try:
+        dt = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def utc_iso(value):
+    """One UTC format with millisecond precision for every stored and compared time."""
+    dt = parse_time(value) if isinstance(value, str) else value
+    if dt is None:
+        return None
+    return dt.astimezone(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
 def lock_domain():
     return "windows" if os.name == "nt" else "posix"
 
@@ -209,32 +231,6 @@ class Store:
             finally:
                 f.close()
 
-    def try_lock_once(self):
-        """RPC readers: one non-blocking attempt (spec 3.2.1). Returns True when free; never waits."""
-        p = self.root / "store.lock"
-        if not p.exists():
-            return True
-        try:
-            f = open(p, "a+b")
-        except OSError:
-            return False
-        try:
-            if os.name == "nt":
-                import msvcrt
-                f.seek(0)
-                msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
-                f.seek(0)
-                msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
-            else:
-                import fcntl
-                fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                fcntl.flock(f, fcntl.LOCK_UN)
-            return True
-        except OSError:
-            return False
-        finally:
-            f.close()
-
     # ------------------------------------------------------------------ uploads
     def put_upload(self, data, kind):
         """Content-addressed upload (exclusive create; identical bytes reuse the file). Returns the sha256."""
@@ -280,6 +276,18 @@ class Store:
         os.rename(staging, target)
         _fsync_dir(target.parent)
         _fault("after-rename")
+
+    def discard(self, staging):
+        """Remove one of this process's own staging directories (never a committed record)."""
+        import shutil
+        staging = Path(staging)
+        if staging.parent != self.root / ".staging" or not staging.is_dir():
+            return
+
+        def onerror(func, path, _exc):
+            os.chmod(path, stat.S_IWRITE | stat.S_IREAD)
+            func(path)
+        shutil.rmtree(staging, onerror=onerror)
 
     def incomplete_staging(self):
         d = self.root / ".staging"
@@ -364,8 +372,10 @@ class Store:
         return {"ok": True, "brokenAt": None, "n": len(entries)}
 
     def append(self, event, *, freeze_key=None, job_id=None, record=None, hashes=None, extra=None):
-        """Append one event (caller holds the lock). Returns the entry."""
+        """Append one event (caller holds the lock). Refuses on a broken chain. Returns the entry."""
         entries = self.ledger()
+        if not self.verify_chain(entries)["ok"]:
+            raise BlindRefusal("STORE_LEDGER_BROKEN")
         prev = entries[-1]["entryHash"] if entries else None
         entry = {"seq": len(entries) + 1, "at": now_iso(), "event": event, "freezeKey": freeze_key,
                  "jobId": job_id, "record": record, "hashes": dict(hashes or {}), "prevEntryHash": prev}

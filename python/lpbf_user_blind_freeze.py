@@ -27,6 +27,7 @@ SCORER_FILES = ("python/lpbf_blind_stats.py", "python/lpbf_user_blind_score.py",
 def scorer_identity():
     from lpbf_user_blind_store import REPO_ROOT, scorer_source_hashes
     import numpy
+    import scipy
     hashes = scorer_source_hashes([REPO_ROOT / p for p in SCORER_FILES])
     return {"scoreSourcesSha256": canonical_sha256(hashes), "files": hashes,
             "statsConstants": {"median": stats.MEDIAN_MAX, "p90": stats.P90_MAX, "meanSigned": stats.BIAS_MAX,
@@ -34,7 +35,7 @@ def scorer_identity():
                                "uMax": stats.U_MAX, "leverageHighCut": stats.LEVERAGE_HIGH_CUT,
                                "leverageLowCut": dict(stats.LEVERAGE_LOW_CUT), "uMRelFloor": stats.U_M_REL_FLOOR,
                                "uMFUm": dict(stats.U_M_F_UM), "bootB": stats.BOOT_B, "bootSeed": stats.BOOT_SEED},
-            "protocolSha256": protocol_sha256(), "numpy": numpy.__version__}
+            "protocolSha256": protocol_sha256(), "numpy": numpy.__version__, "scipy": scipy.__version__}
 
 
 class _ColumnsLoaded:
@@ -165,6 +166,17 @@ def run_freeze(store, job, progress=lambda k, n: None):
     }
     data = canonical_bytes(record)
     staging = store.stage({"freeze.json": data})
+    try:
+        return _commit(store, job, record, data, staging, key, parsed, metadata_raw, inputs)
+    finally:
+        # The rename consumed the staging directory when the freeze was committed; on the already-frozen path
+        # and on a refusal it is still ours and is removed (a killed job leaves it, listed as incomplete).
+        if staging.exists():
+            store.discard(staging)
+
+
+def _commit(store, job, record, data, staging, key, parsed, metadata_raw, inputs):
+    import base64
     with store.lock():
         target = store.freeze_dir(key)
         if target.exists():
