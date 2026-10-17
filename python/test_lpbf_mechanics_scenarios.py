@@ -114,6 +114,12 @@ class CantileverTests(unittest.TestCase):
             self.assertTrue(q["validity"]["noValueText"], name)
         self.assertIn("cannot determine cantilever bending",
                       run(beam=cases["m1 provenance"])["quantities"]["tipDeflection"]["validity"]["noValueText"])
+        # The explicit M1-provenance refusal has its own reason code; without it the profile would only be "missing".
+        for name in ("tipDeflection", "tipDeflectionOverThickness"):
+            q = run(beam=cases["m1 provenance"])["quantities"][name]
+            self.assertEqual(q["reasons"][0]["code"], "missing-source-bound-model", name)
+        self.assertEqual(run(beam=cases["missing evidence"])["quantities"]["tipDeflection"]["reasons"][0]["code"],
+                         "missing-source-constant")
         identity = {k: "x" for k in ms.CALIBRATION_KEYS}
         matched = run(beam=dict(BEAM, profileEvidence="matched-build-calibration", calibrationIdentity=identity))
         self.assertIsNotNone(matched["quantities"]["tipDeflection"]["value"])

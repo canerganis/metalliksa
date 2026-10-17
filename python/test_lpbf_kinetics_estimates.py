@@ -120,6 +120,10 @@ class BuildJobKineticsTests(unittest.TestCase):
         ti, al = self.jobs["ti6al4v"]["estimates"], self.jobs["alsi10mg"]["estimates"]
         self.assertEqual(al["coolingInterval"]["rule"], "solidus-to-preheat-plus-25K-v1")
         self.assertEqual(al["coolingInterval"]["low_C"], 185.0)
+        record = al["inputProvenance"]["coolingInterval"]
+        self.assertEqual(record["kind"], "declaredAssumption")
+        self.assertIn("declared convention: solidus to preheat plus 25 K", record["scope"])
+        self.assertIn(f"{al['coolingInterval']['high_C']:g} C to 185 C", record["scope"])
         self.assertNotEqual(al["coolingInterval"]["high_C"], 998.0)
         self.assertIn(f"{al['coolingInterval']['high_C']:g} C", al["quantities"]["pathCoolingRate"]["validity"]
                       ["explanation"])
