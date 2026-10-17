@@ -130,6 +130,9 @@ jobs:
           test_lpbf_process_window test_lpbf_gr_solidification test_lpbf_keyhole_regime_bump test_lpbf_p1_sourced_depth_path test_lpbf_p6_containment test_lpbf_p7a_rules_and_nulls test_lpbf_p7b_sourced_constants test_lpbf_keyhole_literature test_lpbf_keyhole_benchmark test_lpbf_literature_datasets test_lpbf_calibration_v2_config test_lpbf_calibration_v2_tool test_calphad_literature_solidification test_calphad_matcalc_open test_lpbf_zero_drift_depth test_lpbf_error_bands test_lpbf_depth_bias test_lpbf_part_porosity_aggregator
           test_lpbf_solidification_segregation test_lpbf_next_experiment test_lpbf_user_measurements test_lpbf_benchmark
           test_lpbf_machine_calibration test_lpbf_machine_calibrated_meltpool
+          test_lpbf_blind_stats test_lpbf_served_arms test_lpbf_spent_ledger test_lpbf_spent_descriptive
+          test_lpbf_user_blind test_lpbf_user_blind_inputs test_lpbf_user_blind_targets
+          test_lpbf_user_blind_store test_lpbf_user_blind_crash test_lpbf_worker_blind_jobs
           test_lpbf_public_datasets test_lpbf_wave2_datasets test_lpbf_process_map test_lpbf_powder_layer_analysis
           test_phase7 test_phase8 test_keyhole_contract
           test_lpbf_transient_3d_gpu test_lpbf_phase22_energy_ledger test_lpbf_phase22_full_field_cuda_parity
