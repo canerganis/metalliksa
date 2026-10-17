@@ -1,0 +1,296 @@
+{
+ "_title": "Synthetic fixture, not measured data",
+ "document": {
+  "attempts": [
+   {
+    "blindness": "blind-prospective-declared",
+    "n": 1,
+    "reportSha256": "53c3f835a2aa2db7a920315e16105c4134b4f144c10184ff40fdeaeffcfdf494",
+    "statuses": {
+     "research:cavity": "unavailable",
+     "research:melt-link": "unavailable",
+     "served": "threshold-not-met",
+     "served:P+5%": "threshold-not-met",
+     "served:P-5%": "threshold-not-met",
+     "served:d+5%": "threshold-not-met",
+     "served:d-5%": "threshold-not-met"
+    },
+    "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+   }
+  ],
+  "documents": [
+   {
+    "attempt": null,
+    "jobId": "4759352d6dacbe47fe718c8e8f413e3b",
+    "jobRecordPresent": false,
+    "name": "blind-receipt.json"
+   },
+   {
+    "attempt": null,
+    "jobId": "4759352d6dacbe47fe718c8e8f413e3b",
+    "jobRecordPresent": false,
+    "name": "blind-freeze.json"
+   },
+   {
+    "attempt": 1,
+    "jobId": "bfebca1791f688ac1151d95612da9c1e",
+    "jobRecordPresent": false,
+    "name": "blind-report.json",
+    "sha256": "53c3f835a2aa2db7a920315e16105c4134b4f144c10184ff40fdeaeffcfdf494",
+    "size": 42846
+   },
+   {
+    "attempt": 1,
+    "jobId": "bfebca1791f688ac1151d95612da9c1e",
+    "jobRecordPresent": false,
+    "name": "blind-comparison.csv",
+    "sha256": "0a1996083b4f4d862f335d48401e88959e5c52d67722cb815c192092f471999f",
+    "size": 30365
+   }
+  ],
+  "freezeKey": "e0bd23f240848ece9dc9ff1127eb78177610797150dc230bab6af1b49feb863b",
+  "honesty": {
+   "appValidation": false,
+   "dataLabel": "Measured (user-supplied)",
+   "evidenceKind": "screening-only",
+   "experimentalValidation": false,
+   "g3Satisfied": false,
+   "labelPromotionProposed": "none",
+   "n3Counted": false,
+   "neverEnters": {
+    "calibration": true,
+    "g3": true,
+    "g3o": true,
+    "leaderboard": true,
+    "n3": true,
+    "n4": true,
+    "physicsBump": true,
+    "researchRegistry": true
+   },
+   "notG3oRecord": true,
+   "protocolId": "lpbf-user-blind-protocol-1",
+   "resultScope": "user-blind-test"
+  },
+  "readOnly": false,
+  "receipt": {
+   "acknowledgements": {
+    "predeterminedInconclusive": true
+   },
+   "alloy": "Ti-6Al-4V",
+   "alreadyFrozen": false,
+   "anchorAdvice": "Share freezeSha256 with someone outside this computer, or commit it to a repository, before you measure or upload measurements. This app cannot prove the order of events by itself.",
+   "armsFrozen": [
+    {
+     "available": 12,
+     "id": "served",
+     "of": 12,
+     "reasonCodes": []
+    },
+    {
+     "available": 12,
+     "id": "served:P-5%",
+     "of": 12,
+     "reasonCodes": []
+    },
+    {
+     "available": 12,
+     "id": "served:P+5%",
+     "of": 12,
+     "reasonCodes": []
+    },
+    {
+     "available": 12,
+     "id": "served:d-5%",
+     "of": 12,
+     "reasonCodes": []
+    },
+    {
+     "available": 12,
+     "id": "served:d+5%",
+     "of": 12,
+     "reasonCodes": []
+    },
+    {
+     "available": 0,
+     "id": "research:melt-link",
+     "of": 12,
+     "reasonCodes": [
+      "RESEARCH_NOT_REQUESTED"
+     ]
+    },
+    {
+     "available": 0,
+     "id": "research:cavity",
+     "of": 12,
+     "reasonCodes": [
+      "RESEARCH_NOT_REQUESTED"
+     ]
+    },
+    {
+     "available": 12,
+     "id": "context:fabbro",
+     "of": 12,
+     "reasonCodes": []
+    }
+   ],
+   "blockIssues": [],
+   "blockLabel": "Synthetic fixture block",
+   "counts": {
+    "conditions": 12,
+    "rows": 36,
+    "sections": 0,
+    "tracks": 36
+   },
+   "createdAt": "2026-10-17T09:10:37.289Z",
+   "designChecks": {
+    "leverage": {
+     "cut": 15.0,
+     "nAtOrAbove20": 10,
+     "nBelow": 1,
+     "ok": false
+    },
+    "nConditions": 12,
+    "nMinMet": true,
+    "resolution": {
+     "evaluable": true,
+     "reason": null
+    },
+    "uMNote": "with u_m not released, a condition needs a measured depth of at least 100 um for U_c at most 0.10 even with no track scatter"
+   },
+   "excludedInputs": [],
+   "freezeKey": "e0bd23f240848ece9dc9ff1127eb78177610797150dc230bab6af1b49feb863b",
+   "freezeSha256": "e8b57254faf6ca432fd208c0fb3e77e3df538c24a25ba46d37be52faa0dbf610",
+   "grades": {
+    "beam": "C",
+    "block": "C",
+    "power": "C"
+   },
+   "honesty": {
+    "appValidation": false,
+    "dataLabel": "Measured (user-supplied)",
+    "evidenceKind": "screening-only",
+    "experimentalValidation": false,
+    "g3Satisfied": false,
+    "labelPromotionProposed": "none",
+    "n3Counted": false,
+    "neverEnters": {
+     "calibration": true,
+     "g3": true,
+     "g3o": true,
+     "leaderboard": true,
+     "n3": true,
+     "n4": true,
+     "physicsBump": true,
+     "researchRegistry": true
+    },
+    "notG3oRecord": true,
+    "protocolId": "lpbf-user-blind-protocol-1",
+    "resultScope": "user-blind-test"
+   },
+   "inputsSha256": "28fb6960984fef2b592a3b1545d2acc8e9121fb99506c55717c926558dd2bb16",
+   "labels": [
+    "S and O flagged missing",
+    "u_m assumed (lead assumption, not sourced)",
+    "bare plate: layer argument 40 um passed",
+    "research arm not requested"
+   ],
+   "ledgerEntryHash": "a6cf9581900a0ca4336a1317edf14183f5954795dbf48be954e2eae9f76687d8",
+   "ledgerSeq": 1,
+   "metadataSha256": "ea509afc4b3718215b931d528287f3874c1ab940be463cc799cec48656e90626",
+   "predictionsSha256": "81690087817e5fd508ea441dba54fc2d111f9013c992702841241b9903da0425",
+   "predictionsWithheld": true,
+   "predictorIdentity": {
+    "absorptionModel": "flat-plate",
+    "alloy": "Ti-6Al-4V",
+    "buildJobIdentitySha256": "063838a2c480fab77deae6a2d58bde8008ba8a00f724838f118dfc56a88c9dd6",
+    "buildJobModelId": "rosenthal-screening-v1",
+    "buildJobSolverRevision": "lpbf-build-job-solt-v27",
+    "heatSource": "rosenthal",
+    "implementationFingerprint": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
+    "includeProcessMap": false,
+    "materialAuthorityRevisionSha256": "d26c4b0318380615fbe89d482100083a5d2ad8193e03640149b0bc2f1770ff12",
+    "materialPropertySha256": "bb9bf8336ec5dbdc1a3aeb1544104d4e98450bdf77db053b8d8f891ac53f8c06",
+    "numpy": "2.2.6",
+    "pinnedFingerprint": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
+    "python": "3.12.10",
+    "research": {
+     "contract": "research/p8-research-arm 14e13ea8",
+     "reasonCode": "RESEARCH_NOT_REQUESTED",
+     "requested": false
+    },
+    "scipy": "1.15.3",
+    "servedClosure": {
+     "files": [
+      {
+       "liveSha256": "c0cda3994e4b2e7df30796964075cc7ea8293bb897b6c918cc3ab16e3c702083",
+       "path": "python/lpbf_build_job_material_snapshot.py",
+       "pinnedSha256": "c0cda3994e4b2e7df30796964075cc7ea8293bb897b6c918cc3ab16e3c702083"
+      },
+      {
+       "liveSha256": "42181784b999244c8b34d18d125b2ea97e001d8d2747cd51ef3d8847776926c2",
+       "path": "python/lpbf_job_cache.py",
+       "pinnedSha256": "42181784b999244c8b34d18d125b2ea97e001d8d2747cd51ef3d8847776926c2"
+      },
+      {
+       "liveSha256": "c8af101836331e0a3e19e946644c70062c538ad58d8b5180058403c06552bba8",
+       "path": "python/lpbf_public_datasets.py",
+       "pinnedSha256": "c8af101836331e0a3e19e946644c70062c538ad58d8b5180058403c06552bba8"
+      },
+      {
+       "liveSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4",
+       "path": "python/lpbf_served_arms.py",
+       "pinnedSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4"
+      }
+     ],
+     "pinSha256": "1ff8e0200e944ba7cf07d8ed51aab0145c3f4e8499894e08908a890c69b0b35c"
+    },
+    "servedPath": "build-job-thermal"
+   },
+   "previewSha256": "4e704e0d5316a3126466ed74bed0a9f9326f9c19bf0ebd21d90592fa7bcefb07",
+   "receiptLine": "Predictions frozen. Values are withheld until you upload your measurements or choose to reveal them.",
+   "schema": "lpbf-user-blind-receipt-1",
+   "scorerIdentity": {
+    "files": {
+     "python/lpbf_blind_stats.py": "bbaeb312f49892348ccc74d46f7d92ab8c499b5b493a4db30829411ad76906cf",
+     "python/lpbf_spent_ledger.py": "51d7ffeb9b13e8b14e87cb105ff62056cc39fe655f4f705541a2fca4158c9813",
+     "python/lpbf_user_blind_score.py": "5816b2c8a386c706a1fc4ce41f8bf3a69e9129a1e2a2d058d8c3c9424b87574b",
+     "python/lpbf_user_blind_targets.py": "54f6469748aa0e995e7f60e47ede0c7955110066e9a2b781f20fed645fd480a3"
+    },
+    "numpy": "2.2.6",
+    "protocolSha256": "8739daf89556142775596c8ca0b7723d09c6e4422593f34522fce60c6204b0d5",
+    "scoreSourcesSha256": "b99fac8b63ed45e7907b0ddb375f8408d3d7dc3e4694d53ab07dd67502d7fe26",
+    "statsConstants": {
+     "bootB": 2000,
+     "bootSeed": 20261011,
+     "leverageHighCut": 20.0,
+     "leverageLowCut": {
+      "AlSi10Mg": 15.0,
+      "Ti64": 15.0
+     },
+     "maxApe": "0.50",
+     "meanSigned": "0.10",
+     "median": "0.20",
+     "nMin": 12,
+     "p90": "0.35",
+     "sideMin": 4,
+     "uMFUm": {
+      "bare_plate": 5.0,
+      "powder_layer_or_am": 10.0
+     },
+     "uMRelFloor": 0.03,
+     "uMax": 0.1
+    }
+   },
+   "targetCommitmentSha256": null
+  },
+  "revealEvents": [
+   {
+    "at": "2026-10-17T09:10:37.921Z",
+    "jobId": "4bc7a1e84aec5c4100afdd719b3c0b59",
+    "seq": 3
+   }
+  ],
+  "schema": "lpbf-user-blind-get-1",
+  "sharedHost": false
+ }
+}

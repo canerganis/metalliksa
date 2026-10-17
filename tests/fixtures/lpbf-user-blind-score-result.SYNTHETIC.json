@@ -1,0 +1,52 @@
+{
+ "_title": "Synthetic fixture, not measured data",
+ "document": {
+  "alreadyScored": false,
+  "attempt": 1,
+  "documents": [
+   {
+    "attempt": 1,
+    "name": "blind-report.json"
+   },
+   {
+    "attempt": 1,
+    "name": "blind-comparison.csv"
+   }
+  ],
+  "freezeKey": "e0bd23f240848ece9dc9ff1127eb78177610797150dc230bab6af1b49feb863b",
+  "honesty": {
+   "appValidation": false,
+   "dataLabel": "Measured (user-supplied)",
+   "evidenceKind": "screening-only",
+   "experimentalValidation": false,
+   "g3Satisfied": false,
+   "labelPromotionProposed": "none",
+   "n3Counted": false,
+   "neverEnters": {
+    "calibration": true,
+    "g3": true,
+    "g3o": true,
+    "leaderboard": true,
+    "n3": true,
+    "n4": true,
+    "physicsBump": true,
+    "researchRegistry": true
+   },
+   "notG3oRecord": true,
+   "protocolId": "lpbf-user-blind-protocol-1",
+   "resultScope": "user-blind-test"
+  },
+  "provenance": {},
+  "reportSha256": "53c3f835a2aa2db7a920315e16105c4134b4f144c10184ff40fdeaeffcfdf494",
+  "statuses": {
+   "blindness": "blind-prospective-declared",
+   "research:cavity": "unavailable",
+   "research:melt-link": "unavailable",
+   "served": "threshold-not-met",
+   "served:P+5%": "threshold-not-met",
+   "served:P-5%": "threshold-not-met",
+   "served:d+5%": "threshold-not-met",
+   "served:d-5%": "threshold-not-met"
+  }
+ }
+}

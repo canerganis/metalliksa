@@ -1,0 +1,263 @@
+{
+ "_title": "Synthetic fixture, not measured data",
+ "document": {
+  "acknowledgementsRequired": [
+   "predeterminedInconclusive"
+  ],
+  "aliases": [],
+  "bestReachable": {
+   "reasons": [
+    "leverage counts below 4 on either side of the served index cuts"
+   ],
+   "status": "inconclusive"
+  },
+  "blockIssues": [],
+  "budget": {
+   "cap": 48,
+   "conditions": 12,
+   "estimate_s": 4.7,
+   "queueNote": "A freeze can hold the simulation queue for up to about a minute.",
+   "solverCalls": 60
+  },
+  "columns": [
+   "condition_id",
+   "track_id",
+   "power_W",
+   "speed_mm_s",
+   "spot_um"
+  ],
+  "counts": {
+   "conditions": 12,
+   "rows": 36,
+   "sections": 0,
+   "tracks": 36
+  },
+  "designChecks": {
+   "leverage": {
+    "cut": 15.0,
+    "nAtOrAbove20": 10,
+    "nBelow": 1,
+    "ok": false
+   },
+   "nConditions": 12,
+   "nMinMet": true,
+   "resolution": {
+    "evaluable": true,
+    "reason": null
+   },
+   "uMNote": "with u_m not released, a condition needs a measured depth of at least 100 um for U_c at most 0.10 even with no track scatter"
+  },
+  "dialect": "comma-dot",
+  "divergences": [
+   "D7",
+   "D9",
+   "D10",
+   "G1"
+  ],
+  "excludedInputs": [],
+  "grades": {
+   "beam": "C",
+   "block": "C",
+   "power": "C"
+  },
+  "honesty": {
+   "appValidation": false,
+   "dataLabel": "Measured (user-supplied)",
+   "evidenceKind": "screening-only",
+   "experimentalValidation": false,
+   "g3Satisfied": false,
+   "labelPromotionProposed": "none",
+   "n3Counted": false,
+   "neverEnters": {
+    "calibration": true,
+    "g3": true,
+    "g3o": true,
+    "leaderboard": true,
+    "n3": true,
+    "n4": true,
+    "physicsBump": true,
+    "researchRegistry": true
+   },
+   "notG3oRecord": true,
+   "protocolId": "lpbf-user-blind-protocol-1",
+   "resultScope": "user-blind-test"
+  },
+  "inputsSha256": "28fb6960984fef2b592a3b1545d2acc8e9121fb99506c55717c926558dd2bb16",
+  "labels": [
+   "S and O flagged missing",
+   "u_m assumed (lead assumption, not sourced)",
+   "bare plate: layer argument 40 um passed",
+   "research arm not requested"
+  ],
+  "metadataSha256": "ea509afc4b3718215b931d528287f3874c1ab940be463cc799cec48656e90626",
+  "overlap": {
+   "buildJobHistory": [],
+   "calibrationStores": [],
+   "earlierTests": [],
+   "publishedSets": []
+  },
+  "overlapSha256": "790d3d047a81b9380a3af5a5b63f916da5b951909b1ab4c9dd229069e080e442",
+  "parsedInputs": [
+   {
+    "P_W": 120.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c1",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 400.0
+   },
+   {
+    "P_W": 120.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c2",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 800.0
+   },
+   {
+    "P_W": 120.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c3",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 1400.0
+   },
+   {
+    "P_W": 200.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c4",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 400.0
+   },
+   {
+    "P_W": 200.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c5",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 800.0
+   },
+   {
+    "P_W": 200.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c6",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 1400.0
+   },
+   {
+    "P_W": 300.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c7",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 400.0
+   },
+   {
+    "P_W": 300.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c8",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 800.0
+   },
+   {
+    "P_W": 300.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c9",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 1400.0
+   },
+   {
+    "P_W": 400.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c10",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 400.0
+   },
+   {
+    "P_W": 400.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c11",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 800.0
+   },
+   {
+    "P_W": 400.0,
+    "beamDeclared_um": 80.0,
+    "beamDefinition": "1/e2",
+    "beamQuantity": "diameter",
+    "condition": "c12",
+    "d_1e2_um": 80.0,
+    "rows": 3,
+    "tracks": 3,
+    "v_mm_s": 1400.0
+   }
+  ],
+  "predictorPinned": true,
+  "predictorUnpinnedFiles": [],
+  "previewSha256": "4e704e0d5316a3126466ed74bed0a9f9326f9c19bf0ebd21d90592fa7bcefb07",
+  "protocolId": "lpbf-user-blind-protocol-1",
+  "protocolSha256": "8739daf89556142775596c8ca0b7723d09c6e4422593f34522fce60c6204b0d5",
+  "research": {
+   "reasonCode": "RESEARCH_NOT_REQUESTED",
+   "requested": false,
+   "text": "Research arm: not requested in this version"
+  },
+  "schema": "lpbf-user-blind-preview-1",
+  "units": {
+   "power_W": {
+    "factor": 1.0,
+    "header": "power_W",
+    "unitRead": null
+   },
+   "speed_mm_s": {
+    "factor": 1.0,
+    "header": "speed_mm_s",
+    "unitRead": null
+   },
+   "spot_um": {
+    "factor": 1.0,
+    "header": "spot_um",
+    "unitRead": null
+   }
+  }
+ }
+}

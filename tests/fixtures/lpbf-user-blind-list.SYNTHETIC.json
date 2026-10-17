@@ -1,0 +1,56 @@
+{
+ "_title": "Synthetic fixture, not measured data",
+ "document": {
+  "entries": [
+   {
+    "alloy": "Ti-6Al-4V",
+    "attempts": 1,
+    "blockLabel": "Synthetic fixture block",
+    "counts": {
+     "conditions": 12,
+     "rows": 36,
+     "sections": 0,
+     "tracks": 36
+    },
+    "createdAt": "2026-10-17T09:10:37.289Z",
+    "freezeKey": "e0bd23f240848ece9dc9ff1127eb78177610797150dc230bab6af1b49feb863b",
+    "latestStatus": {
+     "blindness": "blind-prospective-declared",
+     "served": "threshold-not-met"
+    },
+    "state": "scored"
+   }
+  ],
+  "honesty": {
+   "appValidation": false,
+   "dataLabel": "Measured (user-supplied)",
+   "evidenceKind": "screening-only",
+   "experimentalValidation": false,
+   "g3Satisfied": false,
+   "labelPromotionProposed": "none",
+   "n3Counted": false,
+   "neverEnters": {
+    "calibration": true,
+    "g3": true,
+    "g3o": true,
+    "leaderboard": true,
+    "n3": true,
+    "n4": true,
+    "physicsBump": true,
+    "researchRegistry": true
+   },
+   "notG3oRecord": true,
+   "protocolId": "lpbf-user-blind-protocol-1",
+   "resultScope": "user-blind-test"
+  },
+  "incompleteStaging": 0,
+  "ledgerOk": true,
+  "lockDomain": "windows",
+  "page": 0,
+  "readOnly": false,
+  "schema": "lpbf-user-blind-list-1",
+  "sharedHost": false,
+  "storeId": "5d9690077d70327e",
+  "total": 1
+ }
+}

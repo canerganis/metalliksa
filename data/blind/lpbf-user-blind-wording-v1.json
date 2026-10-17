@@ -1,0 +1,53 @@
+{
+ "approved": false,
+ "note": "Proposed wording (maintainer question Q1); not part of any identity.",
+ "protocolId": "lpbf-user-blind-protocol-1",
+ "schema": "lpbf-user-blind-wording-1",
+ "wording": {
+  "anchorAdvice": "Share freezeSha256 with someone outside this computer, or commit it to a repository, before you measure or upload measurements. This app cannot prove the order of events by itself.",
+  "banner": "This is your test of the model on your data. It is not validation of this app, and the app's evidence labels do not change (experimentalValidation false).",
+  "blindness": {
+   "blind-committed": "Blind: your targets file was fixed by its hash before the predictions were frozen.",
+   "blind-prospective-declared": "Blind as you declared: you froze the predictions before measuring.",
+   "blind-retrospective-declared": "Blind as you declared: you measured before freezing, and no commitment of the targets was matched.",
+   "not-blind-app-history": "Not blind: Build Job history on this computer holds these conditions before the freeze (partial check).",
+   "not-blind-data-already-used-by-app": "Not blind: these data or conditions are in this app's spent ledger ({id}).",
+   "not-blind-earlier-test-overlap": "Not blind: {k} conditions match a test on this computer that was revealed or scored earlier.",
+   "not-blind-predictions-revealed": "Not blind: the frozen predictions were revealed before this score.",
+   "not-blind-predictions-viewed": "Not blind: you declared that you viewed predictions for these conditions.",
+   "not-blind-rescored-changed-targets": "Not blind: this attempt uses a targets file that differs from attempt 1.",
+   "not-blind-used-for-calibration": "Not blind: these conditions were used for machine calibration on this computer ({id})."
+  },
+  "blockIssueFix": {
+   "ATMOSPHERE_UNSTATED": "State the process atmosphere.",
+   "BEAM_PROFILE_NOT_GAUSSIAN": "The served model assumes a Gaussian beam; top-hat and ring beams are outside it.",
+   "BOUNDARY_NOT_ETCHED": "Measure on an etched fusion boundary.",
+   "DATUM_NOT_ORIGINAL_SURFACE": "Measure depth from the original plate surface, or state the datum you used.",
+   "INDEPENDENCE_NOT_ESTABLISHED": "State whether these data were published before.",
+   "LOCATION_NEAR_ENDS_OR_UNSTATED": "State the cross-section location; sections near track ends measure start or end transients.",
+   "LOSSES_ABOVE_20_PERCENT": "More than 20 % of tracks or conditions were lost; measure more sections.",
+   "PLATE_THICKNESS_NOT_RELEASED": "State the plate thickness.",
+   "REDUCTION_UNUSABLE": "Upload one row per track or per section, not a maximum or a single selected section.",
+   "SECTIONS_WITHOUT_TRACK": "Add track_id so sections are grouped by track.",
+   "SURFACE_PREPARATION_UNSTATED": "State how the plate surface was prepared."
+  },
+  "doNotResave": "Do not open and save this file again before you upload it for scoring: saving it, even unchanged, in a spreadsheet program usually changes its bytes, and the hash will no longer match.",
+  "notScoredAlloy": "thresholds are registered for Ti-6Al-4V and AlSi10Mg only",
+  "receiptLine": "Predictions frozen. Values are withheld until you upload your measurements or choose to reveal them.",
+  "relNote": "rel is a fraction (pred - obs) / obs; positive means the model is deeper",
+  "reportTitle": "Your blind test on your own measurements",
+  "researchReason": "not requested: the P8 research route accepts requests only from the Research model panel today",
+  "researchReview": "Research arm: not requested in this version",
+  "servedValueLabel": "Unresolved: the served result does not yet list the source of each value.",
+  "status": {
+   "descriptive-exposed": "Not blind: {reason}. The statistics are shown for information.",
+   "descriptive-not-scored": "Shown for information, not scored: {reason}.",
+   "inconclusive": "Inconclusive: {reason}. The statistics are shown for information.",
+   "threshold-not-met": "At least one threshold was not met on your data: {list}.",
+   "thresholds-met": "All four thresholds were met on your data, with leverage and resolution met.",
+   "unavailable": "Research arm not available: {reason}."
+  },
+  "tab": "Your blind test"
+ },
+ "wordingSha256": "87cfe059c7dcfa793eceea814465ca43e2686662433788d4163a7f73c8b12320"
+}

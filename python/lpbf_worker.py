@@ -38,6 +38,9 @@ IN625_BAREPLATE_ARTIFACT = "in625-temperature-field-f64le.bin"
 IN625_BAREPLATE_MAX_CELLS = 1_000_000
 IN625_BAREPLATE_MAX_CELL_STEPS = 2_000_000
 IN625_BAREPLATE_MAX_STEPS = 25_000
+# User blind test (research hub spec 3.2): queued job types; the facade is imported lazily.
+USER_BLIND_JOB_TYPES = frozenset(("user-blind-freeze", "user-blind-reveal", "user-blind-score", "user-blind-bundle",
+                                  "user-blind-open"))
 
 
 def _is_allowed_artifact_name(name):
@@ -304,6 +307,8 @@ def _run_in625_bareplate_job(raw, folder):
 
 
 def _archive_run_kind(job_type, result=None):
+    if job_type in USER_BLIND_JOB_TYPES:
+        return None  # blind tests are never archived
     if job_type == "gpu-thermal-pilot":
         contract = result.get("gpuRunContract") if isinstance(result, dict) else None
         fields = result.get("gpuFieldArtifacts") if isinstance(result, dict) else None
@@ -763,6 +768,10 @@ class Queue:
             out["requestSummary"]["executionEngine"] = "warp"
         if settings.get("jobType") == IN625_BAREPLATE_JOB_TYPE:
             out["requestSummary"] = {k:settings.get(k) for k in ("jobType", "backend", "config")}
+        blind = settings.get("jobType") in USER_BLIND_JOB_TYPES
+        if blind:
+            out["requestSummary"] = {"jobType": settings.get("jobType"), "schema": settings.get("schema"),
+                                     "freezeKey": settings.get("freezeKey")}
         if out["status"] == "completed":
             try:
                 out["result"] = json.loads((self.root/job/"result.json").read_text())
@@ -787,14 +796,24 @@ class Queue:
                         raise ValueError("CUDA pilot result does not match submitted settings")
                 elif settings.get("jobType") == IN625_BAREPLATE_JOB_TYPE:
                     _enforce_bareplate_result(out["result"], settings, self.root/job)
+                elif blind:
+                    from lpbf_user_blind import enforce_user_blind_job_result
+                    enforce_user_blind_job_result(out["result"], settings)
                 else:
                     enforce_thermal_balances(out["result"])
             except (OSError, ValueError) as error:
                 out.pop("result", None)
                 out.update(status="failed", error=f"Saved result integrity failed: {error}")
                 self.update(job, status=out["status"], error=out["error"])
+        if blind:
+            from lpbf_user_blind import filter_blind_log
+            out["log"] = filter_blind_log(out.get("log") or "")
         if out["status"] in ("failed", "cancelled", "timed_out"):
-            if out["status"] == "failed":
+            if out["status"] == "failed" and blind:
+                from lpbf_user_blind import blind_failure_message
+                refused = blind_failure_message(out["log"])
+                out.update(error=refused["message"], errorKind="blind", blindError=refused["code"])
+            elif out["status"] == "failed":
                 refused = _execution_refusal(out["log"])
                 if refused is not None:
                     out.update(error=refused["message"], errorKind="validation", refusal=refused)
@@ -902,6 +921,8 @@ class Queue:
             state = self.get(job)
             if state['status'] != 'completed':
                 raise ValueError('Only completed jobs can be captured')
+            if (state.get('requestSummary') or {}).get('jobType') in USER_BLIND_JOB_TYPES:
+                raise ValueError('Blind tests are not archivable')
             return capture_run(self.root/job, job)
 
     def archive_capture(self, job):
@@ -911,6 +932,13 @@ class Queue:
     def artifact(self, payload):
         state = self.get(payload["id"])
         name = payload.get("name")
+        job_type = (state.get("requestSummary") or {}).get("jobType")
+        if job_type in USER_BLIND_JOB_TYPES:
+            if state["status"] != "completed":
+                raise ValueError("Artifact unavailable")
+            from lpbf_user_blind import blind_document
+            doc = blind_document(state["result"], name, job_type)
+            return dict(content=base64.b64encode(doc["data"]).decode(), type=doc["type"], sha256=doc["sha256"])
         allowed = _is_allowed_artifact_name(name)
         if state["status"] != "completed" or not allowed:
             raise ValueError("Artifact unavailable")
@@ -925,7 +953,9 @@ class Queue:
     def submit(self, raw, *, execution_scope="deduplicated"):
         if execution_scope not in ("deduplicated", "repeat"):
             raise ValueError("Invalid execution scope")
-        job_type = raw.get("jobType")
+        job_type = raw.get("jobType") if isinstance(raw, dict) else None
+        if isinstance(job_type, str) and job_type.startswith("user-blind-"):
+            return self._submit_blind(raw)
         if job_type == "build-job":
             validate_build_job_request(raw)
             p, m = raw, raw
@@ -994,6 +1024,37 @@ class Queue:
             c.execute("INSERT INTO jobs VALUES (?,?,?,?,?,?,?)", (job, key, "queued", 0., "", None, time.time()))
         return {**self.get(job), "cacheHit": False}
 
+    def _submit_blind(self, raw):
+        """Blind job submit (spec 3.2 item 2): closed validation and staging in the blind store, hashes-only input,
+        never the generic result reuse (only user-blind-open is deduplicated). Exception text never reaches the reply."""
+        import lpbf_user_blind as blind
+        try:
+            if raw.get("jobType") not in blind.USER_BLIND_JOB_TYPES:
+                raise blind.BlindRefusal("METADATA_FIELD", field="jobType", message="Unknown blind request type.")
+            p = blind.stage_request(blind.validate_request(raw))
+        except blind.BlindRefusal:
+            raise
+        except BaseException:  # noqa: BLE001 - fixed code, never str(error)
+            raise blind.BlindRefusal("BLIND_SUBMIT_INTERNAL") from None
+        key = blind.job_cache_key(p)
+        with self.lock, self.connect() as c:
+            if p["jobType"] == "user-blind-open":
+                row = c.execute("SELECT id FROM jobs WHERE cache_key=? AND status IN ('queued','running','completed') "
+                                "ORDER BY created DESC LIMIT 1", (key,)).fetchone()
+                if row:
+                    cached = self.get(row["id"])
+                    if cached["status"] in ("queued", "running", "completed"):
+                        return {**cached, "cacheHit": cached["status"] == "completed",
+                                "deduplicated": cached["status"] != "completed"}
+            if c.execute("SELECT count(*) FROM jobs WHERE status IN ('queued','running')").fetchone()[0] >= 16:
+                raise ValueError("Queue full (16 jobs)")
+            job = uuid.uuid4().hex
+            folder = self.root/job; folder.mkdir()
+            (folder/"input.json").write_text(json.dumps(p, allow_nan=False))
+            (folder/"capabilities.json").write_text(json.dumps({}))
+            c.execute("INSERT INTO jobs VALUES (?,?,?,?,?,?,?)", (job, key, "queued", 0., "", None, time.time()))
+        return {**self.get(job), "cacheHit": False}
+
     def cancel(self, job):
         with self.lock:
             state = self.get(job)
@@ -1027,6 +1088,9 @@ class Queue:
         folder = self.root/job
         params = json.loads((folder/"input.json").read_text())
         timeout_s = params.get("timeout_s", DEFAULT_JOB_TIMEOUT_S)
+        blind = params.get("jobType") in USER_BLIND_JOB_TYPES
+        if blind:
+            from lpbf_user_blind import blind_failure_message, enforce_user_blind_job_result, filter_blind_log
         with (folder/"progress.log").open("w") as log:
             # Serialize the status check, spawn and registration against cancel().
             # This prevents cancellation from acknowledging while an untracked
@@ -1059,6 +1123,8 @@ class Queue:
                             self.finish_running(job, status="failed", error="Worker stopped during execution")
                         return
                     text = (folder/"progress.log").read_text(errors="replace")[-16000:]
+                    if blind:
+                        text = filter_blind_log(text)
                     progress = self.get(job)["progress"]
                     for line in text.splitlines():
                         try:
@@ -1072,6 +1138,8 @@ class Queue:
                     if self.get(job)["status"] == "cancelled":
                         return
                     final_log = (folder/"progress.log").read_text(errors="replace")[-16000:]
+                    if blind:
+                        final_log = filter_blind_log(final_log)
                     if time.monotonic()-started > timeout_s or self.closed.is_set():
                         self.finish_running(job, status="timed_out" if not self.closed.is_set() else "failed",
                                             error="Simulation timeout" if not self.closed.is_set() else "Worker stopped during execution", log=final_log)
@@ -1087,9 +1155,14 @@ class Queue:
                                 enforce_gpu_pilot_result(result, artifact_dir=folder)
                         elif params.get("jobType") == IN625_BAREPLATE_JOB_TYPE:
                             _enforce_bareplate_result(result, params, folder)
+                        elif blind:
+                            enforce_user_blind_job_result(result, params)
                         else:
                             enforce_thermal_balances(result)
                         self.finish_running(job, status="completed", progress=1., log=final_log)
+                    elif blind:
+                        self.finish_running(job, status="failed", error=blind_failure_message(final_log)["message"],
+                                            log=final_log)
                     else:
                         self.finish_running(job, status="failed", error=_execution_failure_message(final_log, child.returncode), log=final_log)
             finally:
@@ -1191,8 +1264,16 @@ def main():
             print(json.dumps(dict(progress=progress, message=message)), flush=True)
         run_progress = None
         try:
-            execution_start = time.monotonic()
             input_data = json.loads((folder/"input.json").read_text())
+        except Exception as e:
+            print(str(e), flush=True)
+            sys.exit(1)
+        if isinstance(input_data, dict) and input_data.get("jobType") in USER_BLIND_JOB_TYPES:
+            # Silent blind branch ahead of the generic exception print (spec 3.2 item 3).
+            from lpbf_user_blind import child_main
+            sys.exit(child_main(input_data, folder))
+        try:
+            execution_start = time.monotonic()
             job_type = input_data.get("jobType")
 
             if job_type == "gpu-thermal-pilot":
@@ -1303,6 +1384,11 @@ def rpc_error_response(request, error):
     from gpu_capability import GpuCapabilityError
     if isinstance(error, GpuCapabilityError):
         response.update(errorKind="capability", capability=error.capability)
+    blind = sys.modules.get("lpbf_user_blind_protocol")
+    if blind is not None and isinstance(error, blind.BlindRefusal):
+        # Fixed refusal message only; never str() of another exception (spec 3.2 item 10).
+        response.update(error=error.message, errorKind="validation", validation=error.envelope())
+        return response
     validation = sys.modules.get("input_validation")
     if validation is not None and isinstance(error, validation.ValidationError):
         response.update(errorKind="validation", validation=validation.validation_envelope(error))

@@ -1,0 +1,62 @@
+{
+ "alloy": "Ti-6Al-4V",
+ "atmosphere": "argon",
+ "beam": {
+  "basis": "nominal",
+  "definition": "1/e2",
+  "diameter_um": null,
+  "profile": "gaussian",
+  "quantity": "diameter",
+  "u_k1_um": null,
+  "uncertaintyReleased": false
+ },
+ "blockLabel": "Synthetic example block",
+ "chemistry": {
+  "basis": "unstated",
+  "oxygen_ppm": null,
+  "sulfur_ppm": null
+ },
+ "crossSectionLocation": "steady-state-mid-track",
+ "csvDialect": "comma-dot",
+ "depthBoundary": "etched-fusion-boundary",
+ "depthDatum": "original-surface",
+ "depthUncertainty": {
+  "basis": "not-released",
+  "coverageFactor": 1,
+  "u_um": null
+ },
+ "independence": {
+  "dataPreviouslyPublished": "no",
+  "predictionsViewedBeforeFreeze": "no",
+  "publishedDoi": null,
+  "usedForMachineCalibration": false
+ },
+ "measurementMethod": "optical-cross-section",
+ "mode": "pre-measurement",
+ "power": {
+  "basis": "commanded",
+  "meterNamed": false,
+  "u_k1_rel": null,
+  "uncertaintyReleased": false
+ },
+ "preheatBasis": "measured",
+ "preheat_C": 25,
+ "quantity": "melt-pool-depth",
+ "reduction": "per-section-raw",
+ "replication": {
+  "rowsAreSeparateTracks": false,
+  "sectionsPerTrack": 1,
+  "tracksPerCondition": 1
+ },
+ "schema": "lpbf-user-blind-metadata-1",
+ "substrate": {
+  "alsi10mgState": null,
+  "amSubstrate": false,
+  "kind": "bare-plate",
+  "layerThickness_um": null,
+  "surfacePreparation": "ground",
+  "thickness_mm": 10
+ },
+ "targetCommitment": null,
+ "wavelength_nm": 1070
+}

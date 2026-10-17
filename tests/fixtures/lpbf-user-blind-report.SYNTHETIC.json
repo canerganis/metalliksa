@@ -1,0 +1,1777 @@
+{
+ "_title": "Synthetic fixture, not measured data",
+ "document": {
+  "arms": {
+   "research:cavity": {
+    "coverage": {
+     "k": 0,
+     "n": 12,
+     "unavailable": 12
+    },
+    "reason": "RESEARCH_NOT_REQUESTED",
+    "sentence": "Research arm not available: not requested: the P8 research route accepts requests only from the Research model panel today.",
+    "stats": null,
+    "status": "unavailable",
+    "unavailableConditions": [
+     "c1",
+     "c2",
+     "c3",
+     "c4",
+     "c5",
+     "c6",
+     "c7",
+     "c8",
+     "c9",
+     "c10",
+     "c11",
+     "c12"
+    ]
+   },
+   "research:melt-link": {
+    "coverage": {
+     "k": 0,
+     "n": 12,
+     "unavailable": 12
+    },
+    "reason": "RESEARCH_NOT_REQUESTED",
+    "sentence": "Research arm not available: not requested: the P8 research route accepts requests only from the Research model panel today.",
+    "stats": null,
+    "status": "unavailable",
+    "unavailableConditions": [
+     "c1",
+     "c2",
+     "c3",
+     "c4",
+     "c5",
+     "c6",
+     "c7",
+     "c8",
+     "c9",
+     "c10",
+     "c11",
+     "c12"
+    ]
+   },
+   "served": {
+    "bootstrap95": {
+     "max_ape": {
+      "hi": 1.4861111111111112,
+      "lo": 0.6808510638297872,
+      "marginal": false
+     },
+     "mean_signed": {
+      "hi": 0.8555838697405003,
+      "lo": 0.4853086847794197,
+      "marginal": false
+     },
+     "median": {
+      "hi": 0.7854383196386788,
+      "lo": 0.4633497818196649,
+      "marginal": false
+     },
+     "p90": {
+      "hi": 1.4861111111111112,
+      "lo": 0.630503772612951,
+      "marginal": false
+     }
+    },
+    "coverage": {
+     "k": 12,
+     "n": 12,
+     "unavailable": 0
+    },
+    "marginal": [],
+    "reason": "median APE, 90th percentile APE, mean signed error, maximum APE",
+    "sentence": "At least one threshold was not met on your data: median APE, 90th percentile APE, mean signed error, maximum APE.",
+    "servedBins": {
+     "at_or_above": {
+      "mean_signed": 0.7190482217566548,
+      "n": 10,
+      "n_failed": 0
+     },
+     "below": {
+      "mean_signed": 0.254612546125461,
+      "n": 1,
+      "n_failed": 0
+     },
+     "between": {
+      "mean_signed": 0.4387096774193549,
+      "n": 1,
+      "n_failed": 0
+     }
+    },
+    "stats": {
+     "allThresholdsMet": false,
+     "maxApe": 1.4861111111111112,
+     "meanSigned": 0.656983703425947,
+     "median": 0.6143184167774334,
+     "n": 12,
+     "nFailed": 0,
+     "nNotFormed": 0,
+     "p75": 0.733144691734233,
+     "p90": 0.9863259776191066,
+     "thresholdsMet": {
+      "maxApe": false,
+      "meanSigned": false,
+      "median": false,
+      "p90": false
+     }
+    },
+    "status": "threshold-not-met",
+    "unavailableConditions": []
+   },
+   "served:P+5%": {
+    "coverage": {
+     "k": 12,
+     "n": 12,
+     "unavailable": 0
+    },
+    "reason": "median APE, 90th percentile APE, mean signed error, maximum APE",
+    "sentence": "At least one threshold was not met on your data: median APE, 90th percentile APE, mean signed error, maximum APE.",
+    "stats": {
+     "allThresholdsMet": false,
+     "maxApe": 1.6111111111111112,
+     "meanSigned": 0.7563337321596728,
+     "median": 0.700860655737705,
+     "n": 12,
+     "nFailed": 0,
+     "nNotFormed": 0,
+     "p75": 0.967440278609131,
+     "p90": 1.0854543207294234,
+     "thresholdsMet": {
+      "maxApe": false,
+      "meanSigned": false,
+      "median": false,
+      "p90": false
+     }
+    },
+    "status": "threshold-not-met",
+    "unavailableConditions": []
+   },
+   "served:P-5%": {
+    "coverage": {
+     "k": 12,
+     "n": 12,
+     "unavailable": 0
+    },
+    "reason": "median APE, 90th percentile APE, mean signed error, maximum APE",
+    "sentence": "At least one threshold was not met on your data: median APE, 90th percentile APE, mean signed error, maximum APE.",
+    "stats": {
+     "allThresholdsMet": false,
+     "maxApe": 1.3624999999999998,
+     "meanSigned": 0.5612676660504855,
+     "median": 0.4767051756007393,
+     "n": 12,
+     "nFailed": 0,
+     "nNotFormed": 0,
+     "p75": 0.6006032241834727,
+     "p90": 0.8866563667652287,
+     "thresholdsMet": {
+      "maxApe": false,
+      "meanSigned": false,
+      "median": false,
+      "p90": false
+     }
+    },
+    "status": "threshold-not-met",
+    "unavailableConditions": []
+   },
+   "served:d+5%": {
+    "coverage": {
+     "k": 12,
+     "n": 12,
+     "unavailable": 0
+    },
+    "reason": "median APE, 90th percentile APE, mean signed error, maximum APE",
+    "sentence": "At least one threshold was not met on your data: median APE, 90th percentile APE, mean signed error, maximum APE.",
+    "stats": {
+     "allThresholdsMet": false,
+     "maxApe": 1.3888888888888888,
+     "meanSigned": 0.5709728571375591,
+     "median": 0.4848790322580645,
+     "n": 12,
+     "nFailed": 0,
+     "nNotFormed": 0,
+     "p75": 0.6145278910624179,
+     "p90": 0.9073403436047119,
+     "thresholdsMet": {
+      "maxApe": false,
+      "meanSigned": false,
+      "median": false,
+      "p90": false
+     }
+    },
+    "status": "threshold-not-met",
+    "unavailableConditions": []
+   },
+   "served:d-5%": {
+    "coverage": {
+     "k": 12,
+     "n": 12,
+     "unavailable": 0
+    },
+    "reason": "median APE, 90th percentile APE, mean signed error, maximum APE",
+    "sentence": "At least one threshold was not met on your data: median APE, 90th percentile APE, mean signed error, maximum APE.",
+    "stats": {
+     "allThresholdsMet": false,
+     "maxApe": 1.593055555555555,
+     "meanSigned": 0.7623052293782925,
+     "median": 0.7026484045938002,
+     "n": 12,
+     "nFailed": 0,
+     "nNotFormed": 0,
+     "p75": 1.0032717527343964,
+     "p90": 1.0810527564660286,
+     "thresholdsMet": {
+      "maxApe": false,
+      "meanSigned": false,
+      "median": false,
+      "p90": false
+     }
+    },
+    "status": "threshold-not-met",
+    "unavailableConditions": []
+   }
+  },
+  "attempt": {
+   "earlierTargetsSha256": [],
+   "n": 1
+  },
+  "banner": "This is your test of the model on your data. It is not validation of this app, and the app's evidence labels do not change (experimentalValidation false).",
+  "blindness": {
+   "exposuresAfterCommitment": [],
+   "reasons": [],
+   "revealEvents": [],
+   "sentence": "Blind as you declared: you froze the predictions before measuring.",
+   "status": "blind-prospective-declared",
+   "statuses": []
+  },
+  "blockIssues": [],
+  "commitment": {
+   "declared": false,
+   "matched": null
+  },
+  "commonSubset": {
+   "k": 12,
+   "note": "research arm not requested; the common subset is the served arm's scope"
+  },
+  "divergences": [
+   {
+    "applied": false,
+    "id": "D1",
+    "melt": "MELT reduce_conditions refuses a missing or non-positive target; GOAL kill criterion 3",
+    "rule": "declared measurement losses (specimen-lost, section-unreadable, not-measured) are excluded, listed and counted at section, track and condition level; above 20 % of tracks or of conditions is a block issue; a status change after an attempt is a changed targets file"
+   },
+   {
+    "applied": false,
+    "id": "D2",
+    "melt": "MELT block_level_issues has no boundary item",
+    "rule": "a boundary that is not an etched fusion boundary is a block issue"
+   },
+   {
+    "applied": false,
+    "id": "D3",
+    "melt": "no MELT item",
+    "rule": "a cross-section location near track ends or unstated is a block issue"
+   },
+   {
+    "applied": false,
+    "id": "D4",
+    "melt": "no MELT item",
+    "rule": "beam profile top-hat or ring is a block issue; unknown is a label only"
+   },
+   {
+    "applied": false,
+    "id": "D5",
+    "melt": "MELT: initial temperature not released is a block issue",
+    "rule": "a missing plate temperature refuses (PREHEAT_MISSING); nominal-ambient is labelled"
+   },
+   {
+    "applied": false,
+    "id": "D6",
+    "melt": "MELT registers thresholds and leverage cuts for Ti-6Al-4V and AlSi10Mg only",
+    "rule": "thresholds are registered for Ti-6Al-4V and AlSi10Mg only; 316L, IN718 and IN625 are shown for information and never scored (maintainer decision 2026-10-16)"
+   },
+   {
+    "applied": true,
+    "id": "D7",
+    "melt": "MELT scores its registered arm catalogue",
+    "rule": "protocol 1 scores the served Build Job melt-pool depth"
+   },
+   {
+    "applied": false,
+    "id": "D8",
+    "melt": "MELT S2 is the registered melt-link candidate",
+    "rule": "the research arm would be P8 linkedMeltDepth_um, not the registered S2 candidate"
+   },
+   {
+    "applied": true,
+    "id": "D9",
+    "melt": "MELT exposure: a target read before the prediction hash",
+    "rule": "blindness statuses of 6.4, several of them declared by the user"
+   },
+   {
+    "applied": true,
+    "id": "D10",
+    "melt": "MELT status words PASS, FAIL, INCONCLUSIVE",
+    "rule": "status words thresholds-met, threshold-not-met, inconclusive and the descriptive words"
+   },
+   {
+    "applied": false,
+    "id": "D11",
+    "melt": "MELT refuses a non-positive target",
+    "rule": "track-not-formed counts as APE +inf for every arm"
+   },
+   {
+    "applied": false,
+    "id": "D12",
+    "melt": "no MELT counterpart",
+    "rule": "research band coverage and consistency counts (protocol 2 only; inactive here)"
+   },
+   {
+    "applied": true,
+    "id": "G1",
+    "melt": "GOAL roadmap item 1: served and P8 side by side",
+    "rule": "protocol 1 records the research arm as RESEARCH_NOT_REQUESTED; keyholeCavity is never scored against melt-pool depth"
+   }
+  ],
+  "excluded": {
+   "inputs": [],
+   "targets": []
+  },
+  "exclusions": {
+   "conditions": "0 of 12 frozen",
+   "sections": "0 of 36 frozen",
+   "tracks": "0 of 36 frozen"
+  },
+  "fragile": {
+   "input": "not evaluated (the served arm does not meet all four thresholds)",
+   "inputFlips": [],
+   "property": "not evaluated"
+  },
+  "freezeKey": "e0bd23f240848ece9dc9ff1127eb78177610797150dc230bab6af1b49feb863b",
+  "freezeSha256": "e8b57254faf6ca432fd208c0fb3e77e3df538c24a25ba46d37be52faa0dbf610",
+  "grades": {
+   "beam": "C",
+   "block": "C",
+   "power": "C"
+  },
+  "honesty": {
+   "appValidation": false,
+   "dataLabel": "Measured (user-supplied)",
+   "evidenceKind": "screening-only",
+   "experimentalValidation": false,
+   "g3Satisfied": false,
+   "labelPromotionProposed": "none",
+   "n3Counted": false,
+   "neverEnters": {
+    "calibration": true,
+    "g3": true,
+    "g3o": true,
+    "leaderboard": true,
+    "n3": true,
+    "n4": true,
+    "physicsBump": true,
+    "researchRegistry": true
+   },
+   "notG3oRecord": true,
+   "protocolId": "lpbf-user-blind-protocol-1",
+   "resultScope": "user-blind-test"
+  },
+  "labels": [
+   "S and O flagged missing",
+   "u_m assumed (lead assumption, not sourced)",
+   "bare plate: layer argument 40 um passed",
+   "research arm not requested",
+   "property sensitivity not evaluated"
+  ],
+  "ledger": [
+   {
+    "D_obs_um": 40.0,
+    "P_W": 120.0,
+    "condition": "c1",
+    "d_1e2_um": 80.0,
+    "indexBin": "at_or_above",
+    "inputSensitivityRange_um": {
+     "max_um": 72.9,
+     "min_um": 59.8,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c1",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 56.8
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 0.5425000000000002,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 61.7
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 0.7050000000000001,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 68.2
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 0.4949999999999998,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 59.8
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 0.5375,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 61.5
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 0.8225000000000001,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 72.9
+     }
+    },
+    "trackDepths_um": [
+     39.0,
+     40.0,
+     41.0
+    ],
+    "v_mm_s": 400.0,
+    "widthModel_um": 126.4,
+    "widthObs_um": 92.0
+   },
+   {
+    "D_obs_um": 31.0,
+    "P_W": 120.0,
+    "condition": "c2",
+    "d_1e2_um": 80.0,
+    "indexBin": "between",
+    "inputSensitivityRange_um": {
+     "max_um": 45.9,
+     "min_um": 43.3,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c2",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 4.8
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 0.4387096774193549,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 44.6
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 0.48064516129032253,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 45.9
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 0.3967741935483868,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 43.3
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 0.43225806451612897,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 44.4
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 0.44193548387096804,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 44.7
+     }
+    },
+    "trackDepths_um": [
+     30.0,
+     31.0,
+     32.0
+    ],
+    "v_mm_s": 800.0,
+    "widthModel_um": 92.0,
+    "widthObs_um": 92.0
+   },
+   {
+    "D_obs_um": 27.100000000000005,
+    "P_W": 120.0,
+    "condition": "c3",
+    "d_1e2_um": 80.0,
+    "indexBin": "below",
+    "inputSensitivityRange_um": {
+     "max_um": 35.0,
+     "min_um": 33.0,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c3",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 0.0
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 0.254612546125461,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 34.0
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 0.29151291512915106,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 35.0
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 0.217712177121771,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 33.0
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 0.25092250922509196,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 33.9
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 0.2583025830258301,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 34.1
+     }
+    },
+    "trackDepths_um": [
+     26.1,
+     27.1,
+     28.1
+    ],
+    "v_mm_s": 1400.0,
+    "widthModel_um": 70.5,
+    "widthObs_um": 92.0
+   },
+   {
+    "D_obs_um": 72.0,
+    "P_W": 200.0,
+    "condition": "c4",
+    "d_1e2_um": 80.0,
+    "indexBin": "at_or_above",
+    "inputSensitivityRange_um": {
+     "max_um": 188.0,
+     "min_um": 170.1,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c4",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 179.0
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 1.4861111111111112,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 179.0
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 1.6111111111111112,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 188.0
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 1.3624999999999998,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 170.1
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 1.3888888888888888,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 172.0
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 1.593055555555555,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 186.7
+     }
+    },
+    "trackDepths_um": [
+     71.0,
+     72.0,
+     73.0
+    ],
+    "v_mm_s": 400.0,
+    "widthModel_um": 169.5,
+    "widthObs_um": 92.0
+   },
+   {
+    "D_obs_um": 47.0,
+    "P_W": 200.0,
+    "condition": "c5",
+    "d_1e2_um": 80.0,
+    "indexBin": "at_or_above",
+    "inputSensitivityRange_um": {
+     "max_um": 97.5,
+     "min_um": 63.6,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c5",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 79.0
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 0.6808510638297872,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 79.0
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 0.9617021276595745,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 92.2
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 0.41702127659574456,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 66.6
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 0.35319148936170214,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 63.6
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 1.074468085106383,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 97.5
+     }
+    },
+    "trackDepths_um": [
+     46.0,
+     47.0,
+     48.0
+    ],
+    "v_mm_s": 800.0,
+    "widthModel_um": 122.3,
+    "widthObs_um": 92.0
+   },
+   {
+    "D_obs_um": 36.3,
+    "P_W": 200.0,
+    "condition": "c6",
+    "d_1e2_um": 80.0,
+    "indexBin": "at_or_above",
+    "inputSensitivityRange_um": {
+     "max_um": 46.4,
+     "min_um": 44.0,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c6",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 21.3
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 0.2451790633608819,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 45.2
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 0.278236914600551,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 46.4
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 0.2121212121212122,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 44.0
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 0.24242424242424257,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 45.1
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 0.24793388429752047,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 45.3
+     }
+    },
+    "trackDepths_um": [
+     35.3,
+     36.3,
+     37.3
+    ],
+    "v_mm_s": 1400.0,
+    "widthModel_um": 93.3,
+    "widthObs_um": 92.0
+   },
+   {
+    "D_obs_um": 134.5,
+    "P_W": 300.0,
+    "condition": "c7",
+    "d_1e2_um": 80.0,
+    "indexBin": "at_or_above",
+    "inputSensitivityRange_um": {
+     "max_um": 282.0,
+     "min_um": 255.1,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c7",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 268.6
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 0.9970260223048328,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 268.6
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 1.096654275092937,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 282.0
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 0.8966542750929367,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 255.1
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 0.9182156133828996,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 258.0
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 1.0817843866171004,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 280.0
+     }
+    },
+    "trackDepths_um": [
+     133.5,
+     134.5,
+     135.5
+    ],
+    "v_mm_s": 400.0,
+    "widthModel_um": 211.4,
+    "widthObs_um": 92.0
+   },
+   {
+    "D_obs_um": 78.2,
+    "P_W": 300.0,
+    "condition": "c8",
+    "d_1e2_um": 80.0,
+    "indexBin": "at_or_above",
+    "inputSensitivityRange_um": {
+     "max_um": 155.2,
+     "min_um": 140.5,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c8",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 147.8
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 0.8900255754475704,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 147.8
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 0.9846547314578002,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 155.2
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 0.7966751918158567,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 140.5
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 0.8094629156010229,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 141.5
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 0.9795396419437341,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 154.8
+     }
+    },
+    "trackDepths_um": [
+     77.2,
+     78.2,
+     79.2
+    ],
+    "v_mm_s": 800.0,
+    "widthModel_um": 151.7,
+    "widthObs_um": 92.0
+   },
+   {
+    "D_obs_um": 54.1,
+    "P_W": 300.0,
+    "condition": "c9",
+    "d_1e2_um": 80.0,
+    "indexBin": "at_or_above",
+    "inputSensitivityRange_um": {
+     "max_um": 92.7,
+     "min_um": 75.8,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c9",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 88.3
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 0.632162661737523,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 88.3
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 0.7134935304990758,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 92.7
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 0.4584103512014788,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 78.9
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 0.4011090573012938,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 75.8
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 0.7134935304990758,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 92.7
+     }
+    },
+    "trackDepths_um": [
+     53.1,
+     54.1,
+     55.1
+    ],
+    "v_mm_s": 1400.0,
+    "widthModel_um": 115.4,
+    "widthObs_um": 92.0
+   },
+   {
+    "D_obs_um": 222.0,
+    "P_W": 400.0,
+    "condition": "c10",
+    "d_1e2_um": 80.0,
+    "indexBin": "at_or_above",
+    "inputSensitivityRange_um": {
+     "max_um": 376.0,
+     "min_um": 340.2,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c10",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 358.1
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 0.6130630630630635,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 358.1
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 0.6936936936936937,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 376.0
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 0.5324324324324324,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 340.2
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 0.5495495495495496,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 344.0
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 0.6815315315315316,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 373.3
+     }
+    },
+    "trackDepths_um": [
+     221.0,
+     222.0,
+     223.0
+    ],
+    "v_mm_s": 400.0,
+    "widthModel_um": 246.3,
+    "widthObs_um": 92.0
+   },
+   {
+    "D_obs_um": 122.0,
+    "P_W": 400.0,
+    "condition": "c11",
+    "d_1e2_um": 80.0,
+    "indexBin": "at_or_above",
+    "inputSensitivityRange_um": {
+     "max_um": 207.0,
+     "min_um": 187.3,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c11",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 197.1
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 0.6155737704918033,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 197.1
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 0.6967213114754098,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 207.0
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 0.5352459016393446,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 187.3
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 0.5459016393442623,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 188.6
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 0.6918032786885246,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 206.4
+     }
+    },
+    "trackDepths_um": [
+     121.0,
+     122.0,
+     123.0
+    ],
+    "v_mm_s": 800.0,
+    "widthModel_um": 176.2,
+    "widthObs_um": 92.0
+   },
+   {
+    "D_obs_um": 79.1,
+    "P_W": 400.0,
+    "condition": "c12",
+    "d_1e2_um": 80.0,
+    "indexBin": "at_or_above",
+    "inputSensitivityRange_um": {
+     "max_um": 123.6,
+     "min_um": 111.9,
+     "note": "served at power and beam each 5 % lower and higher; an input sensitivity range, not an error bar"
+    },
+    "nTracks": 3,
+    "notFormed": false,
+    "observed": {
+     "sourceEvidenceKind": "Measured (user-supplied)",
+     "sourceLocator": {
+      "condition": "c12",
+      "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7"
+     },
+     "tier": "Declared"
+    },
+    "pred": {
+     "context:fabbro": {
+      "reasonCode": null,
+      "rel": null,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 117.7
+     },
+     "research:cavity": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "research:melt-link": {
+      "reasonCode": "RESEARCH_NOT_REQUESTED",
+      "rel": null,
+      "status": "unavailable",
+      "value_um": null
+     },
+     "served": {
+      "reasonCode": null,
+      "rel": 0.48798988621997486,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 117.7
+     },
+     "served:P+5%": {
+      "reasonCode": null,
+      "rel": 0.5625790139064474,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 123.6
+     },
+     "served:P-5%": {
+      "reasonCode": null,
+      "rel": 0.4146649810366628,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 111.9
+     },
+     "served:d+5%": {
+      "reasonCode": null,
+      "rel": 0.4222503160556259,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 112.5
+     },
+     "served:d-5%": {
+      "reasonCode": null,
+      "rel": 0.5613147914032871,
+      "sourceEvidenceKind": "Unresolved",
+      "sourceLocator": "docs/research/SPEC_research_hub_data_2026-10-14.md section 14.6",
+      "sourceReason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+      "status": "ok",
+      "value_um": 123.5
+     }
+    },
+    "trackDepths_um": [
+     78.1,
+     79.1,
+     80.1
+    ],
+    "v_mm_s": 1400.0,
+    "widthModel_um": 133.9,
+    "widthObs_um": 92.0
+   }
+  ],
+  "leverage": {
+   "cut": 15.0,
+   "n_at_or_above_20": 10,
+   "n_below": 1,
+   "ok": false
+  },
+  "lostConditions": [],
+  "notFormed": {
+   "conditions": []
+  },
+  "predictor": {
+   "atFreeze": {
+    "absorptionModel": "flat-plate",
+    "alloy": "Ti-6Al-4V",
+    "buildJobIdentitySha256": "063838a2c480fab77deae6a2d58bde8008ba8a00f724838f118dfc56a88c9dd6",
+    "buildJobModelId": "rosenthal-screening-v1",
+    "buildJobSolverRevision": "lpbf-build-job-solt-v27",
+    "heatSource": "rosenthal",
+    "implementationFingerprint": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
+    "includeProcessMap": false,
+    "materialAuthorityRevisionSha256": "d26c4b0318380615fbe89d482100083a5d2ad8193e03640149b0bc2f1770ff12",
+    "materialPropertySha256": "bb9bf8336ec5dbdc1a3aeb1544104d4e98450bdf77db053b8d8f891ac53f8c06",
+    "numpy": "2.2.6",
+    "pinnedFingerprint": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
+    "python": "3.12.10",
+    "research": {
+     "contract": "research/p8-research-arm 14e13ea8",
+     "reasonCode": "RESEARCH_NOT_REQUESTED",
+     "requested": false
+    },
+    "scipy": "1.15.3",
+    "servedClosure": {
+     "files": [
+      {
+       "liveSha256": "c0cda3994e4b2e7df30796964075cc7ea8293bb897b6c918cc3ab16e3c702083",
+       "path": "python/lpbf_build_job_material_snapshot.py",
+       "pinnedSha256": "c0cda3994e4b2e7df30796964075cc7ea8293bb897b6c918cc3ab16e3c702083"
+      },
+      {
+       "liveSha256": "42181784b999244c8b34d18d125b2ea97e001d8d2747cd51ef3d8847776926c2",
+       "path": "python/lpbf_job_cache.py",
+       "pinnedSha256": "42181784b999244c8b34d18d125b2ea97e001d8d2747cd51ef3d8847776926c2"
+      },
+      {
+       "liveSha256": "c8af101836331e0a3e19e946644c70062c538ad58d8b5180058403c06552bba8",
+       "path": "python/lpbf_public_datasets.py",
+       "pinnedSha256": "c8af101836331e0a3e19e946644c70062c538ad58d8b5180058403c06552bba8"
+      },
+      {
+       "liveSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4",
+       "path": "python/lpbf_served_arms.py",
+       "pinnedSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4"
+      }
+     ],
+     "pinSha256": "1ff8e0200e944ba7cf07d8ed51aab0145c3f4e8499894e08908a890c69b0b35c"
+    },
+    "servedPath": "build-job-thermal"
+   },
+   "atScore": {
+    "absorptionModel": "flat-plate",
+    "alloy": "Ti-6Al-4V",
+    "buildJobIdentitySha256": "063838a2c480fab77deae6a2d58bde8008ba8a00f724838f118dfc56a88c9dd6",
+    "buildJobModelId": "rosenthal-screening-v1",
+    "buildJobSolverRevision": "lpbf-build-job-solt-v27",
+    "heatSource": "rosenthal",
+    "implementationFingerprint": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
+    "includeProcessMap": false,
+    "materialAuthorityRevisionSha256": "d26c4b0318380615fbe89d482100083a5d2ad8193e03640149b0bc2f1770ff12",
+    "materialPropertySha256": "bb9bf8336ec5dbdc1a3aeb1544104d4e98450bdf77db053b8d8f891ac53f8c06",
+    "numpy": "2.2.6",
+    "pinnedFingerprint": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
+    "python": "3.12.10",
+    "research": {
+     "contract": "research/p8-research-arm 14e13ea8",
+     "reasonCode": "RESEARCH_NOT_REQUESTED",
+     "requested": false
+    },
+    "scipy": "1.15.3",
+    "servedClosure": {
+     "files": [
+      {
+       "liveSha256": "c0cda3994e4b2e7df30796964075cc7ea8293bb897b6c918cc3ab16e3c702083",
+       "path": "python/lpbf_build_job_material_snapshot.py",
+       "pinnedSha256": "c0cda3994e4b2e7df30796964075cc7ea8293bb897b6c918cc3ab16e3c702083"
+      },
+      {
+       "liveSha256": "42181784b999244c8b34d18d125b2ea97e001d8d2747cd51ef3d8847776926c2",
+       "path": "python/lpbf_job_cache.py",
+       "pinnedSha256": "42181784b999244c8b34d18d125b2ea97e001d8d2747cd51ef3d8847776926c2"
+      },
+      {
+       "liveSha256": "c8af101836331e0a3e19e946644c70062c538ad58d8b5180058403c06552bba8",
+       "path": "python/lpbf_public_datasets.py",
+       "pinnedSha256": "c8af101836331e0a3e19e946644c70062c538ad58d8b5180058403c06552bba8"
+      },
+      {
+       "liveSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4",
+       "path": "python/lpbf_served_arms.py",
+       "pinnedSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4"
+      }
+     ],
+     "pinSha256": "1ff8e0200e944ba7cf07d8ed51aab0145c3f4e8499894e08908a890c69b0b35c"
+    },
+    "servedPath": "build-job-thermal"
+   },
+   "changedSinceFreeze": false
+  },
+  "protocolId": "lpbf-user-blind-protocol-1",
+  "resolution": {
+   "cv_pool": 0.02089556253835721,
+   "leadAssumption": "u_m = max(f, 0.03 D) with f 5 um bare plate or 10 um powder or AM block (not sourced)",
+   "median_U": 0.16294141888951214,
+   "median_U_2x_descriptive": 0.3242708765122952,
+   "median_U_t_descriptive": 0.3505401703827609,
+   "n_replicated_conditions": 12,
+   "pooled_df": 24,
+   "reason": "median U_c 0.1629 above 0.1",
+   "status": "not_met",
+   "u_m_assumed": true
+  },
+  "schema": "lpbf-user-blind-report-1",
+  "scorer": {
+   "atFreeze": {
+    "files": {
+     "python/lpbf_blind_stats.py": "bbaeb312f49892348ccc74d46f7d92ab8c499b5b493a4db30829411ad76906cf",
+     "python/lpbf_spent_ledger.py": "51d7ffeb9b13e8b14e87cb105ff62056cc39fe655f4f705541a2fca4158c9813",
+     "python/lpbf_user_blind_score.py": "5816b2c8a386c706a1fc4ce41f8bf3a69e9129a1e2a2d058d8c3c9424b87574b",
+     "python/lpbf_user_blind_targets.py": "54f6469748aa0e995e7f60e47ede0c7955110066e9a2b781f20fed645fd480a3"
+    },
+    "numpy": "2.2.6",
+    "protocolSha256": "8739daf89556142775596c8ca0b7723d09c6e4422593f34522fce60c6204b0d5",
+    "scoreSourcesSha256": "b99fac8b63ed45e7907b0ddb375f8408d3d7dc3e4694d53ab07dd67502d7fe26",
+    "statsConstants": {
+     "bootB": 2000,
+     "bootSeed": 20261011,
+     "leverageHighCut": 20.0,
+     "leverageLowCut": {
+      "AlSi10Mg": 15.0,
+      "Ti64": 15.0
+     },
+     "maxApe": "0.50",
+     "meanSigned": "0.10",
+     "median": "0.20",
+     "nMin": 12,
+     "p90": "0.35",
+     "sideMin": 4,
+     "uMFUm": {
+      "bare_plate": 5.0,
+      "powder_layer_or_am": 10.0
+     },
+     "uMRelFloor": 0.03,
+     "uMax": 0.1
+    }
+   },
+   "atScore": {
+    "files": {
+     "python/lpbf_blind_stats.py": "bbaeb312f49892348ccc74d46f7d92ab8c499b5b493a4db30829411ad76906cf",
+     "python/lpbf_spent_ledger.py": "51d7ffeb9b13e8b14e87cb105ff62056cc39fe655f4f705541a2fca4158c9813",
+     "python/lpbf_user_blind_score.py": "5816b2c8a386c706a1fc4ce41f8bf3a69e9129a1e2a2d058d8c3c9424b87574b",
+     "python/lpbf_user_blind_targets.py": "54f6469748aa0e995e7f60e47ede0c7955110066e9a2b781f20fed645fd480a3"
+    },
+    "numpy": "2.2.6",
+    "protocolSha256": "8739daf89556142775596c8ca0b7723d09c6e4422593f34522fce60c6204b0d5",
+    "scoreSourcesSha256": "b99fac8b63ed45e7907b0ddb375f8408d3d7dc3e4694d53ab07dd67502d7fe26",
+    "statsConstants": {
+     "bootB": 2000,
+     "bootSeed": 20261011,
+     "leverageHighCut": 20.0,
+     "leverageLowCut": {
+      "AlSi10Mg": 15.0,
+      "Ti64": 15.0
+     },
+     "maxApe": "0.50",
+     "meanSigned": "0.10",
+     "median": "0.20",
+     "nMin": 12,
+     "p90": "0.35",
+     "sideMin": 4,
+     "uMFUm": {
+      "bare_plate": 5.0,
+      "powder_layer_or_am": 10.0
+     },
+     "uMRelFloor": 0.03,
+     "uMax": 0.1
+    }
+   },
+   "changedSinceFreeze": false
+  },
+  "servedValueLabel": {
+   "reason": "SERVED_VALUE_KIND_NOT_PROVIDED",
+   "sourceEvidenceKind": "Unresolved",
+   "text": "Unresolved: the served result does not yet list the source of each value."
+  },
+  "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7",
+  "thresholds": {
+   "alloyNote": null,
+   "maxApe": "0.50",
+   "meanSigned": "0.10",
+   "median": "0.20",
+   "nMin": 12,
+   "p90": "0.35",
+   "source": "MELT pre-registration Amendment 6 values, reused as fixed protocol 1 constants; this result is not a G3o record",
+   "uMax": "0.10"
+  },
+  "title": "Your blind test on your own measurements",
+  "userValueLabel": {
+   "sourceEvidenceKind": "Measured (user-supplied)",
+   "tier": "Declared"
+  },
+  "wordingSha256": "87cfe059c7dcfa793eceea814465ca43e2686662433788d4163a7f73c8b12320"
+ }
+}
