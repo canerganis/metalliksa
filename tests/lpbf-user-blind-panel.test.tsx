@@ -349,3 +349,22 @@ test('no rendered text claims validation or accuracy, uses PASS or FAIL, or cont
     assert.doesNotMatch(m, /[–—]/);
   }
 });
+
+test('gate 2026-10-17: the report lists exposures after a matched commitment with their reasons', () => {
+  const raw = clone(fixture('report')) as { blindness: Record<string, unknown> };
+  raw.blindness.status = 'blind-committed';
+  raw.blindness.exposuresAfterCommitment = [{ status: 'not-blind-predictions-revealed', reason: 'the frozen predictions were revealed before this score' }];
+  const markup = html(<BlindTestReportView report={checkedBlindReport(raw)} />);
+  assert.match(markup, /data-testid="blind-exposures-after-commitment"/);
+  assert.match(markup, /not-blind-predictions-revealed: the frozen predictions were revealed before this score/);
+  const bad = clone(raw) as { blindness: { exposuresAfterCommitment: unknown[] } };
+  bad.blindness.exposuresAfterCommitment = [{ status: 'made-up', reason: 'x' }];
+  assert.throws(() => checkedBlindReport(bad));
+});
+
+test('gate 2026-10-17: the reveal dialog says what happens with and without a matched commitment', () => {
+  const dialog = html(<BlindRevealDialog onCancel={() => undefined} onConfirm={() => undefined} />);
+  assert.match(dialog, /Without a matched commitment: every later score of this test is marked not blind\./);
+  assert.match(dialog, /this test stays blind-committed/);
+  assert.doesNotMatch(dialog, /ends blind status/);
+});

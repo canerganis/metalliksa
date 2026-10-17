@@ -93,6 +93,8 @@ export function BlindTestReportView({ report, reportSha256 = null, hashCheck = n
     <header className="space-y-2">
       <h2 id="blind-report-title" className="text-xl font-semibold text-slate-100">{report.title}</h2>
       <p className="text-sm text-slate-200" data-testid="blind-blindness">{report.blindness.sentence}</p>
+      {report.blindness.reasons.length > 0 && <ul className="list-disc pl-5 text-xs text-slate-300" data-testid="blind-blindness-reasons">{report.blindness.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul>}
+      {report.blindness.exposuresAfterCommitment.length > 0 && <div className="text-xs text-slate-300" data-testid="blind-exposures-after-commitment"><p>Exposures after your commitment (they cannot have shaped the committed targets, so this test stays blind-committed):</p><ul className="list-disc pl-5">{report.blindness.exposuresAfterCommitment.map((e, i) => <li key={i}>{e.status}: {e.reason}</li>)}</ul></div>}
       <p className="text-xs text-slate-400">Blindness status: {report.blindness.status}. Attempt {report.attempt.n}{report.attempt.earlierTargetsSha256.length ? ` (${report.attempt.earlierTargetsSha256.length} earlier)` : ''}. Commitment: {report.commitment.declared ? (report.commitment.matched ? 'declared and matched' : 'declared, not matched') : 'none declared'}.</p>
       <p className="break-all text-[11px] text-slate-500">Freeze {report.freezeKey}. Targets {report.targetsSha256}.{reportSha256 ? ` Report ${reportSha256}.` : ''}</p>
       {hashCheck === 'skipped' && <p role="status" className="text-xs text-amber-200">{HASH_CHECK_SKIPPED_NOTE}</p>}

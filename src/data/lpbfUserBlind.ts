@@ -287,7 +287,7 @@ export interface BlindLedgerRow {
 export interface BlindReport {
   schema: "lpbf-user-blind-report-1"; protocolId: string; title: string; banner: string; freezeKey: string; freezeSha256: string; targetsSha256: string;
   commitment: { declared: boolean; matched: boolean | null }; attempt: { n: number; earlierTargetsSha256: string[] };
-  blindness: { status: string; sentence: string; reasons: string[]; revealEvents: unknown[]; overlap?: unknown[]; exposuresAfterCommitment: unknown[]; statuses?: unknown[] };
+  blindness: { status: string; sentence: string; reasons: string[]; revealEvents: unknown[]; overlap?: unknown[]; exposuresAfterCommitment: { status: string; reason: string }[]; statuses?: unknown[] };
   predictor: Obj; scorer: Obj; divergences: { id: string; melt: string; rule: string; applied: boolean }[]; wordingSha256: string;
   thresholds: Obj; grades: BlindGrades; blockIssues: string[]; resolution: Obj; leverage: Obj; arms: Record<string, BlindArm>;
   commonSubset: Obj; labels: string[]; fragile: Obj; ledger: BlindLedgerRow[];
@@ -314,7 +314,10 @@ export function checkedBlindReport(value: unknown): BlindReport {
   int(at.n, "attempt.n"); arr(at.earlierTargetsSha256, "attempt.earlierTargetsSha256").forEach(s => hex64(s, "earlierTargetsSha256"));
   const bl = closed(o.blindness, "report.blindness", ["status", "sentence", "reasons", "revealEvents", "exposuresAfterCommitment"], ["overlap", "statuses"]);
   oneOf(bl.status, BLIND_BLINDNESS_WORDS, "report.blindness.status"); str(bl.sentence, "blindness.sentence"); strList(bl.reasons, "blindness.reasons");
-  arr(bl.revealEvents, "blindness.revealEvents"); arr(bl.exposuresAfterCommitment, "blindness.exposuresAfterCommitment");
+  arr(bl.revealEvents, "blindness.revealEvents"); arr(bl.exposuresAfterCommitment, "blindness.exposuresAfterCommitment").forEach((e, i) => {
+    const x = closed(e, `blindness.exposuresAfterCommitment[${i}]`, ["status", "reason"]);
+    oneOf(x.status, BLIND_BLINDNESS_WORDS, "exposuresAfterCommitment.status"); str(x.reason, "exposuresAfterCommitment.reason");
+  });
   obj(o.predictor, "report.predictor"); obj(o.scorer, "report.scorer");
   arr(o.divergences, "report.divergences").forEach((d, i) => {
     const x = closed(d, `report.divergences[${i}]`, ["id", "melt", "rule", "applied"]);

@@ -20,13 +20,18 @@ export interface ScoreRequest {
   declarations: { viewedPredictionsBeforeFinalisingTargets: 'no' | 'yes' | 'unsure' }; acceptCommitmentMismatch: boolean;
 }
 
-/** Confirmation with the exact phrase typed by the user. The reveal ends blind status for this test. */
+/** Confirmation with the exact phrase typed by the user. What the reveal does depends on a matched commitment. */
 export function BlindRevealDialog({ onCancel, onConfirm, busy = false }: { onCancel: () => void; onConfirm: () => void; busy?: boolean }) {
   const titleId = useId(), inputId = useId();
   const [typed, setTyped] = useState('');
   return <AccessibleModal open onClose={onCancel} labelledBy={titleId} panelClassName="w-full max-w-lg space-y-3 rounded-xl border border-slate-700 bg-slate-950 p-5">
     <h3 id={titleId} className="text-base font-semibold text-slate-100">Reveal the frozen predictions</h3>
-    <p className="text-sm text-slate-300">Revealing shows the frozen predictions and ends blind status for this test and for later tests with overlapping conditions. This cannot be undone.</p>
+    <p className="text-sm text-slate-300">Revealing shows the frozen predictions and is recorded on this computer. This cannot be undone.</p>
+    <ul className="list-disc space-y-1 pl-5 text-xs text-slate-300" data-testid="blind-reveal-effects">
+      <li>Without a matched commitment: every later score of this test is marked not blind.</li>
+      <li>With a commitment: if you committed the targets file by its SHA-256 before the freeze and later upload exactly that file, this test stays blind-committed, and the reveal is listed under exposures after the commitment. If the uploaded file differs, the test is marked not blind.</li>
+      <li>In both cases, any later test on this computer with overlapping conditions, frozen after this reveal, is marked not blind.</li>
+    </ul>
     <p className="text-xs text-slate-400">Type this phrase exactly: <code className="text-slate-100">{BLIND_REVEAL_PHRASE}</code></p>
     <div className="space-y-1.5"><label htmlFor={inputId} className="block text-xs text-slate-400">Confirmation phrase</label><input id={inputId} autoFocus className={inputClass} value={typed} onChange={e => setTyped(e.target.value)} autoComplete="off" /></div>
     <div className="flex gap-2"><button type="button" className={primaryClass} disabled={typed !== BLIND_REVEAL_PHRASE || busy} onClick={onConfirm}>{busy ? 'Revealing...' : 'Reveal predictions'}</button><button type="button" className={buttonClass} onClick={onCancel}>Cancel</button></div>
@@ -97,7 +102,7 @@ export function BlindTestTargetsStep({ freezeKey, defaultDialect, revealedOrScor
 
     <section aria-labelledby="blind-reveal-h" className="space-y-2 border-t border-slate-800 pt-4">
       <h3 id="blind-reveal-h" className="text-sm font-semibold text-slate-100">Reveal the predictions</h3>
-      <p className="text-xs text-slate-400">You can reveal the frozen predictions before you score. Revealing ends blind status for this test and for later tests with overlapping conditions.</p>
+      <p className="text-xs text-slate-400">You can reveal the frozen predictions before you score. A reveal marks this test not blind unless your committed targets file is matched at scoring, and it marks later overlapping tests on this computer not blind.</p>
       {revealedOrScored && <p className="text-xs text-slate-400">The predictions are already available for this test.</p>}
       <button type="button" className={buttonClass} disabled={revealBusy} onClick={() => setRevealOpen(true)}>Reveal predictions</button>
       {revealMessage && <p role="status" className="text-xs text-slate-300">{revealMessage}</p>}
