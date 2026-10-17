@@ -205,6 +205,18 @@ def _murakami_block(data, alloy_id):
     )
 
 
+def _mechanics_block(data, thermal):
+    from lpbf_mechanics_scenarios import evaluate_mechanics
+    solidus = ((thermal.get("processParameters") or {}).get("solidus_C")
+               if isinstance(thermal, dict) else None)
+    if solidus is None:
+        from four_alloy_materials import thermal_props
+        props = thermal_props(ALLOY_MATERIALS[data["alloyId"]]["thermal"]) if data.get("alloyId") in ALLOY_MATERIALS \
+            else None
+        solidus = props.get("solidus_C") if props else None
+    return evaluate_mechanics(data.get("mechanicsScenario"), alloy_id=data.get("alloyId"), solidus_C=solidus)
+
+
 def build_job_kinetics(alloy_id, thermal, front_parent=None, process=None, options=None, prop_overrides=None):
     """Kinetics block for a build job; never a substitute alloy or a steel model.
 
@@ -1275,6 +1287,8 @@ def _solve_lpbf_build_job_core(data):
         "ambench": ambench,
         "murakami": murakami,
         "qualification": qualification,
+        # Group 2 scenarios: outside the verdict, the recoater gate and the legacy stress/distortion keys.
+        "mechanicsScenarios": _mechanics_block(data, thermal),
     }
     return cache_put(cache_key, result)
 

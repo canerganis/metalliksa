@@ -13,6 +13,7 @@ import {
   PythonLpbfBuildJobResult,
   PythonLpbfMurakamiBlock,
   PythonLpbfUqBlock,
+  type LpbfMechanicsRequest,
 } from "../services/pythonComputationService";
 import { inferSlicerPreset, mapSpecimenToBuildJobMaterials } from "../utils/lpbfIndustrialDecision";
 import { canonicalBuildJobIdentity, canonicalBuildJobMaterialSnapshot, sha256Utf8 } from "../utils/lpbfBuildJobIdentity";
@@ -80,6 +81,84 @@ export const EMPTY_KINETICS_INPUT: LpbfKineticsSessionInput = {
   holdInterpolate: false,
 };
 
+export type LpbfMechanicsEvidence = "measured" | "literature" | "assumed-scenario";
+export type LpbfProfileEvidence = "matched-build-calibration" | "assumed-effective-profile-scenario";
+export const CALIBRATION_IDENTITY_KEYS = ["buildId", "machine", "alloyState", "orientation", "supportRestraint",
+  "depositionHistory", "referenceGeometry", "releaseSequence"] as const;
+export type CalibrationIdentityKey = typeof CALIBRATION_IDENTITY_KEYS[number];
+
+/** Mechanics scenario inputs. Every field starts empty: no alloy default, no preset, no preselected evidence. */
+export interface LpbfMechanicsBarInput {
+  elasticModulus_GPa: number | null;
+  elasticModulusEvidence: LpbfMechanicsEvidence | null;
+  thermalExpansion_per_K: number | null;
+  thermalExpansionEvidence: LpbfMechanicsEvidence | null;
+  returnYield_MPa: number | null;
+  returnYieldEvidence: LpbfMechanicsEvidence | null;
+  returnTemperature_C: number | null;
+  peakTemperature_C: number | null;
+}
+export interface LpbfProfileRow { from: number | null; to: number | null; strain: number | null }
+export interface LpbfMechanicsCantileverInput {
+  profileEvidence: LpbfProfileEvidence | null;
+  calibrationIdentity: Record<CalibrationIdentityKey, string>;
+  length_mm: number | null;
+  thickness_mm: number | null;
+  elasticModulus_GPa: number | null;
+  releaseYield_MPa: number | null;
+  maxRotation_rad: number | null;
+  profile: LpbfProfileRow[];
+}
+export interface LpbfMechanicsSessionInput { bar: LpbfMechanicsBarInput; cantilever: LpbfMechanicsCantileverInput }
+
+export const EMPTY_MECHANICS_INPUT: LpbfMechanicsSessionInput = {
+  bar: {
+    elasticModulus_GPa: null, elasticModulusEvidence: null, thermalExpansion_per_K: null,
+    thermalExpansionEvidence: null, returnYield_MPa: null, returnYieldEvidence: null,
+    returnTemperature_C: null, peakTemperature_C: null,
+  },
+  cantilever: {
+    profileEvidence: null,
+    calibrationIdentity: {
+      buildId: "", machine: "", alloyState: "", orientation: "", supportRestraint: "",
+      depositionHistory: "", referenceGeometry: "", releaseSequence: "",
+    },
+    length_mm: null, thickness_mm: null, elasticModulus_GPa: null, releaseYield_MPa: null,
+    maxRotation_rad: null, profile: [],
+  },
+};
+
+/** A section is sent only when every required field and evidence kind is set; otherwise it is left out. */
+export function buildMechanicsScenario(input: LpbfMechanicsSessionInput): LpbfMechanicsRequest | null {
+  const out: LpbfMechanicsRequest = {};
+  const b = input.bar;
+  if (b.elasticModulus_GPa != null && b.elasticModulusEvidence && b.thermalExpansion_per_K != null
+    && b.thermalExpansionEvidence && b.returnYield_MPa != null && b.returnYieldEvidence
+    && b.returnTemperature_C != null && b.peakTemperature_C != null) {
+    out.bar = {
+      elasticModulus_GPa: b.elasticModulus_GPa, elasticModulusEvidence: b.elasticModulusEvidence,
+      thermalExpansion_per_K: b.thermalExpansion_per_K, thermalExpansionEvidence: b.thermalExpansionEvidence,
+      returnYield_MPa: b.returnYield_MPa, returnYieldEvidence: b.returnYieldEvidence,
+      returnTemperature_C: b.returnTemperature_C, peakTemperature_C: b.peakTemperature_C,
+    };
+  }
+  const c = input.cantilever;
+  const rowsComplete = c.profile.length > 0 && c.profile.every(r => r.from != null && r.to != null && r.strain != null);
+  if (c.profileEvidence && c.length_mm != null && c.thickness_mm != null && c.elasticModulus_GPa != null
+    && c.releaseYield_MPa != null && c.maxRotation_rad != null && rowsComplete) {
+    const identity: Record<string, string> = {};
+    for (const k of CALIBRATION_IDENTITY_KEYS) if (c.calibrationIdentity[k].trim()) identity[k] = c.calibrationIdentity[k].trim();
+    out.cantilever = {
+      profileEvidence: c.profileEvidence,
+      ...(c.profileEvidence === "matched-build-calibration" ? { calibrationIdentity: identity } : {}),
+      length_mm: c.length_mm, thickness_mm: c.thickness_mm, elasticModulus_GPa: c.elasticModulus_GPa,
+      releaseYield_MPa: c.releaseYield_MPa, maxRotation_rad: c.maxRotation_rad,
+      profile: c.profile.map(r => ({ from: r.from as number, to: r.to as number, strain: r.strain as number })),
+    };
+  }
+  return out.bar || out.cantilever ? out : null;
+}
+
 interface LpbfBuildJobPythonState {
   job: PythonLpbfBuildJobResult | null;
   error: string | null;
@@ -94,6 +173,7 @@ interface LpbfBuildJobPythonState {
   lastUqSamples: number;
   murakamiInput: LpbfMurakamiSessionInput;
   kineticsInput: LpbfKineticsSessionInput;
+  mechanicsInput: LpbfMechanicsSessionInput;
   lastFlags: { enableUq: boolean; includeAmbench: boolean };
 }
 
@@ -110,6 +190,7 @@ export const useLpbfBuildJobStore = create<LpbfBuildJobPythonState>(() => ({
   lastUqSamples: 96,
   murakamiInput: { ...EMPTY_MURAKAMI_INPUT },
   kineticsInput: { ...EMPTY_KINETICS_INPUT },
+  mechanicsInput: structuredClone(EMPTY_MECHANICS_INPUT),
   lastFlags: { enableUq: false, includeAmbench: false },
 }));
 
@@ -143,6 +224,7 @@ function buildJobKey(flags: { enableUq: boolean; includeAmbench: boolean; uqSamp
   const liveMesh = useLpbfBuildMeshStore.getState().mesh;
   const murakamiInput = useLpbfBuildJobStore.getState().murakamiInput;
   const kineticsInput = useLpbfBuildJobStore.getState().kineticsInput;
+  const mechanicsScenario = buildMechanicsScenario(useLpbfBuildJobStore.getState().mechanicsInput);
   const lpbf = specimen.lpbf;
   const materials = mapSpecimenToBuildJobMaterials(specimen.name, specimen.baseMetal);
   const payload: Parameters<typeof pythonComputationService.solveLpbfBuildJob>[0] = {
@@ -212,6 +294,7 @@ function buildJobKey(flags: { enableUq: boolean; includeAmbench: boolean; uqSamp
         },
       }
       : {}),
+    ...(mechanicsScenario ? { mechanicsScenario } : {}),
   };
   // Include the complete CT/defect input and mesh identity. Names/counts do not identify geometry.
   const { customTriangles: _triangles, enableUq: _uq, includeAmbench: _ambench, uqSamples: _samples, ...basePayload } = payload;
@@ -232,6 +315,16 @@ export function peekLpbfBuildJobKey(): string {
 export function setLpbfMurakamiInput( partial: Partial<LpbfMurakamiSessionInput>): void {
   const prev = useLpbfBuildJobStore.getState().murakamiInput;
   useLpbfBuildJobStore.setState({ murakamiInput: { ...prev, ...partial } });
+}
+
+export function setLpbfMechanicsBar(partial: Partial<LpbfMechanicsBarInput>): void {
+  const prev = useLpbfBuildJobStore.getState().mechanicsInput;
+  useLpbfBuildJobStore.setState({ mechanicsInput: { ...prev, bar: { ...prev.bar, ...partial } } });
+}
+
+export function setLpbfMechanicsCantilever(partial: Partial<LpbfMechanicsCantileverInput>): void {
+  const prev = useLpbfBuildJobStore.getState().mechanicsInput;
+  useLpbfBuildJobStore.setState({ mechanicsInput: { ...prev, cantilever: { ...prev.cantilever, ...partial } } });
 }
 
 export function setLpbfKineticsInput(partial: Partial<LpbfKineticsSessionInput>): void {
@@ -392,6 +485,7 @@ export function useLpbfBuildJobPython() {
   const lastFlags = useLpbfBuildJobStore((s) => s.lastFlags);
   const murakamiInput = useLpbfBuildJobStore((s) => s.murakamiInput);
   const kineticsInput = useLpbfBuildJobStore((s) => s.kineticsInput);
+  const mechanicsInput = useLpbfBuildJobStore((s) => s.mechanicsInput);
   const aligned = lastKey === peekLpbfBuildJobKey();
 
   const lpbf = specimen.lpbf;
@@ -439,6 +533,7 @@ export function useLpbfBuildJobPython() {
     kineticsInput.holdTemperature_C,
     kineticsInput.holdTime_s,
     kineticsInput.holdInterpolate,
+    mechanicsInput,
   ]);
 
   return {
@@ -449,6 +544,7 @@ export function useLpbfBuildJobPython() {
     lastFlags,
     murakamiInput,
     kineticsInput,
+    mechanicsInput,
     cache: aligned ? job?.cache ?? null : null,
     rerun: () => requestLpbfBuildJob({ force: true, bypassCache: true, enableUq: false, includeAmbench: false }),
     runUq: () =>
@@ -457,5 +553,7 @@ export function useLpbfBuildJobPython() {
       requestLpbfBuildJob({ force: true, enableUq: false, includeAmbench: true }),
     setMurakamiInput: setLpbfMurakamiInput,
     setKineticsInput: setLpbfKineticsInput,
+    setMechanicsBar: setLpbfMechanicsBar,
+    setMechanicsCantilever: setLpbfMechanicsCantilever,
   };
 }

@@ -1,0 +1,427 @@
+{
+ "quantityEnvelopeSchema": "metalliksa-quantity-envelope-2",
+ "moduleEvidenceCeiling": "screening-only",
+ "moduleMaturity": "Research",
+ "quantities": {
+  "barStress": {
+   "status": "computed",
+   "value": 500000000.0,
+   "unit": "Pa",
+   "quantityDefinition": "constrained-bar-axial-stress",
+   "leafRole": "derived",
+   "sourceEvidenceKind": "User input",
+   "dependsOn": [
+    "barModel",
+    "elasticModulus",
+    "thermalExpansion",
+    "yieldStrength",
+    "thermalCycle"
+   ],
+   "weakestInputs": [
+    "elasticModulus",
+    "thermalExpansion",
+    "yieldStrength",
+    "thermalCycle"
+   ],
+   "labelSources": [],
+   "reasons": [],
+   "numericalStatus": {
+    "state": "not-assessed",
+    "settings": {},
+    "residuals": {}
+   },
+   "physicalValidation": {
+    "status": "unvalidated",
+    "experimentalValidation": false,
+    "productionReady": false
+   },
+   "sources": [
+    {
+     "id": "bower-solids",
+     "locator": "A. F. Bower, Applied Mechanics of Solids, open author text sections 3.2.2 (thermoelastic strain) and 3.7.2, 3.7.5-3.7.8 (yield, flow, return mapping)",
+     "readLevel": "primary-read"
+    }
+   ],
+   "assumptions": [],
+   "validity": {
+    "estimateTier": "Physics estimate",
+    "tierLabel": "Uncalibrated estimate",
+    "displaySignificantDigits": 2,
+    "domainWarnings": [
+     {
+      "code": "domain-extrapolation",
+      "detail": "barModel: fully fixed slender bar, constant E and alpha, ideal plasticity, one declared solid-state cycle; three-dimensional restraint and relaxation omitted"
+     },
+     {
+      "code": "domain-extrapolation",
+      "detail": "Constant-property ideal-plastic bar with full axial restraint; not a part residual-stress field"
+     }
+    ],
+    "estimateBand": null,
+    "inputSensitivity": null,
+    "uncertaintyStatement": "Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "explanation": "Uncalibrated estimate: about 500 MPa axial stress after the declared thermal cycle in a fully constrained bar. The model uses the supplied inputs and ideal plasticity. It omits three-dimensional restraint, relaxation, phase-transformation strain and temperature-dependent properties. The bar remains constrained. In a fully constrained bar this equals the yield strength you supplied whenever thermal strain exceeds twice the yield strain. It is an upper-bound scenario, not a prediction of the part's stress. This result is saturated at the supplied return-temperature yield strength. Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "noValueText": null,
+    "saturatedAtYield": true,
+    "constraint": "fully fixed"
+   },
+   "uncertainty": {
+    "kind": "not-quantified",
+    "construction": "Incremental return mapping over the declared cycle; no interval."
+   },
+   "fractionBasis": null,
+   "identity": {
+    "input": null,
+    "model": "mechanics-scenarios-v1",
+    "parent": "parents-v2:[\"object\",[[\"barModel\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceModelAssumption\"],[\"label\",\"sourceModelAssumption\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"fully fixed slender bar, constant E and alpha, ideal plasticity, one declared solid-state cycle; three-dimensional restraint and relaxation omitted\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"m1-constrained-bar\"],[\"sourceLocator\",\"A. F. Bower, Applied Mechanics of Solids, open author text sections 3.2.2 (thermoelastic strain) and 3.7.2, 3.7.5-3.7.8 (yield, flow, return mapping)\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]],[\"elasticModulus\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.9000000000000p+6\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"elasticModulus 100 GPa, assumed scenario typed by the user\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:elasticModulus:0x1.9000000000000p+6\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"thermalCycle\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"declared solid-state cycle 20 C to 1020 C and back, fully fixed ends, stress-free start (scenario)\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:cycle:20.0:1020.0\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"thermalExpansion\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.4f8b588e368f1p-17\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"thermalExpansion 1e-05 1/K, assumed scenario typed by the user\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:thermalExpansion:0x1.4f8b588e368f1p-17\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"yieldStrength\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.f400000000000p+8\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"yieldStrength 500 MPa, assumed scenario typed by the user\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:yieldStrength:0x1.f400000000000p+8\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+   }
+  },
+  "tipDeflection": {
+   "status": "computed",
+   "value": -0.00045,
+   "unit": "m",
+   "quantityDefinition": "released-cantilever-tip-deflection",
+   "leafRole": "derived",
+   "sourceEvidenceKind": "User input",
+   "dependsOn": [
+    "beamModel",
+    "beamGeometry",
+    "beamModulus",
+    "inherentStrainProfile"
+   ],
+   "weakestInputs": [
+    "beamGeometry",
+    "beamModulus",
+    "inherentStrainProfile"
+   ],
+   "labelSources": [],
+   "reasons": [],
+   "numericalStatus": {
+    "state": "not-assessed",
+    "settings": {},
+    "residuals": {}
+   },
+   "physicalValidation": {
+    "status": "unvalidated",
+    "experimentalValidation": false,
+    "productionReady": false
+   },
+   "sources": [
+    {
+     "id": "beam-release",
+     "locator": "Elastic section release of a rectangular cantilever: zero axial force and moment with beam compatibility (derived in SPEC_engine_estimates_2026-10-17 M2 and A1.2)",
+     "readLevel": "repository-attribution"
+    }
+   ],
+   "assumptions": [],
+   "validity": {
+    "estimateTier": "Physics estimate",
+    "tierLabel": "Uncalibrated estimate",
+    "displaySignificantDigits": 2,
+    "domainWarnings": [
+     {
+      "code": "domain-extrapolation",
+      "detail": "beamModel: rectangular released cantilever, constant E, elastic small-rotation release"
+     },
+     {
+      "code": "domain-extrapolation",
+      "detail": "Released-cantilever beam reduction with constant E; transferred to the selected alloy without an alloy-specific calibration"
+     }
+    ],
+    "estimateBand": null,
+    "inputSensitivity": null,
+    "uncertaintyStatement": "Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "explanation": "Uncalibrated estimate: about -0.45 mm tip displacement for the selected cantilever and inherent-strain profile. This is a released-cantilever scenario. It does not predict distortion of your part geometry. The geometry, restraint and strain profile determine the result. Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "noValueText": null,
+    "curvature_1_m": -1.0,
+    "rotation_rad": 0.03
+   },
+   "uncertainty": {
+    "kind": "not-quantified",
+    "construction": "Exact section integrals of the piecewise profile; kappa L^2 / 2; no interval."
+   },
+   "fractionBasis": null,
+   "identity": {
+    "input": null,
+    "model": "mechanics-scenarios-v1",
+    "parent": "parents-v2:[\"object\",[[\"beamGeometry\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"rectangular cantilever L 30 mm, H 3 mm, one root, released (user geometry)\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:beam:0.03:0.003\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"beamModel\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceModelAssumption\"],[\"label\",\"sourceModelAssumption\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"rectangular released cantilever, constant E, elastic small-rotation release\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"m2-released-cantilever\"],[\"sourceLocator\",\"Elastic section release of a rectangular cantilever: zero axial force and moment with beam compatibility (derived in SPEC_engine_estimates_2026-10-17 M2 and A1.2)\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]],[\"beamModulus\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.74876e8000000p+36\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"elastic modulus 100 GPa entered by the user\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:beam-E:100000000000.0\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"inherentStrainProfile\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"assumed effective-profile scenario typed by the user: 2 piecewise-constant segments, z up from the bottom face, positive strain is expansion; never derived from the constrained-bar scenario\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:profile:2\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]]]]"
+   }
+  },
+  "tipDeflectionOverThickness": {
+   "status": "computed",
+   "value": 0.15,
+   "unit": "1",
+   "quantityDefinition": "tip-deflection-over-thickness",
+   "leafRole": "derived",
+   "sourceEvidenceKind": "User input",
+   "dependsOn": [
+    "tipDeflection",
+    "beamGeometry"
+   ],
+   "weakestInputs": [
+    "beamGeometry",
+    "beamModulus",
+    "inherentStrainProfile"
+   ],
+   "labelSources": [],
+   "reasons": [],
+   "numericalStatus": {
+    "state": "not-assessed",
+    "settings": {},
+    "residuals": {}
+   },
+   "physicalValidation": {
+    "status": "unvalidated",
+    "experimentalValidation": false,
+    "productionReady": false
+   },
+   "sources": [
+    {
+     "id": "beam-release",
+     "locator": "Elastic section release of a rectangular cantilever: zero axial force and moment with beam compatibility (derived in SPEC_engine_estimates_2026-10-17 M2 and A1.2)",
+     "readLevel": "repository-attribution"
+    }
+   ],
+   "assumptions": [],
+   "validity": {
+    "estimateTier": "Physics estimate",
+    "tierLabel": "Uncalibrated estimate",
+    "displaySignificantDigits": 2,
+    "domainWarnings": [
+     {
+      "code": "domain-extrapolation",
+      "detail": "beamModel: rectangular released cantilever, constant E, elastic small-rotation release"
+     },
+     {
+      "code": "domain-extrapolation",
+      "detail": "Released-cantilever beam reduction with constant E; transferred to the selected alloy without an alloy-specific calibration"
+     }
+    ],
+    "estimateBand": null,
+    "inputSensitivity": null,
+    "uncertaintyStatement": "Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "explanation": "Uncalibrated estimate: the tip deflection divided by thickness is about 0.15. This is a released-cantilever scenario. It does not predict distortion of your part geometry. Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "noValueText": null
+   },
+   "uncertainty": {
+    "kind": "not-quantified",
+    "construction": "abs(tip deflection) / H; a new observable, not the legacy distortionIndex."
+   },
+   "fractionBasis": null,
+   "identity": {
+    "input": null,
+    "model": "mechanics-scenarios-v1",
+    "parent": "parents-v2:[\"object\",[[\"beamGeometry\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"rectangular cantilever L 30 mm, H 3 mm, one root, released (user geometry)\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:beam:0.03:0.003\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"beamModel\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceModelAssumption\"],[\"label\",\"sourceModelAssumption\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"rectangular released cantilever, constant E, elastic small-rotation release\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"m2-released-cantilever\"],[\"sourceLocator\",\"Elastic section release of a rectangular cantilever: zero axial force and moment with beam compatibility (derived in SPEC_engine_estimates_2026-10-17 M2 and A1.2)\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]],[\"beamModulus\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.74876e8000000p+36\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"elastic modulus 100 GPa entered by the user\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:beam-E:100000000000.0\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"inherentStrainProfile\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"assumed effective-profile scenario typed by the user: 2 piecewise-constant segments, z up from the bottom face, positive strain is expansion; never derived from the constrained-bar scenario\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:profile:2\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"tipDeflection\",[\"object\",[[\"identity\",[\"object\",[[\"input\",null],[\"model\",\"mechanics-scenarios-v1\"],[\"parent\",\"parents-v2:[\\\"object\\\",[[\\\"beamGeometry\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",\\\"request\\\"],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",null],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"userInput\\\"],[\\\"label\\\",\\\"userInput\\\"],[\\\"phase\\\",null],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"rectangular cantilever L 30 mm, H 3 mm, one root, released (user geometry)\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"User input\\\"],[\\\"sourceId\\\",\\\"user:beam:0.03:0.003\\\"],[\\\"sourceLocator\\\",null],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]],[\\\"beamModel\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",null],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",null],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"sourceModelAssumption\\\"],[\\\"label\\\",\\\"sourceModelAssumption\\\"],[\\\"phase\\\",null],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"rectangular released cantilever, constant E, elastic small-rotation release\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"Literature estimate\\\"],[\\\"sourceId\\\",\\\"m2-released-cantilever\\\"],[\\\"sourceLocator\\\",\\\"Elastic section release of a rectangular cantilever: zero axial force and moment with beam compatibility (derived in SPEC_engine_estimates_2026-10-17 M2 and A1.2)\\\"],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"extrapolated\\\"]]]]]]],[\\\"beamModulus\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",\\\"request\\\"],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",[\\\"number\\\",\\\"0x1.74876e8000000p+36\\\"]],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"userInput\\\"],[\\\"label\\\",\\\"userInput\\\"],[\\\"phase\\\",null],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"elastic modulus 100 GPa entered by the user\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"User input\\\"],[\\\"sourceId\\\",\\\"user:beam-E:100000000000.0\\\"],[\\\"sourceLocator\\\",null],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]],[\\\"inherentStrainProfile\\\",[\\\"object\\\",[[\\\"input\\\",[\\\"object\\\",[[\\\"declarationLocator\\\",\\\"request\\\"],[\\\"defaultKind\\\",null],[\\\"defaultValue\\\",null],[\\\"dependsOn\\\",[\\\"list\\\",[]]],[\\\"followState\\\",null],[\\\"followsInput\\\",null],[\\\"kind\\\",\\\"userInput\\\"],[\\\"label\\\",\\\"userInput\\\"],[\\\"phase\\\",null],[\\\"referenceTemperature_K\\\",null],[\\\"scope\\\",\\\"assumed effective-profile scenario typed by the user: 2 piecewise-constant segments, z up from the bottom face, positive strain is expansion; never derived from the constrained-bar scenario\\\"],[\\\"source\\\",null],[\\\"sourceEvidenceKind\\\",\\\"User input\\\"],[\\\"sourceId\\\",\\\"user:profile:2\\\"],[\\\"sourceLocator\\\",null],[\\\"sourceRange_K\\\",null],[\\\"status\\\",\\\"inRange\\\"]]]]]]]]]\"]]]],[\"value\",[\"number\",\"-0x1.d7dbf487fcb92p-12\"]]]]]]]"
+   }
+  }
+ },
+ "inputProvenance": {
+  "barModel": {
+   "kind": "sourceModelAssumption",
+   "label": "sourceModelAssumption",
+   "sourceId": "m1-constrained-bar",
+   "sourceLocator": "A. F. Bower, Applied Mechanics of Solids, open author text sections 3.2.2 (thermoelastic strain) and 3.7.2, 3.7.5-3.7.8 (yield, flow, return mapping)",
+   "declarationLocator": null,
+   "source": null,
+   "scope": "fully fixed slender bar, constant E and alpha, ideal plasticity, one declared solid-state cycle; three-dimensional restraint and relaxation omitted",
+   "status": "extrapolated",
+   "sourceEvidenceKind": "Literature estimate",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "beamModel": {
+   "kind": "sourceModelAssumption",
+   "label": "sourceModelAssumption",
+   "sourceId": "m2-released-cantilever",
+   "sourceLocator": "Elastic section release of a rectangular cantilever: zero axial force and moment with beam compatibility (derived in SPEC_engine_estimates_2026-10-17 M2 and A1.2)",
+   "declarationLocator": null,
+   "source": null,
+   "scope": "rectangular released cantilever, constant E, elastic small-rotation release",
+   "status": "extrapolated",
+   "sourceEvidenceKind": "Literature estimate",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "elasticModulus": {
+   "kind": "userInput",
+   "label": "userInput",
+   "sourceId": "user:elasticModulus:0x1.9000000000000p+6",
+   "sourceLocator": null,
+   "declarationLocator": "request",
+   "source": null,
+   "scope": "elasticModulus 100 GPa, assumed scenario typed by the user",
+   "status": "inRange",
+   "sourceEvidenceKind": "User input",
+   "defaultValue": 100.0,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "thermalExpansion": {
+   "kind": "userInput",
+   "label": "userInput",
+   "sourceId": "user:thermalExpansion:0x1.4f8b588e368f1p-17",
+   "sourceLocator": null,
+   "declarationLocator": "request",
+   "source": null,
+   "scope": "thermalExpansion 1e-05 1/K, assumed scenario typed by the user",
+   "status": "inRange",
+   "sourceEvidenceKind": "User input",
+   "defaultValue": 1e-05,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "yieldStrength": {
+   "kind": "userInput",
+   "label": "userInput",
+   "sourceId": "user:yieldStrength:0x1.f400000000000p+8",
+   "sourceLocator": null,
+   "declarationLocator": "request",
+   "source": null,
+   "scope": "yieldStrength 500 MPa, assumed scenario typed by the user",
+   "status": "inRange",
+   "sourceEvidenceKind": "User input",
+   "defaultValue": 500.0,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "thermalCycle": {
+   "kind": "userInput",
+   "label": "userInput",
+   "sourceId": "user:cycle:20.0:1020.0",
+   "sourceLocator": null,
+   "declarationLocator": "request",
+   "source": null,
+   "scope": "declared solid-state cycle 20 C to 1020 C and back, fully fixed ends, stress-free start (scenario)",
+   "status": "inRange",
+   "sourceEvidenceKind": "User input",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "beamGeometry": {
+   "kind": "userInput",
+   "label": "userInput",
+   "sourceId": "user:beam:0.03:0.003",
+   "sourceLocator": null,
+   "declarationLocator": "request",
+   "source": null,
+   "scope": "rectangular cantilever L 30 mm, H 3 mm, one root, released (user geometry)",
+   "status": "inRange",
+   "sourceEvidenceKind": "User input",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "beamModulus": {
+   "kind": "userInput",
+   "label": "userInput",
+   "sourceId": "user:beam-E:100000000000.0",
+   "sourceLocator": null,
+   "declarationLocator": "request",
+   "source": null,
+   "scope": "elastic modulus 100 GPa entered by the user",
+   "status": "inRange",
+   "sourceEvidenceKind": "User input",
+   "defaultValue": 100000000000.0,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "inherentStrainProfile": {
+   "kind": "userInput",
+   "label": "userInput",
+   "sourceId": "user:profile:2",
+   "sourceLocator": null,
+   "declarationLocator": "request",
+   "source": null,
+   "scope": "assumed effective-profile scenario typed by the user: 2 piecewise-constant segments, z up from the bottom face, positive strain is expansion; never derived from the constrained-bar scenario",
+   "status": "inRange",
+   "sourceEvidenceKind": "User input",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  }
+ },
+ "modelId": "mechanics-scenarios-v1",
+ "status": "computed",
+ "usedForBuildJobVerdict": false,
+ "legacyKeysUnchanged": [
+  "defectDiagnostics.effectiveResidualStress_MPa",
+  "distortionIndex"
+ ],
+ "barScenario": {
+  "saturatedAtYield": true,
+  "returnYield_MPa": 500.0,
+  "returnYieldEvidence": "assumed-scenario",
+  "constraint": "fully fixed bar, ends restrained, not released",
+  "thermalStrainOverYieldStrain": 2.0000000000000004,
+  "hotStress_MPa": -500.0,
+  "yielded": true
+ },
+ "cantileverScenario": {
+  "meanStrain": -0.001,
+  "curvature_1_m": -1.0,
+  "maxReleaseStress_Pa": 100000000.0,
+  "rotation_rad": 0.03,
+  "rotationLimit_rad": 0.1,
+  "profileEvidence": "assumed-effective-profile-scenario",
+  "segments": [
+   {
+    "from": 0.0,
+    "to": 0.5,
+    "strain": 0.0
+   },
+   {
+    "from": 0.5,
+    "to": 1.0,
+    "strain": -0.002
+   }
+  ]
+ }
+}

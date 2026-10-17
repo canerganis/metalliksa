@@ -25,6 +25,9 @@ export const ESTIMATE_LABELS: Readonly<Record<string, string>> = {
   phaseTransformation: "Solid-state phase transformation",
   fatigueThreshold: "Murakami threshold stress amplitude (R = -1)",
   gumbelLargest: "Largest defect in target volume (Gumbel)",
+  barStress: "Constrained-bar axial stress (scenario)",
+  tipDeflection: "Released-cantilever tip deflection (scenario)",
+  tipDeflectionOverThickness: "Tip deflection divided by thickness",
 };
 export const MEMBER_LABELS: Readonly<Record<string, string>> = {
   hunt: "Hunt", kurzFisher: "Kurz-Fisher", alphaAl: "alpha-Al", Si: "Si", Mg2Si: "Mg2Si",
@@ -34,6 +37,7 @@ export const RANGE_NAME = V2.inputSensitivityRangeName;
 
 /** Display unit and scale: lengths in micrometres, stresses (Pa) in MPa, every other quantity in its SI unit. */
 function displayUnit(q: EstimateQuantity): { unit: string; scale: number } {
+  if (q.unit === "m" && q.quantityDefinition === "released-cantilever-tip-deflection") return { unit: "mm", scale: 1e3 };
   if (q.unit === "m") return { unit: "µm", scale: 1e6 };
   if (q.unit === "Pa") return { unit: "MPa", scale: 1e-6 };
   return { unit: q.unit === "1" ? "" : q.unit.replace("K*s/m^2", "K·s/m²"), scale: 1 };

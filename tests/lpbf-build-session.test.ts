@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { after, beforeEach, test } from "node:test";
 import { pythonComputationService, type PythonLpbfBuildJobResult } from "../src/services/pythonComputationService";
-import { BUILD_JOB_SOLVER_REVISION, peekLpbfBuildJobKey, requestLpbfBuildJob, setLpbfKineticsInput, setLpbfMurakamiInput, useLpbfBuildJobStore } from "../src/store/useLpbfBuildJobStore";
+import { BUILD_JOB_SOLVER_REVISION, peekLpbfBuildJobKey, requestLpbfBuildJob, setLpbfKineticsInput, setLpbfMechanicsBar, setLpbfMechanicsCantilever, setLpbfMurakamiInput, useLpbfBuildJobStore } from "../src/store/useLpbfBuildJobStore";
 import { useMaterialSpecimenStore } from "../src/store/useMaterialSpecimenStore";
 import { useLpbfBuildMeshStore } from "../src/store/useLpbfBuildMeshStore";
 import { mapSpecimenToBuildJobMaterials } from "../src/utils/lpbfIndustrialDecision";
@@ -340,4 +340,31 @@ test("kinetics interval and isothermal hold are absent by default and sent only 
   await requestLpbfBuildJob();
   assert.equal(calls, 3);
   assert.equal((sent[2].isothermalHold as { interpolate: boolean }).interpolate, false);
+});
+
+test("mechanicsScenario is absent by default and each section is sent only when complete", async () => {
+  const sent: Record<string, any>[] = [];
+  pythonComputationService.solveLpbfBuildJob = async (payload) => { calls++; sent.push(payload as Record<string, unknown>); return fixture(); };
+  await requestLpbfBuildJob();
+  assert.equal("mechanicsScenario" in sent[0], false);
+  setLpbfMechanicsBar({ elasticModulus_GPa: 110, elasticModulusEvidence: "literature", thermalExpansion_per_K: 9e-6,
+    thermalExpansionEvidence: "literature", returnYield_MPa: 500, returnTemperature_C: 20, peakTemperature_C: 600 });
+  await requestLpbfBuildJob();
+  assert.equal("mechanicsScenario" in sent[sent.length - 1], false, "bar without yield evidence is incomplete");
+  const callsBefore = calls;
+  setLpbfMechanicsBar({ returnYieldEvidence: "assumed-scenario" });
+  await requestLpbfBuildJob();
+  assert.equal(calls, callsBefore + 1);
+  const withBar = sent[sent.length - 1].mechanicsScenario;
+  assert.equal(withBar.bar.returnYieldEvidence, "assumed-scenario");
+  assert.equal("cantilever" in withBar, false);
+  setLpbfMechanicsCantilever({ length_mm: 20, thickness_mm: 3, elasticModulus_GPa: 110, releaseYield_MPa: 800,
+    maxRotation_rad: 0.1, profileEvidence: "assumed-effective-profile-scenario", profile: [{ from: 0, to: 1, strain: null }] });
+  await requestLpbfBuildJob();
+  assert.equal("cantilever" in sent[sent.length - 1].mechanicsScenario, false, "incomplete profile row blocks the section");
+  setLpbfMechanicsCantilever({ profile: [{ from: 0, to: 1, strain: 0.001 }] });
+  await requestLpbfBuildJob();
+  const both = sent[sent.length - 1].mechanicsScenario;
+  assert.deepEqual(both.cantilever.profile, [{ from: 0, to: 1, strain: 0.001 }]);
+  assert.equal("calibrationIdentity" in both.cantilever, false);
 });

@@ -1,0 +1,213 @@
+{
+ "quantityEnvelopeSchema": "metalliksa-quantity-envelope-2",
+ "moduleEvidenceCeiling": "screening-only",
+ "moduleMaturity": "Research",
+ "quantities": {
+  "barStress": {
+   "status": "not-requested",
+   "value": null,
+   "unit": "Pa",
+   "quantityDefinition": "constrained-bar-axial-stress",
+   "leafRole": "derived",
+   "sourceEvidenceKind": null,
+   "dependsOn": [
+    "barModel"
+   ],
+   "weakestInputs": [],
+   "labelSources": [],
+   "reasons": [
+    {
+     "code": "not-requested",
+     "params": {},
+     "parent": {
+      "input": "barModel",
+      "kind": "sourceModelAssumption"
+     }
+    }
+   ],
+   "numericalStatus": {
+    "state": "not-assessed",
+    "settings": {},
+    "residuals": {}
+   },
+   "physicalValidation": {
+    "status": "unvalidated",
+    "experimentalValidation": false,
+    "productionReady": false
+   },
+   "sources": [],
+   "assumptions": [],
+   "validity": {
+    "estimateTier": "no-value",
+    "tierLabel": "No value",
+    "displaySignificantDigits": null,
+    "domainWarnings": [],
+    "estimateBand": null,
+    "inputSensitivity": null,
+    "uncertaintyStatement": null,
+    "explanation": null,
+    "noValueText": "A residual-stress estimate needs a solid-state temperature history, restraint conditions and elastic, thermal-expansion and yield properties. Supply those inputs or select an explicit constrained-bar scenario."
+   },
+   "uncertainty": null,
+   "fractionBasis": null,
+   "identity": {
+    "input": null,
+    "model": "mechanics-scenarios-v1",
+    "parent": null
+   }
+  },
+  "tipDeflection": {
+   "status": "not-requested",
+   "value": null,
+   "unit": "m",
+   "quantityDefinition": "released-cantilever-tip-deflection",
+   "leafRole": "derived",
+   "sourceEvidenceKind": null,
+   "dependsOn": [
+    "beamModel"
+   ],
+   "weakestInputs": [],
+   "labelSources": [],
+   "reasons": [
+    {
+     "code": "not-requested",
+     "params": {},
+     "parent": {
+      "input": "beamModel",
+      "kind": "sourceModelAssumption"
+     }
+    }
+   ],
+   "numericalStatus": {
+    "state": "not-assessed",
+    "settings": {},
+    "residuals": {}
+   },
+   "physicalValidation": {
+    "status": "unvalidated",
+    "experimentalValidation": false,
+    "productionReady": false
+   },
+   "sources": [],
+   "assumptions": [],
+   "validity": {
+    "estimateTier": "no-value",
+    "tierLabel": "No value",
+    "displaySignificantDigits": null,
+    "domainWarnings": [],
+    "estimateBand": null,
+    "inputSensitivity": null,
+    "uncertaintyStatement": null,
+    "explanation": null,
+    "noValueText": "Supply a matched-build effective inherent-strain profile or enter an explicit effective-profile scenario. A constrained-bar thermal cycle alone cannot determine cantilever bending."
+   },
+   "uncertainty": null,
+   "fractionBasis": null,
+   "identity": {
+    "input": null,
+    "model": "mechanics-scenarios-v1",
+    "parent": null
+   }
+  },
+  "tipDeflectionOverThickness": {
+   "status": "not-requested",
+   "value": null,
+   "unit": "1",
+   "quantityDefinition": "tip-deflection-over-thickness",
+   "leafRole": "derived",
+   "sourceEvidenceKind": null,
+   "dependsOn": [
+    "beamModel"
+   ],
+   "weakestInputs": [],
+   "labelSources": [],
+   "reasons": [
+    {
+     "code": "not-requested",
+     "params": {},
+     "parent": {
+      "input": "beamModel",
+      "kind": "sourceModelAssumption"
+     }
+    }
+   ],
+   "numericalStatus": {
+    "state": "not-assessed",
+    "settings": {},
+    "residuals": {}
+   },
+   "physicalValidation": {
+    "status": "unvalidated",
+    "experimentalValidation": false,
+    "productionReady": false
+   },
+   "sources": [],
+   "assumptions": [],
+   "validity": {
+    "estimateTier": "no-value",
+    "tierLabel": "No value",
+    "displaySignificantDigits": null,
+    "domainWarnings": [],
+    "estimateBand": null,
+    "inputSensitivity": null,
+    "uncertaintyStatement": null,
+    "explanation": null,
+    "noValueText": "Supply a matched-build effective inherent-strain profile or enter an explicit effective-profile scenario. A constrained-bar thermal cycle alone cannot determine cantilever bending."
+   },
+   "uncertainty": null,
+   "fractionBasis": null,
+   "identity": {
+    "input": null,
+    "model": "mechanics-scenarios-v1",
+    "parent": null
+   }
+  }
+ },
+ "inputProvenance": {
+  "barModel": {
+   "kind": "sourceModelAssumption",
+   "label": "sourceModelAssumption",
+   "sourceId": "m1-constrained-bar",
+   "sourceLocator": "A. F. Bower, Applied Mechanics of Solids, open author text sections 3.2.2 (thermoelastic strain) and 3.7.2, 3.7.5-3.7.8 (yield, flow, return mapping)",
+   "declarationLocator": null,
+   "source": null,
+   "scope": "fully fixed slender bar, constant E and alpha, ideal plasticity, one declared solid-state cycle; three-dimensional restraint and relaxation omitted",
+   "status": "extrapolated",
+   "sourceEvidenceKind": "Literature estimate",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "beamModel": {
+   "kind": "sourceModelAssumption",
+   "label": "sourceModelAssumption",
+   "sourceId": "m2-released-cantilever",
+   "sourceLocator": "Elastic section release of a rectangular cantilever: zero axial force and moment with beam compatibility (derived in SPEC_engine_estimates_2026-10-17 M2 and A1.2)",
+   "declarationLocator": null,
+   "source": null,
+   "scope": "rectangular released cantilever, constant E, elastic small-rotation release",
+   "status": "extrapolated",
+   "sourceEvidenceKind": "Literature estimate",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  }
+ },
+ "modelId": "mechanics-scenarios-v1",
+ "status": "unavailable",
+ "usedForBuildJobVerdict": false,
+ "legacyKeysUnchanged": [
+  "defectDiagnostics.effectiveResidualStress_MPa",
+  "distortionIndex"
+ ]
+}

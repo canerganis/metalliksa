@@ -62,6 +62,8 @@ class LpbfBuildJobRequest(BaseModel):
     # Group 8: optional named cooling interval {high_C, low_C} and Ti isothermal hold {temperature_C, time_s, interpolate}.
     kineticsCoolingInterval_C: Optional[dict] = None
     isothermalHold: Optional[dict] = None
+    # Group 2: explicit constrained-bar and released-cantilever scenarios {bar: {...}, cantilever: {...}}.
+    mechanicsScenario: Optional[dict] = None
     bypassCache: bool = False
     gitSha: Optional[str] = None
 

@@ -20,6 +20,7 @@ import { useMaterialSpecimenStore } from "../../store/useMaterialSpecimenStore";
 import { useLpbfBuildMeshStore } from "../../store/useLpbfBuildMeshStore";
 import { useLpbfBuildJobPython, type LpbfKineticsSessionInput, type LpbfMurakamiSessionInput } from "../../store/useLpbfBuildJobStore";
 import { MurakamiScenarioResult } from "./MurakamiScenarioResult";
+import { MechanicsScenariosPanel } from "./MechanicsScenariosPanel";
 import {
   findNearestLiteratureRecord,
   inferSlicerPreset,
@@ -57,7 +58,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
   const updateLpbfProcess = useMaterialSpecimenStore((s) => s.updateLpbfProcess);
   const liveMesh = useLpbfBuildMeshStore((s) => s.mesh);
   const lpbf = specimen.lpbf;
-  const { job, error, busy, roundTripMs, rerun, runUq, validateNist, murakamiInput, setMurakamiInput, kineticsInput, setKineticsInput, cache, lastFlags } =
+  const { job, error, busy, roundTripMs, rerun, runUq, validateNist, murakamiInput, setMurakamiInput, mechanicsInput, setMechanicsBar, setMechanicsCantilever, kineticsInput, setKineticsInput, cache, lastFlags } =
     useLpbfBuildJobPython();
 
   const materials = useMemo(
@@ -255,6 +256,19 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
             pasteHint={job?.murakami?.pasteHint}
           />
           {job?.murakami && <MurakamiScenarioResult block={job.murakami} />}
+        </div>
+
+        <div className="rounded-2xl border border-[#1e2d46] bg-[#090e18] p-3.5 space-y-2">
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 text-amber-400" />
+            <h3 className="text-xs font-bold text-white">Mechanics scenarios (optional)</h3>
+          </div>
+          <MechanicsScenariosPanel
+            input={mechanicsInput}
+            onBarChange={setMechanicsBar}
+            onCantileverChange={setMechanicsCantilever}
+            block={job?.mechanicsScenarios}
+          />
         </div>
 
         <div className="rounded-2xl border border-[#1e2d46] bg-[#090e18] p-3.5 space-y-2">

@@ -825,6 +825,7 @@ class PythonComputationService {
     };
     kineticsCoolingInterval_C?: { high_C: number; low_C: number };
     isothermalHold?: { temperature_C: number; time_s: number; interpolate: boolean };
+    mechanicsScenario?: LpbfMechanicsRequest;
     bypassCache?: boolean;
     gitSha?: string;
   }): Promise<PythonLpbfBuildJobResult> {
@@ -1110,6 +1111,36 @@ export interface PythonLpbfAmbenchBlock {
   fourAlloyCoverage?: Record<string, { status: string; note: string }>;
 }
 
+/** Mechanics scenario request (python/lpbf_mechanics_scenarios.py). Sections are sent only when complete. */
+export type LpbfMechanicsRequest = {
+  bar?: {
+    elasticModulus_GPa: number; elasticModulusEvidence: "measured" | "literature" | "assumed-scenario";
+    thermalExpansion_per_K: number; thermalExpansionEvidence: "measured" | "literature" | "assumed-scenario";
+    returnYield_MPa: number; returnYieldEvidence: "measured" | "literature" | "assumed-scenario";
+    returnTemperature_C: number; peakTemperature_C: number;
+  };
+  cantilever?: {
+    profileEvidence: "matched-build-calibration" | "assumed-effective-profile-scenario";
+    calibrationIdentity?: Record<string, string>;
+    length_mm: number; thickness_mm: number; elasticModulus_GPa: number; releaseYield_MPa: number;
+    maxRotation_rad: number;
+    profile: { from: number; to: number; strain: number }[];
+  };
+};
+
+/** Mechanics scenarios block of a Build Job result; parse with checkedEstimateContainer. */
+export interface PythonLpbfMechanicsScenariosBlock extends EstimateContainer {
+  modelId: string;
+  status: "computed" | "partial" | "unavailable";
+  usedForBuildJobVerdict: false;
+  legacyKeysUnchanged: string[];
+  barScenario?: {
+    saturatedAtYield: boolean; returnYield_MPa: number; returnYieldEvidence?: string | null; constraint: string;
+    thermalStrainOverYieldStrain?: number; hotStress_MPa?: number; yielded?: boolean;
+  };
+  cantileverScenario?: Record<string, unknown>;
+}
+
 export interface PythonLpbfMurakamiBlock extends EstimateContainer {
   schema: "murakami-screening-2";
   status: "screening_estimate" | "data_not_supplied" | "input_refused";
@@ -1206,6 +1237,7 @@ export interface PythonLpbfBuildJobResult {
   uq?: PythonLpbfUqBlock | null;
   ambench?: PythonLpbfAmbenchBlock | null;
   murakami?: PythonLpbfMurakamiBlock | null;
+  mechanicsScenarios?: PythonLpbfMechanicsScenariosBlock | null;
   qualification?: PythonLpbfQualificationBlock | null;
   cache?: PythonLpbfCacheMeta | null;
   porosity?: any;
