@@ -25,6 +25,31 @@ _MAX_ENTRIES = 64
 BUILD_JOB_SOLVER_REVISION = "lpbf-build-job-solt-v28"
 BUILD_JOB_MODEL_ID = "rosenthal-screening-v1"
 
+# Cache key scheme. v2: every LpbfBuildJobRequest field is keyed, either by the explicit normalised entries of
+# build_cache_key (EXPLICITLY_KEYED_FIELDS) or generically by its canonical JSON value, except the allow-listed
+# non-semantic fields. A new request field is therefore keyed by default; test_lpbf_job_cache_key proves it.
+CACHE_KEY_SCHEMA = 2
+EXPLICITLY_KEYED_FIELDS = frozenset((
+    "alloyId", "thermalMaterial", "slicerMaterial", "laserPower_W", "scanSpeed_mm_s", "scanSpeed_mms",
+    "beamDiameter_um", "preheatTemp_C", "layerThickness_um", "hatchSpacing_um", "laserWavelength", "preset",
+    "customTriangles", "cadAssetName", "maxTriangles", "recoatTimePerLayer_s", "processSeed",
+    "seed", "scanStrategy", "stripeWidth_mm", "scanRotation_deg", "hatchDwell_ms", "inclineAngle_deg",
+    "surfaceIncline_deg", "downskinOverhang_deg", "enableUq", "uqSamples", "includeAmbench", "defectSqrtAreas_um",
+    "hardness_HV", "ctDetectionThreshold_um", "gitSha",
+))
+# Fields that cannot change any output: bypassCache only selects whether the cache is read.
+NON_SEMANTIC_FIELDS = frozenset(("bypassCache",))
+
+
+def request_field_names() -> Tuple[str, ...]:
+    from lpbf_build_job_schema import LpbfBuildJobRequest
+    return tuple(LpbfBuildJobRequest.model_fields)
+
+
+def generically_keyed_fields() -> Tuple[str, ...]:
+    return tuple(name for name in request_field_names()
+                 if name not in EXPLICITLY_KEYED_FIELDS and name not in NON_SEMANTIC_FIELDS)
+
 
 def cache_stats() -> Dict[str, Any]:
     return {
@@ -109,6 +134,9 @@ def build_cache_key(data: Dict[str, Any]) -> str:
         "ctThresh": data.get("ctDetectionThreshold_um"),
         "gitSha": data.get("gitSha"),
         "solverRevision": BUILD_JOB_SOLVER_REVISION,
+        "cacheKeySchema": CACHE_KEY_SCHEMA,
+        # Every other request field (scenario inputs of groups 2, 7 and 8, the defect paste, and any future field).
+        "request": {name: data.get(name) for name in generically_keyed_fields()},
     }
     raw = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
