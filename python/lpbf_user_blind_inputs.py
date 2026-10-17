@@ -150,13 +150,13 @@ def map_header(header, columns, aliases, field, *, inputs):
                         base_canon = c
                         break
             if unit is not None and base_canon in UNITS:
-                table = UNITS[base_canon]
+                table = {k.casefold(): v for k, v in UNITS[base_canon].items()}  # the micro sign folds to mu
                 if unit.casefold() not in table:
                     raise BlindRefusal("HEADER_UNIT_UNKNOWN", field=field, name=name, unit=unit,
-                                       accepted=", ".join(table), detail={"column": name})
+                                       accepted=", ".join(UNITS[base_canon]), detail={"column": name})
                 canon, factor, unit_read = base_canon, table[unit.casefold()], unit
             elif unit is not None and base_canon is not None and base_canon not in UNITS and not inputs:
-                if base_canon.endswith("_um") and unit.casefold() not in ("um", "µm", "micron"):
+                if base_canon.endswith("_um") and unit.casefold() not in ("um", "µm".casefold(), "micron"):
                     raise BlindRefusal("HEADER_UNIT_UNKNOWN", field=field, name=name, unit=unit,
                                        accepted="um", detail={"column": name})
                 canon, unit_read = base_canon, unit

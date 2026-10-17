@@ -26,6 +26,20 @@ Undeclared input keys (read by the authority, not describable by the Field schem
 
 Output fields (no status key, so the output carries no evidence status): `datasets`, `rows`, `summary`, `honesty`.
 
+### `display-spent-descriptive-record`: `None None`
+
+Authority: browser-local `browser-local`; timeout None ms; GPU none; warm false.
+
+| Key | Label | Type | Unit | Min | Max | Step | Default | Note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+— = not established from the authority code or a source; the contract states no bound.
+All keys are optional at the authority, which applies the listed default when a key is absent.
+
+Undeclared input keys (read by the authority, not describable by the Field schema): `record`, `selectedSet`, `curveXAxis`.
+
+Output fields (no status key, so the output carries no evidence status): `datasets`, `curves`, `deviation`, `notes`, `honesty`.
+
 ## Evidence
 
 - Ceiling: screening-only (the strongest class this module may claim; not a result status)
@@ -47,7 +61,7 @@ Background work: none; resources: none.
 ## Recorded notes
 
 - The operation describes a local view, not a request/response endpoint. Output fields name consumed record sections. The SDK scalar input schema cannot express the nested document or dynamic kernel and regime selections; these are undeclaredInput, with runtime validation in checkedDatasetComparison.
-- Vite eagerly bundles the committed .view.json record. An absent record produces NoComparisonRecord; malformed committed bytes throw during checkedDatasetComparison rather than producing an empty success.
+- Vite eagerly bundles the committed .view.json record. An absent record produces NoComparisonRecord; malformed committed bytes throw during checkedDatasetComparison rather than producing an empty success. The spent descriptive record is loaded lazily through a non-eager import.meta.glob in its own chunk, and its absence renders the panel's empty state.
 - No fetch, solver, timer, worker or archive mutation runs in this module. Filters change plotted rows and axis scales locally; error statistics, provenance, hashes and uncertainty figures are read from JSON.
 - Record dataset hashes and citations are displayed provenance, not a fresh remote source verification. Prediction exclusions and honesty statements remain visible; the view does not upgrade evidence status.
 
@@ -57,6 +71,10 @@ Background work: none; resources: none.
 - `src/data/lpbfDatasetComparison.ts::checkedDatasetComparison`
 - `src/components/3d-distortion-lab/LpbfDatasetComparisonLab.tsx::DatasetComparisonView`
 - `src/components/3d-distortion-lab/LpbfDatasetComparisonLab.tsx::NoComparisonRecord`
+- `src/data/lpbfSpentDescriptiveRecord.ts`
+- `src/data/lpbfSpentDescriptive.ts::checkedSpentDescriptive`
+- `src/components/3d-distortion-lab/SpentSetDescriptivePanel.tsx::SpentSetDescriptivePanel`
+- `tests/lpbf-spent-descriptive.test.tsx`
 - `tests/lpbf-dataset-comparison.test.ts`
 - `tests/lpbf-dataset-comparison-lab.test.tsx`
 

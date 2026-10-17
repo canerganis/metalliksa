@@ -2570,6 +2570,40 @@
           },
           "quantities": [],
           "observations": []
+        },
+        {
+          "id": "display-spent-descriptive-record",
+          "method": null,
+          "route": null,
+          "authority": {
+            "kind": "browser-local",
+            "script": null,
+            "workerMethod": null,
+            "timeoutMs": null,
+            "gpu": "none",
+            "warm": false,
+            "exceptionReason": "Read-only committed JSON display of spent public sets and local curve toggling; no solver, server or research request."
+          },
+          "input": [],
+          "undeclaredInput": [
+            "record",
+            "selectedSet",
+            "curveXAxis"
+          ],
+          "output": {
+            "fields": [
+              "datasets",
+              "curves",
+              "deviation",
+              "notes",
+              "honesty"
+            ],
+            "statusKey": null,
+            "transportValues": {},
+            "transportObjects": {}
+          },
+          "quantities": [],
+          "observations": []
         }
       ],
       "validityDomain": null,
@@ -2603,7 +2637,7 @@
       "migrationState": "contracted",
       "legacyNotes": [
         "The operation describes a local view, not a request/response endpoint. Output fields name consumed record sections. The SDK scalar input schema cannot express the nested document or dynamic kernel and regime selections; these are undeclaredInput, with runtime validation in checkedDatasetComparison.",
-        "Vite eagerly bundles the committed .view.json record. An absent record produces NoComparisonRecord; malformed committed bytes throw during checkedDatasetComparison rather than producing an empty success.",
+        "Vite eagerly bundles the committed .view.json record. An absent record produces NoComparisonRecord; malformed committed bytes throw during checkedDatasetComparison rather than producing an empty success. The spent descriptive record is loaded lazily through a non-eager import.meta.glob in its own chunk, and its absence renders the panel's empty state.",
         "No fetch, solver, timer, worker or archive mutation runs in this module. Filters change plotted rows and axis scales locally; error statistics, provenance, hashes and uncertainty figures are read from JSON.",
         "Record dataset hashes and citations are displayed provenance, not a fresh remote source verification. Prediction exclusions and honesty statements remain visible; the view does not upgrade evidence status."
       ],
@@ -2612,6 +2646,10 @@
         "src/data/lpbfDatasetComparison.ts::checkedDatasetComparison",
         "src/components/3d-distortion-lab/LpbfDatasetComparisonLab.tsx::DatasetComparisonView",
         "src/components/3d-distortion-lab/LpbfDatasetComparisonLab.tsx::NoComparisonRecord",
+        "src/data/lpbfSpentDescriptiveRecord.ts",
+        "src/data/lpbfSpentDescriptive.ts::checkedSpentDescriptive",
+        "src/components/3d-distortion-lab/SpentSetDescriptivePanel.tsx::SpentSetDescriptivePanel",
+        "tests/lpbf-spent-descriptive.test.tsx",
         "tests/lpbf-dataset-comparison.test.ts",
         "tests/lpbf-dataset-comparison-lab.test.tsx"
       ],

@@ -10,6 +10,8 @@ import {
   printPlanCsv,
   type ExperimentPlanDocument,
 } from "../data/lpbfExperimentPlan";
+import { blindInputsFromPlanCsv, blindMetadataTemplateJson } from "../data/lpbfUserBlind";
+import { downloadBlindBytes } from "./research/BlindTestReceiptView";
 
 // Read-only view of a plan.json written by python/tools/lpbf_next_experiment.py. The ranking and the plate layout are
 // computed in Python; this panel loads the file in the browser (no network request, no worker call), shows it and
@@ -18,6 +20,8 @@ import {
 const MAX_PLAN_FILE_BYTES = 2_000_000;
 const PLAN_COMMAND =
   'python -B python/tools/lpbf_next_experiment.py plan --material "316L Stainless Steel" --power 100 400 --speed 400 1600 --spots 70,100 --layer-um 40 --preheat-c 80 --n 12 --seed 1 --plate-x-mm 120 --plate-y-mm 120 --out-dir .runtime/next-experiment/run1';
+
+export const PLAN_BLIND_NOTICE = "This plan shows a score, the disagreement between the app's kernels and an interval width for each track, not a predicted depth, so viewing it does not count as viewing predictions. For a blind test, use these templates, not measurement_template.csv: importing these tracks' measurements for machine calibration with the commands below makes any blind test on them not blind.";
 
 const fmt = (v: number | null, digits = 3): string => (v === null ? "n/a" : v.toFixed(digits));
 
@@ -83,7 +87,16 @@ export function ExperimentPlanView({ plan }: { plan: ExperimentPlanDocument }) {
             Download {name}
           </button>
         ))}
+        <button
+          type="button" data-testid="plan-blind-templates"
+          onClick={() => { downloadText("blind_inputs_from_plan.csv", blindInputsFromPlanCsv(plan)); downloadBlindBytes("blind_metadata_v1.json", blindMetadataTemplateJson(), "application/json"); }}
+          className="inline-flex items-center gap-2 rounded border border-slate-600 px-3 py-1.5 text-sm text-slate-100 hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+        >
+          <Download className="h-4 w-4" aria-hidden="true" />
+          Download blind-test templates from this plan
+        </button>
       </div>
+      <p className="text-xs text-amber-200" data-testid="plan-blind-notice">{PLAN_BLIND_NOTICE}</p>
       <div className="max-h-96 overflow-auto" tabIndex={0} role="region" aria-label="Proposed tracks (scrollable)">
         <table className="w-full whitespace-nowrap text-xs text-slate-300 [&_td]:pr-3 [&_th]:pr-3 [&_th]:text-left" data-testid="plan-table">
           <caption className="sr-only">Proposed single tracks ranked by information score</caption>
