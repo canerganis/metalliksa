@@ -1,0 +1,491 @@
+{
+ "success": true,
+ "status": "partial",
+ "reason": null,
+ "alloyId": "alsi10mg",
+ "alloy": "AlSi10Mg",
+ "buildCoolingRate_C_s": 128319.82603250231,
+ "reportedCoolingRate_K_s": 128319.82603250231,
+ "coolingRateSource": "build-job-kinetics-estimates-v1: single-pass path average between 567 C and 185 C",
+ "cctContinuousCoolingMap": null,
+ "calphadVsKineticsGap": null,
+ "buildCoolingRateCctRow": null,
+ "buildRateMartensite": null,
+ "reasons": [],
+ "estimates": {
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-2",
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "quantities": {
+   "pathCoolingRate": {
+    "status": "computed",
+    "value": 128319.82603250231,
+    "unit": "K/s",
+    "quantityDefinition": "path-average-cooling-rate",
+    "leafRole": "derived",
+    "sourceEvidenceKind": "Unresolved",
+    "dependsOn": [
+     "frontSamples",
+     "coolingInterval"
+    ],
+    "weakestInputs": [
+     "coolingInterval"
+    ],
+    "labelSources": [],
+    "reasons": [],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [
+     {
+      "id": "ghosh2017-kinematics",
+      "locator": "Ghosh et al. 2017, Modelling Simul. Mater. Sci. Eng. 25 065002, doi 10.1088/1361-651X/aa7369, Sec. 3.1 (PDF9/printed8): normal projection of scan velocity and the full Cartesian gradient norm",
+      "readLevel": "primary-read"
+     },
+     {
+      "id": "eagar-tsai-1983",
+      "locator": "Eagar and Tsai 1983, Welding Journal, printed 346s-348s, Eqs. 1 to 6 (moving conduction framework; the repository kernel keeps its own regularisation)",
+      "readLevel": "primary-read"
+     }
+    ],
+    "assumptions": [],
+    "validity": {
+     "estimateTier": "Physics estimate",
+     "tierLabel": "Uncalibrated estimate",
+     "displaySignificantDigits": 2,
+     "domainWarnings": [
+      {
+       "code": "alloy-family-transfer",
+       "detail": "liquidus_K: Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction"
+      },
+      {
+       "code": "domain-extrapolation",
+       "detail": "liquidus_K: Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction"
+      },
+      {
+       "code": "domain-extrapolation",
+       "detail": "thermalConductivity: Kirchhoff mean of the sourced solid k(T) from preheat to liquidus held constant over the field; liquid and high-temperature state transfer"
+      },
+      {
+       "code": "domain-extrapolation",
+       "detail": "specificHeat: Kirchhoff mean of the sourced solid cp(T) from preheat to liquidus held constant over the field; liquid and high-temperature state transfer"
+      },
+      {
+       "code": "domain-extrapolation",
+       "detail": "density: nominal ambient density held constant over the high-temperature field"
+      },
+      {
+       "code": "domain-extrapolation",
+       "detail": "absorptivity: measured-conduction-as-built-surface at 1075 nm applied to a powder-bed track; optical surface transfer"
+      }
+     ],
+     "estimateBand": null,
+     "inputSensitivity": null,
+     "uncertaintyStatement": "Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+     "explanation": "Uncalibrated estimate: the average cooling rate is about 130000 K/s between 567 C and 185 C on the selected single-pass path. This cooling rate does not determine the final phases. Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+     "noValueText": null,
+     "localSupport": {
+      "retained": 32,
+      "refusedByReason": {},
+      "pathRule": "single-pass-conduction-path-v1",
+      "intervalSelection": "declared-default",
+      "interval_C": [
+       567.0,
+       185.0
+      ]
+     },
+     "paths": [
+      {
+       "sampleId": "nominal:n32:0",
+       "rate_K_s": 127061.91907718258,
+       "timeHigh_s": 4.058092810243861e-05,
+       "timeLow_s": 0.003046989164137011
+      },
+      {
+       "sampleId": "nominal:n32:1",
+       "rate_K_s": 127074.68638471636,
+       "timeHigh_s": 3.7275318754462087e-05,
+       "timeLow_s": 0.0030433814982613844
+      },
+      {
+       "sampleId": "nominal:n32:2",
+       "rate_K_s": 127099.5532659612,
+       "timeHigh_s": 3.43597230156667e-05,
+       "timeLow_s": 0.003039877761310017
+      },
+      {
+       "sampleId": "nominal:n32:3",
+       "rate_K_s": 127135.44273636035,
+       "timeHigh_s": 3.180689712635203e-05,
+       "timeLow_s": 0.0030364764981293552
+      },
+      {
+       "sampleId": "nominal:n32:4",
+       "rate_K_s": 127181.01283078063,
+       "timeHigh_s": 2.9583265298971378e-05,
+       "timeLow_s": 0.0030331762663097913
+      },
+      {
+       "sampleId": "nominal:n32:5",
+       "rate_K_s": 127234.79945574528,
+       "timeHigh_s": 2.7652360055057047e-05,
+       "timeLow_s": 0.0030299756366588527
+      },
+      {
+       "sampleId": "nominal:n32:6",
+       "rate_K_s": 127295.33674012104,
+       "timeHigh_s": 2.5977718721488752e-05,
+       "timeLow_s": 0.0030268731936269806
+      },
+      {
+       "sampleId": "nominal:n32:7",
+       "rate_K_s": 127361.24177880274,
+       "timeHigh_s": 2.4524920425687657e-05,
+       "timeLow_s": 0.0030238675356888648
+      }
+     ]
+    },
+    "uncertainty": {
+     "kind": "not-quantified",
+     "construction": "(Thi - Tlo) / (t(Tlo) - t(Thi)) per retained material path, weighted median; crossings bisected and checked at a finer step ratio; no interval."
+    },
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "build-job-kinetics-estimates-v1",
+     "parent": "parents-v2:[\"object\",[[\"absorptivity\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.3333333333333p-2\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceDefault\"],[\"label\",\"sourceDefault\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"measured-conduction-as-built-surface at 1075 nm applied to a powder-bed track; optical surface transfer\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"absorptivity:alsi10mg:0x1.3333333333333p-2\"],[\"sourceLocator\",\"Leis, Weber, Graf 2020, Procedia CIRP 94, 173 to 176 (leis2020.pdf): Sec. 3, Figs. 4 to 6 (pp.175 to 176): area II minimum 30 percent (35 and 100 um beams) and 28 percent (200 um); 30 to 40 percent below 1800 W/mm at 35 um; sensitivities 0.14 (Trapp 2017 Fig. 7, Al 1100 ground, a relative alloy) and 0.40 live in PROPERTY_LEDGER\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]],[\"beamDiameter_um\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:beamDiameter_um\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"coolingInterval\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/lpbf_kinetics_estimates.py#DEFAULT_INTERVAL_RULE\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"declaredAssumption\"],[\"label\",\"declaredAssumption\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"567 C to 185 C; declared convention: solidus to preheat plus 25 K\"],[\"source\",null],[\"sourceEvidenceKind\",\"Unresolved\"],[\"sourceId\",\"cooling-interval:567.0:185.0\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"density\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.5100000000000p+11\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"modelConvention\"],[\"label\",\"modelConvention\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"nominal ambient density held constant over the high-temperature field\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"density:alsi10mg:0x1.5100000000000p+11\"],[\"sourceLocator\",\"Akwaboa et al. 2023, Materials 16, 4920, Table 3 (PDF p.5), sample 100-0.2, 2.696 g/cm3\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]],[\"frontSamples\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[\"liquidus_K\",\"thermalConductivity\",\"specificHeat\",\"density\",\"absorptivity\",\"power_W\",\"speed_mm_s\",\"beamDiameter_um\",\"preheat_C\",\"heatSource\"]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"derived\"],[\"label\",\"derived\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"local tuples of the rear solidifying centre-plane liquidus branch of the served conduction field (rosenthal-screening-v1)\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"front-samples:rear-centre-plane-liquidus-branch-v1:a3ceede4221e098a27a527f3ff48ae2a3b57454a663cf03d17684a90c0a90157\"],[\"sourceLocator\",\"Ghosh et al. 2017, Modelling Simul. Mater. Sci. Eng. 25 065002, doi 10.1088/1361-651X/aa7369, Sec. 3.1 (PDF9/printed8): normal projection of scan velocity and the full Cartesian gradient norm\"],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"heatSource\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:heatSource\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"liquidus_K\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"python/four_alloy_materials.py#ENDPOINT_ADMISSIONS/alsi10mg\"],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.b413333333333p+9\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"alloyTransfer\"],[\"label\",\"alloyTransfer\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction\"],[\"source\",\"SOLT-BRANDT-AL\"],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"SOL-T-A4-alsi10mg:ca4a499bc021698c9214cb5aa51d4ea4282d05ec2f0741cb6ccd3ca46928bf96\"],[\"sourceLocator\",\"Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]],[\"power_W\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:power_W\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"preheat_C\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:preheat_C\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"specificHeat\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.06c33510e941ep+10\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"modelConvention\"],[\"label\",\"modelConvention\"],[\"phase\",\"solid-liquid-mean\"],[\"referenceTemperature_K\",null],[\"scope\",\"Kirchhoff mean of the sourced solid cp(T) from preheat to liquidus held constant over the field; liquid and high-temperature state transfer\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"kernel-cp:alsi10mg:0x1.06c33510e941ep+10\"],[\"sourceLocator\",\"Yang 2018 Fig. 5 and Fig. 1; Akwaboa 2023 Fig. 2f, Table 3; Fetni 2024 Fig. 4a; Kirchhoff mean\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]],[\"speed_mm_s\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"user input\"],[\"phase\",\"process\"],[\"referenceTemperature_K\",null],[\"scope\",\"Process request value; excluded from the source-label rule\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"request:speed_mm_s\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"thermalConductivity\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.45ebb4e420309p+7\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"modelConvention\"],[\"label\",\"modelConvention\"],[\"phase\",\"solid-liquid-mean\"],[\"referenceTemperature_K\",null],[\"scope\",\"Kirchhoff mean of the sourced solid k(T) from preheat to liquidus held constant over the field; liquid and high-temperature state transfer\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"kernel-k:alsi10mg:0x1.45ebb4e420309p+7\"],[\"sourceLocator\",\"Yang 2018 Fig. 5 and Fig. 1; Akwaboa 2023 Fig. 2f, Table 3; Fetni 2024 Fig. 4a; Kirchhoff mean\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]]]]"
+    }
+   },
+   "phaseTransformation": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "solid-state-transformation",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "phaseSelectionModel"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-source-bound-model",
+      "params": {},
+      "parent": {
+       "input": "phaseSelectionModel",
+       "kind": "declaredAssumption"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": {
+     "estimateTier": "no-value",
+     "tierLabel": "No value",
+     "displaySignificantDigits": null,
+     "domainWarnings": [],
+     "estimateBand": null,
+     "inputSensitivity": null,
+     "uncertaintyStatement": null,
+     "explanation": null,
+     "noValueText": "This transformation estimate needs the starting phase amounts and a same-alloy reaction model with temperature-dependent transformation times. Supply these inputs with a time-temperature history, or select an explicitly labelled isothermal reaction scenario."
+    },
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "build-job-kinetics-estimates-v1",
+     "parent": null
+    }
+   }
+  },
+  "inputProvenance": {
+   "liquidus_K": {
+    "kind": "alloyTransfer",
+    "label": "alloyTransfer",
+    "sourceId": "SOL-T-A4-alsi10mg:ca4a499bc021698c9214cb5aa51d4ea4282d05ec2f0741cb6ccd3ca46928bf96",
+    "sourceLocator": "Brandt2007 PDF14 / p1442 TableII AlSi-10 Heating cycle",
+    "declarationLocator": "python/four_alloy_materials.py#ENDPOINT_ADMISSIONS/alsi10mg",
+    "source": "SOLT-BRANDT-AL",
+    "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. Al-9Si-0.6Mg to nominal AlSi10Mg: both Si9->nominal10 and Mg0.6->explicit requested Mg; impurities/state/rate transfer unquantified; no fitted correction",
+    "status": "extrapolated",
+    "sourceEvidenceKind": "Literature estimate",
+    "defaultValue": 872.15,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "thermalConductivity": {
+    "kind": "modelConvention",
+    "label": "modelConvention",
+    "sourceId": "kernel-k:alsi10mg:0x1.45ebb4e420309p+7",
+    "sourceLocator": "Yang 2018 Fig. 5 and Fig. 1; Akwaboa 2023 Fig. 2f, Table 3; Fetni 2024 Fig. 4a; Kirchhoff mean",
+    "declarationLocator": null,
+    "source": null,
+    "scope": "Kirchhoff mean of the sourced solid k(T) from preheat to liquidus held constant over the field; liquid and high-temperature state transfer",
+    "status": "extrapolated",
+    "sourceEvidenceKind": "Literature estimate",
+    "defaultValue": 162.9603644646925,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": "solid-liquid-mean",
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "specificHeat": {
+    "kind": "modelConvention",
+    "label": "modelConvention",
+    "sourceId": "kernel-cp:alsi10mg:0x1.06c33510e941ep+10",
+    "sourceLocator": "Yang 2018 Fig. 5 and Fig. 1; Akwaboa 2023 Fig. 2f, Table 3; Fetni 2024 Fig. 4a; Kirchhoff mean",
+    "declarationLocator": null,
+    "source": null,
+    "scope": "Kirchhoff mean of the sourced solid cp(T) from preheat to liquidus held constant over the field; liquid and high-temperature state transfer",
+    "status": "extrapolated",
+    "sourceEvidenceKind": "Literature estimate",
+    "defaultValue": 1051.0501138952163,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": "solid-liquid-mean",
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "density": {
+    "kind": "modelConvention",
+    "label": "modelConvention",
+    "sourceId": "density:alsi10mg:0x1.5100000000000p+11",
+    "sourceLocator": "Akwaboa et al. 2023, Materials 16, 4920, Table 3 (PDF p.5), sample 100-0.2, 2.696 g/cm3",
+    "declarationLocator": null,
+    "source": null,
+    "scope": "nominal ambient density held constant over the high-temperature field",
+    "status": "extrapolated",
+    "sourceEvidenceKind": "Literature estimate",
+    "defaultValue": 2696.0,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "absorptivity": {
+    "kind": "sourceDefault",
+    "label": "sourceDefault",
+    "sourceId": "absorptivity:alsi10mg:0x1.3333333333333p-2",
+    "sourceLocator": "Leis, Weber, Graf 2020, Procedia CIRP 94, 173 to 176 (leis2020.pdf): Sec. 3, Figs. 4 to 6 (pp.175 to 176): area II minimum 30 percent (35 and 100 um beams) and 28 percent (200 um); 30 to 40 percent below 1800 W/mm at 35 um; sensitivities 0.14 (Trapp 2017 Fig. 7, Al 1100 ground, a relative alloy) and 0.40 live in PROPERTY_LEDGER",
+    "declarationLocator": null,
+    "source": null,
+    "scope": "measured-conduction-as-built-surface at 1075 nm applied to a powder-bed track; optical surface transfer",
+    "status": "extrapolated",
+    "sourceEvidenceKind": "Literature estimate",
+    "defaultValue": 0.3,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "power_W": {
+    "kind": "userInput",
+    "label": "user input",
+    "sourceId": "request:power_W",
+    "sourceLocator": null,
+    "declarationLocator": null,
+    "source": null,
+    "scope": "Process request value; excluded from the source-label rule",
+    "status": "inRange",
+    "sourceEvidenceKind": "User input",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": "process",
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "speed_mm_s": {
+    "kind": "userInput",
+    "label": "user input",
+    "sourceId": "request:speed_mm_s",
+    "sourceLocator": null,
+    "declarationLocator": null,
+    "source": null,
+    "scope": "Process request value; excluded from the source-label rule",
+    "status": "inRange",
+    "sourceEvidenceKind": "User input",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": "process",
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "beamDiameter_um": {
+    "kind": "userInput",
+    "label": "user input",
+    "sourceId": "request:beamDiameter_um",
+    "sourceLocator": null,
+    "declarationLocator": null,
+    "source": null,
+    "scope": "Process request value; excluded from the source-label rule",
+    "status": "inRange",
+    "sourceEvidenceKind": "User input",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": "process",
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "preheat_C": {
+    "kind": "userInput",
+    "label": "user input",
+    "sourceId": "request:preheat_C",
+    "sourceLocator": null,
+    "declarationLocator": null,
+    "source": null,
+    "scope": "Process request value; excluded from the source-label rule",
+    "status": "inRange",
+    "sourceEvidenceKind": "User input",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": "process",
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "heatSource": {
+    "kind": "userInput",
+    "label": "user input",
+    "sourceId": "request:heatSource",
+    "sourceLocator": null,
+    "declarationLocator": null,
+    "source": null,
+    "scope": "Process request value; excluded from the source-label rule",
+    "status": "inRange",
+    "sourceEvidenceKind": "User input",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": "process",
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "frontSamples": {
+    "kind": "derived",
+    "label": "derived",
+    "sourceId": "front-samples:rear-centre-plane-liquidus-branch-v1:a3ceede4221e098a27a527f3ff48ae2a3b57454a663cf03d17684a90c0a90157",
+    "sourceLocator": "Ghosh et al. 2017, Modelling Simul. Mater. Sci. Eng. 25 065002, doi 10.1088/1361-651X/aa7369, Sec. 3.1 (PDF9/printed8): normal projection of scan velocity and the full Cartesian gradient norm",
+    "declarationLocator": null,
+    "source": null,
+    "scope": "local tuples of the rear solidifying centre-plane liquidus branch of the served conduction field (rosenthal-screening-v1)",
+    "status": "inRange",
+    "sourceEvidenceKind": "Literature estimate",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [
+     "liquidus_K",
+     "thermalConductivity",
+     "specificHeat",
+     "density",
+     "absorptivity",
+     "power_W",
+     "speed_mm_s",
+     "beamDiameter_um",
+     "preheat_C",
+     "heatSource"
+    ],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "coolingInterval": {
+    "kind": "declaredAssumption",
+    "label": "declaredAssumption",
+    "sourceId": "cooling-interval:567.0:185.0",
+    "sourceLocator": null,
+    "declarationLocator": "python/lpbf_kinetics_estimates.py#DEFAULT_INTERVAL_RULE",
+    "source": null,
+    "scope": "567 C to 185 C; declared convention: solidus to preheat plus 25 K",
+    "status": "inRange",
+    "sourceEvidenceKind": "Unresolved",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "phaseSelectionModel": {
+    "kind": "declaredAssumption",
+    "label": "declaredAssumption",
+    "sourceId": "phase-model:alsi10mg",
+    "sourceLocator": null,
+    "declarationLocator": "python/lpbf_kinetics_estimates.py",
+    "source": null,
+    "scope": "no admitted same-alloy reaction model",
+    "status": "outOfRange",
+    "sourceEvidenceKind": "Unresolved",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   }
+  },
+  "default": true,
+  "modelId": "build-job-kinetics-estimates-v1",
+  "status": "partial",
+  "surrogate": null,
+  "coolingInterval": {
+   "high_C": 567.0,
+   "low_C": 185.0,
+   "selection": "declared-default",
+   "rule": "solidus-to-preheat-plus-25K-v1"
+  }
+ }
+}

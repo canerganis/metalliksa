@@ -468,7 +468,7 @@ class Ladder(unittest.TestCase):
     def test_assumptions_and_revision(self):
         from lpbf_job_cache import BUILD_JOB_SOLVER_REVISION
         # P7b (2026-10-14): v25.
-        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-solt-v27")
+        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-solt-v28")
         job = bj.solve_lpbf_build_job({"alloyId": "in718", "laserPower_W": 285, "scanSpeed_mm_s": 960,
                                        "hatchSpacing_um": 110, "layerThickness_um": 40, "bypassCache": True})
         text = " ".join(job["assumptions"])

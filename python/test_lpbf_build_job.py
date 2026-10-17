@@ -145,7 +145,13 @@ def check_build_job_microstructure(job):
     assert micro["inputProvenance"] == kin["inputProvenance"]
     assert envelope_problems(micro) == []
     assert "G_K_m" not in micro and "doi" not in micro
-    assert job["kinetics"]["reasons"][0]["code"] == "missing-thermal-history"
+    # Group 8: the legacy block keeps its keys; a computed path cooling observable replaces the missing-history reason.
+    k = job["kinetics"]
+    assert envelope_problems(k["estimates"]) == []
+    if k["estimates"]["quantities"]["pathCoolingRate"]["value"] is None:
+        assert k["reasons"][0]["code"] == "missing-thermal-history"
+    else:
+        assert k["status"] == "partial" and k["reasons"] == [] and k["cctContinuousCoolingMap"] is None
 
 
 def check_build_job_microstructure_fallback():
@@ -422,7 +428,7 @@ def main():
         "lpbf-build-job-p6-containment-v23",
         "lpbf-build-job-p7a-rules-and-nulls-v24",
     ), BUILD_JOB_SOLVER_REVISION
-    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-solt-v27"  # P7b (2026-10-14)
+    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-solt-v28"  # P7b (2026-10-14)
     assert ti["processSeed"] == 42
     assert ti["scanStrategy"]["id"] == "stripe"
     assert ti["uq"] is None  # lazy default
@@ -715,7 +721,7 @@ def main():
     assert compared_changed["materialPropertySha256"] == compared["materialPropertySha256"]
     assert compared_changed["amBenchMaterialPropertySha256"] != comparison_sha
 
-    # Murakami paste path + alloy HV default
+    # Murakami paste path: no alloy HV default exists (group 7, review item 5)
     mur = run_job(
         {
             "alloyId": "in718",
@@ -728,10 +734,30 @@ def main():
             "bypassCache": True,
         }
     )
-    assert mur["murakami"]["status"] == "screening_estimate"
-    assert mur["murakami"]["hardnessSource"] == "alloy_default"
-    assert mur["murakami"]["hardness_HV"] == 380.0
-    assert mur["murakami"]["fatigueLimit_internal_MPa"] > 0
+    assert mur["murakami"]["status"] == "input_refused"
+    assert mur["murakami"]["fatigueLimit_MPa"] is None
+    assert "hardness_HV" in mur["murakami"]["missingInputs"]
+    assert mur["murakami"]["observedMaximum"]["value_um"] == 70.0
+    assert "fatigueLimit_internal_MPa" not in mur["murakami"]
+    typed = run_job(
+        {
+            "alloyId": "in718",
+            "laserPower_W": 285,
+            "scanSpeed_mm_s": 960,
+            "beamDiameter_um": 80,
+            "layerThickness_um": 40,
+            "hatchSpacing_um": 110,
+            "defectSqrtAreasPaste": "40, 55, 62, 48, 70",
+            "defectEvidence": "measured",
+            "defectLocation": "internal",
+            "hardness_HV": 380.0,
+            "hardnessEvidence": "assumed-scenario",
+            "bypassCache": True,
+        }
+    )
+    assert typed["murakami"]["status"] == "screening_estimate"
+    assert abs(typed["murakami"]["fatigueLimit_MPa"] - 1.56 * 500.0 / 70.0 ** (1 / 6)) < 1e-9
+    assert typed["murakami"]["scenarioEcho"]["hardnessEvidence"] == "assumed-scenario"
 
     # R = v·cosθ
     # P6 (2026-10-11): the build-surface incline no longer multiplies R (R = v n_x on the conduction-field

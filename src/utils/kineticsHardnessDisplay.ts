@@ -3,6 +3,7 @@
 // null for other alloy classes and outside HRC 20-68. A missing or null value is shown as "Unavailable", never as an
 // invented number.
 import { UNAVAILABLE_TEXT } from "./hardnessConversion";
+import type { EstimateContainer } from "../data/quantityEnvelope";
 
 export interface KineticsHardnessRow {
   predictedHardness_HRC?: number | null;
@@ -347,13 +348,37 @@ export interface BuildRateMartensite {
   coolingRate_C_s?: number | null;
 }
 
+/** Python's cooling interval for the path-average cooling rate (lpbf_kinetics_estimates). */
+export interface BuildJobCoolingInterval {
+  high_C: number;
+  low_C: number;
+  selection: string;
+  rule?: string | null;
+}
+
+/** Quantity envelope v2 container of the build-job kinetics block, plus the module keys. */
+export type BuildJobKineticsEstimates = EstimateContainer & {
+  readonly modelId?: string;
+  readonly status?: string;
+  readonly surrogate?: string | null;
+  readonly coolingInterval?: BuildJobCoolingInterval | null;
+};
+
 export interface BuildJobKineticsLike {
   status?: string | null;
+  estimates?: BuildJobKineticsEstimates | null;
   reason?: string | null;
   buildCoolingRate_C_s?: number | null;
   buildCoolingRateCctRow?: BuildCoolingRateCctRow | null;
   buildRateMartensite?: BuildRateMartensite | null;
   cctContinuousCoolingMap?: BuildJobCctRow[] | null;
+}
+
+/** "between 1604 C and 175 C (declared default convention)" or "... (user selected)"; null without an interval. */
+export function coolingIntervalText(interval: BuildJobCoolingInterval | null | undefined): string | null {
+  if (!interval || !finite(interval.high_C) || !finite(interval.low_C)) return null;
+  const how = interval.selection === "declared-default" ? "declared default convention" : "user selected";
+  return `Cooling interval: between ${interval.high_C} C and ${interval.low_C} C (${how}).`;
 }
 
 /** Python reasons have no final period; add one for display. */
@@ -365,6 +390,8 @@ export function buildJobKineticsAvailability(
 ): { available: boolean; reason: string } {
   if (!kinetics) return { available: false, reason: "No kinetics block in the build-job result." };
   if (kinetics.status !== "available") {
+    // "partial" is a computed result with some quantities withheld, never a failure.
+    if (kinetics.status === "partial") return { available: true, reason: "" };
     return { available: false, reason: sentence(kinetics.reason || "Kinetics unavailable for this build") };
   }
   return { available: true, reason: "" };

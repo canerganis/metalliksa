@@ -278,7 +278,6 @@ _FATIGUE_FRACTURE_UNITS = {
     "paris_m": "1",
 }
 
-_FATIGUE_SCREENING_UNITS = {"hardness_HV": "HV"}
 
 _CORROSION_UNITS = {
     "density_g_cm3": "g/cm^3",
@@ -401,15 +400,8 @@ _FATIGUE_FRACTURE = {
                  "paris_C": 2.1e-10, "paris_m": 3.8},
 }
 
-# murakami_fatigue_screening.py:15-20 ALLOY_HV_DEFAULTS. These intentionally differ
-# from the fatigue_fracture HV values; the two domains are kept apart, not merged.
-_FATIGUE_SCREENING_REF = f"murakami_fatigue_screening.py:15-20 ALLOY_HV_DEFAULTS @{BASE_REVISION}"
-_FATIGUE_SCREENING = {
-    "ti6al4v": {"hardness_HV": 340.0},
-    "ss316l": {"hardness_HV": 210.0},
-    "alsi10mg": {"hardness_HV": 120.0},
-    "in718": {"hardness_HV": 380.0},
-}
+# The former murakami_fatigue_screening ALLOY_HV_DEFAULTS mirror is removed (SPEC engine estimates 2026-10-17, review
+# item 5): those hardness values had no source, and Murakami screening now needs an explicit measured or assumed HV.
 
 # tafel_corrosion_rate_solver.py:26-117 ALLOY_LIBRARY. Its per-alloy atomic weight
 # copies are not duplicated here; physical_constants.STANDARD_ATOMIC_WEIGHTS holds them.
@@ -653,7 +645,6 @@ def _copied_domains(aid: str) -> Dict[str, Mapping[str, ValueRecord]]:
     tables = (
         (DOMAIN_KINETICS, _KINETICS, _KINETICS_UNITS, _KINETICS_REF),
         (DOMAIN_FATIGUE_FRACTURE, _FATIGUE_FRACTURE, _FATIGUE_FRACTURE_UNITS, _FATIGUE_FRACTURE_REF),
-        (DOMAIN_FATIGUE_SCREENING, _FATIGUE_SCREENING, _FATIGUE_SCREENING_UNITS, _FATIGUE_SCREENING_REF),
         (DOMAIN_CORROSION, _CORROSION, _CORROSION_UNITS, _CORROSION_REF),
     )
     for domain, table, units, ref in tables:

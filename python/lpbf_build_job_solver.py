@@ -188,18 +188,53 @@ def _unavailable_kinetics_block(alloy_id, reason, reported, degenerate):
     }
 
 
-def build_job_kinetics(alloy_id, thermal):
-    """Kinetics block for a build job; unavailable (with reason) instead of a substitute alloy.
+MURAKAMI_SCENARIO_KEYS = ("defectSqrtArea_um", "defectEvidence", "defectLocation", "hardnessEvidence", "loadRatio",
+                          "cycleTarget", "specimenOrientation", "defectIsLongCrack", "defectSampling",
+                          "ctDetectionMethod")
 
-    ``status`` ("available" / "unavailable") is the field to trust. ``success: False`` on the
-    unavailable block only keeps the solver-envelope shape; it does not mean the build job failed.
-    SOL-A1 supplies no subsolidus thermal history. A liquidus-front cooling rate cannot
-    select a CCT row, so every alloy is unavailable with missing-thermal-history.
+
+def _murakami_block(data, alloy_id):
+    """Group 7 block from the explicit request fields only; no hardness, size or cycle default exists."""
+    return evaluate_murakami_block(
+        data.get("defectSqrtAreas_um"),
+        hardness_HV=data.get("hardness_HV"),
+        ct_detection_threshold_um=data.get("ctDetectionThreshold_um"),
+        alloy_id=alloy_id,
+        defect_paste=data.get("defectSqrtAreasPaste"),
+        scenario={key: data.get(key) for key in MURAKAMI_SCENARIO_KEYS},
+    )
+
+
+def build_job_kinetics(alloy_id, thermal, front_parent=None, process=None, options=None, prop_overrides=None):
+    """Kinetics block for a build job; never a substitute alloy or a steel model.
+
+    ``status`` is the field to trust. The legacy CCT keys stay null: a single-pass cooling average cannot select a CCT
+    row and no admitted CCT model exists for these alloys. ``estimates`` (quantity envelope v2, SPEC engine estimates
+    group 8) carries the path cooling observable at a named subsolidus interval on the build's own captured front
+    parent, and for Ti-6Al-4V the first-pass KM reference and the isothermal dissolution reference, all Tier 2. Without
+    a captured parent every estimate is no-value with missing-thermal-history.
     """
     from quantity_envelope import reason, reason_text
+    from lpbf_kinetics_estimates import build_kinetics_estimates
     block = _unavailable_kinetics_block(alloy_id, reason_text("missing-thermal-history"), None, False)
     block["reasons"] = [reason("missing-thermal-history")]
     block["coolingRateSource"] = None
+    if process is None:
+        return block
+    estimates = build_kinetics_estimates(alloy_id, thermal, front_parent, process, options=options,
+                                         prop_overrides=prop_overrides)
+    block["estimates"] = estimates
+    block["alloy"] = ALLOY_MATERIALS[alloy_id]["thermal"] if alloy_id in ALLOY_MATERIALS else None
+    cooling = estimates["quantities"]["pathCoolingRate"]
+    if cooling["value"] is not None:
+        interval = estimates["coolingInterval"]
+        source = (estimates["modelId"] + ": single-pass path average between " + format(interval["high_C"], "g")
+                  + " C and " + format(interval["low_C"], "g") + " C")
+        block.update(status="partial", success=True, reason=None, reasons=[],
+                     buildCoolingRate_C_s=cooling["value"], reportedCoolingRate_K_s=cooling["value"],
+                     coolingRateSource=source)
+    elif estimates["status"] != "unavailable":
+        block.update(status="partial", success=True)
     return block
 
 
@@ -968,19 +1003,22 @@ def _solve_lpbf_build_job_core(data):
     rotation_deg = float(data.get("scanRotation_deg", 67.0))
     dwell_ms = float(data.get("hatchDwell_ms", 0.0))
 
-    thermal = calculate_meltpool_physics(
-        thermal_mat,
-        power,
-        speed,
-        beam,
-        preheat,
-        layer,
-        hatch,
-        wavelength,
-        incline_angle_deg=incline_deg,
-        process_seed=process_seed,
-        prop_overrides=material_snapshot["thermal"],
-    )
+    from lpbf_solidification_estimates import capture_front_parent
+    with capture_front_parent() as front_slot:
+        thermal = calculate_meltpool_physics(
+            thermal_mat,
+            power,
+            speed,
+            beam,
+            preheat,
+            layer,
+            hatch,
+            wavelength,
+            incline_angle_deg=incline_deg,
+            process_seed=process_seed,
+            prop_overrides=material_snapshot["thermal"],
+        )
+    front_parent = front_slot[0] if len(front_slot) == 1 else None
     slicer = solve_slicer(
         {
             "preset": data.get("preset", "nozzle"),
@@ -1096,13 +1134,10 @@ def _solve_lpbf_build_job_core(data):
         ambench["alloyCoverage"] = coverage_for_alloy(alloy_id)
 
     # --- Faz 4b/c: Murakami + qualification template ---
-    murakami = evaluate_murakami_block(
-        data.get("defectSqrtAreas_um"),
-        hardness_HV=data.get("hardness_HV"),
-        ct_detection_threshold_um=data.get("ctDetectionThreshold_um"),
-        alloy_id=alloy_id,
-        defect_paste=data.get("defectSqrtAreasPaste"),
-    )
+    try:
+        murakami = _murakami_block(data, alloy_id)
+    except ValueError as e:  # input_validation.ValidationError: a non-finite or nonpositive scenario value
+        return {"success": False, "error": f"Invalid LPBF build-job payload: {e}"}
     input_hash = cache_key[:16]
     qualification = build_qualification_block(
         alloy_id,
@@ -1192,7 +1227,7 @@ def _solve_lpbf_build_job_core(data):
             f"(doi:{ambench['source']['doi']}); four-alloy direct coverage is limited."
         )
     assumptions.append(
-        "Murakami/qualification blocks are SCREENING ONLY; defect √area not invented when absent."
+        "Murakami/qualification blocks are SCREENING ONLY; defect √area, hardness and location are never defaulted."
     )
 
     microstructure = project_build_job_microstructure(thermal)
@@ -1226,7 +1261,12 @@ def _solve_lpbf_build_job_core(data):
         "microstructure": microstructure,
         # Nb segregation / terminal gamma-Laves screening (composition-only; G/R copied from microstructure).
         "segregation": build_job_segregation(alloy_id, microstructure),
-        "kinetics": build_job_kinetics(alloy_id, thermal),
+        "kinetics": build_job_kinetics(
+            alloy_id, thermal, front_parent,
+            {"power_W": power, "speed_mm_s": speed, "beamDiameter_um": beam, "preheat_C": preheat,
+             "layerThickness_um": layer, "hatch_um": hatch},
+            {"coolingInterval_C": data.get("kineticsCoolingInterval_C"), "isothermalHold": data.get("isothermalHold")},
+            material_snapshot["thermal"]),
         "porosity": aggregate_part_porosity(
             uq_block.pop("defectSamples", []) if uq_block else [thermal.get("geometricDefectScreen", {})]
         ),

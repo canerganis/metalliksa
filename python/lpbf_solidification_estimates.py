@@ -272,6 +272,9 @@ SPACING = {
 KM_MS_C, KM_TRANSUS_C, KM_COEFFICIENT, KM_RATE_K_S, KM_OFFSET_K = 575.0, 998.0, 0.005, 410.0, 25.0
 KM_LOCATOR = ("Salsi, Chiumenti and Cervera 2018, Metals 8, 633, doi 10.3390/met8080633, PDF9 Eq. 19 and PDF12 "
               "before Fig. 7 (km 0.005 1/K, Ms 575 C, transus 998 C, 410 K/s)")
+# Amendment 1 A1.6 attribution: Salsi et al. adopt Ms and km from their reference [10]; they did not fit them.
+KM_ATTRIBUTION = ("Ms and km are literature assumptions adopted by Salsi et al. from their reference [10]. Their "
+                  "uncertainty is unquantified.")
 KM_PATH_RATIO = 1.15
 KM_PATH_FIRST_STEP_M = 1e-7
 KM_PATH_MAX_M = 1.0
@@ -786,7 +789,8 @@ def _record(kind: str, source_id: str, *, status: str, locator: Optional[str] = 
 class Builder:
     """Accumulates input records and quantities of one v2 container, with the inherited-warning bookkeeping."""
 
-    def __init__(self) -> None:
+    def __init__(self, model_id: str = MODEL_ID) -> None:
+        self.model_id = model_id
         self.inputs: Dict[str, Any] = {}
         self.quantities: Dict[str, Any] = {}
         self.warnings: Dict[str, List[Dict[str, str]]] = {}  # input name -> warnings its record implies
@@ -833,7 +837,7 @@ class Builder:
         else:
             text = explanation
         q = qe.quantity(
-            definition, value, inputs=self.inputs, depends_on=depends_on, sources=sources, model_identity=MODEL_ID,
+            definition, value, inputs=self.inputs, depends_on=depends_on, sources=sources, model_identity=self.model_id,
             uncertainty={"kind": uncertainty_kind, "construction": construction}, numerical=numerical,
             fraction_basis=fraction_basis, assumptions=assumptions,
             validity=_validity(definition, tier, warnings, explanation=text, band=band, sensitivity=sensitivity,
@@ -845,16 +849,16 @@ class Builder:
     def no_value(self, name: str, definition: str, code: str, *, parent: str, depends_on: Sequence[str],
                  text: str, extra_reasons: Sequence[Mapping[str, Any]] = (), params: Optional[Mapping] = None,
                  extra_validity: Optional[Mapping[str, Any]] = None,
-                 numerical: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
+                 numerical: Optional[Mapping[str, Any]] = None, status: str = "unavailable") -> Dict[str, Any]:
         reasons = [qe.reason(code, params or {}, qe.reason_parent(parent, self.inputs, self.quantities))]
         reasons += [dict(item) for item in extra_reasons]
         for dep in depends_on:
             sibling = self.quantities.get(dep)
             if isinstance(sibling, dict) and sibling["value"] is None and dep != parent:
                 reasons.append(qe.reason("parent-unavailable", {}, {"input": dep, "kind": "derived"}))
-        q = qe.unavailable(definition, reasons, depends_on=depends_on, numerical=numerical,
+        q = qe.unavailable(definition, reasons, status=status, depends_on=depends_on, numerical=numerical,
                            validity=_validity(definition, "no-value", [], no_value_text=text, extra=extra_validity),
-                           model_identity=MODEL_ID)
+                           model_identity=self.model_id)
         self.quantities[name] = q
         return q
 
@@ -1439,7 +1443,7 @@ def _phase_quantities(b: Builder, alloy: str, rows: Sequence[Mapping[str, Any]],
 
 def _km_quantity(b: Builder, rows, front_ok, blocked, parent, request) -> None:
     b.add_input("kmModel", _record("sourceModelAssumption", "km-salsi2018", status="inRange", locator=KM_LOCATOR,
-                                   scope="first-pass, fully beta, diffusion-suppressed KM progress; Ms fitted"))
+                                   scope="first-pass, fully beta, diffusion-suppressed KM progress; Ms and km adopted by the source from its reference [10]"))
     b.add_input("beta0", _record("declaredAssumption", "km-beta0-nominal", status="inRange",
                                  declaration="python/lpbf_solidification_estimates.py#_km_quantity",
                                  scope="entering beta fraction declared 1 (fully beta before cooling)",
@@ -1489,16 +1493,17 @@ def _km_quantity(b: Builder, rows, front_ok, blocked, parent, request) -> None:
                 f"{T_eval:g} C is at or above Ms). {UNKNOWN}")
     elif float(shown) >= 0.9:
         text = (f"{TIER2_LABEL} for a single rapid cooling pass: mostly alpha martensite or massive alpha (model about "
-                f"{shown}). The remainder is the untransformed KM asymptote, not an estimate of retained beta. Ms is a "
-                f"fitted source parameter with unquantified uncertainty. {UNKNOWN}")
+                f"{shown}). The remainder is the untransformed KM asymptote, not an estimate of retained beta. "
+                f"{KM_ATTRIBUTION} {UNKNOWN}")
     else:
         text = (f"{TIER2_LABEL} for a single rapid cooling pass: about {shown} alpha martensite or massive alpha. The "
-                "remainder is the untransformed KM asymptote, not an estimate of retained beta. Ms is a fitted source "
-                f"parameter with unquantified uncertainty. {UNKNOWN}")
+                "remainder is the untransformed KM asymptote, not an estimate of retained beta. "
+                f"{KM_ATTRIBUTION} {UNKNOWN}")
     b.value("kmAlphaMFraction", "km-alpha-m-fraction", fraction, depends_on=depends,
             sources=[_src("salsi2018", KM_LOCATOR)], fraction_basis="reaction-progress",
-            own_warnings=[_warn("km-source-fit-uncertainty", "Ms = 575 C and km = 0.005 1/K are fitted source "
-                                "parameters with unquantified uncertainty")],
+            own_warnings=[_warn("km-source-fit-uncertainty", "Ms = 575 C and km = 0.005 1/K are literature "
+                                "assumptions adopted by Salsi et al. from their reference [10] (Charles Murgau, "
+                                "Pederson and Lindgren 2012); their uncertainty is unquantified")],
             explanation=text, construction="KM progress at the first post-melt crossing of preheat + 25 K on each "
                                            "retained single-pass material path; no interval.",
             extra={"evaluation": evaluation, "residual": residual},

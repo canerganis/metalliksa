@@ -1,4 +1,4 @@
-import type { QuantityContainer } from "../data/quantityEnvelope";
+import type { EstimateContainer, QuantityContainer } from "../data/quantityEnvelope";
 /**
  * MetalliX Python HPC Subsystem & Proxy Client Service
  * Dispatches heavy, CPU-intensive calculations (CALPHAD Gibbs minimization, elastic-constant homogenisation, PHACOMP,
@@ -809,6 +809,22 @@ class PythonComputationService {
     defectSqrtAreasPaste?: string;
     hardness_HV?: number;
     ctDetectionThreshold_um?: number;
+    defectSqrtArea_um?: number;
+    defectEvidence?: "measured" | "assumed-scenario";
+    defectLocation?: "surface" | "internal";
+    hardnessEvidence?: "measured" | "assumed-scenario";
+    specimenOrientation?: "vertical" | "horizontal";
+    loadRatio?: number;
+    cycleTarget?: number;
+    ctDetectionMethod?: string;
+    defectSampling?: {
+      design: "comparable-independent-block-maxima";
+      blockVolume_mm3: number;
+      targetVolume_mm3: number;
+      targetProbability: number;
+    };
+    kineticsCoolingInterval_C?: { high_C: number; low_C: number };
+    isothermalHold?: { temperature_C: number; time_s: number; interpolate: boolean };
     bypassCache?: boolean;
     gitSha?: string;
   }): Promise<PythonLpbfBuildJobResult> {
@@ -1094,19 +1110,40 @@ export interface PythonLpbfAmbenchBlock {
   fourAlloyCoverage?: Record<string, { status: string; note: string }>;
 }
 
-export interface PythonLpbfMurakamiBlock {
-  status: string;
-  fatigueLimit_MPa?: number | null;
-  fatigueLimit_internal_MPa?: number;
-  fatigueLimit_surface_MPa?: number;
-  hardness_HV?: number;
-  hardnessSource?: string;
-  nDefects?: number;
-  gumbel?: Record<string, number | string> | null;
+export interface PythonLpbfMurakamiBlock extends EstimateContainer {
+  schema: "murakami-screening-2";
+  status: "screening_estimate" | "data_not_supplied" | "input_refused";
+  fatigueLimit_MPa: number | null;
+  defectLocation: "surface" | "internal" | null;
+  missingInputs: string[];
+  scenarioEcho: {
+    defectSqrtArea_um: number | null;
+    defectSqrtAreaBasis: string | null;
+    defectEvidence: "measured" | "assumed-scenario" | null;
+    defectLocation: "surface" | "internal" | null;
+    hardness_HV: number | null;
+    hardnessEvidence: "measured" | "assumed-scenario" | null;
+    loadRatio: number;
+    specimenOrientation: "vertical" | "horizontal" | null;
+  };
+  cycleTarget: { requested: number; value: null; text: string } | null;
+  observedMaximum: {
+    value_um: number;
+    n: number;
+    label: string;
+    evidence: "measured" | "assumed-scenario" | null;
+    note: string;
+  } | null;
+  ctDetectionThreshold: {
+    value_um: number | null;
+    method: string | null;
+    label: string | null;
+    text: string | null;
+  };
+  ctDetectionThreshold_um: number | null;
+  pasteHint: string;
   note: string;
-  pasteHint?: string;
-  alloyHvDefaults?: Record<string, number>;
-  ctDetectionThreshold_um?: number | null;
+  references: string[];
 }
 
 export interface PythonLpbfQualificationBlock {
@@ -1174,7 +1211,7 @@ export interface PythonLpbfBuildJobResult {
   porosity?: any;
   kinematics?: any;
   microstructure?: any;
-  kinetics?: any;
+  kinetics?: any; // shape: BuildJobKineticsLike (src/utils/kineticsHardnessDisplay.ts), optionally with `estimates`
 }
 
 /** Output of POST /api/python/lpbf-calibrated-meltpool (python/lpbf_calibration_layer.apply_calibration). */
@@ -1211,6 +1248,9 @@ export interface LPBFCalibratedMeltpoolResult {
   } | null;
   outsideTrainingEnvelope: boolean;
   envelopeNotes: string[];
+  /** Status display only (python/lpbf_calibrated_meltpool.py); never changes a number above. */
+  calibrationStatus?: import("../components/CalibrationStatusDisplay").CalibrationStatusPayload;
+  uncalibratedParent?: import("../components/CalibrationStatusDisplay").UncalibratedParentPayload;
 }
 
 export interface PythonLPBFResult {

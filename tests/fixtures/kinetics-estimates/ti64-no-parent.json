@@ -1,0 +1,317 @@
+{
+ "success": false,
+ "status": "unavailable",
+ "reason": "No eligible temperature history is available for this quantity.",
+ "alloyId": "ti6al4v",
+ "alloy": "Ti-6Al-4V",
+ "buildCoolingRate_C_s": null,
+ "reportedCoolingRate_K_s": null,
+ "coolingRateSource": null,
+ "cctContinuousCoolingMap": null,
+ "calphadVsKineticsGap": null,
+ "buildCoolingRateCctRow": null,
+ "buildRateMartensite": null,
+ "reasons": [
+  {
+   "code": "missing-thermal-history",
+   "params": {},
+   "parent": null
+  }
+ ],
+ "estimates": {
+  "quantityEnvelopeSchema": "metalliksa-quantity-envelope-2",
+  "moduleEvidenceCeiling": "screening-only",
+  "moduleMaturity": "Research",
+  "quantities": {
+   "pathCoolingRate": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "K/s",
+    "quantityDefinition": "path-average-cooling-rate",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "frontSamples",
+     "coolingInterval"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "missing-thermal-history",
+      "params": {},
+      "parent": {
+       "input": "frontSamples",
+       "kind": "declaredAssumption"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": {
+     "estimateTier": "no-value",
+     "tierLabel": "No value",
+     "displaySignificantDigits": null,
+     "domainWarnings": [],
+     "estimateBand": null,
+     "inputSensitivity": null,
+     "uncertaintyStatement": null,
+     "explanation": null,
+     "noValueText": "A cooling rate needs a computed or measured time-temperature path. No thermal parent was captured for this build."
+    },
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "build-job-kinetics-estimates-v1",
+     "parent": null
+    }
+   },
+   "kmAlphaMFraction": {
+    "status": "unavailable",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "km-alpha-m-fraction",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "frontSamples",
+     "kmModel",
+     "beta0",
+     "preheat_C"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "parent-unavailable",
+      "params": {},
+      "parent": {
+       "input": "frontSamples",
+       "kind": "declaredAssumption"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": {
+     "estimateTier": "no-value",
+     "tierLabel": "No value",
+     "displaySignificantDigits": null,
+     "domainWarnings": [],
+     "estimateBand": null,
+     "inputSensitivity": null,
+     "uncertaintyStatement": null,
+     "explanation": null,
+     "noValueText": "A retained phase estimate needs a cooling path and the beta fraction entering martensite formation. Slow cooling or reheating also needs competing transformation kinetics."
+    },
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "build-job-kinetics-estimates-v1",
+     "parent": null
+    }
+   },
+   "tiMartensiteDissolution": {
+    "status": "not-requested",
+    "value": null,
+    "unit": "1",
+    "quantityDefinition": "ti-martensite-dissolution-fraction",
+    "leafRole": "derived",
+    "sourceEvidenceKind": null,
+    "dependsOn": [
+     "dissolutionModel"
+    ],
+    "weakestInputs": [],
+    "labelSources": [],
+    "reasons": [
+     {
+      "code": "not-requested",
+      "params": {},
+      "parent": {
+       "input": "dissolutionModel",
+       "kind": "sourceModelAssumption"
+      }
+     }
+    ],
+    "numericalStatus": {
+     "state": "not-assessed",
+     "settings": {},
+     "residuals": {}
+    },
+    "physicalValidation": {
+     "status": "unvalidated",
+     "experimentalValidation": false,
+     "productionReady": false
+    },
+    "sources": [],
+    "assumptions": [],
+    "validity": {
+     "estimateTier": "no-value",
+     "tierLabel": "No value",
+     "displaySignificantDigits": null,
+     "domainWarnings": [],
+     "estimateBand": null,
+     "inputSensitivity": null,
+     "uncertaintyStatement": null,
+     "explanation": null,
+     "noValueText": "Enter an isothermal hold temperature and time to see the dissolved fraction of the martensite entering the hold."
+    },
+    "uncertainty": null,
+    "fractionBasis": null,
+    "identity": {
+     "input": null,
+     "model": "build-job-kinetics-estimates-v1",
+     "parent": null
+    }
+   }
+  },
+  "inputProvenance": {
+   "frontSamples": {
+    "kind": "declaredAssumption",
+    "label": "declaredAssumption",
+    "sourceId": "front-samples:none",
+    "sourceLocator": null,
+    "declarationLocator": "python/lpbf_kinetics_estimates.py",
+    "source": null,
+    "scope": "no captured thermal parent matching the estimate kernel",
+    "status": "outOfRange",
+    "sourceEvidenceKind": "Unresolved",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "preheat_C": {
+    "kind": "userInput",
+    "label": "user input",
+    "sourceId": "request:preheat_C",
+    "sourceLocator": null,
+    "declarationLocator": null,
+    "source": null,
+    "scope": "Process request value; excluded from the source-label rule",
+    "status": "inRange",
+    "sourceEvidenceKind": "User input",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": "process",
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "coolingInterval": {
+    "kind": "declaredAssumption",
+    "label": "declaredAssumption",
+    "sourceId": "cooling-interval:1604.0:175.0",
+    "sourceLocator": null,
+    "declarationLocator": "python/lpbf_kinetics_estimates.py#DEFAULT_INTERVAL_RULE",
+    "source": null,
+    "scope": "1604 C to 175 C; declared convention: solidus to preheat plus 25 K",
+    "status": "inRange",
+    "sourceEvidenceKind": "Unresolved",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "kmModel": {
+    "kind": "sourceModelAssumption",
+    "label": "sourceModelAssumption",
+    "sourceId": "km-salsi2018",
+    "sourceLocator": "Salsi, Chiumenti and Cervera 2018, Metals 8, 633, doi 10.3390/met8080633, PDF9 Eq. 19 and PDF12 before Fig. 7 (km 0.005 1/K, Ms 575 C, transus 998 C, 410 K/s)",
+    "declarationLocator": null,
+    "source": null,
+    "scope": "first-pass, fully beta, diffusion-suppressed KM progress; Ms and km adopted by the source from its reference [10]",
+    "status": "inRange",
+    "sourceEvidenceKind": "Literature estimate",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "beta0": {
+    "kind": "declaredAssumption",
+    "label": "declaredAssumption",
+    "sourceId": "km-beta0-nominal",
+    "sourceLocator": null,
+    "declarationLocator": "python/lpbf_solidification_estimates.py#_km_quantity",
+    "source": null,
+    "scope": "entering beta fraction declared 1 (fully beta before cooling)",
+    "status": "inRange",
+    "sourceEvidenceKind": "Unresolved",
+    "defaultValue": 1.0,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   },
+   "dissolutionModel": {
+    "kind": "sourceModelAssumption",
+    "label": "sourceModelAssumption",
+    "sourceId": "salsi2018-table3-dissolution",
+    "sourceLocator": "Salsi, Chiumenti and Cervera 2018, Metals 8, 633, doi 10.3390/met8080633, author PDF14 Table 3 (T, dissolvable fraction, t30, t90; hardness-derived interpretation), PDF5 Eqs. 3-9",
+    "declarationLocator": null,
+    "source": null,
+    "scope": "heat-treatment hardness-derived kinetic parameters for wrought/AM Ti-6Al-4V martensite dissolution; transferred to this LPBF state",
+    "status": "extrapolated",
+    "sourceEvidenceKind": "Literature estimate",
+    "defaultValue": null,
+    "defaultKind": null,
+    "followsInput": null,
+    "followState": null,
+    "dependsOn": [],
+    "phase": null,
+    "referenceTemperature_K": null,
+    "sourceRange_K": null
+   }
+  },
+  "default": true,
+  "modelId": "build-job-kinetics-estimates-v1",
+  "status": "unavailable",
+  "surrogate": null,
+  "coolingInterval": {
+   "high_C": 1604.0,
+   "low_C": 175.0,
+   "selection": "declared-default",
+   "rule": "solidus-to-preheat-plus-25K-v1"
+  }
+ }
+}

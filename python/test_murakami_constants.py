@@ -53,11 +53,13 @@ class ScreeningEngineTest(unittest.TestCase):
         self.assertAlmostEqual(ms.murakami_fatigue_limit_MPa(AREA, HV, "sub-surface"), oracle(1.41), places=9)
 
     def test_evaluate_block_reports_the_standard_constants(self):
-        # one defect -> max-only fit, characteristic size == the defect, no Gumbel noise.
-        block = ms.evaluate_murakami_block([AREA], hardness_HV=HV)
-        self.assertEqual(block["status"], "screening_estimate")
-        self.assertEqual(block["fatigueLimit_internal_MPa"], round(oracle(1.56), 2))
-        self.assertEqual(block["fatigueLimit_surface_MPa"], round(oracle(1.43), 2))
+        # One explicitly chosen defect and location: the named-location leaf uses that location's constant.
+        for location, c in (("internal", 1.56), ("surface", 1.43)):
+            block = ms.evaluate_murakami_block([AREA], hardness_HV=HV, scenario={
+                "defectEvidence": "measured", "hardnessEvidence": "measured", "defectLocation": location})
+            self.assertEqual(block["status"], "screening_estimate")
+            self.assertAlmostEqual(block["fatigueLimit_MPa"], oracle(c), places=9)
+            self.assertEqual(block["defectLocation"], location)
 
     def test_nonpositive_inputs_are_rejected_not_clamped(self):
         for area, hv in ((0.0, HV), (-5.0, HV), (AREA, 0.0), (AREA, -1.0), (float("nan"), HV), (AREA, float("inf"))):

@@ -147,11 +147,13 @@ class CopiedTableDriftTest(unittest.TestCase):
             for key, rec in table.items():
                 self.assertEqual(rec.value, src[key], f"{aid}.{key}")
 
-    def test_fatigue_screening_table(self):
+    def test_fatigue_screening_has_no_hardness_defaults(self):
+        # Group 7 review item 5: the unsourced Murakami HV defaults are removed, not mirrored here.
         import murakami_fatigue_screening as ms
-        self.assertEqual(set(ms.ALLOY_HV_DEFAULTS), set(reg._FATIGUE_SCREENING))
-        for aid, hv in ms.ALLOY_HV_DEFAULTS.items():
-            self.assertEqual(reg.REGISTRY[aid].value("hardness_HV", reg.DOMAIN_FATIGUE_SCREENING), hv)
+        self.assertFalse(hasattr(ms, "ALLOY_HV_DEFAULTS"))
+        self.assertFalse(hasattr(reg, "_FATIGUE_SCREENING"))
+        for aid, record in reg.REGISTRY.items():
+            self.assertNotIn(reg.DOMAIN_FATIGUE_SCREENING, record.domains, aid)
 
     def test_corrosion_table(self):
         # tafel_corrosion_rate_solver no longer holds ALLOY_LIBRARY (Phase 6a structural
@@ -346,8 +348,7 @@ class NoSilentDefaultTest(unittest.TestCase):
             reg.resolve_alloy("alsi10mg", reg.DOMAIN_CORROSION)
 
     def test_fatigue_display_and_lowercase_names_resolve_to_the_right_alloy(self):
-        # murakami: "Ti-6Al-4V" fell to the generic 350 HV; fatigue_fracture: lowercase fell to Ti64.
-        self.assertEqual(reg.get_value("Ti-6Al-4V", "hardness_HV", reg.DOMAIN_FATIGUE_SCREENING).value, 340.0)
+        # fatigue_fracture: lowercase fell to Ti64. The Murakami screening domain has no hardness defaults.
         self.assertEqual(reg.get_value("inconel 718", "hardness_HV", reg.DOMAIN_FATIGUE_FRACTURE).value, 440.0)
 
     def test_missing_property_raises(self):

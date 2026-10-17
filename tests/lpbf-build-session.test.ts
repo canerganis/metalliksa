@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { after, beforeEach, test } from "node:test";
 import { pythonComputationService, type PythonLpbfBuildJobResult } from "../src/services/pythonComputationService";
-import { BUILD_JOB_SOLVER_REVISION, peekLpbfBuildJobKey, requestLpbfBuildJob, setLpbfMurakamiInput, useLpbfBuildJobStore } from "../src/store/useLpbfBuildJobStore";
+import { BUILD_JOB_SOLVER_REVISION, peekLpbfBuildJobKey, requestLpbfBuildJob, setLpbfKineticsInput, setLpbfMurakamiInput, useLpbfBuildJobStore } from "../src/store/useLpbfBuildJobStore";
 import { useMaterialSpecimenStore } from "../src/store/useMaterialSpecimenStore";
 import { useLpbfBuildMeshStore } from "../src/store/useLpbfBuildMeshStore";
 import { mapSpecimenToBuildJobMaterials } from "../src/utils/lpbfIndustrialDecision";
@@ -95,6 +95,30 @@ test("identical fast requests reuse the result; changed CT threshold recomputes"
   setLpbfMurakamiInput({ ctDetectionThreshold_um: 25 });
   await requestLpbfBuildJob();
   assert.equal(calls, 2);
+});
+
+test("scenario fields are sent only when the user set them and a change recomputes", async () => {
+  const sent: Record<string, unknown>[] = [];
+  pythonComputationService.solveLpbfBuildJob = async (payload) => { calls++; sent.push(payload as Record<string, unknown>); return fixture(); };
+  const scenarioKeys = ["defectSqrtArea_um", "defectEvidence", "defectLocation", "hardnessEvidence", "specimenOrientation",
+    "loadRatio", "cycleTarget", "ctDetectionMethod", "defectSampling", "hardness_HV"];
+  await requestLpbfBuildJob();
+  for (const key of scenarioKeys) assert.equal(key in sent[0], false, key);
+  setLpbfMurakamiInput({ defectSqrtArea_um: 250, defectEvidence: "assumed-scenario", defectLocation: "internal",
+    hardnessEvidence: "assumed-scenario", hardness_HV: 330, blockVolume_mm3: 10, targetVolume_mm3: 1000, targetProbability: 0.9 });
+  await requestLpbfBuildJob();
+  assert.equal(calls, 2);
+  assert.equal(sent[1].defectSqrtArea_um, 250);
+  assert.equal(sent[1].defectEvidence, "assumed-scenario");
+  assert.equal(sent[1].defectLocation, "internal");
+  assert.equal(sent[1].hardnessEvidence, "assumed-scenario");
+  for (const key of ["specimenOrientation", "loadRatio", "cycleTarget", "ctDetectionMethod", "defectSampling"]) {
+    assert.equal(key in sent[1], false, key);
+  }
+  setLpbfMurakamiInput({ blockMaximaComparable: true });
+  await requestLpbfBuildJob();
+  assert.deepEqual(sent[2].defectSampling, { design: "comparable-independent-block-maxima", blockVolume_mm3: 10,
+    targetVolume_mm3: 1000, targetProbability: 0.9 });
 });
 
 test("same-input results from a prior solver revision are recomputed", async () => {
@@ -295,4 +319,25 @@ test("returning to a supported alloy cannot reuse a request superseded by an uns
   assert.equal(calls,2);
   assert.equal(useLpbfBuildJobStore.getState().job?.engine,"latest-fixture");
   assert.equal(useLpbfBuildJobStore.getState().busy,false);
+});
+
+test("kinetics interval and isothermal hold are absent by default and sent only when complete", async () => {
+  const sent: Record<string, unknown>[] = [];
+  pythonComputationService.solveLpbfBuildJob = async (payload) => { calls++; sent.push(payload as Record<string, unknown>); return fixture(); };
+  await requestLpbfBuildJob();
+  assert.equal("kineticsCoolingInterval_C" in sent[0], false);
+  assert.equal("isothermalHold" in sent[0], false);
+  setLpbfKineticsInput({ coolingHigh_C: 900 });
+  setLpbfKineticsInput({ holdTemperature_C: 600, holdInterpolate: true });
+  await requestLpbfBuildJob();
+  assert.equal(calls, 1);
+  setLpbfKineticsInput({ coolingLow_C: 300, holdTime_s: 3600 });
+  await requestLpbfBuildJob();
+  assert.equal(calls, 2);
+  assert.deepEqual(sent[1].kineticsCoolingInterval_C, { high_C: 900, low_C: 300 });
+  assert.deepEqual(sent[1].isothermalHold, { temperature_C: 600, time_s: 3600, interpolate: true });
+  setLpbfKineticsInput({ holdInterpolate: false });
+  await requestLpbfBuildJob();
+  assert.equal(calls, 3);
+  assert.equal((sent[2].isothermalHold as { interpolate: boolean }).interpolate, false);
 });

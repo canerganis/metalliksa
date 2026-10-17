@@ -21,13 +21,64 @@ import { useLpbfBuildMeshStore } from "./useLpbfBuildMeshStore";
 
 // Keep aligned with python/lpbf_job_cache.py; changing this invalidates held
 // same-input results when the client and build-job solver are upgraded.
-export const BUILD_JOB_SOLVER_REVISION = "lpbf-build-job-solt-v27";
+export const BUILD_JOB_SOLVER_REVISION = "lpbf-build-job-solt-v28";
 
 export interface LpbfMurakamiSessionInput {
   defectSqrtAreasPaste: string;
   hardness_HV: number | null;
   ctDetectionThreshold_um: number | null;
+  /** Typed scenario. Every field starts empty/unset: nothing is preselected or prefilled. */
+  defectSqrtArea_um: number | null;
+  defectEvidence: LpbfMurakamiEvidence | null;
+  defectLocation: "surface" | "internal" | null;
+  hardnessEvidence: LpbfMurakamiEvidence | null;
+  specimenOrientation: "vertical" | "horizontal" | null;
+  loadRatio: number | null;
+  cycleTarget: number | null;
+  ctDetectionMethod: string;
+  /** Block-maxima design, applied only when `blockMaximaComparable` is ticked. */
+  blockMaximaComparable: boolean;
+  blockVolume_mm3: number | null;
+  targetVolume_mm3: number | null;
+  targetProbability: number | null;
 }
+
+export type LpbfMurakamiEvidence = "measured" | "assumed-scenario";
+
+export const EMPTY_MURAKAMI_INPUT: LpbfMurakamiSessionInput = {
+  defectSqrtAreasPaste: "",
+  hardness_HV: null,
+  ctDetectionThreshold_um: null,
+  defectSqrtArea_um: null,
+  defectEvidence: null,
+  defectLocation: null,
+  hardnessEvidence: null,
+  specimenOrientation: null,
+  loadRatio: null,
+  cycleTarget: null,
+  ctDetectionMethod: "",
+  blockMaximaComparable: false,
+  blockVolume_mm3: null,
+  targetVolume_mm3: null,
+  targetProbability: null,
+};
+
+/** Optional kinetics inputs. Empty by default; nothing is sent until the user sets them. */
+export interface LpbfKineticsSessionInput {
+  coolingHigh_C: number | null;
+  coolingLow_C: number | null;
+  holdTemperature_C: number | null;
+  holdTime_s: number | null;
+  holdInterpolate: boolean;
+}
+
+export const EMPTY_KINETICS_INPUT: LpbfKineticsSessionInput = {
+  coolingHigh_C: null,
+  coolingLow_C: null,
+  holdTemperature_C: null,
+  holdTime_s: null,
+  holdInterpolate: false,
+};
 
 interface LpbfBuildJobPythonState {
   job: PythonLpbfBuildJobResult | null;
@@ -42,6 +93,7 @@ interface LpbfBuildJobPythonState {
   sessionEvidenceKey: string | null;
   lastUqSamples: number;
   murakamiInput: LpbfMurakamiSessionInput;
+  kineticsInput: LpbfKineticsSessionInput;
   lastFlags: { enableUq: boolean; includeAmbench: boolean };
 }
 
@@ -56,11 +108,8 @@ export const useLpbfBuildJobStore = create<LpbfBuildJobPythonState>(() => ({
   sessionAmbench: null,
   sessionEvidenceKey: null,
   lastUqSamples: 96,
-  murakamiInput: {
-    defectSqrtAreasPaste: "",
-    hardness_HV: null,
-    ctDetectionThreshold_um: null,
-  },
+  murakamiInput: { ...EMPTY_MURAKAMI_INPUT },
+  kineticsInput: { ...EMPTY_KINETICS_INPUT },
   lastFlags: { enableUq: false, includeAmbench: false },
 }));
 
@@ -93,6 +142,7 @@ function buildJobKey(flags: { enableUq: boolean; includeAmbench: boolean; uqSamp
   const specimen = useMaterialSpecimenStore.getState().activeSpecimen;
   const liveMesh = useLpbfBuildMeshStore.getState().mesh;
   const murakamiInput = useLpbfBuildJobStore.getState().murakamiInput;
+  const kineticsInput = useLpbfBuildJobStore.getState().kineticsInput;
   const lpbf = specimen.lpbf;
   const materials = mapSpecimenToBuildJobMaterials(specimen.name, specimen.baseMetal);
   const payload: Parameters<typeof pythonComputationService.solveLpbfBuildJob>[0] = {
@@ -130,6 +180,38 @@ function buildJobKey(flags: { enableUq: boolean; includeAmbench: boolean; uqSamp
     ...(murakamiInput.ctDetectionThreshold_um != null
       ? { ctDetectionThreshold_um: murakamiInput.ctDetectionThreshold_um }
       : {}),
+    ...(murakamiInput.defectSqrtArea_um != null ? { defectSqrtArea_um: murakamiInput.defectSqrtArea_um } : {}),
+    ...(murakamiInput.defectEvidence ? { defectEvidence: murakamiInput.defectEvidence } : {}),
+    ...(murakamiInput.defectLocation ? { defectLocation: murakamiInput.defectLocation } : {}),
+    ...(murakamiInput.hardnessEvidence ? { hardnessEvidence: murakamiInput.hardnessEvidence } : {}),
+    ...(murakamiInput.specimenOrientation ? { specimenOrientation: murakamiInput.specimenOrientation } : {}),
+    ...(murakamiInput.loadRatio != null ? { loadRatio: murakamiInput.loadRatio } : {}),
+    ...(murakamiInput.cycleTarget != null ? { cycleTarget: murakamiInput.cycleTarget } : {}),
+    ...(murakamiInput.ctDetectionMethod.trim() ? { ctDetectionMethod: murakamiInput.ctDetectionMethod.trim() } : {}),
+    ...(murakamiInput.blockMaximaComparable
+      && murakamiInput.blockVolume_mm3 != null && murakamiInput.targetVolume_mm3 != null
+      && murakamiInput.targetProbability != null
+      ? {
+        defectSampling: {
+          design: "comparable-independent-block-maxima" as const,
+          blockVolume_mm3: murakamiInput.blockVolume_mm3,
+          targetVolume_mm3: murakamiInput.targetVolume_mm3,
+          targetProbability: murakamiInput.targetProbability,
+        },
+      }
+      : {}),
+    ...(kineticsInput.coolingHigh_C != null && kineticsInput.coolingLow_C != null
+      ? { kineticsCoolingInterval_C: { high_C: kineticsInput.coolingHigh_C, low_C: kineticsInput.coolingLow_C } }
+      : {}),
+    ...(kineticsInput.holdTemperature_C != null && kineticsInput.holdTime_s != null
+      ? {
+        isothermalHold: {
+          temperature_C: kineticsInput.holdTemperature_C,
+          time_s: kineticsInput.holdTime_s,
+          interpolate: kineticsInput.holdInterpolate,
+        },
+      }
+      : {}),
   };
   // Include the complete CT/defect input and mesh identity. Names/counts do not identify geometry.
   const { customTriangles: _triangles, enableUq: _uq, includeAmbench: _ambench, uqSamples: _samples, ...basePayload } = payload;
@@ -150,6 +232,11 @@ export function peekLpbfBuildJobKey(): string {
 export function setLpbfMurakamiInput( partial: Partial<LpbfMurakamiSessionInput>): void {
   const prev = useLpbfBuildJobStore.getState().murakamiInput;
   useLpbfBuildJobStore.setState({ murakamiInput: { ...prev, ...partial } });
+}
+
+export function setLpbfKineticsInput(partial: Partial<LpbfKineticsSessionInput>): void {
+  const prev = useLpbfBuildJobStore.getState().kineticsInput;
+  useLpbfBuildJobStore.setState({ kineticsInput: { ...prev, ...partial } });
 }
 
 export async function requestLpbfBuildJob(options?: LpbfBuildJobRequestOptions): Promise<void> {
@@ -304,6 +391,7 @@ export function useLpbfBuildJobPython() {
   const lastKey = useLpbfBuildJobStore((s) => s.lastKey);
   const lastFlags = useLpbfBuildJobStore((s) => s.lastFlags);
   const murakamiInput = useLpbfBuildJobStore((s) => s.murakamiInput);
+  const kineticsInput = useLpbfBuildJobStore((s) => s.kineticsInput);
   const aligned = lastKey === peekLpbfBuildJobKey();
 
   const lpbf = specimen.lpbf;
@@ -334,6 +422,23 @@ export function useLpbfBuildJobPython() {
     murakamiInput.defectSqrtAreasPaste,
     murakamiInput.hardness_HV,
     murakamiInput.ctDetectionThreshold_um,
+    murakamiInput.defectSqrtArea_um,
+    murakamiInput.defectEvidence,
+    murakamiInput.defectLocation,
+    murakamiInput.hardnessEvidence,
+    murakamiInput.specimenOrientation,
+    murakamiInput.loadRatio,
+    murakamiInput.cycleTarget,
+    murakamiInput.ctDetectionMethod,
+    murakamiInput.blockMaximaComparable,
+    murakamiInput.blockVolume_mm3,
+    murakamiInput.targetVolume_mm3,
+    murakamiInput.targetProbability,
+    kineticsInput.coolingHigh_C,
+    kineticsInput.coolingLow_C,
+    kineticsInput.holdTemperature_C,
+    kineticsInput.holdTime_s,
+    kineticsInput.holdInterpolate,
   ]);
 
   return {
@@ -343,6 +448,7 @@ export function useLpbfBuildJobPython() {
     roundTripMs: aligned ? roundTripMs : null,
     lastFlags,
     murakamiInput,
+    kineticsInput,
     cache: aligned ? job?.cache ?? null : null,
     rerun: () => requestLpbfBuildJob({ force: true, bypassCache: true, enableUq: false, includeAmbench: false }),
     runUq: () =>
@@ -350,5 +456,6 @@ export function useLpbfBuildJobPython() {
     validateNist: () =>
       requestLpbfBuildJob({ force: true, enableUq: false, includeAmbench: true }),
     setMurakamiInput: setLpbfMurakamiInput,
+    setKineticsInput: setLpbfKineticsInput,
   };
 }

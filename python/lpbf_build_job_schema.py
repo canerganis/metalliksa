@@ -48,6 +48,20 @@ class LpbfBuildJobRequest(BaseModel):
     defectSqrtAreasPaste: Optional[str] = None
     hardness_HV: Optional[float] = Field(None, gt=0, allow_inf_nan=False)
     ctDetectionThreshold_um: Optional[float] = None
+    # Group 7 explicit fatigue scenario (no defaults; murakami_fatigue_screening validates the choices).
+    defectSqrtArea_um: Optional[float] = Field(None, gt=0, allow_inf_nan=False)
+    defectEvidence: Optional[str] = None
+    defectLocation: Optional[str] = None
+    hardnessEvidence: Optional[str] = None
+    loadRatio: Optional[float] = Field(None, allow_inf_nan=False)
+    cycleTarget: Optional[float] = Field(None, gt=0, allow_inf_nan=False)
+    specimenOrientation: Optional[str] = None
+    defectIsLongCrack: Optional[bool] = None
+    defectSampling: Optional[dict] = None
+    ctDetectionMethod: Optional[str] = None
+    # Group 8: optional named cooling interval {high_C, low_C} and Ti isothermal hold {temperature_C, time_s, interpolate}.
+    kineticsCoolingInterval_C: Optional[dict] = None
+    isothermalHold: Optional[dict] = None
     bypassCache: bool = False
     gitSha: Optional[str] = None
 

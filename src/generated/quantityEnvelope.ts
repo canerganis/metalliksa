@@ -652,7 +652,7 @@ export const QUANTITY_ENVELOPE = {
       "binary-eutectic-omission": "Eutectic competition omitted",
       "equilibrium-limit-only": "Equilibrium limit only",
       "microconstituent-not-phase": "Microconstituent, not a phase",
-      "km-source-fit-uncertainty": "Fitted source parameter",
+      "km-source-fit-uncertainty": "Adopted literature parameter",
       "km-quench-reference-only": "Quench-limit reference only"
     },
     "unknownComponents": [
@@ -962,11 +962,82 @@ export const QUANTITY_ENVELOPE = {
         ],
         "memberUnits": {},
         "categories": []
+      },
+      "murakami-threshold-stress-amplitude": {
+        "label": "Murakami defect-conditioned threshold stress amplitude, R = -1",
+        "unit": "Pa",
+        "valueKind": "number",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "gumbel-characteristic-largest-defect": {
+        "label": "Largest defect sqrt(area) in a target volume from block maxima (Gumbel)",
+        "unit": "m",
+        "valueKind": "number",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "path-average-cooling-rate": {
+        "label": "Average cooling rate over a named interval of a material-point path",
+        "unit": "K/s",
+        "valueKind": "number",
+        "valueRange": "positive",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "ti-martensite-dissolution-fraction": {
+        "label": "Dissolved fraction of the martensite entering an isothermal hold (Ti-6Al-4V)",
+        "unit": "1",
+        "valueKind": "number",
+        "valueRange": "fraction",
+        "fraction": true,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "constrained-bar-axial-stress": {
+        "label": "Axial stress after a declared thermal cycle in a fully constrained bar (scenario)",
+        "unit": "Pa",
+        "valueKind": "number",
+        "valueRange": "finite",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "released-cantilever-tip-deflection": {
+        "label": "Tip deflection of a released cantilever for an effective inherent-strain profile (scenario)",
+        "unit": "m",
+        "valueKind": "number",
+        "valueRange": "finite",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
+      },
+      "tip-deflection-over-thickness": {
+        "label": "Tip deflection divided by thickness (released cantilever)",
+        "unit": "1",
+        "valueKind": "number",
+        "valueRange": "nonnegative",
+        "fraction": false,
+        "members": [],
+        "memberUnits": {},
+        "categories": []
       }
     },
     "fractionBasis": {
       "equiaxed-envelope-fraction": "volume",
       "km-alpha-m-fraction": "reaction-progress",
+      "ti-martensite-dissolution-fraction": "reaction-progress",
       "terminal-equilibrium-phase-inventory": "mass",
       "scheil-microconstituent-inventory": "mass"
     },
@@ -983,7 +1054,14 @@ export const QUANTITY_ENVELOPE = {
       "km-alpha-m-fraction": 1,
       "terminal-equilibrium-phase-inventory": 1,
       "scheil-microconstituent-inventory": 1,
-      "cet-class": 1
+      "cet-class": 1,
+      "murakami-threshold-stress-amplitude": 2,
+      "gumbel-characteristic-largest-defect": 2,
+      "path-average-cooling-rate": 2,
+      "ti-martensite-dissolution-fraction": 1,
+      "constrained-bar-axial-stress": 2,
+      "released-cantilever-tip-deflection": 2,
+      "tip-deflection-over-thickness": 2
     },
     "extraQuantityKeys": {
       "km-alpha-m-fraction": [

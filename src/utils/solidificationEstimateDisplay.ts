@@ -20,6 +20,11 @@ export const ESTIMATE_LABELS: Readonly<Record<string, string>> = {
   cetClass: "Grain model class (CET)", kmAlphaMFraction: "Alpha martensite or massive alpha",
   equilibriumPhaseInventory: "Terminal equilibrium phases", scheilMicroconstituents: "Scheil microconstituents",
   phaseInventory: "Phase inventory",
+  pathCoolingRate: "Average cooling rate on the selected path",
+  tiMartensiteDissolution: "Dissolved martensite in an isothermal hold",
+  phaseTransformation: "Solid-state phase transformation",
+  fatigueThreshold: "Murakami threshold stress amplitude (R = -1)",
+  gumbelLargest: "Largest defect in target volume (Gumbel)",
 };
 export const MEMBER_LABELS: Readonly<Record<string, string>> = {
   hunt: "Hunt", kurzFisher: "Kurz-Fisher", alphaAl: "alpha-Al", Si: "Si", Mg2Si: "Mg2Si",
@@ -27,9 +32,10 @@ export const MEMBER_LABELS: Readonly<Record<string, string>> = {
 };
 export const RANGE_NAME = V2.inputSensitivityRangeName;
 
-/** Display unit and scale: spacings in micrometres, every other quantity in its SI unit. */
+/** Display unit and scale: lengths in micrometres, stresses (Pa) in MPa, every other quantity in its SI unit. */
 function displayUnit(q: EstimateQuantity): { unit: string; scale: number } {
   if (q.unit === "m") return { unit: "µm", scale: 1e6 };
+  if (q.unit === "Pa") return { unit: "MPa", scale: 1e-6 };
   return { unit: q.unit === "1" ? "" : q.unit.replace("K*s/m^2", "K·s/m²"), scale: 1 };
 }
 

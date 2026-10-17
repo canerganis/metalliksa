@@ -1,0 +1,189 @@
+{
+ "schema": "murakami-screening-2",
+ "status": "data_not_supplied",
+ "quantityEnvelopeSchema": "metalliksa-quantity-envelope-2",
+ "moduleEvidenceCeiling": "screening-only",
+ "moduleMaturity": "Research",
+ "quantities": {
+  "fatigueThreshold": {
+   "status": "unavailable",
+   "value": null,
+   "unit": "Pa",
+   "quantityDefinition": "murakami-threshold-stress-amplitude",
+   "leafRole": "derived",
+   "sourceEvidenceKind": null,
+   "dependsOn": [
+    "murakamiLaw"
+   ],
+   "weakestInputs": [],
+   "labelSources": [],
+   "reasons": [
+    {
+     "code": "missing-source-constant",
+     "params": {
+      "missing": "defectSqrtArea_um, defectLocation, hardness_HV"
+     },
+     "parent": {
+      "input": "murakamiLaw",
+      "kind": "sourceModelAssumption"
+     }
+    }
+   ],
+   "numericalStatus": {
+    "state": "not-assessed",
+    "settings": {},
+    "residuals": {}
+   },
+   "physicalValidation": {
+    "status": "unvalidated",
+    "experimentalValidation": false,
+    "productionReady": false
+   },
+   "sources": [],
+   "assumptions": [],
+   "validity": {
+    "estimateTier": "no-value",
+    "tierLabel": "No value",
+    "displaySignificantDigits": null,
+    "domainWarnings": [],
+    "estimateBand": null,
+    "inputSensitivity": null,
+    "uncertaintyStatement": null,
+    "explanation": null,
+    "noValueText": "Supply projected defect square-root area in micrometres, defect location and material hardness, or select an explicit defect scenario. Add the load ratio and cycle target to interpret the estimate. Laser settings alone do not determine fatigue strength. Missing: defect square-root area; defect location (surface or internal); Vickers hardness."
+   },
+   "uncertainty": null,
+   "fractionBasis": null,
+   "identity": {
+    "input": null,
+    "model": "murakami-threshold-scenario-v1",
+    "parent": null
+   }
+  },
+  "gumbelLargest": {
+   "status": "unavailable",
+   "value": null,
+   "unit": "m",
+   "quantityDefinition": "gumbel-characteristic-largest-defect",
+   "leafRole": "derived",
+   "sourceEvidenceKind": null,
+   "dependsOn": [
+    "gumbelModel"
+   ],
+   "weakestInputs": [],
+   "labelSources": [],
+   "reasons": [
+    {
+     "code": "missing-source-constant",
+     "params": {},
+     "parent": {
+      "input": "gumbelModel",
+      "kind": "sourceModelAssumption"
+     }
+    }
+   ],
+   "numericalStatus": {
+    "state": "not-assessed",
+    "settings": {},
+    "residuals": {}
+   },
+   "physicalValidation": {
+    "status": "unvalidated",
+    "experimentalValidation": false,
+    "productionReady": false
+   },
+   "sources": [],
+   "assumptions": [],
+   "validity": {
+    "estimateTier": "no-value",
+    "tierLabel": "No value",
+    "displaySignificantDigits": null,
+    "domainWarnings": [],
+    "estimateBand": null,
+    "inputSensitivity": null,
+    "uncertaintyStatement": null,
+    "explanation": null,
+    "noValueText": "A largest-defect distribution needs independent maxima from comparable inspected regions and a target volume. The supplied pore list can show its observed maximum, but cannot establish the part-wide maximum."
+   },
+   "uncertainty": null,
+   "fractionBasis": null,
+   "identity": {
+    "input": null,
+    "model": "murakami-threshold-scenario-v1",
+    "parent": null
+   }
+  }
+ },
+ "inputProvenance": {
+  "murakamiLaw": {
+   "kind": "sourceModelAssumption",
+   "label": "sourceModelAssumption",
+   "sourceId": "murakami-sqrt-area-law",
+   "sourceLocator": "Murakami and Endo 1994, doi 10.1016/0142-1123(94)90001-9 (lineage); C 1.43 surface (Uematsu 2021 Eq. 1), 1.56 internal (Materials 14 5315 Eq. 1), HV offset 120, exponent 1/6",
+   "declarationLocator": null,
+   "source": null,
+   "scope": "steel-derived small-defect law, R = -1 threshold amplitude; applied to AM alloys as a transfer",
+   "status": "extrapolated",
+   "sourceEvidenceKind": "Literature estimate",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "gumbelModel": {
+   "kind": "sourceModelAssumption",
+   "label": "sourceModelAssumption",
+   "sourceId": "gumbel-type-i-maximum",
+   "sourceLocator": "NIST/SEMATECH e-Handbook 1.3.6.6.16, Extreme Value Type I (maximum): CDF and percent point function",
+   "declarationLocator": null,
+   "source": null,
+   "scope": "statistical sampling transfer to the target volume",
+   "status": "extrapolated",
+   "sourceEvidenceKind": "Literature estimate",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  }
+ },
+ "fatigueLimit_MPa": null,
+ "defectLocation": null,
+ "missingInputs": [
+  "defectSqrtArea_um",
+  "defectLocation",
+  "hardness_HV"
+ ],
+ "scenarioEcho": {
+  "defectSqrtArea_um": null,
+  "defectSqrtAreaBasis": null,
+  "defectEvidence": null,
+  "defectLocation": null,
+  "hardness_HV": null,
+  "hardnessEvidence": null,
+  "loadRatio": -1.0,
+  "specimenOrientation": null
+ },
+ "cycleTarget": null,
+ "observedMaximum": null,
+ "ctDetectionThreshold": {
+  "value_um": null,
+  "method": null,
+  "label": null,
+  "text": "Add the CT detection threshold and its validation method to describe which defect sizes may be missed."
+ },
+ "ctDetectionThreshold_um": null,
+ "pasteHint": "Paste sqrt(area) values in micrometres: one per line, or CSV / whitespace / semicolon separated. No sizes are invented when this is empty.",
+ "note": "SCREENING ONLY. Murakami sqrt(area) threshold scenario; not a certified allowable and not a fatigue life.",
+ "references": [
+  "Murakami Y., Metal Fatigue: Effects of Small Defects and Nonmetallic Inclusions",
+  "NIST/SEMATECH e-Handbook, Extreme Value Type I distribution (block maxima)"
+ ]
+}

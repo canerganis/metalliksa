@@ -270,7 +270,7 @@ WARNING_LABELS: Dict[str, str] = {
     "binary-eutectic-omission": "Eutectic competition omitted",
     "equilibrium-limit-only": "Equilibrium limit only",
     "microconstituent-not-phase": "Microconstituent, not a phase",
-    "km-source-fit-uncertainty": "Fitted source parameter",
+    "km-source-fit-uncertainty": "Adopted literature parameter",
     "km-quench-reference-only": "Quench-limit reference only",
 }
 UNKNOWN_COMPONENTS: Tuple[str, ...] = ("model-error", "input-interactions", "alloy-transfer-error",
@@ -310,9 +310,30 @@ V2_NEW_DEFINITIONS: Dict[str, Dict[str, Any]] = {
                                                      "fraction", fraction=True,
                                                      members=("primaryAlphaAl", "eutecticConstituent")),
 }
+# Engine-estimate definitions (SPEC_engine_estimates_2026-10-17 and its Amendment 1): new observables with their own
+# producer, validator and consumer, never relabelled legacy keys. Each is Tier 2 at most with the present transfers.
+V2_NEW_DEFINITIONS.update({
+    "murakami-threshold-stress-amplitude": _definition(
+        "Murakami defect-conditioned threshold stress amplitude, R = -1", "Pa", "number", "positive"),
+    "gumbel-characteristic-largest-defect": _definition(
+        "Largest defect sqrt(area) in a target volume from block maxima (Gumbel)", "m", "number", "positive"),
+    "path-average-cooling-rate": _definition("Average cooling rate over a named interval of a material-point path",
+                                             "K/s", "number", "positive"),
+    "ti-martensite-dissolution-fraction": _definition(
+        "Dissolved fraction of the martensite entering an isothermal hold (Ti-6Al-4V)", "1", "number", "fraction",
+        fraction=True),
+    "constrained-bar-axial-stress": _definition(
+        "Axial stress after a declared thermal cycle in a fully constrained bar (scenario)", "Pa", "number", "finite"),
+    "released-cantilever-tip-deflection": _definition(
+        "Tip deflection of a released cantilever for an effective inherent-strain profile (scenario)", "m", "number",
+        "finite"),
+    "tip-deflection-over-thickness": _definition("Tip deflection divided by thickness (released cantilever)", "1",
+                                                 "number", "nonnegative"),
+})
 V2_QUANTITY_DEFINITIONS: Dict[str, Dict[str, Any]] = {**QUANTITY_DEFINITIONS, **V2_NEW_DEFINITIONS}
 # Exact fraction basis of each value-carrying v2 fraction definition (A7 definition table).
 V2_FRACTION_BASIS: Dict[str, str] = {"equiaxed-envelope-fraction": "volume", "km-alpha-m-fraction": "reaction-progress",
+                                     "ti-martensite-dissolution-fraction": "reaction-progress",
                                      "terminal-equilibrium-phase-inventory": "mass",
                                      "scheil-microconstituent-inventory": "mass"}
 # A7 precision rule: thermal kinematics and spacing two significant figures; chi, fractions and CET one.
@@ -321,6 +342,9 @@ DISPLAY_SIGNIFICANT_DIGITS: Dict[str, int] = {
     "liquidus-front-g-over-r": 2, "pdas-correlation": 2, "pdas-model-alternatives": 2, "sdas": 2,
     "planar-stability-index": 1, "equiaxed-envelope-fraction": 1, "km-alpha-m-fraction": 1,
     "terminal-equilibrium-phase-inventory": 1, "scheil-microconstituent-inventory": 1, "cet-class": 1,
+    "murakami-threshold-stress-amplitude": 2, "gumbel-characteristic-largest-defect": 2,
+    "path-average-cooling-rate": 2, "ti-martensite-dissolution-fraction": 1,
+    "constrained-bar-axial-stress": 2, "released-cantilever-tip-deflection": 2, "tip-deflection-over-thickness": 2,
 }
 # Quantity-relative keys that only the KM definition carries (A7 schema rows evaluation and residual).
 V2_EXTRA_QUANTITY_KEYS: Dict[str, Tuple[str, ...]] = {"km-alpha-m-fraction": ("evaluation", "residual")}

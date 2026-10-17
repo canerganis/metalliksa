@@ -18,7 +18,8 @@ import {
 } from "lucide-react";
 import { useMaterialSpecimenStore } from "../../store/useMaterialSpecimenStore";
 import { useLpbfBuildMeshStore } from "../../store/useLpbfBuildMeshStore";
-import { useLpbfBuildJobPython } from "../../store/useLpbfBuildJobStore";
+import { useLpbfBuildJobPython, type LpbfKineticsSessionInput, type LpbfMurakamiSessionInput } from "../../store/useLpbfBuildJobStore";
+import { MurakamiScenarioResult } from "./MurakamiScenarioResult";
 import {
   findNearestLiteratureRecord,
   inferSlicerPreset,
@@ -56,7 +57,7 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
   const updateLpbfProcess = useMaterialSpecimenStore((s) => s.updateLpbfProcess);
   const liveMesh = useLpbfBuildMeshStore((s) => s.mesh);
   const lpbf = specimen.lpbf;
-  const { job, error, busy, roundTripMs, rerun, runUq, validateNist, murakamiInput, setMurakamiInput, cache, lastFlags } =
+  const { job, error, busy, roundTripMs, rerun, runUq, validateNist, murakamiInput, setMurakamiInput, kineticsInput, setKineticsInput, cache, lastFlags } =
     useLpbfBuildJobPython();
 
   const materials = useMemo(
@@ -248,59 +249,12 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
             <ShieldAlert className="w-4 h-4 text-violet-400" />
             <h3 className="text-xs font-bold text-white">Murakami √area paste (optional)</h3>
           </div>
-          <p className="text-[10px] text-slate-500">
-            {job?.murakami?.pasteHint ||
-              "Paste √area values in µm: CSV / whitespace / one per line. Example: 40, 55, 62, 48, 70. No sizes invented when empty."}
-          </p>
-          <textarea aria-label="Murakami √area paste (optional)"
-            value={murakamiInput.defectSqrtAreasPaste}
-            onChange={(e) => setMurakamiInput({ defectSqrtAreasPaste: e.target.value })}
-            rows={3}
-            placeholder="40, 55, 62, 48, 70"
-            className="w-full bg-[#060a12] border border-[#162032] rounded-lg px-2 py-1.5 text-[11px] text-slate-200 font-mono"
+          <MurakamiInputs
+            input={murakamiInput}
+            onChange={setMurakamiInput}
+            pasteHint={job?.murakami?.pasteHint}
           />
-          <div className="flex flex-wrap gap-2 items-end">
-            <label className="text-[10px] text-slate-400 font-mono">
-              HV override
-              <input
-                type="number"
-                value={murakamiInput.hardness_HV ?? ""}
-                placeholder={
-                  job?.murakami?.alloyHvDefaults?.[materials.alloyId]
-                    ? String(job.murakami.alloyHvDefaults[materials.alloyId])
-                    : "alloy default"
-                }
-                onChange={(e) =>
-                  setMurakamiInput({
-                    hardness_HV: e.target.value === "" ? null : Number(e.target.value),
-                  })
-                }
-                className="ml-1 w-20 bg-[#060a12] border border-[#162032] rounded px-1 py-0.5 text-[11px] text-slate-200"
-              />
-            </label>
-            <label className="text-[10px] text-slate-400 font-mono">
-              CT thresh µm
-              <input
-                type="number"
-                value={murakamiInput.ctDetectionThreshold_um ?? ""}
-                onChange={(e) =>
-                  setMurakamiInput({
-                    ctDetectionThreshold_um: e.target.value === "" ? null : Number(e.target.value),
-                  })
-                }
-                className="ml-1 w-16 bg-[#060a12] border border-[#162032] rounded px-1 py-0.5 text-[11px] text-slate-200"
-              />
-            </label>
-            {job?.murakami?.status === "screening_estimate" && (
-              <span className="text-[10px] text-violet-200 font-mono">
-                σ_w {job.murakami.fatigueLimit_internal_MPa ?? "—"} MPa (internal) · HV{" "}
-                {job.murakami.hardness_HV} ({job.murakami.hardnessSource || "—"})
-              </span>
-            )}
-            {job?.murakami?.status === "data_not_supplied" && (
-              <span className="text-[10px] text-slate-500 font-mono">data_not_supplied</span>
-            )}
-          </div>
+          {job?.murakami && <MurakamiScenarioResult block={job.murakami} />}
         </div>
 
         <div className="rounded-2xl border border-[#1e2d46] bg-[#090e18] p-3.5 space-y-2">
@@ -686,6 +640,11 @@ export const IndustrialLPBFDecisionLab: React.FC<Props> = ({ onOpenSlicer, onOpe
         </div>
       )}
 
+      <div className="rounded-2xl border border-[#1e2d46] bg-[#090e18] p-3.5 space-y-2">
+        <h3 className="text-xs font-bold text-white">Kinetics inputs (optional)</h3>
+        <KineticsInputs input={kineticsInput} onChange={setKineticsInput} />
+      </div>
+
       {(job?.microstructure || job?.kinetics) && (
         <div className="rounded-2xl border border-teal-500/30 bg-[#090e18] p-3.5 grid grid-cols-1 md:grid-cols-2 gap-4">
           <BuildJobMicrostructurePanel micro={job?.microstructure} segregation={job && "segregation" in job ? job.segregation : undefined} />
@@ -941,3 +900,173 @@ const Tiny: React.FC<{ label: string; value: string; icon?: React.ReactNode; sub
 const SkeletonLines: React.FC = () => (
   <div className="h-24 rounded-lg bg-[#060a12] border border-[#162032] animate-pulse" />
 );
+
+
+const FIELD = "ml-1 bg-[#060a12] border border-[#162032] rounded px-1 py-0.5 text-[11px] text-slate-200";
+
+function numberOrNull(raw: string): number | null {
+  return raw.trim() === "" || !Number.isFinite(Number(raw)) ? null : Number(raw);
+}
+
+/** Radio group with no option preselected: the user must choose explicitly. */
+function Choice<T extends string>({ legend, name, value, options, onPick }: {
+  legend: string;
+  name: string;
+  value: T | null;
+  options: readonly (readonly [T, string])[];
+  onPick: (v: T) => void;
+}) {
+  return (
+    <fieldset className="flex flex-wrap items-center gap-2 text-[10px] text-slate-400 font-mono">
+      <legend className="sr-only">{legend}</legend>
+      <span>{legend}</span>
+      {options.map(([v, text]) => (
+        <label key={v} className="flex items-center gap-1">
+          <input type="radio" name={name} checked={value === v} onChange={() => onPick(v)} />
+          {text}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
+function KineticsInputs({ input, onChange }: {
+  input: LpbfKineticsSessionInput;
+  onChange: (partial: Partial<LpbfKineticsSessionInput>) => void;
+}) {
+  return (
+    <div className="space-y-2" data-kinetics-inputs>
+      <div className="flex flex-wrap gap-2 items-end">
+        <label className="text-[10px] text-slate-400 font-mono">
+          Cooling interval upper temperature (C)
+          <input type="number" value={input.coolingHigh_C ?? ""}
+            onChange={(e) => onChange({ coolingHigh_C: numberOrNull(e.target.value) })}
+            className={`${FIELD} w-20`} />
+        </label>
+        <label className="text-[10px] text-slate-400 font-mono">
+          Cooling interval lower temperature (C)
+          <input type="number" value={input.coolingLow_C ?? ""}
+            onChange={(e) => onChange({ coolingLow_C: numberOrNull(e.target.value) })}
+            className={`${FIELD} w-20`} />
+        </label>
+      </div>
+      <p className="text-[9px] text-slate-500">Both empty uses the declared default interval. Set both to choose your own.</p>
+      <div className="flex flex-wrap gap-2 items-end">
+        <label className="text-[10px] text-slate-400 font-mono">
+          Isothermal hold temperature (C, Ti-6Al-4V)
+          <input type="number" value={input.holdTemperature_C ?? ""}
+            onChange={(e) => onChange({ holdTemperature_C: numberOrNull(e.target.value) })}
+            className={`${FIELD} w-20`} />
+        </label>
+        <label className="text-[10px] text-slate-400 font-mono">
+          Isothermal hold time (s)
+          <input type="number" value={input.holdTime_s ?? ""}
+            onChange={(e) => onChange({ holdTime_s: numberOrNull(e.target.value) })}
+            className={`${FIELD} w-20`} />
+        </label>
+        <label className="flex items-center gap-1 text-[10px] text-slate-400 font-mono">
+          <input type="checkbox" checked={input.holdInterpolate}
+            onChange={(e) => onChange({ holdInterpolate: e.target.checked })} />
+          interpolate between source temperatures
+        </label>
+      </div>
+    </div>
+  );
+}
+
+const EVIDENCE_OPTIONS = [["measured", "measured"], ["assumed-scenario", "assumed scenario"]] as const;
+
+function MurakamiInputs({ input, onChange, pasteHint }: {
+  input: LpbfMurakamiSessionInput;
+  onChange: (partial: Partial<LpbfMurakamiSessionInput>) => void;
+  pasteHint?: string;
+}) {
+  return (
+    <div className="space-y-2" data-murakami-inputs>
+      {pasteHint && <p className="text-[10px] text-slate-500">{pasteHint}</p>}
+      <textarea aria-label="Murakami √area paste (optional)"
+        value={input.defectSqrtAreasPaste}
+        onChange={(e) => onChange({ defectSqrtAreasPaste: e.target.value })}
+        rows={3}
+        className="w-full bg-[#060a12] border border-[#162032] rounded-lg px-2 py-1.5 text-[11px] text-slate-200 font-mono"
+      />
+      <div className="flex flex-wrap gap-2 items-end">
+        <label className="text-[10px] text-slate-400 font-mono">
+          Defect √area µm
+          <input type="number" value={input.defectSqrtArea_um ?? ""}
+            onChange={(e) => onChange({ defectSqrtArea_um: numberOrNull(e.target.value) })}
+            className={`${FIELD} w-20`} />
+        </label>
+        <label className="text-[10px] text-slate-400 font-mono">
+          Hardness HV
+          <input type="number" value={input.hardness_HV ?? ""}
+            onChange={(e) => onChange({ hardness_HV: numberOrNull(e.target.value) })}
+            className={`${FIELD} w-20`} />
+        </label>
+      </div>
+      <Choice legend="Defect size is" name="murakami-defect-evidence" value={input.defectEvidence}
+        options={EVIDENCE_OPTIONS} onPick={(v) => onChange({ defectEvidence: v })} />
+      <Choice legend="Hardness is" name="murakami-hardness-evidence" value={input.hardnessEvidence}
+        options={EVIDENCE_OPTIONS} onPick={(v) => onChange({ hardnessEvidence: v })} />
+      <Choice legend="Defect location" name="murakami-defect-location" value={input.defectLocation}
+        options={[["surface", "surface"], ["internal", "internal"]] as const}
+        onPick={(v) => onChange({ defectLocation: v })} />
+      <Choice legend="Specimen orientation (optional)" name="murakami-orientation" value={input.specimenOrientation}
+        options={[["vertical", "vertical"], ["horizontal", "horizontal"]] as const}
+        onPick={(v) => onChange({ specimenOrientation: v })} />
+      <div className="flex flex-wrap gap-2 items-end">
+        <label className="text-[10px] text-slate-400 font-mono">
+          Load ratio R (optional)
+          <input type="number" value={input.loadRatio ?? ""}
+            onChange={(e) => onChange({ loadRatio: numberOrNull(e.target.value) })}
+            className={`${FIELD} w-16`} />
+        </label>
+        <label className="text-[10px] text-slate-400 font-mono">
+          Cycle target (optional)
+          <input type="number" value={input.cycleTarget ?? ""}
+            onChange={(e) => onChange({ cycleTarget: numberOrNull(e.target.value) })}
+            className={`${FIELD} w-24`} />
+        </label>
+        <label className="text-[10px] text-slate-400 font-mono">
+          CT thresh µm
+          <input type="number" value={input.ctDetectionThreshold_um ?? ""}
+            onChange={(e) => onChange({ ctDetectionThreshold_um: numberOrNull(e.target.value) })}
+            className={`${FIELD} w-16`} />
+        </label>
+        <label className="text-[10px] text-slate-400 font-mono">
+          CT detection method
+          <input type="text" value={input.ctDetectionMethod}
+            onChange={(e) => onChange({ ctDetectionMethod: e.target.value })}
+            className={`${FIELD} w-40`} />
+        </label>
+      </div>
+      <label className="flex items-center gap-1 text-[10px] text-slate-400 font-mono">
+        <input type="checkbox" checked={input.blockMaximaComparable}
+          onChange={(e) => onChange({ blockMaximaComparable: e.target.checked })} />
+        These values are comparable independent block maxima
+      </label>
+      {input.blockMaximaComparable && (
+        <div className="flex flex-wrap gap-2 items-end">
+          <label className="text-[10px] text-slate-400 font-mono">
+            Block volume mm³
+            <input type="number" value={input.blockVolume_mm3 ?? ""}
+              onChange={(e) => onChange({ blockVolume_mm3: numberOrNull(e.target.value) })}
+              className={`${FIELD} w-20`} />
+          </label>
+          <label className="text-[10px] text-slate-400 font-mono">
+            Target volume mm³
+            <input type="number" value={input.targetVolume_mm3 ?? ""}
+              onChange={(e) => onChange({ targetVolume_mm3: numberOrNull(e.target.value) })}
+              className={`${FIELD} w-20`} />
+          </label>
+          <label className="text-[10px] text-slate-400 font-mono">
+            Target probability
+            <input type="number" value={input.targetProbability ?? ""}
+              onChange={(e) => onChange({ targetProbability: numberOrNull(e.target.value) })}
+              className={`${FIELD} w-20`} />
+          </label>
+        </div>
+      )}
+    </div>
+  );
+}

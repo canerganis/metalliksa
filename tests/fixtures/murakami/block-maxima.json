@@ -1,0 +1,307 @@
+{
+ "schema": "murakami-screening-2",
+ "status": "screening_estimate",
+ "quantityEnvelopeSchema": "metalliksa-quantity-envelope-2",
+ "moduleEvidenceCeiling": "screening-only",
+ "moduleMaturity": "Research",
+ "quantities": {
+  "fatigueThreshold": {
+   "status": "computed",
+   "value": 345796642.44874436,
+   "unit": "Pa",
+   "quantityDefinition": "murakami-threshold-stress-amplitude",
+   "leafRole": "derived",
+   "sourceEvidenceKind": "User input",
+   "dependsOn": [
+    "murakamiLaw",
+    "defectSqrtArea",
+    "hardness"
+   ],
+   "weakestInputs": [
+    "defectSqrtArea",
+    "hardness"
+   ],
+   "labelSources": [],
+   "reasons": [],
+   "numericalStatus": {
+    "state": "not-assessed",
+    "settings": {},
+    "residuals": {}
+   },
+   "physicalValidation": {
+    "status": "unvalidated",
+    "experimentalValidation": false,
+    "productionReady": false
+   },
+   "sources": [
+    {
+     "id": "ti64-internal-2021",
+     "locator": "Materials 14 (2021) 5315, doi 10.3390/ma14185315, Eq. 1 (internal form C = 1.56, R = -1)",
+     "readLevel": "primary-read"
+    },
+    {
+     "id": "radlof2020",
+     "locator": "Radlof et al. 2020, Materials 13, 4642, doi 10.3390/ma13204642, section 3.2.3 and Eqs. 10-11 (PDF p.15): EBM Ti-6Al-4V defect sizes; both forms 1.43 and 1.56",
+     "readLevel": "primary-read"
+    },
+    {
+     "id": "machado2019",
+     "locator": "Machado et al. 2019, MATEC Web Conf. 300, 16005, doi 10.1051/matecconf/201930016005, section 2 (small-defect limit about 1000 um; indexed publisher text)",
+     "readLevel": "secondary-read"
+    }
+   ],
+   "assumptions": [],
+   "validity": {
+    "estimateTier": "Physics estimate",
+    "tierLabel": "Uncalibrated estimate",
+    "displaySignificantDigits": 2,
+    "domainWarnings": [
+     {
+      "code": "domain-extrapolation",
+      "detail": "murakamiLaw: steel-derived small-defect law, R = -1 threshold amplitude; applied to AM alloys as a transfer"
+     },
+     {
+      "code": "alloy-family-transfer",
+      "detail": "Murakami's small-defect law was derived for steels; it is applied to Ti-6Al-4V as a transfer"
+     },
+     {
+      "code": "domain-extrapolation",
+      "detail": "The cited Ti-6Al-4V applications are EBM and forged specimens, not this LPBF state."
+     },
+     {
+      "code": "domain-extrapolation",
+      "detail": "The supplied size is 70 micrometres. The cited radlof2020 EBM Ti-6Al-4V vertical specimen study reports 120 to 300 micrometres. This is a size-domain extrapolation."
+     },
+     {
+      "code": "domain-extrapolation",
+      "detail": "The supplied size is 70 micrometres. The cited radlof2020 EBM Ti-6Al-4V horizontal specimen study reports 75 to 200 micrometres. This is a size-domain extrapolation."
+     }
+    ],
+    "estimateBand": null,
+    "inputSensitivity": null,
+    "uncertaintyStatement": "Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "explanation": "Uncalibrated estimate: about 350 MPa fully reversed stress amplitude for an internal defect with projected square-root area 70 micrometres and hardness 330 HV. This is a defect-conditioned Murakami screening estimate for an R = -1 threshold scenario. It is not a fatigue strength at a stated cycle count and not an infinite-life endurance limit. Mixed measured and assumed inputs. The cited Ti-6Al-4V applications are EBM and forged specimens, not this LPBF state. Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "noValueText": null,
+    "defectLocation": "internal",
+    "loadRatio": -1.0,
+    "sqrtAreaBasis": "largest supplied defect"
+   },
+   "uncertainty": {
+    "kind": "not-quantified",
+    "construction": "Murakami sqrt(area) law at the supplied size and hardness; no interval."
+   },
+   "fractionBasis": null,
+   "identity": {
+    "input": null,
+    "model": "murakami-threshold-scenario-v1",
+    "parent": "parents-v2:[\"object\",[[\"defectSqrtArea\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.1800000000000p+6\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"projected sqrt(area), largest supplied defect, 70 um, measured value supplied by the user\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:defectSqrtArea:0x1.1800000000000p+6\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"hardness\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",[\"number\",\"0x1.4a00000000000p+8\"]],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"Vickers hardness 330 HV, assumed scenario typed by the user\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:hardness:0x1.4a00000000000p+8\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"murakamiLaw\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceModelAssumption\"],[\"label\",\"sourceModelAssumption\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"steel-derived small-defect law, R = -1 threshold amplitude; applied to AM alloys as a transfer\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"murakami-sqrt-area-law\"],[\"sourceLocator\",\"Murakami and Endo 1994, doi 10.1016/0142-1123(94)90001-9 (lineage); C 1.43 surface (Uematsu 2021 Eq. 1), 1.56 internal (Materials 14 5315 Eq. 1), HV offset 120, exponent 1/6\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]]]]"
+   }
+  },
+  "gumbelLargest": {
+   "status": "computed",
+   "value": 9.510442437598149e-05,
+   "unit": "m",
+   "quantityDefinition": "gumbel-characteristic-largest-defect",
+   "leafRole": "derived",
+   "sourceEvidenceKind": "User input",
+   "dependsOn": [
+    "gumbelModel",
+    "blockMaxima"
+   ],
+   "weakestInputs": [
+    "blockMaxima"
+   ],
+   "labelSources": [],
+   "reasons": [],
+   "numericalStatus": {
+    "state": "not-assessed",
+    "settings": {},
+    "residuals": {}
+   },
+   "physicalValidation": {
+    "status": "unvalidated",
+    "experimentalValidation": false,
+    "productionReady": false
+   },
+   "sources": [
+    {
+     "id": "nist-gumbel",
+     "locator": "NIST/SEMATECH e-Handbook 1.3.6.6.16, Extreme Value Type I (maximum): CDF and percent point function",
+     "readLevel": "primary-read"
+    }
+   ],
+   "assumptions": [],
+   "validity": {
+    "estimateTier": "Physics estimate",
+    "tierLabel": "Uncalibrated estimate",
+    "displaySignificantDigits": 2,
+    "domainWarnings": [
+     {
+      "code": "domain-extrapolation",
+      "detail": "gumbelModel: statistical sampling transfer to the target volume"
+     },
+     {
+      "code": "domain-extrapolation",
+      "detail": "Extrapolated from 5 block maxima to 100 target blocks"
+     }
+    ],
+    "estimateBand": null,
+    "inputSensitivity": null,
+    "uncertaintyStatement": "Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "explanation": "Uncalibrated estimate: the largest defect in the target volume is about 95 micrometres sqrt(area) at probability 0.5 from a Gumbel fit to 5 block maxima. The fit has only two moments and does not establish tail adequacy. Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "noValueText": null,
+    "fit": {
+     "n": 5,
+     "mu_um": 49.73226226182083,
+     "beta_um": 9.126117079788186,
+     "mean_um": 55.0,
+     "std_um": 11.704699910719626,
+     "blocks": 100.0,
+     "perBlockProbability": 0.9930924954370359,
+     "quantile_um": 95.1044243759815
+    }
+   },
+   "uncertainty": {
+    "kind": "not-quantified",
+    "construction": "Method-of-moments Gumbel fit; quantile at p^(V0/V); no interval."
+   },
+   "fractionBasis": null,
+   "identity": {
+    "input": null,
+    "model": "murakami-threshold-scenario-v1",
+    "parent": "parents-v2:[\"object\",[[\"blockMaxima\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",\"request\"],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"userInput\"],[\"label\",\"userInput\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"5 block maxima, block 10 mm3, target 1000 mm3, p 0.5; measured\"],[\"source\",null],[\"sourceEvidenceKind\",\"User input\"],[\"sourceId\",\"user:block-maxima:5\"],[\"sourceLocator\",null],[\"sourceRange_K\",null],[\"status\",\"inRange\"]]]]]]],[\"gumbelModel\",[\"object\",[[\"input\",[\"object\",[[\"declarationLocator\",null],[\"defaultKind\",null],[\"defaultValue\",null],[\"dependsOn\",[\"list\",[]]],[\"followState\",null],[\"followsInput\",null],[\"kind\",\"sourceModelAssumption\"],[\"label\",\"sourceModelAssumption\"],[\"phase\",null],[\"referenceTemperature_K\",null],[\"scope\",\"statistical sampling transfer to the target volume\"],[\"source\",null],[\"sourceEvidenceKind\",\"Literature estimate\"],[\"sourceId\",\"gumbel-type-i-maximum\"],[\"sourceLocator\",\"NIST/SEMATECH e-Handbook 1.3.6.6.16, Extreme Value Type I (maximum): CDF and percent point function\"],[\"sourceRange_K\",null],[\"status\",\"extrapolated\"]]]]]]]]]"
+   }
+  }
+ },
+ "inputProvenance": {
+  "murakamiLaw": {
+   "kind": "sourceModelAssumption",
+   "label": "sourceModelAssumption",
+   "sourceId": "murakami-sqrt-area-law",
+   "sourceLocator": "Murakami and Endo 1994, doi 10.1016/0142-1123(94)90001-9 (lineage); C 1.43 surface (Uematsu 2021 Eq. 1), 1.56 internal (Materials 14 5315 Eq. 1), HV offset 120, exponent 1/6",
+   "declarationLocator": null,
+   "source": null,
+   "scope": "steel-derived small-defect law, R = -1 threshold amplitude; applied to AM alloys as a transfer",
+   "status": "extrapolated",
+   "sourceEvidenceKind": "Literature estimate",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "defectSqrtArea": {
+   "kind": "userInput",
+   "label": "userInput",
+   "sourceId": "user:defectSqrtArea:0x1.1800000000000p+6",
+   "sourceLocator": null,
+   "declarationLocator": "request",
+   "source": null,
+   "scope": "projected sqrt(area), largest supplied defect, 70 um, measured value supplied by the user",
+   "status": "inRange",
+   "sourceEvidenceKind": "User input",
+   "defaultValue": 70.0,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "hardness": {
+   "kind": "userInput",
+   "label": "userInput",
+   "sourceId": "user:hardness:0x1.4a00000000000p+8",
+   "sourceLocator": null,
+   "declarationLocator": "request",
+   "source": null,
+   "scope": "Vickers hardness 330 HV, assumed scenario typed by the user",
+   "status": "inRange",
+   "sourceEvidenceKind": "User input",
+   "defaultValue": 330.0,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "gumbelModel": {
+   "kind": "sourceModelAssumption",
+   "label": "sourceModelAssumption",
+   "sourceId": "gumbel-type-i-maximum",
+   "sourceLocator": "NIST/SEMATECH e-Handbook 1.3.6.6.16, Extreme Value Type I (maximum): CDF and percent point function",
+   "declarationLocator": null,
+   "source": null,
+   "scope": "statistical sampling transfer to the target volume",
+   "status": "extrapolated",
+   "sourceEvidenceKind": "Literature estimate",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  },
+  "blockMaxima": {
+   "kind": "userInput",
+   "label": "userInput",
+   "sourceId": "user:block-maxima:5",
+   "sourceLocator": null,
+   "declarationLocator": "request",
+   "source": null,
+   "scope": "5 block maxima, block 10 mm3, target 1000 mm3, p 0.5; measured",
+   "status": "inRange",
+   "sourceEvidenceKind": "User input",
+   "defaultValue": null,
+   "defaultKind": null,
+   "followsInput": null,
+   "followState": null,
+   "dependsOn": [],
+   "phase": null,
+   "referenceTemperature_K": null,
+   "sourceRange_K": null
+  }
+ },
+ "fatigueLimit_MPa": 345.79664244874436,
+ "defectLocation": "internal",
+ "missingInputs": [],
+ "scenarioEcho": {
+  "defectSqrtArea_um": 70.0,
+  "defectSqrtAreaBasis": "largest supplied defect",
+  "defectEvidence": "measured",
+  "defectLocation": "internal",
+  "hardness_HV": 330.0,
+  "hardnessEvidence": "assumed-scenario",
+  "loadRatio": -1.0,
+  "specimenOrientation": null
+ },
+ "cycleTarget": null,
+ "observedMaximum": {
+  "value_um": 70.0,
+  "n": 5,
+  "label": "observed in supplied data",
+  "evidence": "measured",
+  "note": "Largest supplied value. It is not a fitted population extreme or a part-wide maximum."
+ },
+ "ctDetectionThreshold": {
+  "value_um": 12.0,
+  "method": "POD 90/95 on drilled holes",
+  "label": "measured CT detection threshold (echo, no estimate tier)",
+  "text": null
+ },
+ "ctDetectionThreshold_um": 12.0,
+ "pasteHint": "Paste sqrt(area) values in micrometres: one per line, or CSV / whitespace / semicolon separated. No sizes are invented when this is empty.",
+ "note": "SCREENING ONLY. Murakami sqrt(area) threshold scenario; not a certified allowable and not a fatigue life.",
+ "references": [
+  "Murakami Y., Metal Fatigue: Effects of Small Defects and Nonmetallic Inclusions",
+  "NIST/SEMATECH e-Handbook, Extreme Value Type I distribution (block maxima)"
+ ]
+}
