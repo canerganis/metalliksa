@@ -1,5 +1,5 @@
 import { QUANTITY_ENVELOPE } from "../generated/quantityEnvelope";
-import { checkedQuantityContainer } from "./quantityEnvelope";
+import { checkedEstimateContainer, checkedQuantityContainer } from "./quantityEnvelope";
 import { checkedFront } from "../utils/solidificationDisplay";
 /**
  * Pure helpers for the LPBF G/R solidification map card (python/lpbf_gr_solidification.py is the result authority).
@@ -21,7 +21,12 @@ export const GR_CELL_STATUSES: readonly GrCellStatus[] = QUANTITY_ENVELOPE.statu
 export const GR_MIN_AXIS = 2;
 export const GR_MAX_AXIS = 15;
 export const GR_MAX_CELLS = 225;
-export const GR_SCHEMA = "lpbf-gr-solidification-2";
+export const GR_SCHEMA = "lpbf-gr-solidification-3";
+/** CET block of a cell: the SOL-C Hunt/Durga projection at the cell's own front tuples (v2 envelope, Tier 2 at most). */
+export const GR_CET_PROJECTION_ID = "sol-c-cet-projection-v1";
+export const GR_CET_QUANTITIES: Readonly<Record<string, string>> = {
+  class: "cet-class", equiaxedEnvelopeFraction: "equiaxed-envelope-fraction", planarStabilityIndex: "planar-stability-index",
+};
 export const GR_HATCH_PATTERN_ID = "gr-keyhole-hatch";
 
 export type GrMetric = "goverr" | "cooling" | "laves";
@@ -165,9 +170,12 @@ function checkBody(where: string, body: unknown): void {
   if (!(GR_CELL_STATUSES as readonly unknown[]).includes(body.status)) return fail(`${where} has unknown status`);
   for (const retired of ["morphology", "rosenthalCenterline", "reason"]) if (Object.hasOwn(body, retired)) return fail(`${where}.${retired} retired`);
   checkedFront(body.front);
-  const cet = checkedQuantityContainer(body.cet);
+  const cet = checkedEstimateContainer(body.cet);
   const laves = checkedQuantityContainer(body.laves);
-  if (Object.keys(cet.quantities).length !== 1 || cet.quantities.class?.quantityDefinition !== "cet-class") return fail(`${where}.cet quantities invalid`);
+  const cetBody = body.cet as Record<string, unknown>;
+  if (cetBody.projectionId !== GR_CET_PROJECTION_ID || !(GR_CELL_STATUSES as readonly unknown[]).includes(cetBody.status)) return fail(`${where}.cet identity invalid`);
+  if (cet.quantities.class?.quantityDefinition !== "cet-class"
+    || Object.entries(cet.quantities).some(([name, q]) => GR_CET_QUANTITIES[name] !== q.quantityDefinition)) return fail(`${where}.cet quantities invalid`);
   if (Object.keys(laves.quantities).length !== 1 || laves.quantities.fraction?.quantityDefinition !== "laves-trapped-scheil-fraction") return fail(`${where}.laves quantities invalid`);
 }
 function checkSourceChecks(raw: unknown): void {

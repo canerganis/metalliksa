@@ -259,10 +259,13 @@ def build_solidification_microstructure_contract(seed: Mapping[str, str]) -> Mod
             "front container with SI values, coded reasons and input provenance; no second estimate or flat-key fallback.",
             "At SOL-A1 every default front quantity is unavailable for Ti64, AlSi10Mg, 316L, IN718 and IN625 because "
             "no source-admitted liquidus is installed. The cfdResult branch is refused with quarantined-legacy-path.",
-            "The independent G/R request returns lpbf-gr-solidification-2 with computed, partial, unavailable, failed "
-            "or not-requested transport statuses. Cells carry a front envelope and CET/Laves envelopes. Default LPBF "
-            "CET is unavailable with outside-source-model-domain; sourceChecks distinguish equation reading, algebra "
-            "reproduction and printed-limit comparison. No Hunt morphology bands or analytic liquidus bypass are served.",
+            "The independent G/R request returns lpbf-gr-solidification-3 with computed, partial, unavailable, failed "
+            "or not-requested transport statuses. Cells carry a front envelope, a CET block and a Laves envelope. The "
+            "CET block is the opt-in channel's Hunt/Durga grain-envelope model projected at the cell's own rear-branch "
+            "tuples (quantity envelope v2, Uncalibrated estimate at most, constructive refusal where a gate fails); "
+            "the legacy Knapp route keeps its own identity and stays unavailable. sourceChecks distinguish equation "
+            "reading, algebra reproduction and printed-limit comparison. No Hunt morphology bands or analytic liquidus "
+            "bypass are served.",
             "The opt-in estimate channel returns lpbf-solidification-estimates-1, a quantity envelope v2 container: per "
             "quantity estimateTier (Estimated, Physics estimate shown as Uncalibrated estimate, or no-value), display "
             "precision, closed value warnings separate from blocking reasons, and an input sensitivity range that is "

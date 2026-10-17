@@ -1,5 +1,7 @@
 import { SolidificationQuantities } from "./SolidificationQuantities";
 import { quantityText } from "../utils/solidificationDisplay";
+import { estimateLine } from "../utils/solidificationEstimateDisplay";
+import { EstimateWarnings } from "./SolidificationEstimates";
 import React, { useEffect, useRef, useState } from "react";
 import { AlertTriangle, Grid3x3, Info, RefreshCw } from "lucide-react";
 import {
@@ -207,7 +209,23 @@ export const GrCellDetail: React.FC<{ body: (GrCellBody & { power_W: number; spe
   return <div data-testid="gr-detail" aria-live="polite" className="space-y-3 text-xs text-slate-300">
     <h3>{STATUS_LABELS[body.status]}: {body.power_W} W, {body.speed_mm_s} mm/s</h3>
     <SolidificationQuantities container={body.front} />
-    <div data-testid="gr-detail-cet">CET: {quantityText(body.cet.quantities.class)}</div>
+    <div data-testid="gr-detail-cet">
+      <p>CET (grain-envelope model{body.cet.surrogate ? ", conduction-field surrogate" : ""}):</p>
+      <dl className="mt-1 grid gap-1">
+        {["class", "equiaxedEnvelopeFraction", "planarStabilityIndex"].filter(name => body.cet.quantities[name]).map(name => {
+          const line = estimateLine(name, body.cet.quantities[name]);
+          return <div key={name} data-quantity={name} className="border-b border-slate-700/50 py-1">
+            <dt className="flex flex-wrap items-center gap-2 text-slate-400">
+              <span>{line.label}</span>
+              <span data-estimate-tier={line.tier} className="rounded border border-slate-500/50 px-1.5 py-0.5 text-[10px] text-slate-200">{line.tierLabel}</span>
+            </dt>
+            {line.value !== null && <dd className="text-slate-200">{line.value}</dd>}
+            <EstimateWarnings warnings={line.warnings} />
+            {line.text && <dd className="break-words text-slate-300">{line.text}</dd>}
+          </div>;
+        })}
+      </dl>
+    </div>
     <div data-testid="gr-detail-laves">Laves: {quantityText(body.laves.quantities.fraction)}</div>
   </div>;
 };

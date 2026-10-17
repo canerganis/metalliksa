@@ -218,30 +218,116 @@ class TrappingTests(unittest.TestCase):
         self.assertEqual(gr.laves_trapping("in718", {"median": 0.0})["status"], "unavailable")
 
 
+class CetProjectionTests(unittest.TestCase):
+    """Group 6: the GR cell CET block is the SOL-C Hunt/Durga model at the same solve's tuples (Tier 2 at most)."""
+
+    VECTORS = {"ti6al4v": (240, 1200, 150), "alsi10mg": (350, 1300, 160), "in718": (280, 940, 200),
+               "ss316l": (200, 850, 80), "in625": (280, 940, 200)}
+
+    @staticmethod
+    def body(alloy, p, v, t):
+        return {"mode": "point", "alloyId": alloy, "beamDiameter_um": 80, "layer_um": 40, "hatch_um": 100,
+                "preheatTemp_C": t, "power_W": p, "speed_mm_s": v}
+
+    @classmethod
+    def setUpClass(cls):
+        cls.points = {alloy: gr.run_gr_solidification(cls.body(alloy, *vec))["point"]
+                      for alloy, vec in cls.VECTORS.items()}
+
+    def test_class_matches_the_sol_c_channel_at_the_same_process(self):
+        import lpbf_solidification_estimates as se
+        for alloy, (p, v, t) in self.VECTORS.items():
+            channel = se.compute_solidification_estimates({"params": {
+                "materialName": se.MATERIAL_NAMES[alloy], "power_W": p, "speed_mm_s": v, "beamDiameter_um": 80,
+                "preheat_C": t, "layerThickness_um": 40, "hatch_um": 100, "heatSource": "rosenthal"}})
+            cet = self.points[alloy]["cet"]["quantities"]
+            for mine, theirs in (("class", "cetClass"), ("equiaxedEnvelopeFraction", "equiaxedEnvelopeFraction"),
+                                 ("planarStabilityIndex", "planarStabilityIndex")):
+                self.assertEqual(cet[mine]["value"], channel["quantities"][theirs]["value"], (alloy, mine))
+                self.assertEqual(cet[mine]["validity"]["estimateTier"],
+                                 channel["quantities"][theirs]["validity"]["estimateTier"], (alloy, mine))
+
+    def test_tier_two_ceiling_and_visible_text(self):
+        for alloy in ("ti6al4v", "in718", "ss316l", "in625"):
+            q = self.points[alloy]["cet"]["quantities"]
+            self.assertIn(q["class"]["value"], ("columnar", "mixed", "equiaxed"), alloy)
+            for name in ("class", "equiaxedEnvelopeFraction", "planarStabilityIndex"):
+                v = q[name]["validity"]
+                self.assertEqual(v["estimateTier"], "Physics estimate", (alloy, name))
+                self.assertEqual(v["tierLabel"], "Uncalibrated estimate")
+                self.assertIsNone(v["estimateBand"])
+                self.assertIn("Uncertainty is unknown and may be large. Calibrate to your machine for better "
+                              "accuracy.", v["explanation"])
+                self.assertTrue(v["domainWarnings"], (alloy, name))
+            self.assertIn("nucleationScenarioNote", q["class"]["validity"])
+
+    def test_aluminium_eutectic_gate_refuses_with_constructive_text(self):
+        q = self.points["alsi10mg"]["cet"]["quantities"]
+        self.assertIsNone(q["class"]["value"])
+        self.assertIsNone(q["equiaxedEnvelopeFraction"]["value"])
+        self.assertEqual(q["equiaxedEnvelopeFraction"]["reasons"][0]["params"]["gate"], "tip-reaches-eutectic")
+        self.assertIn("coupled primary and eutectic growth model", q["class"]["validity"]["noValueText"])
+        self.assertIsNotNone(q["planarStabilityIndex"]["value"])  # chi stays when finite
+
+    def test_gate_removal_is_detected(self):
+        import lpbf_solidification_estimates as se
+        no_eutectic = {**se.PROXIES["alsi10mg"], "ce": None}
+        with mock.patch.dict(se.PROXIES, {"alsi10mg": no_eutectic}):
+            ungated = gr.run_gr_solidification(self.body("alsi10mg", *self.VECTORS["alsi10mg"]))
+        # The eutectic gate is the only thing holding this value back.
+        self.assertIsNotNone(ungated["point"]["cet"]["quantities"]["class"]["value"])
+
+    def test_stale_parent_refuses(self):
+        import lpbf_solidification_estimates as se
+        with mock.patch.object(se, "front_state", side_effect=se.StaleParent("synthetic")):
+            point = gr.run_gr_solidification(req(power_W=280, speed_mm_s=940))["point"]
+        q = point["cet"]["quantities"]["class"]
+        self.assertIsNone(q["value"])
+        self.assertEqual(q["reasons"][0]["code"], "stale-parent-input")
+        self.assertEqual(point["status"], "unavailable")
+
+    def test_keyhole_surrogate_warning_is_inherited(self):
+        q = self.points["in718"]["cet"]
+        self.assertEqual(q["surrogate"], "conduction-field")
+        warnings = " ".join(w["detail"] for w in q["quantities"]["class"]["validity"]["domainWarnings"])
+        self.assertIn("Keyhole regime", warnings)
+
+    def test_no_front_parent_means_no_class(self):
+        block = gr.couple_thermal_block({}, "in718", preheat_C=80, speed_mm_s=940)
+        self.assertEqual(block["cet"]["quantities"]["class"]["reasons"][0]["code"], "parent-unavailable")
+        self.assertIsNone(block["cet"]["quantities"]["class"]["value"])
+
+
 class PointIntegrationTests(unittest.TestCase):
     def test_all_five_alloys_project_null_front_without_bypass(self):
         from quantity_envelope import envelope_problems
         for alloy in gr.SUPPORTED:
             out = gr.run_gr_solidification(req(alloy=alloy, power_W=150, speed_mm_s=1200))
             self.assertTrue(out["success"], out)
-            self.assertEqual(out["schema"], "lpbf-gr-solidification-2")
+            self.assertEqual(out["schema"], "lpbf-gr-solidification-3")
             point = out["point"]
-            self.assertEqual(point["status"], "unavailable")
+            # The served front projection stays refused; only the CET projection may carry a value.
+            self.assertEqual(point["front"]["status"], "unavailable")
+            self.assertEqual(point["status"], "partial" if point["cet"]["status"] in ("computed", "partial")
+                             else "unavailable")
             self.assertEqual(envelope_problems(point), [])
             self.assertNotIn("rosenthalCenterline", point)
             self.assertNotIn("morphology", point)
-            self.assertEqual(point["cet"]["quantities"]["class"]["reasons"][0]["code"], "outside-source-model-domain")
+            self.assertEqual(point["cet"]["projectionId"], "sol-c-cet-projection-v1")
             self.assertEqual(point["laves"]["quantities"]["fraction"]["reasons"][0]["code"], "parent-unavailable")
 
     def test_map_counts_and_error_cell(self):
         out = gr.run_gr_solidification(req(mode="map", powers=[100, 150], speeds=[960, 1200]))
         self.assertEqual(out["grid"]["nCells"], 4)
-        self.assertEqual(out["counts"]["unavailable"], 4)
+        self.assertEqual(sum(out["counts"].values()), 4)
+        self.assertEqual(out["counts"]["failed"], 0)
         with mock.patch.object(gr, "_thermal", side_effect=ValueError("synthetic solver failure")):
             failed = gr.run_gr_solidification(req(power_W=150, speed_mm_s=1200))["point"]
         self.assertEqual(failed["status"], "failed")
         self.assertTrue(all(q["status"] == "failed" for q in failed["front"]["quantities"].values()))
         self.assertEqual(failed["front"]["quantities"]["thermalGradient"]["reasons"][0]["code"], "solver-error")
+        self.assertEqual(failed["cet"]["quantities"]["class"]["reasons"][0]["code"], "solver-error")
+        self.assertIsNone(failed["cet"]["quantities"]["class"]["value"])
 
     def test_invalid_requests_and_aliases(self):
         for bad in ({}, req(alloy="unknown", power_W=150, speed_mm_s=1200),

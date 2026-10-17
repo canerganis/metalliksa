@@ -1057,34 +1057,39 @@ def _sensitivity_arms(request: Mapping[str, Any], kernel: Tuple[float, float, fl
                                  "declared screening scenarios, not measured uncertainties")}
 
 
-def compute_solidification_estimates(payload: Any) -> Dict[str, Any]:
-    """The SOL-C channel response for one request (see the module docstring)."""
-    request, refusal = parse_request(payload)
-    if refusal is not None:
-        return refusal
-    alloy, material = request["alloy"], request["material"]
-    try:
-        thermal, parent = served_solve(material, request["process"], request["heatSource"])
-    except ValueError as exc:
-        return _refusal("nonphysical-input", str(exc))
+class StaleParent(RuntimeError):
+    """The captured thermal parent does not match the kernel the estimate would read."""
+
+
+def front_state(request: Mapping[str, Any], thermal: Mapping[str, Any], parent: Mapping[str, Any], *,
+                prop_overrides: Optional[Mapping[str, Any]] = None, support_resolutions: bool = True
+                ) -> Dict[str, Any]:
+    """The shared front parent of this channel and of its projections onto other served surfaces (SPEC engine
+    estimates groups 6 and 8): identity-checked kernel, thermal input records, the rear-branch local tuples and the
+    blocking state, all from one captured served solve. Raises StaleParent on an identity mismatch."""
     from lpbf_thermal_solver import resolve_conduction_kernel
-    kernel = resolve_conduction_kernel(material, dict(request["props"]), None, request["process"]["preheat_C"])[:4]
+    material = request["material"]
+    props = dict(request["props"])
+    if prop_overrides:
+        props.update(prop_overrides)
+    kernel = resolve_conduction_kernel(material, props, dict(prop_overrides) if prop_overrides else None,
+                                       request["process"]["preheat_C"])[:4]
     process_echo = thermal["processParameters"]
     # Identity checks: the full-precision kernel the estimate reads is the one the served solve used.
     identity_checks = {
         "diffusivityMatchesServed": (kernel[0] / (kernel[2] * kernel[1])) == process_echo["effectiveDiffusivity_m2_s"],
-        "liquidusMatchesCapture": float(parent["T_liq"]) == float(request["props"]["liquidus_C"]),
+        "liquidusMatchesCapture": float(parent["T_liq"]) == float(props["liquidus_C"]),
         "speedMatchesCapture": abs(parent["v_scan"] - request["process"]["speed_mm_s"] * 1e-3) == 0.0,
     }
     if not all(identity_checks.values()):
-        return _refusal("stale-parent-input", "The estimate's thermal parent does not match the served solve.")
+        raise StaleParent("The estimate's thermal parent does not match the served solve.")
     keyhole = bool(parent["depth_from_keyhole_leg"])
     surrogate = keyhole and request["conductionSurrogate"]
     b = Builder()
     front_inputs = _thermal_inputs(b, request, thermal, kernel)
     front = sample_front(parent["T_fn"], parent["T_liq"], parent["v_scan"], parent["x_rear"], parent["search_depth"])
     resolutions = {}
-    for count in SUPPORT_RESOLUTIONS[:-1]:
+    for count in (SUPPORT_RESOLUTIONS[:-1] if support_resolutions else ()):
         coarse = sample_front(parent["T_fn"], parent["T_liq"], parent["v_scan"], parent["x_rear"],
                               parent["search_depth"], count=count, arm_id=f"nominal-n{count}", refine=False)
         summary = thermal_summary(coarse)
@@ -1111,6 +1116,46 @@ def compute_solidification_estimates(payload: Any) -> Dict[str, Any]:
     support = dict(front["support"])
     support["retained"] = len(rows)
     support["resolutionMedians"] = resolutions
+    blocked, local = None, []
+    if front["status"] == "no-crossing":
+        blocked = ("invalid-interface-sample", NO_CROSSING_TEXT)
+    elif keyhole and not surrogate:
+        blocked = ("keyhole-field-inconsistent", KEYHOLE_TEXT)
+    elif summary is None:
+        local = [{"sampleId": s["sampleId"], "position_m": s["position_m"], "G_K_m": s["G_K_m"], "R_m_s": s["R_m_s"],
+                  "coolingRate_K_s": s["coolingRate_K_s"], "gOverR_K_s_m2": s["gOverR_K_s_m2"]} for s in rows]
+        blocked = ("insufficient-sample-support", FEW_POINTS_TEXT if local else NO_FRONT_TEXT)
+    return {"builder": b, "kernel": kernel, "identityChecks": identity_checks, "keyhole": keyhole,
+            "surrogate": surrogate, "front": front, "rows": rows, "sampleDigest": sample_digest, "summary": summary,
+            "resolved": resolved, "numerical": numerical, "support": support, "blocked": blocked, "local": local}
+
+
+def surrogate_identity(request: Mapping[str, Any], thermal: Mapping[str, Any]) -> Dict[str, Any]:
+    return {"id": SURROGATE_ID, "selection": request["surrogateSelection"], "field": thermal.get("heatSourceModel"),
+            "observable": "conduction-only rear liquidus front",
+            "notCoupledTo": "served melt-pool depth (Fabbro keyhole leg)", "warning": KEYHOLE_SURROGATE_WARNING}
+
+
+def compute_solidification_estimates(payload: Any) -> Dict[str, Any]:
+    """The SOL-C channel response for one request (see the module docstring)."""
+    request, refusal = parse_request(payload)
+    if refusal is not None:
+        return refusal
+    alloy, material = request["alloy"], request["material"]
+    try:
+        thermal, parent = served_solve(material, request["process"], request["heatSource"])
+    except ValueError as exc:
+        return _refusal("nonphysical-input", str(exc))
+    try:
+        state = front_state(request, thermal, parent)
+    except StaleParent as exc:
+        return _refusal("stale-parent-input", str(exc))
+    process_echo = thermal["processParameters"]
+    kernel, identity_checks, keyhole, surrogate = (state[k] for k in ("kernel", "identityChecks", "keyhole",
+                                                                       "surrogate"))
+    b, front, rows, sample_digest = state["builder"], state["front"], state["rows"], state["sampleDigest"]
+    summary, resolved, numerical, support = state["summary"], state["resolved"], state["numerical"], state["support"]
+    blocked, local = state["blocked"], state["local"]
     sensitivity = None
     if request["inputSensitivity"] and summary is not None and (not keyhole or surrogate):
         sensitivity = _sensitivity_arms(request, kernel, float(process_echo["conductionAbsorptivity"]),
@@ -1120,15 +1165,6 @@ def compute_solidification_estimates(payload: Any) -> Dict[str, Any]:
                     ("normalSpeed", "liquidus-front-normal-speed", "R_m_s"),
                     ("coolingRate", "liquidus-front-cooling-rate", "coolingRate_K_s"),
                     ("gOverR", "liquidus-front-g-over-r", "gOverR_K_s_m2"))
-    blocked = None
-    if front["status"] == "no-crossing":
-        blocked = ("invalid-interface-sample", NO_CROSSING_TEXT)
-    elif keyhole and not surrogate:
-        blocked = ("keyhole-field-inconsistent", KEYHOLE_TEXT)
-    elif summary is None:
-        local = [{"sampleId": s["sampleId"], "position_m": s["position_m"], "G_K_m": s["G_K_m"], "R_m_s": s["R_m_s"],
-                  "coolingRate_K_s": s["coolingRate_K_s"], "gOverR_K_s_m2": s["gOverR_K_s_m2"]} for s in rows]
-        blocked = ("insufficient-sample-support", FEW_POINTS_TEXT if local else NO_FRONT_TEXT)
     for name, definition, key in thermal_defs:
         if blocked is not None:
             extra = {"localPoints": local} if blocked[0] == "insufficient-sample-support" and local else None
@@ -1188,10 +1224,7 @@ def compute_solidification_estimates(payload: Any) -> Dict[str, Any]:
         "surrogate": "conduction-field" if surrogate else None,
         # Distinct surrogate identity: default selection does not change the model's status. "default" above keeps its
         # contract meaning (false: not the default physical arm of the served field).
-        "surrogateIdentity": ({"id": SURROGATE_ID, "selection": request["surrogateSelection"],
-                               "field": thermal.get("heatSourceModel"), "observable": "conduction-only rear liquidus front",
-                               "notCoupledTo": "served melt-pool depth (Fabbro keyhole leg)",
-                               "warning": KEYHOLE_SURROGATE_WARNING} if surrogate else None),
+        "surrogateIdentity": surrogate_identity(request, thermal) if surrogate else None,
         "thermalParent": {
             "thermalModelId": thermal.get("modelId"),
             "servedFrontModelId": (thermal.get("solidificationKinetics") or {}).get("modelId"),
@@ -1512,3 +1545,77 @@ def _al_phase_quantities(b: Builder, front_ok: bool, blocked) -> None:
                          "mass. This uses a binary Al-Si Scheil model transferred to AlSi10Mg. It does not predict "
                          f"separate silicon or Mg2Si phase fractions. {UNKNOWN}"),
             construction="Constant-k binary Scheil at the named 10 wt% Si scenario; no interval.")
+
+
+# ======================================================================================================================
+# Projections onto other served surfaces (SPEC engine estimates 2026-10-17, groups 6 and 8)
+# ======================================================================================================================
+
+PROJECTION_REQUEST_KEYS = ("power_W", "speed_mm_s", "beamDiameter_um", "preheat_C", "layerThickness_um", "hatch_um")
+CET_PROJECTION_ID = "sol-c-cet-projection-v1"
+CET_STALE_TEXT = ("A grain estimate needs a compatible cooling-side front and a growth model for this solidification "
+                  "regime. The thermal parent of this cell did not match the estimate kernel, so no front was formed.")
+
+
+def projection_request(alloy: str, process: Mapping[str, float], heat_source: str) -> Dict[str, Any]:
+    """The channel's parsed request for a projection; raises ValueError with the channel's refusal detail."""
+    params = {"materialName": MATERIAL_NAMES.get(alloy, alloy), "heatSource": heat_source,
+              **{key: process[key] for key in PROJECTION_REQUEST_KEYS}}
+    request, refusal = parse_request({"params": params})
+    if refusal is not None:
+        raise ValueError(refusal["refusal"]["detail"])
+    return request
+
+
+CET_NO_FRONT_TEXT = ("A grain estimate needs a compatible cooling-side front and a growth model for this "
+                     "solidification regime. No front parent was formed for this cell.")
+CET_SOLVER_TEXT = ("A grain estimate needs a completed thermal solve. The solver failed for this cell, so no front or "
+                   "grain class exists.")
+
+
+def unavailable_container(name: str, definition: str, code: str, text: str, scope: str) -> Dict[str, Any]:
+    """A v2 container whose one quantity is no-value with ``code`` and the constructive ``text``."""
+    b = Builder()
+    b.add_input("frontSamples", _record("declaredAssumption", f"front-samples:{code}", status="outOfRange",
+                                        declaration="python/lpbf_solidification_estimates.py#front_state",
+                                        scope=scope))
+    b.no_value(name, definition, code, parent="frontSamples", depends_on=("frontSamples",), text=text)
+    return qe.container(b.quantities, input_provenance=b.inputs, schema=qe.ENVELOPE_SCHEMA_V2)
+
+
+def cet_unavailable(code: str) -> Dict[str, Any]:
+    """The CET block of a cell without a usable front parent (parent-unavailable, solver-error, stale-parent-input)."""
+    text, scope = {"stale-parent-input": (CET_STALE_TEXT, "captured thermal parent did not match the estimate kernel"),
+                   "solver-error": (CET_SOLVER_TEXT, "the thermal solve of this cell failed"),
+                   "parent-unavailable": (CET_NO_FRONT_TEXT, "no captured front parent")}[code]
+    out = unavailable_container("class", "cet-class", code, text, scope)
+    out.update(status="failed" if code == "solver-error" else "unavailable", projectionId=CET_PROJECTION_ID,
+               surrogate=None)
+    if code == "solver-error":
+        out["quantities"]["class"]["status"] = "failed"
+    return out
+
+
+def cet_projection(alloy: str, thermal: Mapping[str, Any], parent: Mapping[str, Any], process: Mapping[str, float],
+                   heat_source: str) -> Dict[str, Any]:
+    """The channel's Hunt/Durga grain-envelope model at this served solve's own rear-branch tuples (group 6).
+
+    Returns a v2 container with ``class`` (cet-class), ``equiaxedEnvelopeFraction`` and ``planarStabilityIndex``,
+    plus ``status``, ``projectionId`` and ``surrogate``. Same tuples, proxies, nucleation scenarios and gates as the
+    SOL-C channel; the legacy Knapp route of lpbf_cet_screening keeps its own identity and stays unavailable."""
+    request = projection_request(alloy, process, heat_source)
+    try:
+        state = front_state(request, thermal, parent, support_resolutions=False)
+    except StaleParent:
+        return cet_unavailable("stale-parent-input")
+    b = state["builder"]
+    _morphology_quantities(b, alloy, state["rows"], state["blocked"] is None, state["blocked"])
+    quantities = {("class" if name == "cetClass" else name): q for name, q in b.quantities.items()
+                  if name in ("cetClass", "equiaxedEnvelopeFraction", "planarStabilityIndex")}
+    out = qe.container(quantities, input_provenance=b.inputs, schema=qe.ENVELOPE_SCHEMA_V2,
+                       default=not state["surrogate"])
+    statuses = [q["status"] for q in quantities.values()]
+    out.update(status=("computed" if all(s == "computed" for s in statuses) else
+                       "partial" if any(s == "computed" for s in statuses) else "unavailable"),
+               projectionId=CET_PROJECTION_ID, surrogate="conduction-field" if state["surrogate"] else None)
+    return out

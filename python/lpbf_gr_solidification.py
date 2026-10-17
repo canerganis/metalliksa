@@ -14,9 +14,12 @@ import time
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 import lpbf_cet_screening as cet_mod
+from lpbf_solidification_estimates import cet_unavailable
 from lpbf_job_cache import BUILD_JOB_SOLVER_REVISION
 
-SCHEMA = "lpbf-gr-solidification-2"
+SCHEMA = "lpbf-gr-solidification-3"
+# The served field of every cell; the CET projection reads the same captured solve.
+HEAT_SOURCE = "rosenthal"
 ENGINE = "lpbf_gr_solidification"
 SUPPORTED: Dict[str, str] = {"in718": "in718", "in625": "Inconel 625", "ti6al4v": "ti6al4v", "alsi10mg": "alsi10mg", "ss316l": "ss316l"}
 MATERIAL_NAMES: Dict[str, str] = {"in718": "Inconel 718", "in625": "Inconel 625", "ti6al4v": "Ti-6Al-4V", "alsi10mg": "AlSi10Mg", "ss316l": "316L Stainless Steel"}
@@ -172,21 +175,35 @@ def _unavailable_body(status: str, reason: str) -> Dict[str, Any]:
         front["status"] = status
     return {"status": status, "regime": None, "normalizedEnthalpy": None, "extentStatus": None,
             "front": front,
-            "cet": _dependent_block("cet-class", "class", "outside-source-model-domain"),
+            "cet": cet_unavailable("solver-error" if status == "failed" else "parent-unavailable"),
             "laves": _dependent_block("laves-trapped-scheil-fraction", "fraction", "parent-unavailable")}
 
 
 def couple_thermal_block(thermal: Mapping[str, Any], alloy_id: str, *, preheat_C: float, speed_mm_s: float,
-                         cet_constants_override: Optional[Mapping[str, float]] = None) -> Dict[str, Any]:
-    """Project the admitted front; never bypass its liquidus admission through an analytic reference."""
+                         cet_constants_override: Optional[Mapping[str, float]] = None,
+                         front_parent: Optional[Mapping[str, Any]] = None,
+                         process: Optional[Mapping[str, float]] = None) -> Dict[str, Any]:
+    """Project the admitted front; never bypass its liquidus admission through an analytic reference.
+
+    With the captured front parent of this same solve (``front_parent``) and its ``process`` vector, the CET block is
+    the SOL-C Hunt/Durga grain-envelope projection at the solve's own rear-branch tuples (SPEC engine estimates group
+    6, Tier 2 at most). Without them the CET block stays unavailable: no grain class without a front."""
     from lpbf_solidification_microstructure import project_build_job_microstructure
     front = project_build_job_microstructure(dict(thermal))
     geometry = thermal.get("meltPoolGeometry") or {}
-    process = thermal.get("processParameters") or {}
-    return {"status": front["status"], "regime": geometry.get("regime"),
-            "normalizedEnthalpy": process.get("normalizedEnthalpy"), "extentStatus": geometry.get("extentStatus"),
+    process_echo = thermal.get("processParameters") or {}
+    if front_parent is not None and process is not None:
+        from lpbf_solidification_estimates import cet_projection
+        cet = cet_projection(alloy_id, thermal, front_parent, process, HEAT_SOURCE)
+    else:
+        cet = cet_unavailable("parent-unavailable")
+    status = front["status"]
+    if status == "unavailable" and cet["status"] in ("computed", "partial"):
+        status = "partial"
+    return {"status": status, "regime": geometry.get("regime"),
+            "normalizedEnthalpy": process_echo.get("normalizedEnthalpy"), "extentStatus": geometry.get("extentStatus"),
             "front": front,
-            "cet": _dependent_block("cet-class", "class", "outside-source-model-domain"),
+            "cet": cet,
             "laves": _dependent_block("laves-trapped-scheil-fraction", "fraction", "parent-unavailable")}
 
 
@@ -194,13 +211,19 @@ def _thermal(alloy_id: str, power_W: float, speed_mm_s: float, s: Mapping[str, A
     from lpbf_thermal_solver import calculate_meltpool_physics
     return calculate_meltpool_physics(
         SUPPORTED[alloy_id], float(power_W), float(speed_mm_s), float(s["beamDiameter_um"]), float(s["preheatTemp_C"]),
-        float(s["layer_um"]), float(s["hatch_um"]), "IR_1064nm")
+        float(s["layer_um"]), float(s["hatch_um"]), "IR_1064nm", heat_source=HEAT_SOURCE)
 
 
 def _eval(alloy_id: str, power_W: float, speed_mm_s: float, s: Mapping[str, Any]) -> Tuple[Dict[str, Any], Any]:
     try:
-        thermal = _thermal(alloy_id, power_W, speed_mm_s, s)
-        body = couple_thermal_block(thermal, alloy_id, preheat_C=float(s["preheatTemp_C"]), speed_mm_s=float(speed_mm_s))
+        from lpbf_solidification_estimates import capture_front_parent
+        with capture_front_parent() as slot:
+            thermal = _thermal(alloy_id, power_W, speed_mm_s, s)
+        process = {"power_W": float(power_W), "speed_mm_s": float(speed_mm_s),
+                   "beamDiameter_um": float(s["beamDiameter_um"]), "preheat_C": float(s["preheatTemp_C"]),
+                   "layerThickness_um": float(s["layer_um"]), "hatch_um": float(s["hatch_um"])}
+        body = couple_thermal_block(thermal, alloy_id, preheat_C=float(s["preheatTemp_C"]), speed_mm_s=float(speed_mm_s),
+                                    front_parent=slot[0] if len(slot) == 1 else None, process=process)
         return body, thermal.get("materialEvidence")
     except Exception as e:  # a failed cell is an error, never coloured as a result
         return _unavailable_body("failed", f"{type(e).__name__}: {e}"), None

@@ -1,4 +1,4 @@
-import type { QuantityContainer } from "../data/quantityEnvelope";
+import type { EstimateContainer, QuantityContainer } from "../data/quantityEnvelope";
 import type { QuantityStatus } from "../generated/quantityEnvelope";
 export type GrAlloyId = "in718" | "in625" | "ti6al4v" | "alsi10mg" | "ss316l";
 export type GrCellStatus = QuantityStatus;
@@ -20,7 +20,10 @@ export interface GrCetSet {
 }
 export interface GrCellBody {
   status: GrCellStatus; regime: string | null; normalizedEnthalpy: number | null; extentStatus: string | null;
-  front: QuantityContainer; cet: QuantityContainer & { status: GrCellStatus }; laves: QuantityContainer & { status: GrCellStatus };
+  front: QuantityContainer;
+  /** SOL-C CET projection (v2 estimate envelope): class, plus envelope fraction and chi when a front was formed. */
+  cet: EstimateContainer & { status: GrCellStatus; projectionId: string; surrogate: string | null };
+  laves: QuantityContainer & { status: GrCellStatus };
 }
 export interface GrCell extends GrCellBody { iP: number; iV: number; power_W: number; speed_mm_s: number }
 export interface GrPoint extends GrCellBody { power_W: number; speed_mm_s: number }

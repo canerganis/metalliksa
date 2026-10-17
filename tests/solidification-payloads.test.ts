@@ -3,7 +3,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { checkedQuantityContainer } from "../src/data/quantityEnvelope";
+import { checkedEstimateContainer, checkedQuantityContainer } from "../src/data/quantityEnvelope";
 import { checkedGrSolidification } from "../src/data/lpbfGrSolidification";
 import { SolidificationQuantities } from "../src/components/SolidificationQuantities";
 import { quantityText } from "../src/utils/solidificationDisplay";
@@ -12,7 +12,8 @@ function containers(raw: unknown): number {
   if (raw === null || typeof raw !== "object") return 0;
   if (Array.isArray(raw)) return raw.reduce((n, item) => n + containers(item), 0);
   const record = raw as Record<string, unknown>;
-  const own = Object.hasOwn(record, "quantities") ? (checkedQuantityContainer(record), 1) : 0;
+  const own = Object.hasOwn(record, "quantities")
+    ? ((record.quantityEnvelopeSchema === "metalliksa-quantity-envelope-2" ? checkedEstimateContainer(record) : checkedQuantityContainer(record)), 1) : 0;
   return own + Object.values(record).reduce<number>((n, item) => n + containers(item), 0);
 }
 test("all committed real Python payload fixtures parse with no dual read", () => {

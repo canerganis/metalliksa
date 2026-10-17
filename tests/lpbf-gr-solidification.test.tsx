@@ -46,3 +46,18 @@ test("map keeps empty unavailable cells, keyboard grid semantics and per-quantit
   assert.doesNotMatch(card, /Hunt bands|Gäumann 2001 PDF read/);
   assert.ok(!METRICS.some(m => String(m.id) === "band"));
 });
+test("group 6: the cell detail shows the CET projection with its tier label, first warning and More disclosure", () => {
+  const result = checkedGrSolidification(fixture("gr-point-in718"));
+  const point = result.point!;
+  assert.equal(point.cet.projectionId, "sol-c-cet-projection-v1");
+  assert.ok(["columnar", "mixed", "equiaxed"].includes(String(point.cet.quantities.class.value)));
+  const detail = renderToStaticMarkup(<GrCellDetail body={point} result={result} />);
+  assert.match(detail, /data-estimate-tier="Physics estimate"/);
+  assert.match(detail, />Uncalibrated estimate</);
+  assert.match(detail, /Uncertainty is unknown and may be large\. Calibrate to your machine for better accuracy\./);
+  assert.match(detail, /data-estimate-warnings-toggle/);
+  assert.doesNotMatch(detail, /error bar/i);
+  const broken = structuredClone(fixture("gr-point-in718"));
+  broken.point.cet.projectionId = "knapp-legacy";
+  assert.throws(() => checkedGrSolidification(broken));
+});
