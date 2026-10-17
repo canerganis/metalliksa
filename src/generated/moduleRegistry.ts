@@ -1984,6 +1984,98 @@ export const MODULE_REGISTRY = {
               "leafRole": "derived"
             },
             {
+              "path": "point.cet.quantities.equiaxedEnvelopeFraction",
+              "definition": "equiaxed-envelope-fraction",
+              "unit": "1",
+              "statuses": [
+                "computed",
+                "partial",
+                "unavailable",
+                "failed",
+                "not-requested"
+              ],
+              "sourceEvidenceKinds": [
+                "Literature estimate",
+                "User input",
+                "Unresolved"
+              ],
+              "reasonCodes": [
+                "missing-assessed-system",
+                "outside-database-domain",
+                "unknown-database-temperature-domain",
+                "outside-source-model-domain",
+                "missing-source-bound-model",
+                "missing-source-constant",
+                "missing-thermal-history",
+                "unsupported-precipitate",
+                "unverified-equation",
+                "invalid-interface-sample",
+                "nonphysical-input",
+                "unknown-alloy-alias",
+                "not-requested",
+                "phase-selection-sensitive",
+                "residual-liquid-at-termination",
+                "numerical-conservation-failed",
+                "stale-parent-input",
+                "keyhole-field-inconsistent",
+                "incompatible-liquidus-parent",
+                "unsupported-fraction-conversion",
+                "licence-scope-unconfirmed",
+                "parent-unavailable",
+                "solver-error",
+                "insufficient-sample-support",
+                "quarantined-legacy-path"
+              ],
+              "fractionBasis": "volume",
+              "leafRole": "derived"
+            },
+            {
+              "path": "point.cet.quantities.planarStabilityIndex",
+              "definition": "planar-stability-index",
+              "unit": "1",
+              "statuses": [
+                "computed",
+                "partial",
+                "unavailable",
+                "failed",
+                "not-requested"
+              ],
+              "sourceEvidenceKinds": [
+                "Literature estimate",
+                "User input",
+                "Unresolved"
+              ],
+              "reasonCodes": [
+                "missing-assessed-system",
+                "outside-database-domain",
+                "unknown-database-temperature-domain",
+                "outside-source-model-domain",
+                "missing-source-bound-model",
+                "missing-source-constant",
+                "missing-thermal-history",
+                "unsupported-precipitate",
+                "unverified-equation",
+                "invalid-interface-sample",
+                "nonphysical-input",
+                "unknown-alloy-alias",
+                "not-requested",
+                "phase-selection-sensitive",
+                "residual-liquid-at-termination",
+                "numerical-conservation-failed",
+                "stale-parent-input",
+                "keyhole-field-inconsistent",
+                "incompatible-liquidus-parent",
+                "unsupported-fraction-conversion",
+                "licence-scope-unconfirmed",
+                "parent-unavailable",
+                "solver-error",
+                "insufficient-sample-support",
+                "quarantined-legacy-path"
+              ],
+              "fractionBasis": null,
+              "leafRole": "derived"
+            },
+            {
               "path": "point.laves.quantities.fraction",
               "definition": "laves-trapped-scheil-fraction",
               "unit": "1",
@@ -2032,6 +2124,98 @@ export const MODULE_REGISTRY = {
             {
               "path": "cells.cet.quantities.class",
               "definition": "cet-class",
+              "unit": "1",
+              "statuses": [
+                "computed",
+                "partial",
+                "unavailable",
+                "failed",
+                "not-requested"
+              ],
+              "sourceEvidenceKinds": [
+                "Literature estimate",
+                "User input",
+                "Unresolved"
+              ],
+              "reasonCodes": [
+                "missing-assessed-system",
+                "outside-database-domain",
+                "unknown-database-temperature-domain",
+                "outside-source-model-domain",
+                "missing-source-bound-model",
+                "missing-source-constant",
+                "missing-thermal-history",
+                "unsupported-precipitate",
+                "unverified-equation",
+                "invalid-interface-sample",
+                "nonphysical-input",
+                "unknown-alloy-alias",
+                "not-requested",
+                "phase-selection-sensitive",
+                "residual-liquid-at-termination",
+                "numerical-conservation-failed",
+                "stale-parent-input",
+                "keyhole-field-inconsistent",
+                "incompatible-liquidus-parent",
+                "unsupported-fraction-conversion",
+                "licence-scope-unconfirmed",
+                "parent-unavailable",
+                "solver-error",
+                "insufficient-sample-support",
+                "quarantined-legacy-path"
+              ],
+              "fractionBasis": null,
+              "leafRole": "derived"
+            },
+            {
+              "path": "cells.cet.quantities.equiaxedEnvelopeFraction",
+              "definition": "equiaxed-envelope-fraction",
+              "unit": "1",
+              "statuses": [
+                "computed",
+                "partial",
+                "unavailable",
+                "failed",
+                "not-requested"
+              ],
+              "sourceEvidenceKinds": [
+                "Literature estimate",
+                "User input",
+                "Unresolved"
+              ],
+              "reasonCodes": [
+                "missing-assessed-system",
+                "outside-database-domain",
+                "unknown-database-temperature-domain",
+                "outside-source-model-domain",
+                "missing-source-bound-model",
+                "missing-source-constant",
+                "missing-thermal-history",
+                "unsupported-precipitate",
+                "unverified-equation",
+                "invalid-interface-sample",
+                "nonphysical-input",
+                "unknown-alloy-alias",
+                "not-requested",
+                "phase-selection-sensitive",
+                "residual-liquid-at-termination",
+                "numerical-conservation-failed",
+                "stale-parent-input",
+                "keyhole-field-inconsistent",
+                "incompatible-liquidus-parent",
+                "unsupported-fraction-conversion",
+                "licence-scope-unconfirmed",
+                "parent-unavailable",
+                "solver-error",
+                "insufficient-sample-support",
+                "quarantined-legacy-path"
+              ],
+              "fractionBasis": "volume",
+              "leafRole": "derived"
+            },
+            {
+              "path": "cells.cet.quantities.planarStabilityIndex",
+              "definition": "planar-stability-index",
               "unit": "1",
               "statuses": [
                 "computed",
@@ -2159,7 +2343,7 @@ export const MODULE_REGISTRY = {
       "legacyNotes": [
         "The worker returns lpbf-solidification-microstructure-2. Quantities are copied from the Python thermal front container with SI values, coded reasons and input provenance; no second estimate or flat-key fallback.",
         "At SOL-A1 every default front quantity is unavailable for Ti64, AlSi10Mg, 316L, IN718 and IN625 because no source-admitted liquidus is installed. The cfdResult branch is refused with quarantined-legacy-path.",
-        "The independent G/R request returns lpbf-gr-solidification-3 with computed, partial, unavailable, failed or not-requested transport statuses. Cells carry a front envelope, a CET block and a Laves envelope. The CET block is the opt-in channel's Hunt/Durga grain-envelope model projected at the cell's own rear-branch tuples (quantity envelope v2, Uncalibrated estimate at most, constructive refusal where a gate fails); the legacy Knapp route keeps its own identity and stays unavailable. sourceChecks distinguish equation reading, algebra reproduction and printed-limit comparison. No Hunt morphology bands or analytic liquidus bypass are served.",
+        "The independent G/R request returns lpbf-gr-solidification-3 with computed, partial, unavailable, failed or not-requested transport statuses. Cells carry a front envelope, a CET block and a Laves envelope. The CET block is the opt-in channel's Hunt/Durga grain-envelope model projected at the cell's own rear-branch tuples (quantity envelope v2, Uncalibrated estimate at most, constructive outside-source-model-domain refusal where a gate fails); the legacy Knapp route keeps its own identity and stays unavailable. sourceChecks distinguish equation reading, algebra reproduction and printed-limit comparison. No Hunt morphology bands or analytic liquidus bypass are served.",
         "The opt-in estimate channel returns lpbf-solidification-estimates-1, a quantity envelope v2 container: per quantity estimateTier (Estimated, Physics estimate shown as Uncalibrated estimate, or no-value), display precision, closed value warnings separate from blocking reasons, and an input sensitivity range that is never an error bar. Default thermal results and Build Job read nothing from it.",
         "Evidence remains screening-only and Research. The response-level G/R evidence object is SDK-reserved; per-quantity source labels never imply experimental validation."
       ],

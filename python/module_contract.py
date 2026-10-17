@@ -414,8 +414,8 @@ class QuantityDeclaration:
     def __post_init__(self) -> None:
         name = f"quantity {self.path!r}"
         _envelope_path(self.path, "quantities", name)
-        _one_of(self.definition, tuple(_envelope.QUANTITY_DEFINITIONS), f"{name}.definition")
-        expected_unit = _envelope.QUANTITY_DEFINITIONS[self.definition]["unit"]
+        _one_of(self.definition, tuple(_envelope.V2_QUANTITY_DEFINITIONS), f"{name}.definition")
+        expected_unit = _envelope.V2_QUANTITY_DEFINITIONS[self.definition]["unit"]
         _require(self.unit == expected_unit, f"{name}.unit must be {expected_unit!r} for {self.definition}")
         _require(len(self.statuses) > 0, f"{name}.statuses must not be empty")
         _unique(self.statuses, f"{name}.statuses")
@@ -442,7 +442,7 @@ class QuantityDeclaration:
             _require(len(self.reason_codes) > 0, f"{name}: statuses other than computed need reason codes")
         if "not-requested" in self.statuses:
             _require("not-requested" in self.reason_codes, f"{name}: not-requested needs the reason not-requested")
-        if _envelope.QUANTITY_DEFINITIONS[self.definition]["fraction"]:
+        if _envelope.V2_QUANTITY_DEFINITIONS[self.definition]["fraction"]:
             _one_of(self.fraction_basis, _envelope.FRACTION_BASES, f"{name}.fractionBasis")
         else:
             _require(self.fraction_basis is None, f"{name}: fractionBasis applies only to fraction quantities")

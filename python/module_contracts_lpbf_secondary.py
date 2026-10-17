@@ -175,9 +175,12 @@ def _gr_dependent_declarations():
     return tuple(QuantityDeclaration(path=f"{prefix}.{kind}.quantities.{name}", definition=definition, unit="1",
                                      statuses=QUANTITY_STATUSES, source_evidence_kinds=QUANTITY_SOURCE_EVIDENCE_KINDS,
                                      reason_codes=REASON_CODES,
-                                     fraction_basis="microconstituent" if kind == "laves" else None)
+                                     fraction_basis=("microconstituent" if kind == "laves" else "volume"
+                                                     if definition == "equiaxed-envelope-fraction" else None))
                  for prefix in ("point", "cells")
                  for kind, name, definition in (("cet", "class", "cet-class"),
+                                                ("cet", "equiaxedEnvelopeFraction", "equiaxed-envelope-fraction"),
+                                                ("cet", "planarStabilityIndex", "planar-stability-index"),
                                                 ("laves", "fraction", "laves-trapped-scheil-fraction")))
 
 
@@ -262,7 +265,7 @@ def build_solidification_microstructure_contract(seed: Mapping[str, str]) -> Mod
             "The independent G/R request returns lpbf-gr-solidification-3 with computed, partial, unavailable, failed "
             "or not-requested transport statuses. Cells carry a front envelope, a CET block and a Laves envelope. The "
             "CET block is the opt-in channel's Hunt/Durga grain-envelope model projected at the cell's own rear-branch "
-            "tuples (quantity envelope v2, Uncalibrated estimate at most, constructive refusal where a gate fails); "
+            "tuples (quantity envelope v2, Uncalibrated estimate at most, constructive outside-source-model-domain refusal where a gate fails); "
             "the legacy Knapp route keeps its own identity and stays unavailable. sourceChecks distinguish equation "
             "reading, algebra reproduction and printed-limit comparison. No Hunt morphology bands or analytic liquidus "
             "bypass are served.",
