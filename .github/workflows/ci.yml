@@ -117,7 +117,7 @@ jobs:
           test_solidification_front test_cet_and_pdas_admission test_sol_t_installation test_sol_t_moved_values
           test_lpbf_solidification_estimates
           test_murakami_scenario test_lpbf_kinetics_estimates test_calibration_status_display
-          test_lpbf_accepted_prefix test_lpbf_mechanics_scenarios
+          test_lpbf_accepted_prefix test_lpbf_mechanics_scenarios test_lpbf_job_cache_key
           test_lpbf_build_job test_lpbf_solidification test_phase7_microstructure_validation
           test_lpbf_process_map test_lpbf_powder_layer_analysis test_lpbf_additional_datasets
           test_goldak_power_normalization test_lpbf_boiling_cap
