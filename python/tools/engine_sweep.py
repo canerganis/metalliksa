@@ -57,9 +57,10 @@ def inventory():
         op("lpbf-research-models", "P8 research", "lpbf_research_models:run", "ResearchModelPanel / melt-pool and build-job hosts", "/api/python/lpbf-research-models"),
         op("xrd-deconvolve", "XRD", "xrd_peak_deconvolution:deconvolve_peak_roi / solve_williamson_hall", "No mounted caller; service method deconvolveXRD only", "/api/python/xrd-deconvolve", alloy=False, skip="NO_UI_DEFAULT: requires user ROI points/peaks; no mounted caller or default spectrum; no synthetic spectrum invented"),
         op("solidification-microstructure", "Microstructure", "lpbf_worker_rpc:_rpc_solidification_microstructure", "SolidificationMicrostructureLab", "/api/python/lpbf-solidification-microstructure"),
+        op("solidification-estimates", "Solidification estimates", "lpbf_solidification_estimates:compute_solidification_estimates", "SolidificationEstimates (opt-in channel)", "/api/python/lpbf-solidification-estimates"),
         op("keyhole-raytracing", "Keyhole optics", "lpbf_keyhole_raytracing:compute_keyhole_raytracing", "KeyholeRaytracingLab", "/api/python/lpbf-keyhole-raytracing", alloy=False),
         op("estimate", "Job estimate", "lpbf_worker_rpc:_estimate", "LpbfEngineeringSimulation", "/api/lpbf/estimate"),
-        op("submit", "Transient thermal", "lpbf_simulation:run", "LpbfEngineeringSimulation (standard/reference CPU)", "/api/lpbf/jobs"),
+        op("submit", "Transient thermal", "lpbf_accepted_prefix:run_with_accepted_prefix", "LpbfEngineeringSimulation (standard/reference CPU)", "/api/lpbf/jobs"),
         op("submit:build-job", "Build job", "lpbf_build_job_solver:solve_lpbf_build_job", "IndustrialLPBFDecisionLab / Build rail", "/api/lpbf/jobs jobType=build-job"),
         op("submit:in625-bareplate-field", "IN625 bounded field", "lpbf_worker:_run_in625_bareplate_job", "In625BareplatePanel", "/api/lpbf/jobs jobType=in625-bareplate-field", alloy=False),
         op("submit:gpu-thermal-pilot", "GPU pilot", "lpbf_gpu_thermal:run_queued_pilot / lpbf_gpu_warp_pilot:run_queued_warp_pilot", "GpuThermalPilotPanel", "/api/lpbf/jobs jobType=gpu-thermal-pilot", skip="GPU_FORBIDDEN: Torch/Warp CUDA execution"),
@@ -111,6 +112,9 @@ def payload(op, alloy=None, variant="default"):
         if variant == "band":
             answer["timeBudgetMs"] = 1500
         return answer
+    if id == "solidification-estimates":
+        return dict(params=dict(materialName=NAMES[a], power_W=p, speed_mm_s=v, beamDiameter_um=80, preheat_C=t,
+                                layerThickness_um=40, hatch_um=100, heatSource="rosenthal"))
     if id == "solidification-microstructure":
         return dict(params=dict(materialName=NAMES[a], power_W=p, speed_mm_s=v, beamDiameter_um=80,
                                 preheat_C=t, layerThickness_um=40, hatch_um=100, heatSource="rosenthal"))
@@ -215,7 +219,8 @@ def invoke(op, data, folder):
     if id == "estimate":
         return fn(dict(payload=data))
     if id == "submit":
-        return fn(data, artifact_dir=Path(folder), capabilities={})
+        # Worker job path: run_thermal_request with the G1.1 accepted-prefix observer (refusals keep their envelope).
+        return fn(data, lambda *args: None, Path(folder), {})
     if id == "submit:in625-bareplate-field":
         return fn(data, Path(folder))
     return fn(data)
