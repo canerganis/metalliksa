@@ -1,0 +1,592 @@
+{
+ "title": "Synthetic fixture, not measured data",
+ "schema": "lpbf-spent-descriptive-view-1",
+ "generatedAt": "2026-01-01T00:00:00Z",
+ "implementationHash": "2222222222222222222222222222222222222222222222222222222222222222",
+ "servedIdentity": {
+  "servedClosurePinSha256": "3333333333333333333333333333333333333333333333333333333333333333"
+ },
+ "research": {
+  "requested": false,
+  "reasonCode": "RESEARCH_NOT_REQUESTED"
+ },
+ "spentLedgerSha256": "4444444444444444444444444444444444444444444444444444444444444444",
+ "reasonsCatalogSha256": "5555555555555555555555555555555555555555555555555555555555555555",
+ "honesty": {
+  "label": "Not validation: data already seen",
+  "statement": "Synthetic statement: these numbers are invented for a test.",
+  "experimentalValidation": false,
+  "labelPromotionProposed": "none",
+  "evidenceKind": "screening-only",
+  "spentOnly": true
+ },
+ "arms": [
+  {
+   "id": "served",
+   "label": "Served model"
+  },
+  {
+   "id": "research",
+   "label": "Research model",
+   "availability": "unavailable: RESEARCH_NOT_REQUESTED"
+  }
+ ],
+ "sets": [
+  {
+   "id": "synthetic-nist-like",
+   "title": "Synthetic set A (fixture)",
+   "alloy": "IN718",
+   "observable": "fusion-boundary-depth",
+   "curveAxis": "speed",
+   "provenance": {
+    "citation": "Synthetic citation for a fixture",
+    "doi": "10.0000/synthetic",
+    "licence": "Synthetic licence",
+    "attribution": "Synthetic attribution",
+    "licenceFile": "none",
+    "tableSha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "rows": 4,
+    "locator": "Synthetic locator",
+    "loader": "synthetic",
+    "datum": "Synthetic datum",
+    "substrate": "Synthetic substrate",
+    "powerBasis": "Synthetic power basis",
+    "transcription": "table"
+   },
+   "spent": {
+    "status": "SPENT",
+    "spentBy": [
+     {
+      "event": "Synthetic spending event",
+      "record": "synthetic",
+      "date": "2026-01-01"
+     }
+    ],
+    "usedInServedDevelopment": true
+   },
+   "beam": {
+    "value_um": 80.0,
+    "status": "stated",
+    "definition": "Synthetic beam",
+    "sensitivity_um": null
+   },
+   "measuredSource": {
+    "label": "Measured",
+    "transcription": "table",
+    "locator": "Synthetic locator"
+   },
+   "servedSource": {
+    "label": "Unresolved",
+    "reasonCode": "SERVED_VALUE_KIND_NOT_PROVIDED",
+    "reasonText": "Unresolved: the served result does not yet list the source of each value."
+   },
+   "groups": [
+    {
+     "id": "primary-power200-d80-T25-L40",
+     "beamRole": "primary",
+     "fixed": {
+      "power_W": 200.0,
+      "beam_um": 80.0,
+      "preheat_C": 25.0,
+      "preheatBasis": "assumed 25 C",
+      "layer_um": 40.0,
+      "layerBasis": "bare plate default"
+     },
+     "curve": [
+      {
+       "x": 100,
+       "depth_um": 87.5,
+       "index": 40.0,
+       "status": "ok"
+      },
+      {
+       "x": 200,
+       "depth_um": 85.0,
+       "index": 20.0,
+       "status": "ok"
+      },
+      {
+       "x": 400,
+       "depth_um": 80.0,
+       "index": 10.0,
+       "status": "ok"
+      },
+      {
+       "x": 800,
+       "depth_um": 70.0,
+       "index": 5.0,
+       "status": "ok"
+      },
+      {
+       "x": 1600,
+       "depth_um": 50.0,
+       "index": 2.5,
+       "status": "ok"
+      }
+     ],
+     "points": [
+      {
+       "rowId": "a-0",
+       "x": 100,
+       "measured_um": 80.0,
+       "measuredSd_um": 2.0,
+       "served_um": 86.0,
+       "index": 40.0,
+       "diffPct": 7.5,
+       "status": "ok"
+      },
+      {
+       "rowId": "a-1",
+       "x": 200,
+       "measured_um": 70.0,
+       "measuredSd_um": null,
+       "served_um": 74.0,
+       "index": 20.0,
+       "diffPct": 5.7,
+       "status": "ok"
+      },
+      {
+       "rowId": "a-2",
+       "x": 400,
+       "measured_um": 60.0,
+       "measuredSd_um": 2.0,
+       "served_um": 55.0,
+       "index": 10.0,
+       "diffPct": -8.3,
+       "status": "ok"
+      },
+      {
+       "rowId": "a-3",
+       "x": 800,
+       "measured_um": 50.0,
+       "measuredSd_um": null,
+       "served_um": null,
+       "index": 5.0,
+       "diffPct": null,
+       "status": "failed"
+      }
+     ]
+    }
+   ],
+   "deviation": [
+    {
+     "arm": "served",
+     "beamRole": "primary",
+     "beam_um": 80.0,
+     "all": {
+      "n": 3,
+      "failed": 1,
+      "unavailable": 0,
+      "median_pct": 1.0,
+      "p10_pct": -8.0,
+      "p90_pct": 7.5
+     },
+     "bins": [
+      {
+       "id": "below-15",
+       "label": "index below 15",
+       "direction": "model deeper",
+       "n": 1,
+       "failed": 0,
+       "unavailable": 0,
+       "median_pct": 7.5,
+       "p10_pct": 7.5,
+       "p90_pct": 7.5
+      },
+      {
+       "id": "15-to-20",
+       "label": "index 15 to below 20",
+       "direction": null,
+       "n": 0,
+       "failed": 0,
+       "unavailable": 0,
+       "median_pct": null,
+       "p10_pct": null,
+       "p90_pct": null
+      },
+      {
+       "id": "at-or-above-20",
+       "label": "index 20 or above",
+       "direction": "mixed",
+       "n": 2,
+       "failed": 1,
+       "unavailable": 0,
+       "median_pct": -3.0,
+       "p10_pct": -8.0,
+       "p90_pct": 2.0
+      }
+     ]
+    }
+   ],
+   "notes": [
+    {
+     "code": "USED_IN_SERVED_DEVELOPMENT",
+     "sentence": "Candidate explanation, not tested: synthetic sentence one.",
+     "source": "data/benchmark/spent-ledger-v1.json",
+     "locator": "entries[].usedInServedDevelopment"
+    },
+    {
+     "code": "RESEARCH_NOT_REQUESTED",
+     "sentence": "Candidate explanation, not tested: synthetic sentence two.",
+     "source": "python/lpbf_served_arms.py",
+     "locator": "RESEARCH_MEMBER"
+    }
+   ]
+  },
+  {
+   "id": "synthetic-lane-like",
+   "title": "Synthetic set B (fixture)",
+   "alloy": "IN625",
+   "observable": "fusion-boundary-depth",
+   "curveAxis": "speed",
+   "provenance": {
+    "citation": "Synthetic citation for a fixture",
+    "doi": "10.0000/synthetic",
+    "licence": "Synthetic licence",
+    "attribution": "Synthetic attribution",
+    "licenceFile": "none",
+    "tableSha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "rows": 4,
+    "locator": "Synthetic locator",
+    "loader": "synthetic",
+    "datum": "Synthetic datum",
+    "substrate": "Synthetic substrate",
+    "powerBasis": "Synthetic power basis",
+    "transcription": "table"
+   },
+   "spent": {
+    "status": "SPENT",
+    "spentBy": [
+     {
+      "event": "Synthetic spending event",
+      "record": "synthetic",
+      "date": "2026-01-01"
+     }
+    ],
+    "usedInServedDevelopment": false
+   },
+   "beam": {
+    "value_um": 37.5,
+    "status": "unverified",
+    "definition": "Synthetic unverified beam",
+    "sensitivity_um": 75.0
+   },
+   "measuredSource": {
+    "label": "Measured",
+    "transcription": "table",
+    "locator": "Synthetic locator"
+   },
+   "servedSource": {
+    "label": "Unresolved",
+    "reasonCode": "SERVED_VALUE_KIND_NOT_PROVIDED",
+    "reasonText": "Unresolved: the served result does not yet list the source of each value."
+   },
+   "groups": [
+    {
+     "id": "primary-power200-d37.5-T25-L40",
+     "beamRole": "primary",
+     "fixed": {
+      "power_W": 200.0,
+      "beam_um": 37.5,
+      "preheat_C": 25.0,
+      "preheatBasis": "assumed 25 C",
+      "layer_um": 40.0,
+      "layerBasis": "bare plate default"
+     },
+     "curve": [
+      {
+       "x": 100,
+       "depth_um": 58.75,
+       "index": 13.0,
+       "status": "ok"
+      },
+      {
+       "x": 200,
+       "depth_um": 57.5,
+       "index": 14.0,
+       "status": "ok"
+      },
+      {
+       "x": 400,
+       "depth_um": 55.0,
+       "index": 16.0,
+       "status": "ok"
+      },
+      {
+       "x": 800,
+       "depth_um": 50.0,
+       "index": 20.0,
+       "status": "ok"
+      },
+      {
+       "x": 1600,
+       "depth_um": 40.0,
+       "index": 28.0,
+       "status": "ok"
+      }
+     ],
+     "points": [
+      {
+       "rowId": "p-0",
+       "x": 100,
+       "measured_um": 62.0,
+       "measuredSd_um": 2.0,
+       "served_um": 64.0,
+       "index": 40.0,
+       "diffPct": 3.2,
+       "status": "ok"
+      },
+      {
+       "rowId": "p-1",
+       "x": 200,
+       "measured_um": 58.0,
+       "measuredSd_um": null,
+       "served_um": 55.0,
+       "index": 20.0,
+       "diffPct": -5.2,
+       "status": "ok"
+      },
+      {
+       "rowId": "p-2",
+       "x": 400,
+       "measured_um": 54.0,
+       "measuredSd_um": 2.0,
+       "served_um": 51.0,
+       "index": 10.0,
+       "diffPct": -5.6,
+       "status": "ok"
+      },
+      {
+       "rowId": "p-3",
+       "x": 800,
+       "measured_um": 50.0,
+       "measuredSd_um": null,
+       "served_um": 48.0,
+       "index": 5.0,
+       "diffPct": -4.0,
+       "status": "ok"
+      }
+     ]
+    },
+    {
+     "id": "sensitivity-power200-d75-T25-L40",
+     "beamRole": "sensitivity",
+     "fixed": {
+      "power_W": 200.0,
+      "beam_um": 75.0,
+      "preheat_C": 25.0,
+      "preheatBasis": "assumed 25 C",
+      "layer_um": 40.0,
+      "layerBasis": "bare plate default"
+     },
+     "curve": [
+      {
+       "x": 100,
+       "depth_um": 64.75,
+       "index": 13.0,
+       "status": "ok"
+      },
+      {
+       "x": 200,
+       "depth_um": 63.5,
+       "index": 14.0,
+       "status": "ok"
+      },
+      {
+       "x": 400,
+       "depth_um": 61.0,
+       "index": 16.0,
+       "status": "ok"
+      },
+      {
+       "x": 800,
+       "depth_um": 56.0,
+       "index": 20.0,
+       "status": "ok"
+      },
+      {
+       "x": 1600,
+       "depth_um": 46.0,
+       "index": 28.0,
+       "status": "ok"
+      }
+     ],
+     "points": [
+      {
+       "rowId": "s-0",
+       "x": 100,
+       "measured_um": 62.0,
+       "measuredSd_um": 2.0,
+       "served_um": 70.0,
+       "index": 40.0,
+       "diffPct": 12.9,
+       "status": "ok"
+      },
+      {
+       "rowId": "s-1",
+       "x": 200,
+       "measured_um": 58.0,
+       "measuredSd_um": null,
+       "served_um": 61.0,
+       "index": 20.0,
+       "diffPct": 5.2,
+       "status": "ok"
+      },
+      {
+       "rowId": "s-2",
+       "x": 400,
+       "measured_um": 54.0,
+       "measuredSd_um": 2.0,
+       "served_um": 57.0,
+       "index": 10.0,
+       "diffPct": 5.6,
+       "status": "ok"
+      },
+      {
+       "rowId": "s-3",
+       "x": 800,
+       "measured_um": 50.0,
+       "measuredSd_um": null,
+       "served_um": 54.0,
+       "index": 5.0,
+       "diffPct": 8.0,
+       "status": "ok"
+      }
+     ]
+    }
+   ],
+   "deviation": [
+    {
+     "arm": "served",
+     "beamRole": "primary",
+     "beam_um": 37.5,
+     "all": {
+      "n": 4,
+      "failed": 0,
+      "unavailable": 0,
+      "median_pct": 1.0,
+      "p10_pct": -6.0,
+      "p90_pct": 6.0
+     },
+     "bins": [
+      {
+       "id": "below-13.6",
+       "label": "index below 13.6",
+       "direction": "model shallower",
+       "n": 2,
+       "failed": 0,
+       "unavailable": 0,
+       "median_pct": -4.0,
+       "p10_pct": -6.0,
+       "p90_pct": -2.0
+      },
+      {
+       "id": "at-or-above-13.6",
+       "label": "index 13.6 or above",
+       "direction": "model deeper",
+       "n": 2,
+       "failed": 0,
+       "unavailable": 0,
+       "median_pct": 5.0,
+       "p10_pct": 3.0,
+       "p90_pct": 6.0
+      }
+     ]
+    },
+    {
+     "arm": "served",
+     "beamRole": "sensitivity",
+     "beam_um": 75.0,
+     "all": {
+      "n": 4,
+      "failed": 0,
+      "unavailable": 0,
+      "median_pct": 9.0,
+      "p10_pct": 4.0,
+      "p90_pct": 12.0
+     },
+     "bins": [
+      {
+       "id": "below-13.6",
+       "label": "index below 13.6",
+       "direction": "model shallower",
+       "n": 2,
+       "failed": 0,
+       "unavailable": 0,
+       "median_pct": -4.0,
+       "p10_pct": -6.0,
+       "p90_pct": -2.0
+      },
+      {
+       "id": "at-or-above-13.6",
+       "label": "index 13.6 or above",
+       "direction": "model deeper",
+       "n": 2,
+       "failed": 0,
+       "unavailable": 0,
+       "median_pct": 5.0,
+       "p10_pct": 3.0,
+       "p90_pct": 6.0
+      }
+     ]
+    }
+   ],
+   "notes": []
+  }
+ ],
+ "modelMap": [
+  {
+   "key": "synthetic-nist-like",
+   "setId": "synthetic-nist-like",
+   "label": "Synthetic set A (fixture)",
+   "alsoSets": [],
+   "bins": [
+    {
+     "id": "below-15",
+     "label": "index below 15",
+     "direction": "model deeper",
+     "n": 1
+    },
+    {
+     "id": "15-to-20",
+     "label": "index 15 to below 20",
+     "direction": null,
+     "n": 0
+    },
+    {
+     "id": "at-or-above-20",
+     "label": "index 20 or above",
+     "direction": "mixed",
+     "n": 2
+    }
+   ]
+  },
+  {
+   "key": "synthetic-lane-like",
+   "setId": "synthetic-lane-like",
+   "label": "Synthetic set B (fixture)",
+   "alsoSets": [],
+   "bins": [
+    {
+     "id": "below-13.6",
+     "label": "index below 13.6",
+     "direction": "model shallower",
+     "n": 2
+    },
+    {
+     "id": "at-or-above-13.6",
+     "label": "index 13.6 or above",
+     "direction": "model deeper",
+     "n": 2
+    }
+   ]
+  }
+ ],
+ "directionRule": "synthetic rule",
+ "deferred": [
+  {
+   "datasetId": "synthetic-left-out",
+   "reason": "Synthetic reason."
+  }
+ ]
+}

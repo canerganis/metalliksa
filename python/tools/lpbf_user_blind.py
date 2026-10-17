@@ -254,14 +254,38 @@ def verify_bundle(path):
         if not same_scorer:
             checks.append({"id": f"rescore-{n}", "ok": None, "note": "re-score skipped: different scorer"})
         else:
-            checks.append({"id": f"rescore-{n}", "ok": None,
-                           "note": ("re-score needs the store state at score time (overlap and history); the report "
-                                    "hash and the targets hash were checked")})
             rep = json.loads(members[f"score-{n}.json"])
             checks.append({"id": f"targets-hash-{n}", "ok": sha256_bytes(members[f"targets-{n}.csv"]) ==
                            rep["targetsSha256"]})
+            checks.append({"id": f"rescore-statistics-{n}", "ok": _rescore_matches(freeze, members, n, rep),
+                           "note": ("statistics, per-condition rows, resolution and leverage recomputed from the "
+                                    "frozen predictions and the targets file and compared byte for byte; the "
+                                    "blindness status depends on this computer's history and is not recomputed; "
+                                    "bootstrap reproducibility holds for the same numpy version")})
         n += 1
     return checks
+
+
+STAT_SECTIONS = ("ledger", "resolution", "leverage", "exclusions", "excluded", "notFormed")
+
+
+def _rescore_matches(freeze, members, n, rep):
+    import tempfile
+    from lpbf_user_blind_protocol import canonical_bytes
+    import lpbf_user_blind_score as sc
+    from lpbf_user_blind_store import Store
+    with tempfile.TemporaryDirectory() as tmp:
+        st = Store(Path(tmp) / "store")
+        earlier = [json.loads(members[f"score-{k}.json"])["targetsSha256"] for k in range(1, n)]
+        job = {"declarations": {"viewedPredictionsBeforeFinalisingTargets": "no"}}
+        matched = rep["commitment"]["matched"]
+        new = sc.score(st, job, freeze, members["freeze.json"], members[f"targets-{n}.csv"], rep["targetsSha256"],
+                       matched, n, earlier, None, [])
+    same = all(canonical_bytes(new[k]) == canonical_bytes(rep[k]) for k in STAT_SECTIONS)
+    for arm, a in rep["arms"].items():
+        same = same and canonical_bytes(new["arms"][arm]["stats"]) == canonical_bytes(a["stats"])
+        same = same and canonical_bytes(new["arms"][arm].get("bootstrap95")) == canonical_bytes(a.get("bootstrap95"))
+    return bool(same)
 
 
 def cmd_verify(a):

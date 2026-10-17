@@ -1,0 +1,83 @@
+{
+  "schema": "lpbf-spent-descriptive-reasons-1",
+  "reviewedBy": null,
+  "note": "Closed catalogue of provenance codes for the spent-set descriptive panel. Every code names a recorded fact, carries no sign and is a candidate explanation that was not tested.",
+  "codes": [
+    {
+      "code": "USED_IN_SERVED_DEVELOPMENT",
+      "sentence": "Candidate explanation, not tested: this set was used while the served model was developed, so the way the model sits next to it says little about conditions the model has not seen.",
+      "source": "data/benchmark/spent-ledger-v1.json",
+      "locator": "entries[].usedInServedDevelopment and entries[].spentBy",
+      "appliesWhen": "the spent ledger flag usedInServedDevelopment is true for the set",
+      "expectedSign": null
+    },
+    {
+      "code": "BEAM_ASSUMED_OR_UNVERIFIED",
+      "sentence": "Candidate explanation, not tested: the beam diameter used for the served call is recorded as assumed or unverified, so a different true beam would move the served curve.",
+      "source": "data/benchmark/spent-ledger-v1.json",
+      "locator": "entries[].beam.status and entries[].beam.definition",
+      "appliesWhen": "the spent ledger beam status is assumed or unverified",
+      "expectedSign": null
+    },
+    {
+      "code": "DATUM_UNSTATED",
+      "sentence": "Candidate explanation, not tested: the files do not state which surface the depth is measured from, so the measured depth and the served depth may use different reference surfaces.",
+      "source": "data/benchmark/spent-ledger-v1.json",
+      "locator": "entries[].datum (KU Leuven entries: not stated in the files)",
+      "appliesWhen": "the spent ledger datum text begins with not stated",
+      "expectedSign": null
+    },
+    {
+      "code": "POWER_NOMINAL",
+      "sentence": "Candidate explanation, not tested: the power in the table is the printed value and whether it is the applied or the commanded power is not resolved, so the true power at the track may differ.",
+      "source": "data/benchmark/spent-ledger-v1.json",
+      "locator": "entries[].powerBasis (Lane entry: applied versus commanded power not resolved)",
+      "appliesWhen": "the spent ledger power basis says applied versus commanded power is not resolved",
+      "expectedSign": null
+    },
+    {
+      "code": "LEGACY_PROPERTIES_IN625",
+      "sentence": "Candidate explanation, not tested: the served IN625 path uses legacy estimated material properties instead of a sourced property snapshot.",
+      "source": "python/lpbf_served_arms.py",
+      "locator": "IN625_THERMAL_NAME, IN625_REASON and served_arm (IN625 direct thermal path)",
+      "appliesWhen": "the set alloy is IN625 (served path IN625_DIRECT_THERMAL_PATH)",
+      "expectedSign": null
+    },
+    {
+      "code": "POWDER_LAYER_FLAT_PLATE_MODEL",
+      "sentence": "Candidate explanation, not tested: the tracks were made through a powder layer on a printed base and the served model treats the surface as a flat plate.",
+      "source": "python/lpbf_public_datasets.py",
+      "locator": "TOTIS caveats, lines 128 to 135 (25 um powder layer over a printed base)",
+      "appliesWhen": "every row of the set carries a loader layer thickness above zero",
+      "expectedSign": null
+    },
+    {
+      "code": "EXTENT_NOT_COMPUTED",
+      "sentence": "Candidate explanation, not tested: for some conditions the served call did not compute a melt pool extent, so those conditions have no served depth and are counted as failed.",
+      "source": "python/lpbf_served_arms.py",
+      "locator": "served_arm, reason EXTENT_NOT_COMPUTED",
+      "appliesWhen": "at least one served call of the set returned EXTENT_NOT_COMPUTED",
+      "expectedSign": null
+    },
+    {
+      "code": "RESEARCH_NOT_REQUESTED",
+      "sentence": "Candidate explanation, not tested: no research arm was requested for this record, so the research columns are unavailable and nothing here compares the served model with a research model.",
+      "source": "python/lpbf_served_arms.py",
+      "locator": "RESEARCH_MEMBER (reasonCode RESEARCH_NOT_REQUESTED)",
+      "appliesWhen": "always, while the record carries research requested false",
+      "expectedSign": null
+    }
+  ],
+  "deferred": [
+    {"code": "KEYHOLE_LEG_SCALING", "reason": "physics sign-off pending"},
+    {"code": "CONDUCTION_LEG_BIAS", "reason": "physics sign-off pending"},
+    {"code": "INDEX_OUTSIDE_SERVED_BAND", "reason": "physics sign-off pending"},
+    {"code": "DATUM_NOT_ORIGINAL_SURFACE", "reason": "physics sign-off pending"},
+    {"code": "OBSERVABLE_VAPOUR_NOT_MELT", "reason": "physics sign-off pending"},
+    {"code": "TOTIS_DATUM_AND_POWDER_LAYER_OFFSET", "reason": "physics sign-off pending"},
+    {"code": "DIGITIZED_FROM_FIGURE", "reason": "applies only to sets left out of this release"},
+    {"code": "SAME_EXPERIMENTS_AS", "reason": "applies only to sets left out of this release"},
+    {"code": "THRESHOLD_DERIVED_FROM_THIS_SET", "reason": "applies only to sets left out of this release"},
+    {"code": "OUT_OF_RESEARCH_SCOPE", "reason": "applies only to sets left out of this release"}
+  ]
+}

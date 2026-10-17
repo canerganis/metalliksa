@@ -607,6 +607,7 @@ class Exports(BlindCase):
         out.write_bytes(st.read_record(st.record_dir(rec["freezeKey"], "bundle", r["bundleN"]), "bundle.tar"))
         checks = cli.verify_bundle(out)
         self.assertTrue(all(c["ok"] is not False for c in checks), checks)
+        self.assertIs({c["id"]: c["ok"] for c in checks}["rescore-statistics-1"], True)
         tampered = bytearray(out.read_bytes())
         i = tampered.find(b'"blockLabel"')
         tampered[i + 15] ^= 1
