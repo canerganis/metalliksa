@@ -1,5 +1,22 @@
 # Served engine sweep — 2026-10-16
 
+## Engine estimates follow-up (2026-10-17, branch feat/engine-estimates)
+
+Implements the ready groups of [SPEC_engine_estimates_2026-10-17.md](research/SPEC_engine_estimates_2026-10-17.md) and its Amendment 1: group 6 (CET class on G/R cells), group 7 (explicit Murakami scenario, no HV defaults, block-maxima Gumbel), group 8 (path cooling rate, Ti KM first pass, Ti isothermal dissolution), group 9 (calibration status beside the uncalibrated parent), G1.1 (accepted prefix on the boiling stop) and group 2 (constrained-bar and released-cantilever scenarios). Every new value is Tier 2 ("Uncalibrated estimate"). G1.2/G1.3 (evaporative fixed-surface model with the keyhole-onset gate), group 10 and Ti CALPHAD are not implemented. No pinned thermal file changed; the W/D invariance snapshot (735 cases) is byte-equal to main.
+
+Rerun with the same command and interpreter, `--timeout 120`. The catalog gained the opt-in `solidification-estimates` channel (5 records) and `submit` now runs the worker job path, so refusals carry their envelope.
+
+| Measure | Before (7ee62d9e + spec) | After |
+| --- | --- | --- |
+| Records | 94: 57 ok, 16 error, 21 skipped | 99: 60 ok, 18 error, 21 skipped |
+| Null `$.cells[*].cet.quantities.class.value` (G/R map, 5 alloys x 49 cells) | 245 | 44 (all AlSi10Mg: primary Al tip reaches the eutectic, constructive refusal) |
+| Null Build Job `kinetics.buildCoolingRate_C_s` | 4 | 0 |
+| Null Build Job `murakami.fatigueLimit_MPa` | 4 | 4 (no defect or hardness is supplied by default; nothing is invented) |
+| Null `calibrated.depth_um` | 5 | 5 (artefact stale, zero enabled cells; status now explained) |
+| All null/unavailable leaves | 88358 | 119926 (new containers add per-quantity metadata leaves; the counts are not independent outputs) |
+
+The two extra errors are `lpbf-bayesian-optimize` Ti-6Al-4V and AlSi10Mg blocked by the sweep's subprocess guard during the full run; an isolated rerun of that operation returned ok for both, so they are recorded as a transient environment effect, not a code change. The four `submit` boiling refusals now carry `acceptedPrefix` (about 9 microseconds of accepted history for the Ti-6Al-4V default).
+
 ## SOL-T follow-up: software fixes and refusal triage
 
 Worktree `Metalliksa-1-wt-fixes`, branch `fix/engine-sweep-errors`, SOL-T base `9f939fcc`.
