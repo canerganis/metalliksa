@@ -69,7 +69,7 @@
    "sections": 0,
    "tracks": 36
   },
-  "createdAt": "2026-10-17T09:10:37.289Z",
+  "createdAt": "2026-10-17T10:06:21.338Z",
   "designChecks": {
    "leverage": {
     "cut": 15.0,
@@ -92,8 +92,8 @@
    }
   ],
   "excludedInputs": [],
-  "freezeKey": "e0bd23f240848ece9dc9ff1127eb78177610797150dc230bab6af1b49feb863b",
-  "freezeSha256": "e8b57254faf6ca432fd208c0fb3e77e3df538c24a25ba46d37be52faa0dbf610",
+  "freezeKey": "92dee1adaa42e47f5b1e33c8fe8872a689897410266f0e282aaf84398259078b",
+  "freezeSha256": "229f89d307aeff115cc6d72b0c351a27bf940aca9bd44288af40bd4aa6af9de9",
   "grades": {
    "beam": "C",
    "block": "C",
@@ -128,7 +128,7 @@
    "bare plate: layer argument 40 um passed",
    "research arm not requested"
   ],
-  "ledgerEntryHash": "a6cf9581900a0ca4336a1317edf14183f5954795dbf48be954e2eae9f76687d8",
+  "ledgerEntryHash": "9bea6874b6952a95916e47d651e5705c081cfbc4ce23b5b190e274e3a23e8bda",
   "ledgerSeq": 1,
   "metadataSha256": "ea509afc4b3718215b931d528287f3874c1ab940be463cc799cec48656e90626",
   "predictionsSha256": "81690087817e5fd508ea441dba54fc2d111f9013c992702841241b9903da0425",
@@ -171,16 +171,16 @@
       "pinnedSha256": "c8af101836331e0a3e19e946644c70062c538ad58d8b5180058403c06552bba8"
      },
      {
-      "liveSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4",
+      "liveSha256": "c24354878a9e8950fcf78634a4c4ee8ed4f74239ec766e7fe24e34548e53faa1",
       "path": "python/lpbf_served_arms.py",
-      "pinnedSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4"
+      "pinnedSha256": "c24354878a9e8950fcf78634a4c4ee8ed4f74239ec766e7fe24e34548e53faa1"
      }
     ],
-    "pinSha256": "1ff8e0200e944ba7cf07d8ed51aab0145c3f4e8499894e08908a890c69b0b35c"
+    "pinSha256": "189305c550e562abe0711a8c83309dbdbd62e2f4727d66a51022330ad03c9705"
    },
    "servedPath": "build-job-thermal"
   },
-  "previewSha256": "4e704e0d5316a3126466ed74bed0a9f9326f9c19bf0ebd21d90592fa7bcefb07",
+  "previewSha256": "7fdb60cc3dd3d0c9af10eae47f4558566ce94a0ef57a0da365a99d6eaad2f5fa",
   "provenance": {},
   "receiptLine": "Predictions frozen. Values are withheld until you upload your measurements or choose to reveal them.",
   "schema": "lpbf-user-blind-receipt-1",
@@ -188,12 +188,12 @@
    "files": {
     "python/lpbf_blind_stats.py": "bbaeb312f49892348ccc74d46f7d92ab8c499b5b493a4db30829411ad76906cf",
     "python/lpbf_spent_ledger.py": "51d7ffeb9b13e8b14e87cb105ff62056cc39fe655f4f705541a2fca4158c9813",
-    "python/lpbf_user_blind_score.py": "5816b2c8a386c706a1fc4ce41f8bf3a69e9129a1e2a2d058d8c3c9424b87574b",
+    "python/lpbf_user_blind_score.py": "5f721b98164f7b4392cad9b0e5ad6913e0226f632aa9e9ec01d2b87a60ef51e3",
     "python/lpbf_user_blind_targets.py": "54f6469748aa0e995e7f60e47ede0c7955110066e9a2b781f20fed645fd480a3"
    },
    "numpy": "2.2.6",
-   "protocolSha256": "8739daf89556142775596c8ca0b7723d09c6e4422593f34522fce60c6204b0d5",
-   "scoreSourcesSha256": "b99fac8b63ed45e7907b0ddb375f8408d3d7dc3e4694d53ab07dd67502d7fe26",
+   "protocolSha256": "399f3d8e52dfe225f716ce3f7246d63de94c1014529403ac4e029f3163818d97",
+   "scoreSourcesSha256": "05273c743585b0077a01748e62fe71e0c64a9a13f2fac0e8f59546e1ea89d621",
    "statsConstants": {
     "bootB": 2000,
     "bootSeed": 20261011,

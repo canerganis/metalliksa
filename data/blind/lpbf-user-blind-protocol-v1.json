@@ -87,7 +87,7 @@
   {
    "id": "D6",
    "melt": "MELT registers thresholds and leverage cuts for Ti-6Al-4V and AlSi10Mg only",
-   "rule": "thresholds are registered for Ti-6Al-4V and AlSi10Mg only; 316L, IN718 and IN625 are shown for information and never scored (maintainer decision 2026-10-16)"
+   "rule": "thresholds and statistics registered for Ti-6Al-4V and AlSi10Mg are reused unchanged for 316L, IN718 and IN625 with a label; low cut 15 proposed for 316L and IN718; IN625 leverage is not evaluable (a step 5 qualifier); results are reported per alloy and never pooled (maintainer decision 2026-10-17); the G3o and G3s objectives keep their registered scope"
   },
   {
    "id": "D7",
@@ -331,7 +331,9 @@
   200.0
  ],
  "leverageLowCut": {
+  "316L": 15.0,
   "AlSi10Mg": 15.0,
+  "IN718": 15.0,
   "Ti-6Al-4V": 15.0
  },
  "lossStatus": [
@@ -341,7 +343,7 @@
  ],
  "metadataSchema": "lpbf-user-blind-metadata-1",
  "protocolId": "lpbf-user-blind-protocol-1",
- "protocolSha256": "8739daf89556142775596c8ca0b7723d09c6e4422593f34522fce60c6204b0d5",
+ "protocolSha256": "399f3d8e52dfe225f716ce3f7246d63de94c1014529403ac4e029f3163818d97",
  "ranges": {
   "power_W": [
    10.0,
@@ -377,6 +379,10 @@
   "syntheticMarker": "SYNTHETIC-EXAMPLE",
   "targetLike": "depth|width|height|cap|area|penetration|remelt|d_exp|w_exp|d_obs|aspect"
  },
+ "registeredAlloys": [
+  "Ti-6Al-4V",
+  "AlSi10Mg"
+ ],
  "requestSchema": "lpbf-user-blind-request-1",
  "requestTypes": {
   "jobs": [
@@ -400,7 +406,10 @@
  "schema": "lpbf-user-blind-protocol-record-1",
  "scoredAlloys": [
   "Ti-6Al-4V",
-  "AlSi10Mg"
+  "AlSi10Mg",
+  "316L",
+  "IN718",
+  "IN625"
  ],
  "scoredArms": [
   "served",

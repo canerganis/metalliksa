@@ -13,7 +13,7 @@
     "name": "blind-comparison.csv"
    }
   ],
-  "freezeKey": "e0bd23f240848ece9dc9ff1127eb78177610797150dc230bab6af1b49feb863b",
+  "freezeKey": "92dee1adaa42e47f5b1e33c8fe8872a689897410266f0e282aaf84398259078b",
   "honesty": {
    "appValidation": false,
    "dataLabel": "Measured (user-supplied)",
@@ -37,7 +37,7 @@
    "resultScope": "user-blind-test"
   },
   "provenance": {},
-  "reportSha256": "53c3f835a2aa2db7a920315e16105c4134b4f144c10184ff40fdeaeffcfdf494",
+  "reportSha256": "44394eff8f59a07e3aa92c375544cd42d1fc5bb85e8d90be8c64f1b68d55fe48",
   "statuses": {
    "blindness": "blind-prospective-declared",
    "research:cavity": "unavailable",

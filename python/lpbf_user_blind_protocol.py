@@ -54,10 +54,17 @@ HONESTY = {
 
 # ---------------------------------------------------------------------------------------------- metadata (4.1)
 ALLOYS = ("Ti-6Al-4V", "AlSi10Mg", "316L", "IN718", "IN625")
-# Maintainer decision 2026-10-16 (Q7 recommendation accepted, "only Ti64 and AlSi10Mg count"): blind statistics are
-# scored for these two alloys only; the others are shown for information (`descriptive-not-scored`, divergence D6).
-SCORED_ALLOYS = ("Ti-6Al-4V", "AlSi10Mg")
-LEVERAGE_LOW_CUT = {"Ti-6Al-4V": 15.0, "AlSi10Mg": 15.0}
+# Maintainer decision 2026-10-17 ("alasim kapsamini arttir"): the user's own blind test scores all five served alloys
+# with the same thresholds and statistics. The thresholds and leverage cuts were registered (MELT) for Ti-6Al-4V and
+# AlSi10Mg; they are reused unchanged for 316L, IN718 and IN625 with a label (divergence D6). Results are reported
+# per alloy and never pooled: one freeze holds one alloy. This does not change the project's G3o or G3s objectives,
+# which keep their pre-registered scope (Ti-6Al-4V and AlSi10Mg).
+SCORED_ALLOYS = ("Ti-6Al-4V", "AlSi10Mg", "316L", "IN718", "IN625")
+REGISTERED_ALLOYS = ("Ti-6Al-4V", "AlSi10Mg")
+# Low cuts: MELT for Ti-6Al-4V and AlSi10Mg; 15 proposed for 316L and IN718 (spec 7.4 item 3, D6). IN625 has no low
+# cut (the served IN625 rule is two-class at 13.6), so its leverage is not evaluable: a threshold failure is still
+# reported as threshold-not-met, and an IN625 block that meets all four thresholds is inconclusive.
+LEVERAGE_LOW_CUT = {"Ti-6Al-4V": 15.0, "AlSi10Mg": 15.0, "316L": 15.0, "IN718": 15.0}
 STATS_ALLOY_KEY = {"Ti-6Al-4V": "Ti64", "AlSi10Mg": "AlSi10Mg"}
 
 ENUMS = {
@@ -184,8 +191,10 @@ DIVERGENCES = (
      "melt": "no MELT item"},
     {"id": "D5", "rule": "a missing plate temperature refuses (PREHEAT_MISSING); nominal-ambient is labelled",
      "melt": "MELT: initial temperature not released is a block issue"},
-    {"id": "D6", "rule": ("thresholds are registered for Ti-6Al-4V and AlSi10Mg only; 316L, IN718 and IN625 are shown "
-                          "for information and never scored (maintainer decision 2026-10-16)"),
+    {"id": "D6", "rule": ("thresholds and statistics registered for Ti-6Al-4V and AlSi10Mg are reused unchanged for "
+                          "316L, IN718 and IN625 with a label; low cut 15 proposed for 316L and IN718; IN625 leverage "
+                          "is not evaluable (a step 5 qualifier); results are reported per alloy and never pooled "
+                          "(maintainer decision 2026-10-17); the G3o and G3s objectives keep their registered scope"),
      "melt": "MELT registers thresholds and leverage cuts for Ti-6Al-4V and AlSi10Mg only"},
     {"id": "D7", "rule": "protocol 1 scores the served Build Job melt-pool depth",
      "melt": "MELT scores its registered arm catalogue"},
@@ -217,7 +226,7 @@ def protocol_record():
         "requestSchema": REQUEST_SCHEMA,
         "metadataSchema": METADATA_SCHEMA,
         "enums": {k: list(v) for k, v in ENUMS.items()},
-        "scoredAlloys": list(SCORED_ALLOYS),
+        "scoredAlloys": list(SCORED_ALLOYS), "registeredAlloys": list(REGISTERED_ALLOYS),
         "leverageLowCut": LEVERAGE_LOW_CUT,
         "regex": {"blockLabel": BLOCK_LABEL_RE, "id": ID_RE, "fileName": FILE_NAME_RE,
                   "targetLike": TARGET_LIKE_RE, "formulaStart": list(FORMULA_START),
@@ -280,7 +289,8 @@ WORDING = {
     "servedValueLabel": "Unresolved: the served result does not yet list the source of each value.",
     "researchReason": "not requested: the P8 research route accepts requests only from the Research model panel today",
     "researchReview": "Research arm: not requested in this version",
-    "notScoredAlloy": "thresholds are registered for Ti-6Al-4V and AlSi10Mg only",
+    "thresholdsReused": "thresholds reused unchanged for {alloy}; registered for Ti-6Al-4V and AlSi10Mg",
+    "alloyScope": "statistics for {alloy} only; never pooled with other alloys",
     "anchorAdvice": ("Share freezeSha256 with someone outside this computer, or commit it to a repository, before you "
                      "measure or upload measurements. This app cannot prove the order of events by itself."),
     "relNote": "rel is a fraction (pred - obs) / obs; positive means the model is deeper",

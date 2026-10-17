@@ -1221,6 +1221,13 @@ list.
    signs off in phase 0.
 4. Alloy note: thresholds were registered for Ti-6Al-4V and AlSi10Mg; for 316L, IN718 and IN625 the report says
    `thresholds reused unchanged; registered for Ti-6Al-4V and AlSi10Mg` (divergence D6, see Q4).
+5. Decided (maintainer, 2026-10-17, Q4 answered): the user's own blind test (Part P) scores all five served alloys
+   (Ti-6Al-4V, AlSi10Mg, 316L, IN718, IN625) with the same thresholds and statistics; no alloy is held at
+   `descriptive-not-scored` for being outside the registered pair. Every result is per alloy (one freeze holds one
+   alloy, and the report states `statistics for <alloy> only; never pooled with other alloys`); the labels of 7.5 and
+   the blindness rule of 6.4 are unchanged. This widens only the local protocol 1 test. The project's own objectives
+   keep their pre-registered scope: G3o (MELT) and the successor G3s count Ti-6Al-4V and AlSi10Mg only (Q7), and no
+   user test enters either of them (2.1 `neverEnters`).
 
 ### 7.5 Labels
 
@@ -1943,6 +1950,7 @@ community stays with the maintainer; until then the placeholder name stays in th
    experiments (same experiments, flagged); confirm.
 4. Q4, other alloys: show scored statuses for 316L, IN718 and IN625 with `thresholds reused unchanged` (proposal), or keep
    those alloys descriptive only because the thresholds were registered for Ti-6Al-4V and AlSi10Mg.
+   Answered 2026-10-17: scored, as proposed, for the user's own test only (7.4 item 5); G3o and G3s scope unchanged.
 5. Q5, digitized AAAS figure data (Cunningham, Zhao): show per point in the app (proposal, with the digitization note and
    read uncertainty), or show group summaries only.
 6. Q6, Mode B candidate arm (Rev. 4): gate recommendation accepted as the working default: the MELT candidate through the

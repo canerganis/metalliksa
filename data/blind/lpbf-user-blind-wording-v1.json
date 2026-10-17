@@ -4,6 +4,7 @@
  "protocolId": "lpbf-user-blind-protocol-1",
  "schema": "lpbf-user-blind-wording-1",
  "wording": {
+  "alloyScope": "statistics for {alloy} only; never pooled with other alloys",
   "anchorAdvice": "Share freezeSha256 with someone outside this computer, or commit it to a repository, before you measure or upload measurements. This app cannot prove the order of events by itself.",
   "banner": "This is your test of the model on your data. It is not validation of this app, and the app's evidence labels do not change (experimentalValidation false).",
   "blindness": {
@@ -32,7 +33,6 @@
    "SURFACE_PREPARATION_UNSTATED": "State how the plate surface was prepared."
   },
   "doNotResave": "Do not open and save this file again before you upload it for scoring: saving it, even unchanged, in a spreadsheet program usually changes its bytes, and the hash will no longer match.",
-  "notScoredAlloy": "thresholds are registered for Ti-6Al-4V and AlSi10Mg only",
   "receiptLine": "Predictions frozen. Values are withheld until you upload your measurements or choose to reveal them.",
   "relNote": "rel is a fraction (pred - obs) / obs; positive means the model is deeper",
   "reportTitle": "Your blind test on your own measurements",
@@ -47,7 +47,8 @@
    "thresholds-met": "All four thresholds were met on your data, with leverage and resolution met.",
    "unavailable": "Research arm not available: {reason}."
   },
-  "tab": "Your blind test"
+  "tab": "Your blind test",
+  "thresholdsReused": "thresholds reused unchanged for {alloy}; registered for Ti-6Al-4V and AlSi10Mg"
  },
- "wordingSha256": "87cfe059c7dcfa793eceea814465ca43e2686662433788d4163a7f73c8b12320"
+ "wordingSha256": "8137547e98baf2593233a03500b0e2ffd3ab7d5922565c04b7838cc7082f5ad4"
 }

@@ -16,7 +16,8 @@ import lpbf_blind_stats as stats
 from lpbf_served_arms import predictor_identity
 from lpbf_user_blind_overlap import build_job_history, calibration_exposures, spent_set_exposures, store_exposures
 from lpbf_user_blind_protocol import (
-    DATA_LABEL, DIVERGENCES, HONESTY, LOSS_STATUS, PROTOCOL_ID, REPORT_SCHEMA, SCORED_ALLOYS, SERVED_SOURCE_KIND,
+    DATA_LABEL, DIVERGENCES, HONESTY, LEVERAGE_LOW_CUT, LOSS_STATUS, PROTOCOL_ID, REGISTERED_ALLOYS, REPORT_SCHEMA,
+    SERVED_SOURCE_KIND,
     SERVED_SOURCE_LOCATOR, SERVED_SOURCE_REASON, STATS_ALLOY_KEY, THRESHOLDS, USER_TIER, WORDING, BlindRefusal,
     canonical_bytes, canonical_sha256, protocol_sha256, text_cell_safe, wording_sha256,
 )
@@ -188,7 +189,6 @@ def score(store, job, freeze, freeze_bytes, targets_bytes, targets_sha, commitme
     if freeze.get("protocolId") == PROTOCOL_ID and freeze.get("protocolSha256") != protocol_sha256():
         raise BlindRefusal("PROTOCOL_CHANGED")
     targets = {int(k): v for k, v in parse_targets(targets_bytes, freeze)["byOrdinal"].items()}
-    scored_alloy = alloy in SCORED_ALLOYS
     alloy_key = STATS_ALLOY_KEY.get(alloy, "Ti64")
     rows, depth_map, lost, not_formed = _rows_for_reduce(freeze, targets, alloy_key)
     conds = stats.reduce_conditions(rows, depth_map) if rows else []
@@ -218,16 +218,10 @@ def score(store, job, freeze, freeze_bytes, targets_bytes, targets_sha, commitme
         [{"track_depths": c["track_depths"], "u_m_um": c["u_m_um"]} for c in scoped],
         "powder_layer" if powder else "bare_plate", md["substrate"]["amSubstrate"]) if scoped else {
         "status": "not_evaluable", "reason": "no measured condition", "u_m_assumed": False}
-    if alloy in ("Ti-6Al-4V", "AlSi10Mg"):
-        leverage = stats.leverage_qualifier(conds, alloy_key)
-    else:
-        leverage = {"cut": None, "n_below": None, "n_at_or_above_20": None, "ok": False,
-                    "reason": "leverage not evaluable for this alloy"}
+    leverage = leverage_for(conds, alloy)
     not_scored_reason = None
     if powder:
         not_scored_reason = "powder layer (the served model is flat-plate)"
-    elif not scored_alloy:
-        not_scored_reason = WORDING["notScoredAlloy"]
     arms_out, rels_by_arm = {}, {}
     issue_sentences = [issue_text[i] for i in issues]
     for arm in SERVED_ARMS:
@@ -268,8 +262,8 @@ def score(store, job, freeze, freeze_bytes, targets_bytes, targets_sha, commitme
             boot = stats.bootstrap_intervals(rels) if rels else {}
             arm_doc["bootstrap95"] = boot
             arm_doc["marginal"] = [k for k, v in boot.items() if v.get("marginal")]
-            if alloy_key in stats.LEVERAGE_LOW_CUT and scored_alloy:
-                arm_doc["servedBins"] = stats.served_bins(conds, rels_by_arm[arm], alloy_key)
+            if alloy in LEVERAGE_LOW_CUT:
+                arm_doc["servedBins"] = served_bins_for(conds, rels_by_arm[arm], alloy)
         arms_out[arm] = arm_doc
     for arm in ("research:melt-link", "research:cavity"):
         arms_out[arm] = {"status": "unavailable", "sentence": WORDING["status"]["unavailable"].format(
@@ -345,7 +339,9 @@ def score(store, job, freeze, freeze_bytes, targets_bytes, targets_sha, commitme
         "scorer": {"atFreeze": freeze["scorerIdentity"], "atScore": scorer_now, "changedSinceFreeze": scorer_changed},
         "divergences": [{**d, "applied": d["id"] in applied} for d in DIVERGENCES],
         "wordingSha256": wording_sha256(),
-        "thresholds": {**THRESHOLDS, "alloyNote": None if scored_alloy else WORDING["notScoredAlloy"]},
+        "thresholds": {**THRESHOLDS, "alloyNote": "; ".join(
+            [WORDING["alloyScope"].format(alloy=alloy)]
+            + ([] if alloy in REGISTERED_ALLOYS else [WORDING["thresholdsReused"].format(alloy=alloy)]))},
         "grades": freeze["grades"], "blockIssues": issues, "resolution": _clean(_res_doc(resolution)),
         "leverage": leverage, "arms": arms_out,
         "commonSubset": {"k": served["coverage"]["k"], "note": "research arm not requested; the common subset is the "
@@ -362,6 +358,34 @@ def score(store, job, freeze, freeze_bytes, targets_bytes, targets_sha, commitme
         "honesty": HONESTY,
     }
     return _clean(report)
+
+
+def leverage_for(conds, alloy):
+    """MELT leverage_qualifier with the per-alloy low cut of the protocol record (declared addition, D6); IN625 has
+    no low cut and is not evaluable (a step 5 qualifier: it never hides a threshold failure)."""
+    if alloy in ("Ti-6Al-4V", "AlSi10Mg"):
+        return stats.leverage_qualifier(conds, STATS_ALLOY_KEY[alloy])
+    cut = LEVERAGE_LOW_CUT.get(alloy)
+    if cut is None:
+        return {"cut": None, "n_below": None, "n_at_or_above_20": None, "ok": False,
+                "reason": "leverage not evaluable for IN625 (no low cut; the served IN625 rule is two-class at 13.6)"}
+    below = sum(1 for c in conds if c["index"] < cut)
+    above = sum(1 for c in conds if c["index"] >= stats.LEVERAGE_HIGH_CUT)
+    return {"cut": cut, "n_below": below, "n_at_or_above_20": above,
+            "ok": below >= stats.SIDE_MIN and above >= stats.SIDE_MIN}
+
+
+def served_bins_for(conds, rels_by_name, alloy):
+    """stats.served_bins with the per-alloy low cut of the protocol record."""
+    cut = LEVERAGE_LOW_CUT[alloy]
+    out = {}
+    for name in ("below", "between", "at_or_above"):
+        vals = [rels_by_name[c["condition"]] for c in conds if c["condition"] in rels_by_name
+                and stats.index_bins(c["index"], cut) == name]
+        fin = [v for v in vals if math.isfinite(v)]
+        out[name] = {"n": len(vals), "mean_signed": (math.fsum(fin) / len(fin)) if fin else None,
+                     "n_failed": len(vals) - len(fin)}
+    return out
 
 
 def _sens_range(pred):

@@ -19,7 +19,7 @@ import re
 import lpbf_blind_stats as stats
 from lpbf_user_blind_protocol import (
     ALLOYS, BLOCK_LABEL_RE, CANONICAL_UNIT, CAPS, ENUMS, FILE_NAME_RE, FORMULA_START, ID_RE, INPUT_ALIASES,
-    INPUT_COLUMNS, LAYER_RANGE, LEVERAGE_LOW_CUT, METADATA_SCHEMA, PREHEAT_RANGE, RANGES, SCORED_ALLOYS,
+    INPUT_COLUMNS, LAYER_RANGE, LEVERAGE_LOW_CUT, METADATA_SCHEMA, PREHEAT_RANGE, RANGES, REGISTERED_ALLOYS,
     SYNTHETIC_MARKER, TARGET_LIKE_EXACT, TARGET_LIKE_RE, UNITLESS_HEADERS, UNITS, WAVELENGTH_RANGE, BlindRefusal,
 )
 
@@ -607,10 +607,11 @@ def labels_from_metadata(md):
         out.append("plate temperature is nominal ambient")
     if md["depthUncertainty"]["basis"] == "not-released":
         out.append("u_m assumed (lead assumption, not sourced)")
-    if md["alloy"] not in SCORED_ALLOYS:
-        out.append(f"{md['alloy']}: shown for information; thresholds are registered for Ti-6Al-4V and AlSi10Mg only")
+    if md["alloy"] not in REGISTERED_ALLOYS:
+        out.append(f"thresholds reused for {md['alloy']} (registered for Ti-6Al-4V and AlSi10Mg)")
     if md["alloy"] == "IN625":
         out.append("served direct thermal path (IN625, legacy-estimated properties)")
+        out.append("leverage not evaluable (IN625)")
     if md["alloy"] == "AlSi10Mg" and md["substrate"]["alsi10mgState"] in ("heat-treated", "unstated"):
         out.append("plate state differs from the as-built property convention")
     if md["substrate"]["kind"] == "bare-plate":
@@ -658,15 +659,13 @@ def best_reachable(md, issues, checks, exposure_reasons):
     if md["substrate"]["kind"] == "powder-layer":
         return ({"status": "descriptive-not-scored", "reasons": ["powder layer (the served model is flat-plate)"]},
                 ["powderLayerDescriptive"])
-    if md["alloy"] not in SCORED_ALLOYS:
-        return ({"status": "descriptive-not-scored",
-                 "reasons": ["thresholds are registered for Ti-6Al-4V and AlSi10Mg only"]},
-                ["predeterminedInconclusive"])
     if not checks["nMinMet"]:
         reasons.append(f"fewer than {stats.N_MIN} conditions")
     reasons += [ISSUE_TEXT[i] for i in issues]
     lev = checks["leverage"]
-    if lev["ok"] is not True:
+    if md["alloy"] == "IN625":
+        reasons.append("leverage not evaluable for IN625 (a threshold failure is still reported as threshold-not-met)")
+    elif lev["ok"] is not True:
         reasons.append("leverage counts below 4 on either side of the served index cuts")
     if not checks["resolution"]["evaluable"]:
         reasons.append(checks["resolution"]["reason"])

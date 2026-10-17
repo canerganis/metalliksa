@@ -511,8 +511,10 @@ class GradesIssuesLabelsTests(unittest.TestCase):
         self.assertNotIn("beam definition unstated (read as 1/e2)", clean)
         al = ui.labels_from_metadata(nmeta(alloy="AlSi10Mg"))
         self.assertIn("plate state differs from the as-built property convention", al)
-        self.assertTrue(any("shown for information" in x for x in ui.labels_from_metadata(nmeta(alloy="316L"))))
-        self.assertTrue(any("IN625" in x for x in ui.labels_from_metadata(nmeta(alloy="IN625"))))
+        self.assertIn("thresholds reused for 316L (registered for Ti-6Al-4V and AlSi10Mg)",
+                      ui.labels_from_metadata(nmeta(alloy="316L")))
+        self.assertIn("leverage not evaluable (IN625)", ui.labels_from_metadata(nmeta(alloy="IN625")))
+        self.assertFalse(any("thresholds reused" in x for x in ui.labels_from_metadata(nmeta(alloy="Ti-6Al-4V"))))
 
 
 class DesignChecksTests(unittest.TestCase):
@@ -558,14 +560,15 @@ class DesignChecksTests(unittest.TestCase):
         self.assertEqual(status["status"], "inconclusive")
         self.assertEqual(acks, ["predeterminedInconclusive"])
 
-    def test_unscored_alloy_leverage_not_evaluable(self):
+    def test_in625_leverage_not_evaluable_but_scored(self):
         md = nmeta(alloy="IN625")
         _md, parsed = self._parsed(14)
         checks = ui.design_checks(md, parsed, self.served_index)
         self.assertEqual(checks["leverage"]["ok"], "not evaluable")
         self.assertIsNone(checks["leverage"]["cut"])
         status, _acks = ui.best_reachable(md, [], checks, [])
-        self.assertEqual(status["status"], "descriptive-not-scored")
+        self.assertEqual(status["status"], "inconclusive")
+        self.assertTrue(any("leverage not evaluable for IN625" in r for r in status["reasons"]))
 
     def test_powder_layer_and_exposure(self):
         md = nmeta(substrate={"kind": "powder-layer", "layerThickness_um": 40.0})

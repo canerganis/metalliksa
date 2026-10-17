@@ -494,10 +494,58 @@ class Statuses(BlindCase):
         rep = self._status(md=md, conds=[(c[0], c[1] * 1.07, c[2], c[3]) for c in conditions()])
         self.assertEqual(rep["arms"]["served"]["status"], "descriptive-not-scored")
 
-    def test_other_alloys_shown_for_information_only(self):
-        rep = self._status(md=metadata(alloy="316L"))
-        self.assertEqual(rep["arms"]["served"]["status"], "descriptive-not-scored")
-        self.assertIn("Ti-6Al-4V and AlSi10Mg", rep["arms"]["served"]["sentence"])
+    def test_316l_in718_in625_are_scored_with_the_same_thresholds(self):
+        # Maintainer decision 2026-10-17: all five served alloys are scored; per-alloy labels stay.
+        for i, alloy in enumerate(("316L", "IN718", "IN625")):
+            with self.subTest(alloy=alloy):
+                conds = [(c[0], c[1] * (1.0 + 0.11 * (i + 1)), c[2], c[3]) for c in conditions()]
+                rep = self._status(md=metadata(alloy=alloy, blockLabel=f"Synthetic {alloy} block"), conds=conds)
+                served = rep["arms"]["served"]
+                # The sentinel stub predicts about 4000 um against invented depths near 50 um: thresholds fail.
+                self.assertEqual(served["status"], "threshold-not-met")
+                self.assertFalse(served["stats"]["allThresholdsMet"])
+                self.assertIn(f"thresholds reused for {alloy} (registered for Ti-6Al-4V and AlSi10Mg)", rep["labels"])
+                self.assertIn(f"statistics for {alloy} only; never pooled with other alloys",
+                              rep["thresholds"]["alloyNote"])
+                self.assertTrue(next(d for d in rep["divergences"] if d["id"] == "D6")["applied"])
+                if alloy == "IN625":
+                    self.assertFalse(rep["leverage"]["ok"])
+                    self.assertIsNone(rep["leverage"]["cut"])
+                    self.assertIn("leverage not evaluable (IN625)", rep["labels"])
+                else:
+                    self.assertEqual(rep["leverage"]["cut"], 15.0)
+                    self.assertIn("servedBins", served)
+
+    def test_in625_meeting_all_thresholds_is_inconclusive_and_316l_can_meet_them(self):
+        def close_stub(alloy, P_W, v_mm_s, d_1e2_um, T0_C, layer_um=40.0, **_kw):
+            depth = round(100.0 + P_W * 0.1, 6)
+            return {"status": "ok", "depth_um": depth, "width_um": depth * 1.5, "extentStatus": "computed",
+                    "fabbroDepth_um": depth / 2.0, "index": served_index(alloy, P_W, v_mm_s, d_1e2_um, T0_C),
+                    "reasonLabel": None, "materialEvidence": None, "buildJobIdentity": None}
+
+        def exact(P, v, t):
+            return round(100.0 + P * 0.1, 6)
+        with mock.patch.object(ufreeze, "served_arm", close_stub):
+            for alloy in ("IN625", "316L"):
+                conds = [(c[0], c[1] * (1.3 if alloy == "IN625" else 1.45), c[2], c[3]) for c in conditions()]
+                md = metadata(alloy=alloy, blockLabel=f"Exact synthetic {alloy}",
+                              independence={"dataPreviouslyPublished": "no"})
+                rec = self.freeze(md=md, conds=conds)
+                self.score(rec["freezeKey"], targets_csv(conds, depth=exact))
+                rep = self.report(rec["freezeKey"])
+                served = rep["arms"]["served"]
+                self.assertTrue(served["stats"]["allThresholdsMet"], alloy)
+                if alloy == "IN625":
+                    self.assertEqual(served["status"], "inconclusive")
+                    self.assertIn("leverage", served["reason"])
+                else:
+                    self.assertIn(served["status"], ("thresholds-met", "inconclusive"))
+                    self.assertNotEqual(served["status"], "descriptive-not-scored")
+
+    def test_preview_offers_scoring_for_every_served_alloy(self):
+        for alloy in ("Ti-6Al-4V", "AlSi10Mg", "316L", "IN718", "IN625"):
+            pv = self.preview(metadata(alloy=alloy), inputs_csv(conditions()))
+            self.assertNotEqual(pv["bestReachable"]["status"], "descriptive-not-scored", alloy)
 
     def test_fewer_than_12_conditions_inconclusive(self):
         rep = self._status(conds=conditions(8))

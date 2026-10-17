@@ -290,7 +290,7 @@
     "applied": false,
     "id": "D6",
     "melt": "MELT registers thresholds and leverage cuts for Ti-6Al-4V and AlSi10Mg only",
-    "rule": "thresholds are registered for Ti-6Al-4V and AlSi10Mg only; 316L, IN718 and IN625 are shown for information and never scored (maintainer decision 2026-10-16)"
+    "rule": "thresholds and statistics registered for Ti-6Al-4V and AlSi10Mg are reused unchanged for 316L, IN718 and IN625 with a label; low cut 15 proposed for 316L and IN718; IN625 leverage is not evaluable (a step 5 qualifier); results are reported per alloy and never pooled (maintainer decision 2026-10-17); the G3o and G3s objectives keep their registered scope"
    },
    {
     "applied": true,
@@ -349,8 +349,8 @@
    "inputFlips": [],
    "property": "not evaluated"
   },
-  "freezeKey": "e0bd23f240848ece9dc9ff1127eb78177610797150dc230bab6af1b49feb863b",
-  "freezeSha256": "e8b57254faf6ca432fd208c0fb3e77e3df538c24a25ba46d37be52faa0dbf610",
+  "freezeKey": "92dee1adaa42e47f5b1e33c8fe8872a689897410266f0e282aaf84398259078b",
+  "freezeSha256": "229f89d307aeff115cc6d72b0c351a27bf940aca9bd44288af40bd4aa6af9de9",
   "grades": {
    "beam": "C",
    "block": "C",
@@ -1612,12 +1612,12 @@
        "pinnedSha256": "c8af101836331e0a3e19e946644c70062c538ad58d8b5180058403c06552bba8"
       },
       {
-       "liveSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4",
+       "liveSha256": "c24354878a9e8950fcf78634a4c4ee8ed4f74239ec766e7fe24e34548e53faa1",
        "path": "python/lpbf_served_arms.py",
-       "pinnedSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4"
+       "pinnedSha256": "c24354878a9e8950fcf78634a4c4ee8ed4f74239ec766e7fe24e34548e53faa1"
       }
      ],
-     "pinSha256": "1ff8e0200e944ba7cf07d8ed51aab0145c3f4e8499894e08908a890c69b0b35c"
+     "pinSha256": "189305c550e562abe0711a8c83309dbdbd62e2f4727d66a51022330ad03c9705"
     },
     "servedPath": "build-job-thermal"
    },
@@ -1659,12 +1659,12 @@
        "pinnedSha256": "c8af101836331e0a3e19e946644c70062c538ad58d8b5180058403c06552bba8"
       },
       {
-       "liveSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4",
+       "liveSha256": "c24354878a9e8950fcf78634a4c4ee8ed4f74239ec766e7fe24e34548e53faa1",
        "path": "python/lpbf_served_arms.py",
-       "pinnedSha256": "1cbe8bd1aa73ac0ed7552a70544d660ed80df2a86499772ce9fbd1dda166d1e4"
+       "pinnedSha256": "c24354878a9e8950fcf78634a4c4ee8ed4f74239ec766e7fe24e34548e53faa1"
       }
      ],
-     "pinSha256": "1ff8e0200e944ba7cf07d8ed51aab0145c3f4e8499894e08908a890c69b0b35c"
+     "pinSha256": "189305c550e562abe0711a8c83309dbdbd62e2f4727d66a51022330ad03c9705"
     },
     "servedPath": "build-job-thermal"
    },
@@ -1689,12 +1689,12 @@
     "files": {
      "python/lpbf_blind_stats.py": "bbaeb312f49892348ccc74d46f7d92ab8c499b5b493a4db30829411ad76906cf",
      "python/lpbf_spent_ledger.py": "51d7ffeb9b13e8b14e87cb105ff62056cc39fe655f4f705541a2fca4158c9813",
-     "python/lpbf_user_blind_score.py": "5816b2c8a386c706a1fc4ce41f8bf3a69e9129a1e2a2d058d8c3c9424b87574b",
+     "python/lpbf_user_blind_score.py": "5f721b98164f7b4392cad9b0e5ad6913e0226f632aa9e9ec01d2b87a60ef51e3",
      "python/lpbf_user_blind_targets.py": "54f6469748aa0e995e7f60e47ede0c7955110066e9a2b781f20fed645fd480a3"
     },
     "numpy": "2.2.6",
-    "protocolSha256": "8739daf89556142775596c8ca0b7723d09c6e4422593f34522fce60c6204b0d5",
-    "scoreSourcesSha256": "b99fac8b63ed45e7907b0ddb375f8408d3d7dc3e4694d53ab07dd67502d7fe26",
+    "protocolSha256": "399f3d8e52dfe225f716ce3f7246d63de94c1014529403ac4e029f3163818d97",
+    "scoreSourcesSha256": "05273c743585b0077a01748e62fe71e0c64a9a13f2fac0e8f59546e1ea89d621",
     "statsConstants": {
      "bootB": 2000,
      "bootSeed": 20261011,
@@ -1721,12 +1721,12 @@
     "files": {
      "python/lpbf_blind_stats.py": "bbaeb312f49892348ccc74d46f7d92ab8c499b5b493a4db30829411ad76906cf",
      "python/lpbf_spent_ledger.py": "51d7ffeb9b13e8b14e87cb105ff62056cc39fe655f4f705541a2fca4158c9813",
-     "python/lpbf_user_blind_score.py": "5816b2c8a386c706a1fc4ce41f8bf3a69e9129a1e2a2d058d8c3c9424b87574b",
+     "python/lpbf_user_blind_score.py": "5f721b98164f7b4392cad9b0e5ad6913e0226f632aa9e9ec01d2b87a60ef51e3",
      "python/lpbf_user_blind_targets.py": "54f6469748aa0e995e7f60e47ede0c7955110066e9a2b781f20fed645fd480a3"
     },
     "numpy": "2.2.6",
-    "protocolSha256": "8739daf89556142775596c8ca0b7723d09c6e4422593f34522fce60c6204b0d5",
-    "scoreSourcesSha256": "b99fac8b63ed45e7907b0ddb375f8408d3d7dc3e4694d53ab07dd67502d7fe26",
+    "protocolSha256": "399f3d8e52dfe225f716ce3f7246d63de94c1014529403ac4e029f3163818d97",
+    "scoreSourcesSha256": "05273c743585b0077a01748e62fe71e0c64a9a13f2fac0e8f59546e1ea89d621",
     "statsConstants": {
      "bootB": 2000,
      "bootSeed": 20261011,
@@ -1758,7 +1758,7 @@
   },
   "targetsSha256": "45b0defd179e99326fe6ae77428cdd62e38b22a78b83125a81bbd5c755d973c7",
   "thresholds": {
-   "alloyNote": null,
+   "alloyNote": "statistics for Ti-6Al-4V only; never pooled with other alloys",
    "maxApe": "0.50",
    "meanSigned": "0.10",
    "median": "0.20",
@@ -1772,6 +1772,6 @@
    "sourceEvidenceKind": "Measured (user-supplied)",
    "tier": "Declared"
   },
-  "wordingSha256": "87cfe059c7dcfa793eceea814465ca43e2686662433788d4163a7f73c8b12320"
+  "wordingSha256": "8137547e98baf2593233a03500b0e2ffd3ab7d5922565c04b7838cc7082f5ad4"
  }
 }

@@ -11,7 +11,7 @@ from lpbf_user_blind_inputs import (
 from lpbf_user_blind_overlap import preview_overlap
 from lpbf_user_blind_protocol import (
     CAPS, DIVERGENCES, FREEZE_ESTIMATE_S_PER_CALL, FREEZE_QUEUE_NOTE, HONESTY, PREVIEW_SCHEMA, PROTOCOL_ID,
-    SCORED_ALLOYS, WORDING, canonical_bytes, canonical_sha256, protocol_sha256, sha256_hex,
+    REGISTERED_ALLOYS, WORDING, canonical_bytes, canonical_sha256, protocol_sha256, sha256_hex,
 )
 
 
@@ -25,7 +25,7 @@ def applying_divergences(md, issues):
         ids.append("D4")
     if md["preheatBasis"] == "nominal-ambient":
         ids.append("D5")
-    if md["alloy"] not in SCORED_ALLOYS:
+    if md["alloy"] not in REGISTERED_ALLOYS:
         ids.append("D6")
     order = [d["id"] for d in DIVERGENCES]
     return sorted(set(ids), key=order.index)

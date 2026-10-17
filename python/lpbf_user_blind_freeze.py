@@ -13,7 +13,7 @@ import lpbf_blind_stats as stats
 from lpbf_served_arms import RESEARCH_MEMBER, SENSITIVITY_ARMS, served_arm
 from lpbf_user_blind_preview import build_preview
 from lpbf_user_blind_protocol import (
-    FREEZE_SCHEMA, HONESTY, PROTOCOL_ID, RECEIPT_SCHEMA, RESEARCH_ARMS, SERVED_SOURCE_KIND, SERVED_SOURCE_LOCATOR,
+    FREEZE_SCHEMA, HONESTY, LEVERAGE_LOW_CUT, PROTOCOL_ID, RECEIPT_SCHEMA, RESEARCH_ARMS, SERVED_SOURCE_KIND, SERVED_SOURCE_LOCATOR,
     SERVED_SOURCE_REASON, TARGET_COLUMNS, TARGET_ALIASES, WORDING, BlindRefusal, canonical_bytes, canonical_sha256,
     protocol_sha256,
 )
@@ -140,7 +140,7 @@ def run_freeze(store, job, progress=lambda k, n: None):
     conditions, n = [], len(parsed["conditions"])
     for k, c in enumerate(parsed["conditions"]):
         pred, index = predict_condition(md["alloy"], c, T0, layer)
-        cut = stats.LEVERAGE_LOW_CUT.get({"Ti-6Al-4V": "Ti64", "AlSi10Mg": "AlSi10Mg"}.get(md["alloy"], ""))
+        cut = LEVERAGE_LOW_CUT.get(md["alloy"])
         bin_ = stats.index_bins(index, cut) if cut is not None else None
         conditions.append({**{x: c[x] for x in ("condition", "P_W", "v_mm_s", "d_1e2_um", "d_declared_um",
                                                  "nTracks", "nRows", "rows")},
