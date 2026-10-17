@@ -1,0 +1,514 @@
+{
+ "id": "00000000000000000000000000000000",
+ "status": "failed",
+ "progress": 0.01,
+ "log": "",
+ "error": "The run reached the material boiling limit. Reduce laser power or increase scan speed and run again. This conduction model cannot calculate evaporation or free-surface flow.",
+ "errorKind": "validation",
+ "refusal": {
+  "code": "THERMAL_BOILING_LIMIT",
+  "field": "power_W",
+  "message": "The run reached the material boiling limit. Reduce laser power or increase scan speed and run again. This conduction model cannot calculate evaporation or free-surface flow.",
+  "detail": {
+   "diagnostic": "Thermal model validity exceeded at or above the material boiling limit (specific enthalpy 3023784.85 J/kg; limit 3011590 J/kg at 3560.15 K; cell=(np.int64(6), np.int64(20), np.int64(16)), previous T=3549.46 K, previous specific enthalpy=3001649.2 J/kg, dt=8.13109829e-08 s, source rate=8.55776666e+14 W/m\u00b3, net rate=6.58658627e+14 W/m\u00b3); evaporation/free-surface CFD required",
+   "acceptedPrefix": {
+    "schema": "lpbf-accepted-prefix-1",
+    "estimateTier": "Physics estimate",
+    "tierLabel": "Uncalibrated estimate",
+    "displaySignificantDigits": 2,
+    "uncertaintyStatement": "Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.",
+    "observable": "temperature history at declared points over the computed interval",
+    "maximumLabel": "maximum over the computed interval",
+    "computedInterval_s": [
+     0.0,
+     9.075522168112672e-06
+    ],
+    "acceptedSteps": 146,
+    "firstRejectedStep": {
+     "index": 147,
+     "reasonCode": "THERMAL_BOILING_LIMIT"
+    },
+    "points": [
+     {
+      "id": "surface-0pct",
+      "cellIndex": [
+       5,
+       20,
+       16
+      ],
+      "coordinate_m": [
+       -0.00030999999999999995,
+       -9.999999999999972e-06,
+       3.0000000000000024e-05
+      ],
+      "maximumOverComputedInterval_K": 2985.021509256776,
+      "timeOfMaximum_s": 9.075522168112672e-06,
+      "lastAcceptedTemperature_K": 2985.021509256776,
+      "history": [
+       {
+        "time_s": 4.176988769789456e-08,
+        "temperature_K": 446.45585424918414
+       },
+       {
+        "time_s": 3.896433844257352e-07,
+        "temperature_K": 631.08934640268
+       },
+       {
+        "time_s": 7.616986818173333e-07,
+        "temperature_K": 812.5190482279784
+       },
+       {
+        "time_s": 1.1576886305369596e-06,
+        "temperature_K": 990.7445462859882
+       },
+       {
+        "time_s": 1.577421195390996e-06,
+        "temperature_K": 1165.7406456848635
+       },
+       {
+        "time_s": 2.02077176979758e-06,
+        "temperature_K": 1337.466937602057
+       },
+       {
+        "time_s": 2.4876950551305306e-06,
+        "temperature_K": 1505.8738683053696
+       },
+       {
+        "time_s": 2.9782372548784206e-06,
+        "temperature_K": 1670.9065723999443
+       },
+       {
+        "time_s": 3.4914403289236097e-06,
+        "temperature_K": 1832.1558592578087
+       },
+       {
+        "time_s": 4.009730928826164e-06,
+        "temperature_K": 1893.5181387401262
+       },
+       {
+        "time_s": 4.5298781883219256e-06,
+        "temperature_K": 1916.1905837845911
+       },
+       {
+        "time_s": 5.055594844111157e-06,
+        "temperature_K": 1969.4911302957025
+       },
+       {
+        "time_s": 5.591078306455091e-06,
+        "temperature_K": 2117.4391842892896
+       },
+       {
+        "time_s": 6.129952065946645e-06,
+        "temperature_K": 2262.4436344398086
+       },
+       {
+        "time_s": 6.673205939052185e-06,
+        "temperature_K": 2404.6567914117477
+       },
+       {
+        "time_s": 7.222239642860957e-06,
+        "temperature_K": 2544.3114491860774
+       },
+       {
+        "time_s": 7.778472318893085e-06,
+        "temperature_K": 2681.607541832161
+       },
+       {
+        "time_s": 8.351676978759675e-06,
+        "temperature_K": 2818.673333509999
+       },
+       {
+        "time_s": 8.99439528114453e-06,
+        "temperature_K": 2966.76181672072
+       }
+      ]
+     },
+     {
+      "id": "surface-25pct",
+      "cellIndex": [
+       13,
+       20,
+       16
+      ],
+      "coordinate_m": [
+       -0.00015000000000000001,
+       -9.999999999999972e-06,
+       3.0000000000000024e-05
+      ],
+      "maximumOverComputedInterval_K": 423.15000138508583,
+      "timeOfMaximum_s": 9.075522168112672e-06,
+      "lastAcceptedTemperature_K": 423.15000138508583,
+      "history": [
+       {
+        "time_s": 4.176988769789456e-08,
+        "temperature_K": 423.1500000000886
+       },
+       {
+        "time_s": 3.896433844257352e-07,
+        "temperature_K": 423.1500000011244
+       },
+       {
+        "time_s": 7.616986818173333e-07,
+        "temperature_K": 423.1500000029436
+       },
+       {
+        "time_s": 1.1576886305369596e-06,
+        "temperature_K": 423.1500000059194
+       },
+       {
+        "time_s": 1.577421195390996e-06,
+        "temperature_K": 423.1500000105691
+       },
+       {
+        "time_s": 2.02077176979758e-06,
+        "temperature_K": 423.15000001760484
+       },
+       {
+        "time_s": 2.4876950551305306e-06,
+        "temperature_K": 423.1500000280024
+       },
+       {
+        "time_s": 2.9782372548784206e-06,
+        "temperature_K": 423.1500000430943
+       },
+       {
+        "time_s": 3.4914403289236097e-06,
+        "temperature_K": 423.15000006464464
+       },
+       {
+        "time_s": 4.009730928826164e-06,
+        "temperature_K": 423.1500000939293
+       },
+       {
+        "time_s": 4.5298781883219256e-06,
+        "temperature_K": 423.1500001328071
+       },
+       {
+        "time_s": 5.055594844111157e-06,
+        "temperature_K": 423.1500001840695
+       },
+       {
+        "time_s": 5.591078306455091e-06,
+        "temperature_K": 423.15000025153046
+       },
+       {
+        "time_s": 6.129952065946645e-06,
+        "temperature_K": 423.15000033850737
+       },
+       {
+        "time_s": 6.673205939052185e-06,
+        "temperature_K": 423.1500004499127
+       },
+       {
+        "time_s": 7.222239642860957e-06,
+        "temperature_K": 423.1500005920177
+       },
+       {
+        "time_s": 7.778472318893085e-06,
+        "temperature_K": 423.15000077280285
+       },
+       {
+        "time_s": 8.351676978759675e-06,
+        "temperature_K": 423.1500010062118
+       },
+       {
+        "time_s": 8.99439528114453e-06,
+        "temperature_K": 423.150001337255
+       }
+      ]
+     },
+     {
+      "id": "surface-50pct",
+      "cellIndex": [
+       20,
+       20,
+       16
+      ],
+      "coordinate_m": [
+       -9.999999999999972e-06,
+       -9.999999999999972e-06,
+       3.0000000000000024e-05
+      ],
+      "maximumOverComputedInterval_K": 423.15,
+      "timeOfMaximum_s": 4.176988769789456e-08,
+      "lastAcceptedTemperature_K": 423.15,
+      "history": [
+       {
+        "time_s": 4.176988769789456e-08,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 3.896433844257352e-07,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 7.616986818173333e-07,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 1.1576886305369596e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 1.577421195390996e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 2.02077176979758e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 2.4876950551305306e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 2.9782372548784206e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 3.4914403289236097e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 4.009730928826164e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 4.5298781883219256e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 5.055594844111157e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 5.591078306455091e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 6.129952065946645e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 6.673205939052185e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 7.222239642860957e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 7.778472318893085e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 8.351676978759675e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 8.99439528114453e-06,
+        "temperature_K": 423.15
+       }
+      ]
+     },
+     {
+      "id": "surface-75pct",
+      "cellIndex": [
+       28,
+       20,
+       16
+      ],
+      "coordinate_m": [
+       0.00015000000000000001,
+       -9.999999999999972e-06,
+       3.0000000000000024e-05
+      ],
+      "maximumOverComputedInterval_K": 423.15,
+      "timeOfMaximum_s": 4.176988769789456e-08,
+      "lastAcceptedTemperature_K": 423.15,
+      "history": [
+       {
+        "time_s": 4.176988769789456e-08,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 3.896433844257352e-07,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 7.616986818173333e-07,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 1.1576886305369596e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 1.577421195390996e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 2.02077176979758e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 2.4876950551305306e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 2.9782372548784206e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 3.4914403289236097e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 4.009730928826164e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 4.5298781883219256e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 5.055594844111157e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 5.591078306455091e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 6.129952065946645e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 6.673205939052185e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 7.222239642860957e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 7.778472318893085e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 8.351676978759675e-06,
+        "temperature_K": 423.15
+       },
+       {
+        "time_s": 8.99439528114453e-06,
+        "temperature_K": 423.15
+       }
+      ]
+     },
+     {
+      "id": "below-track-start-2-cells",
+      "cellIndex": [
+       5,
+       20,
+       14
+      ],
+      "coordinate_m": [
+       -0.00030999999999999995,
+       -9.999999999999972e-06,
+       -9.999999999999972e-06
+      ],
+      "maximumOverComputedInterval_K": 578.3671112546923,
+      "timeOfMaximum_s": 9.075522168112672e-06,
+      "lastAcceptedTemperature_K": 578.3671112546923,
+      "history": [
+       {
+        "time_s": 4.176988769789456e-08,
+        "temperature_K": 423.9575347355734
+       },
+       {
+        "time_s": 3.896433844257352e-07,
+        "temperature_K": 430.63844889028604
+       },
+       {
+        "time_s": 7.616986818173333e-07,
+        "temperature_K": 437.700665752677
+       },
+       {
+        "time_s": 1.1576886305369596e-06,
+        "temperature_K": 445.1295766606871
+       },
+       {
+        "time_s": 1.577421195390996e-06,
+        "temperature_K": 452.91158325918644
+       },
+       {
+        "time_s": 2.02077176979758e-06,
+        "temperature_K": 461.0340519277969
+       },
+       {
+        "time_s": 2.4876950551305306e-06,
+        "temperature_K": 469.4852243737075
+       },
+       {
+        "time_s": 2.9782372548784206e-06,
+        "temperature_K": 478.25415602188997
+       },
+       {
+        "time_s": 3.4914403289236097e-06,
+        "temperature_K": 487.31122262978
+       },
+       {
+        "time_s": 4.009730928826164e-06,
+        "temperature_K": 496.3392280158956
+       },
+       {
+        "time_s": 4.5298781883219256e-06,
+        "temperature_K": 505.2805060723311
+       },
+       {
+        "time_s": 5.055594844111157e-06,
+        "temperature_K": 514.1961219401387
+       },
+       {
+        "time_s": 5.591078306455091e-06,
+        "temperature_K": 523.1526294679289
+       },
+       {
+        "time_s": 6.129952065946645e-06,
+        "temperature_K": 532.0397353509
+       },
+       {
+        "time_s": 6.673205939052185e-06,
+        "temperature_K": 540.8708019727725
+       },
+       {
+        "time_s": 7.222239642860957e-06,
+        "temperature_K": 549.6646351247822
+       },
+       {
+        "time_s": 7.778472318893085e-06,
+        "temperature_K": 558.438911907684
+       },
+       {
+        "time_s": 8.351676978759675e-06,
+        "temperature_K": 567.3384091053658
+       },
+       {
+        "time_s": 8.99439528114453e-06,
+        "temperature_K": 577.1427640941549
+       }
+      ]
+     }
+    ],
+    "pointRule": "surface cells at the start and at 25, 50 and 75 percent of the first track and one cell two cells below the start, first layer (declared observation points)",
+    "domainWarnings": [
+     "Fixed-domain conduction with a boiling stop: no evaporation, recoil, melt flow or surface motion.",
+     "Material properties are the solver's estimated laws; their transfers apply to this history."
+    ],
+    "explanation": "Uncalibrated estimate of the temperature at the selected points for Ti-6Al-4V from the stated transient model. Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy. Only the interval from 0 s to 9.08e-06 s was computed. The next step exceeded the conduction model's boiling limit.",
+    "noValueText": null,
+    "completeHistoryText": "A complete temperature history needs an evaporation model with compatible material properties. The current run stopped at the boiling limit. You can inspect the computed interval or select a model that includes the missing physics."
+   }
+  }
+ }
+}

@@ -1220,7 +1220,9 @@ def main():
                 execution_capabilities = json.loads((folder/"capabilities.json").read_text())
                 run_progress = _cpu_run_progress_for(input_data, execution_capabilities)
                 options = {"run_progress": run_progress} if run_progress is not None else {}
-                result = run_thermal_request(input_data, report, folder,
+                # G1.1: on a boiling-limit refusal the accepted prefix travels in the refusal detail.
+                from lpbf_accepted_prefix import run_with_accepted_prefix
+                result = run_with_accepted_prefix(input_data, report, folder,
                              execution_capabilities, solver=run, **options)
 
             run_kind = _archive_run_kind(job_type, result)

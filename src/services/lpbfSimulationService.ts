@@ -122,7 +122,26 @@ export interface SimulationResult {
   discretization?: { cells: number; mesh_m: number; minimumDt_s: number; meanDt_s: number; steps: number };
 
 }
+export interface AcceptedPrefixPoint {
+  id: string; cellIndex: number[]; coordinate_m: number[];
+  maximumOverComputedInterval_K: number; timeOfMaximum_s: number; lastAcceptedTemperature_K: number;
+  history: { time_s: number; temperature_K: number }[];
+}
+/** Partial temperature history attached to a THERMAL_BOILING_LIMIT refusal (python/lpbf_accepted_prefix.py). */
+export interface AcceptedPrefix {
+  schema: "lpbf-accepted-prefix-1"; estimateTier: string; tierLabel: string;
+  displaySignificantDigits: number | null; uncertaintyStatement: string | null;
+  observable: string; maximumLabel: string; computedInterval_s: [number, number];
+  acceptedSteps: number; firstRejectedStep: { index: number; reasonCode: string };
+  points: AcceptedPrefixPoint[]; pointRule: string; domainWarnings: string[];
+  explanation: string | null; noValueText: string | null; completeHistoryText: string;
+}
+export interface SimulationRefusal {
+  code: string; field: string; message: string;
+  detail: { acceptedPrefix?: AcceptedPrefix; [key: string]: unknown };
+}
 export interface SimulationJob {
+  errorKind?: "validation"; refusal?: SimulationRefusal;
   id: string; status: "queued" | "running" | "completed" | "failed" | "cancelled" | "timed_out";
   requestSummary?: { mode: string; backend: string; material: string };
   progress: number; log: string; error: string | null; cacheHit?: boolean; deduplicated?: boolean; result?: SimulationResult;
@@ -139,6 +158,35 @@ function object(value: unknown): value is Record<string, unknown> { return typeo
 function literalFields(value: unknown, expected: Record<string, unknown>): boolean {
   return object(value) && Object.keys(value).length === Object.keys(expected).length
     && Object.entries(expected).every(([key, item]) => value[key] === item);
+}
+const isNumArray = (v: unknown, n?: number): v is number[] =>
+  Array.isArray(v) && (n === undefined || v.length === n) && v.every(x => typeof x === "number" && Number.isFinite(x));
+const strOrNull = (v: unknown) => v === null || typeof v === "string";
+function checkAcceptedPrefix(p: unknown): void {
+  const fail = () => { throw new Error("Invalid LPBF accepted prefix"); };
+  if (!object(p) || p.schema !== "lpbf-accepted-prefix-1" || typeof p.estimateTier !== "string" || typeof p.tierLabel !== "string"
+    || !(p.displaySignificantDigits === null || (Number.isSafeInteger(p.displaySignificantDigits) && Number(p.displaySignificantDigits) >= 1))
+    || !strOrNull(p.uncertaintyStatement) || !strOrNull(p.explanation) || !strOrNull(p.noValueText)
+    || typeof p.observable !== "string" || typeof p.maximumLabel !== "string" || typeof p.completeHistoryText !== "string"
+    || typeof p.pointRule !== "string" || !isNumArray(p.computedInterval_s, 2)
+    || !Number.isSafeInteger(p.acceptedSteps) || Number(p.acceptedSteps) < 0
+    || !object(p.firstRejectedStep) || !Number.isSafeInteger(p.firstRejectedStep.index) || typeof p.firstRejectedStep.reasonCode !== "string"
+    || !Array.isArray(p.domainWarnings) || !p.domainWarnings.every(w => typeof w === "string")
+    || !Array.isArray(p.points)) return fail();
+  for (const pt of p.points) {
+    if (!object(pt) || typeof pt.id !== "string" || !isNumArray(pt.cellIndex) || !isNumArray(pt.coordinate_m, 3)
+      || typeof pt.maximumOverComputedInterval_K !== "number" || typeof pt.timeOfMaximum_s !== "number"
+      || typeof pt.lastAcceptedTemperature_K !== "number" || !Array.isArray(pt.history)
+      || !pt.history.every(h => object(h) && typeof h.time_s === "number" && typeof h.temperature_K === "number")) return fail();
+  }
+}
+function checkRefusal(value: Record<string, unknown>): void {
+  const refusal = value.refusal;
+  if (value.errorKind === undefined && refusal === undefined) return;
+  if (value.status !== "failed" || value.errorKind !== "validation" || !object(refusal)
+    || typeof refusal.code !== "string" || typeof refusal.field !== "string" || typeof refusal.message !== "string"
+    || !object(refusal.detail)) throw new Error("Invalid LPBF job refusal");
+  if (refusal.detail.acceptedPrefix !== undefined) checkAcceptedPrefix(refusal.detail.acceptedPrefix);
 }
 function checkCoreContract(result: Record<string, unknown>): void {
   if (result.coreContract === undefined) return; // Preserve legacy absence without inventing a binding.
@@ -263,6 +311,7 @@ export function parseSimulationJob(value: unknown): SimulationJob {
       throw new Error("Invalid LPBF partial artifact inventory");
     }
   }
+  checkRefusal(value);
   if (value.status === "completed") {
     const r = value.result;
     if (!object(r)
