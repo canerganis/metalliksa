@@ -35,6 +35,7 @@ SETTINGS = dict(stepMethod="explicit-Euler-conservative-enthalpy-FV",
                 maximumCells=600000, timeout_s=300.,
                 bottomBoundary="isothermal-at-preheat-half-cell",
                 lateralBoundary="adiabatic", surface="fixed-top-face",
+                verticalGrid="integer-cells-anchored-at-zero-exposed-face",
                 geometry="instantaneous-liquidus-extent-at-peak-melt-volume-snapshot",
                 minimumSourceCapture=MINIMUM_SOURCE_CAPTURE_FRACTION,
                 radiationConstant_W_m2K4=STEFAN_BOLTZMANN)
@@ -88,6 +89,25 @@ def _thermal_table(material, maximum_K):
     value = np.interp(maximum_K, temperatures, enthalpies)
     keep = temperatures < maximum_K
     return np.r_[temperatures[keep], maximum_K], np.r_[enthalpies[keep], value]
+
+
+def _fixed_surface_grid(p):
+    """Keep shared XY/spacing and integer substrate cells, anchored at z=0.
+
+    Shared substrate_depth is already an integer number of dx. A second ceil
+    of its floating quotient can add a spurious cell above the source surface.
+    Recover that integer directly and construct z from the exposed face so the
+    last center is exactly -dx/2 and no represented material lies above it.
+    """
+    domain = calculate_mesh_domain(p)
+    dx = domain["dx"]
+    domain["nz"] = int(round(domain["substrate_depth"]/dx))
+    domain["substrate_depth"] = domain["nz"]*dx
+    nx, ny, nz = (domain[key] for key in ("nx", "ny", "nz"))
+    axes = ((np.arange(nx)+.5)*dx-domain["span"]/2,
+            (np.arange(ny)+.5)*dx-ny*dx/2,
+            (np.arange(nz)-nz+.5)*dx)
+    return domain, axes
 
 
 def _accepted_step(temperature, enthalpy, requested_dt_s, *, dx, rho, cp,
@@ -195,14 +215,11 @@ def run(raw, report=lambda *args: None):
     """Solve one bare-plate track; return a distinct finite, unvalidated schema."""
     normalized, p, material, evaporation = _request(raw)
     provenance = _identity(normalized, material)
-    domain = calculate_mesh_domain(p)
+    domain, axes = _fixed_surface_grid(p)
     nx, ny, nz = (domain[key] for key in ("nx", "ny", "nz"))
     if nx*ny*nz > SETTINGS["maximumCells"]:
         raise ValueError("Evaporative CPU mesh exceeds 600000 cells")
-    dx, radius, substrate = (domain[key] for key in ("dx", "radius", "substrate_depth"))
-    axes = ((np.arange(nx)+.5)*dx-domain["span"]/2,
-            (np.arange(ny)+.5)*dx-ny*dx/2,
-            (np.arange(nz)+.5)*dx-substrate)
+    dx, radius = (domain[key] for key in ("dx", "radius"))
     thermal = thermal_si_inputs(p, material)
     ambient = thermal["preheat_K"]
     tt, hh = _thermal_table(material, evaporation.maxTemperature_K)
@@ -274,10 +291,33 @@ def run(raw, report=lambda *args: None):
     residual = energies["input_J"]-loss-stored
     scale = max(abs(energies["input_J"]), abs(loss), abs(stored), 1e-12)
     energies.update(stored_J=stored, residual_J=residual, relativeResidual=abs(residual)/scale)
-    reason = ("Recoil capillary onset latched; fixed-surface depth/length/volume unavailable"
+    reason = ("The surface would deform into a vapor cavity at these settings. "
+              "A fixed-surface model cannot give melt depth here. Use a model with "
+              "surface motion and melt flow for depth, length and volume."
               if gate["onset"] else
-              "Active evaporation with missing surface tension; geometry unresolved"
+              "Melt geometry needs a keyhole-onset check. Supply surface tension, "
+              "chamber pressure, beam radius and a compatible recoil model."
               if gate["unresolvedGeometry"] else None)
+    width_warning = ("The surface would deform into a vapor cavity. This width is a "
+                     "fixed-surface isotherm scenario and may not represent the melt pool."
+                     if gate["onset"] else None)
+    warnings = [
+        "Uncalibrated estimate of temperature and liquidus isotherm geometry for Ti-6Al-4V "
+        "from the stated transient model. Uncertainty is unknown and may be large. "
+        "Calibrate to your machine for better accuracy.",
+        "The surface is held fixed. Evaporation removes energy, but melt flow, surface "
+        "recession and changes in alloy composition are not resolved.",
+        "This is the liquidus isotherm envelope of the selected temperature model. "
+        "The envelope uses the reported instantaneous peak-melt-volume snapshot.",
+    ]
+    if emitted_mass > 0:
+        warnings.append("Active evaporation is present. Surface recession, expelled liquid, "
+                        "plume shielding, convective redistribution and advective "
+                        "redistribution are not resolved.")
+    if width_warning is not None:
+        warnings.append(width_warning)
+    if reason is not None:
+        warnings.append(reason)
     geometry = dict(snapshot)
     geometry.pop("moltenCellCount")
     if not gate["geometryAvailable"]:
@@ -286,6 +326,7 @@ def run(raw, report=lambda *args: None):
     geometry.update(basis="instantaneous liquidus extent at peak-melt-volume snapshot; cell bounds",
                     label="Uncalibrated fixed-surface isotherm estimate",
                     widthLabel="Conditional fixed-surface liquidus width estimate",
+                    widthWarning=width_warning,
                     refusalReason=reason, liquidus_K=material["liquidus_K"],
                     cellResolution_um=dx*1e6)
     result = dict(schema=SCHEMA, modelId=MODEL_ID, status="completed",
@@ -296,7 +337,7 @@ def run(raw, report=lambda *args: None):
         diagnosticEmittedMass_kg=emitted_mass,
         diagnosticMassLabel="Integrated Ti-species emitted mass diagnostic; not ablation or material removal",
         peakTemperature_K=peak, temperatureLabel="Conditional fixed-surface temperature estimate",
-        geometry=geometry, gate=gate,
+        geometry=geometry, gate=gate, warnings=warnings,
         fieldSummary=dict(shape=[nx, ny, nz], dx_m=dx,
                           minimumFinalTemperature_K=float(temperature.min()),
                           maximumFinalTemperature_K=float(temperature.max()),

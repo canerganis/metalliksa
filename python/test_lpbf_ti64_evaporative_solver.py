@@ -9,6 +9,7 @@ import unittest
 
 import numpy as np
 
+import lpbf_ti64_evaporative_solver as solver
 from lpbf_ti64_evaporation import validate_config
 from lpbf_ti64_evaporative_solver import run, _accepted_step, _thermal_table
 from lpbf_material_registry import material
@@ -142,6 +143,35 @@ class ManufacturedTests(unittest.TestCase):
 
 
 class IntegrationTests(unittest.TestCase):
+    def test_roundoff_mesh_places_all_cells_below_exact_exposed_surface(self):
+        raw = scenario(power_W=10., speed_mm_s=10000., cooling_s=0.,
+                       trackLength_um=100., beamDiameter_um=20., mesh_um=12.)
+        p = solver._request(raw)[1]
+        domain, axes = solver._fixed_surface_grid(p)
+        self.assertEqual(domain["nz"], 27)
+        self.assertEqual(len(axes[2]), 27)
+        self.assertTrue(np.all(axes[2] < 0.))
+        self.assertEqual(axes[2][-1]+domain["dx"]/2, 0.)
+        np.testing.assert_allclose(np.diff(axes[2]), domain["dx"], rtol=1e-14)
+        self.assertEqual(domain["substrate_depth"], domain["nz"]*domain["dx"])
+        result = run(raw)
+        self.assertEqual(result["fieldSummary"]["shape"], [14, 14, 27])
+        self.assertLessEqual(result["energy"]["relativeResidual"], 1e-9)
+
+    def test_returned_limitations_include_active_evaporation_and_cavity_width(self):
+        result = run(scenario())
+        warnings = " ".join(result["warnings"])
+        self.assertIn("Uncertainty is unknown and may be large. Calibrate to your machine for better accuracy.", warnings)
+        self.assertIn("The surface is held fixed. Evaporation removes energy, but melt flow, surface recession and changes in alloy composition are not resolved.", warnings)
+        for omitted in ("surface recession", "expelled liquid", "plume shielding",
+                        "convective redistribution", "advective redistribution"):
+            self.assertIn(omitted, warnings.lower())
+        self.assertEqual(result["geometry"]["widthWarning"],
+            "The surface would deform into a vapor cavity. This width is a fixed-surface isotherm scenario and may not represent the melt pool.")
+        self.assertIn(result["geometry"]["widthWarning"], result["warnings"])
+        self.assertIn("Use a model with surface motion and melt flow for depth, length and volume.",
+                      result["geometry"]["refusalReason"])
+
     def test_table_continuation_preserves_registry(self):
         m = material("Ti-6Al-4V"); saved = copy.deepcopy(m)
         tt, hh = _thermal_table(m, 5000.)
