@@ -37,7 +37,7 @@ def close(a, b, rtol=1e-9, atol=1e-12):
     assert abs(a - b) <= max(atol, rtol * max(abs(a), abs(b))), (a, b)
 
 
-def source_text(filename, first, last=None, mode="-table"):
+def source_text(filename, first, last=None, mode="-layout"):
     path = ROOT / "papers" / filename
     assert path.is_file(), f"Restore local source prerequisite: {path}"
     assert hashlib.sha256(path.read_bytes()).hexdigest() == SOURCES[filename], filename
@@ -47,8 +47,22 @@ def source_text(filename, first, last=None, mode="-table"):
     return subprocess.run(args, capture_output=True, check=True).stdout.decode("utf-8", errors="replace")
 
 
+def vaporization_latents(raw_text):
+    """Read all three columns from the named Gan row, retaining PDF superscripts.
+
+    Poppler layout puts some exponents on the preceding line. Its raw mode keeps
+    them adjacent to their base; use only this bounded row, never nearby fusion
+    values. Hash verification still happens before either extraction.
+    """
+    section = re.search(r"Latent heat of vaporization(.*?)Minimal absorptivity", raw_text, re.S)
+    assert section is not None, "Missing vaporization row boundaries"
+    values = re.findall(r"(\d+\.\d+)×10\s*(\d+)\b", section[1])
+    assert len(values) == 3, "Expected three vaporization columns with exponents"
+    return [float(mantissa) * 10 ** int(exponent) for mantissa, exponent in values]
+
+
 def source_checks():
-    text = source_text("engine_est_gan2021_SI.pdf", 20)
+    text = "\n".join(line.strip() for line in source_text("engine_est_gan2021_SI.pdf", 20).splitlines())
     # Parse physical source rows rather than comparing a hand-entered JSON echo.
     row = next(x for x in text.splitlines() if x.startswith("Vaporization point"))
     numbers = [float(x) for x in re.findall(r"\b\d+(?:\.\d+)?\b", row)]
@@ -58,11 +72,8 @@ def source_checks():
     masses = [float(x) for x in re.findall(r"\b\d+(?:\.\d+)?\b", massrow)]
     close(TI["M"], masses[0] / 1000)
     close(AL_PROXY["M"], masses[1] / 1000)
-    vaporow = next(x for x in text.splitlines() if x.startswith("Latent heat of vaporization"))
-    mantissas = [float(x) for x in re.findall(r"\d+\.\d+", vaporow)]
-    exponents = [int(x) for x in re.findall(r"10(\d+)", vaporow)]
-    assert len(mantissas) == len(exponents) == 3, vaporow
-    close(TI["Lv"], mantissas[0] * 10 ** exponents[0])
+    latent_values = vaporization_latents(source_text("engine_est_gan2021_SI.pdf", 20, mode="-raw"))
+    close(TI["Lv"], latent_values[0])
     ti_other = ["4420", "3920", "0.1734T+452.72", "830", "0.0136T+1.3097", "33.4", "1933", "2.86", "0.26"]
     assert all(token in text for token in ti_other)
     text = source_text("engine_est_mondal2023.pdf", 3, mode="-raw")
