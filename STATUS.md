@@ -1,3 +1,11 @@
+## Güncel devam noktası — 2026-10-20 / Mevcut veriyle fizik workflow'u
+
+- **Kapsam:** Kullanıcının talebiyle yalnız mevcut yerel veri ve kaynaklarla fizik/çözücü eksiklerine giriş yapıldı. [Workflow](docs/research/WORKFLOW_existing_data_physics_2026-10-20.md), [ilk sonuç kaydı](docs/research/RESULTS_existing_data_physics_2026-10-20.md). Dal `codex/existing-data-physics-workflow`, taban `6b73f745`, ilk paket commit'i `ce0c4a6e`.
+- **Tamamlanan W0:** dört mevcut kaynak PDF'si `Metalliksa-1-wt-estimates/papers` konumundan SHA256 eşleştirilerek uygulamanın ignored `papers/` dizinine kopyalandı. Yeni veri indirilmedi. Termal araştırma betiğindeki Xpdf `-table` / kurulu Poppler uyumsuzluğu giderildi; kaynak hashleri, fizik sabitleri ve toleranslar değişmedi.
+- **Güncel doğrulama:** CPython 3.12.10 ile 7 extractor regresyonu PASS; 4 PDF/hash kontrolü ve 90 konik kütle durumu dahil termal araştırma kontrolleri PASS; 7 mekanik araştırma testi PASS; pycalphad 0.11.2 ile beklenen COST507 tam-kimya reddi, 6 disordered-limit ve 18 off-order durum kontrolü PASS (`scientificRepair=false`). Bunlar kaynak/araştırma kontrolleridir; yeni PDE veya deneysel doğrulama değildir. Uygulama/Python tam CI ve tarayıcı testi bu dar değişiklik için tekrarlanmadı.
+- **Karar:** Ti64 mevcut kaynaklarla koşullu G1.2/G1.3 uygulamasının ilk adayı. IN625'te tablo kodu var, ancak kaynak kabulü varsayılan tam transient yolu açmıyor. Ti CALPHAD faz uyumsuzluğu sürüyor; C silinmedi, TDB değiştirilmedi. Pin/golden, fizik ve ürün etiketleri değişmedi.
+- **Sıradaki somut iş:** W1 için Ti64 sabit-yüzey buharlaşma enerji operatörü, bağımsız sayısal kabul vakaları ve A1.1 keyhole-onset latch sözleşmesini hazırlayıp mevcut tasarıma göre uygulamak. W1–W5 henüz tamamlanmadı. Arka plan işi yok; push yapılmadı. Başlangıçtaki kullanıcı değişiklikleri korundu.
+
 ## Güncel devam noktası — 2026-10-15 / Solidification gate onarımı (`batch/solidification-2026-10-15`, yerel)
 
 - **Onarım:** null ön miktarları, reddedilmiş worker/G-R/segregation blokları ve CALPHAD literature adaptörü sabit envelope sözleşmesine taşındı; PDAS yardımcısı gerçek görünümden erişiliyor. Fizik, kaynak katsayıları, liquidus admission ve honesty/label/parity kuralları değişmedi. Değiştirilen her test beklentisi ve gerekçesi: [onarım kaydı](docs/research/SOLBATCH_gate_repair_2026-10-15.md).

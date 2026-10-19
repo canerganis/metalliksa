@@ -35,19 +35,19 @@ tolerances and numerical checks unchanged.
 Files: docs/research/scripts/engine_est_thermal_check.py;
 docs/research/scripts/test_engine_est_thermal_check.py.
 
-- [ ] Add regressions for Poppler command selection, source guards and bounded
+- [x] Add regressions for Poppler command selection, source guards and bounded
   three-column vaporization parsing; observe the relevant failures.
-- [ ] Use `-layout` by default, strip row indentation, and parse scientific
+- [x] Use `-layout` by default, strip row indentation, and parse scientific
   notation only inside the raw vaporization-to-absorptivity section.
-- [ ] Run stdlib tests and the actual four-PDF `--check` with locked Python.
-- [ ] Re-run the existing CALPHAD construction check with pycalphad.
+- [x] Run stdlib tests and the actual four-PDF `--check` with locked Python.
+- [x] Re-run the existing CALPHAD construction check with pycalphad.
 
 ## Task 2: Source receipt and continuation
 
 Files: docs/research/RESULTS_existing_data_physics_2026-10-20.md; STATUS.md.
 
-- [ ] Record paths/hashes, commands, outcomes and limits; distinguish source
+- [x] Record paths/hashes, commands, outcomes and limits; distinguish source
   readiness, numerical research checks, served implementation and validation.
-- [ ] Classify thermal, IN625, Ti CALPHAD, microstructure and mechanical readiness.
-- [ ] Verify diff and links; commit only the listed task files and workflow.
-- [ ] Name W1's next concrete design task; do not claim PDE implementation.
+- [x] Classify thermal, IN625, Ti CALPHAD, microstructure and mechanical readiness.
+- [x] Verify diff and links; commit only the listed task files and workflow (`ce0c4a6e`).
+- [x] Name W1's next concrete design task; do not claim PDE implementation.
