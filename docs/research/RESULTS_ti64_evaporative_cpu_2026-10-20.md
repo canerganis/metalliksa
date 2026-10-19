@@ -6,7 +6,8 @@ Implementation commits: `6046f041` (law), `676fa2c2` (spatial solver),
 `e6cb55ae` (review fixes). Task review found rare floating-point mesh top-face
 misalignment and missing returned scope warnings; both were fixed with focused
 regressions and independently re-reviewed without new findings. Independent
-whole-branch review is pending. Numerical checks are not experimental
+whole-branch review of `6b73f745..a2d13eff` passed with no Critical, Important or
+Minor findings. Numerical checks are not experimental
 validation. No new material measurements or fitted parameters are introduced.
 
 ## Source and assumptions
@@ -126,3 +127,14 @@ claimed. Manufactured convergence verifies the discrete kernel only. Full UI,
 TypeScript and unrelated Python suites were not rerun; no UI or existing route
 changed. The next integration step is an explicit opt-in service/UI consumer
 that preserves these assumptions and geometry refusals. W2-W5 remain pending.
+
+The final review explicitly excluded experimental accuracy, flow/keyhole/ablation,
+full nonlinear process convergence, UI/HTTP integration and redundant execution
+of all application tests. These are accepted scope boundaries, not waived
+failures. The parent ran the focused combined tests and CLI described above.
+
+Implementation decisions: continue the established task branch with one writer
+and explicit file ownership, preserving restored local runtime/source context
+and unrelated changes (tradeoff: shared-checkout coordination risk); implement
+an additive CPU/CLI model to preserve frozen default behavior (tradeoff: a
+separate service/UI integration step). No merge or push was performed.

@@ -59,6 +59,6 @@ workflow and this plan. Parent owns these, workers do not edit them.
 
 - [x] Run combined new tests, relevant existing operator/default tests and frozen
   parity on locked interpreter; record actual counts and limitations.
-- [ ] Run independent whole-branch review; fix important findings and re-review.
+- [x] Run independent whole-branch review; fix important findings and re-review.
 - [x] Document usage, declared assumptions, evidence and pending UI integration.
-- [ ] Verify/stage only own files, local commits, no push.
+- [x] Verify/stage only own files, local commits, no push.

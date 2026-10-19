@@ -40,7 +40,7 @@ not a replacement release objective.
 ## Current work boundary
 
 W0 source readiness is complete. W1's bounded Ti64 fixed-surface CPU/CLI solver
-is implemented and numerically checked; whole-branch review is pending. It has
+is implemented, numerically checked and independently reviewed. It has
 no UI/HTTP dispatch yet and no experimental validity claim. W2-W5 remain pending.
 No recurring job or background autonomous task is created.
 
