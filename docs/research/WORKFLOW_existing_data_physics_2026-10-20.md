@@ -16,7 +16,7 @@ not a replacement release objective.
    bytes; verify hashes; run thermal and CALPHAD research checks on the current
    checkout. Fix extraction portability without changing physical constants,
    tolerances, source hashes or admission rules. Record usable and blocked inputs.
-2. **W1: reduced evaporative thermal model.** Use the existing G1.2/G1.3 contract and
+2. **W1: reduced evaporative thermal model (Ti64 CPU/CLI implemented).** Use the existing G1.2/G1.3 contract and
    Amendment 1 in SPEC_engine_estimates_2026-10-17.md. Start with the alloy whose
    existing input chain passes W0. Separate model identity, opt-in dispatch,
    evaporative energy ledger, timestep rejection and onset admission are required.
@@ -39,15 +39,18 @@ not a replacement release objective.
 
 ## Current work boundary
 
-W0 produces a source-readiness receipt and a runnable verification entry point.
-Later stages require their own concrete implementation contract; their status is
-pending, never implied complete by this workflow being started. No recurring job
-or background autonomous task is created.
+W0 source readiness is complete. W1's bounded Ti64 fixed-surface CPU/CLI solver
+is implemented and numerically checked; whole-branch review is pending. It has
+no UI/HTTP dispatch yet and no experimental validity claim. W2-W5 remain pending.
+No recurring job or background autonomous task is created.
 
 ## First implementation plan
 
 See ../superpowers/plans/2026-10-20-physics-source-readiness.md.
 
 First receipt: [RESULTS_existing_data_physics_2026-10-20.md](RESULTS_existing_data_physics_2026-10-20.md).
-Next: W1 discrete-operator contract and numerical acceptance design, using the
-verified local Ti64 sources and mandatory A1.1 onset gate.
+W1: [contract](SPEC_ti64_evaporative_cpu_2026-10-20.md),
+[plan](../superpowers/plans/2026-10-20-ti64-evaporative-cpu.md),
+[numerical receipt and CLI usage](RESULTS_ti64_evaporative_cpu_2026-10-20.md).
+Next: explicit opt-in consumer integration preserving the model's refusals;
+then W2 material admission. No automatic promotion of estimates is permitted.

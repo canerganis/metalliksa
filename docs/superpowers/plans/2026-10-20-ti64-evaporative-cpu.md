@@ -32,10 +32,10 @@ heat_flux_W_m2, recoil_pressure_Pa, heat_flux_derivative_W_m2K;
 update_onset(previous, state, config, beam_radius_m, time_s) -> new latched gate dict.
 Source identity exported from the same module. Input arrays must remain unchanged.
 
-- [ ] Write failing law/unit/bridge/invalid-input/onset tests.
-- [ ] Implement the source constants, explicit transition and latch per spec.
-- [ ] Run focused tests with locked Python; record RED/GREEN evidence and commit.
-- [ ] Independent task review and fixes before Task 2.
+- [x] Write failing law/unit/bridge/invalid-input/onset tests.
+- [x] Implement the source constants, explicit transition and latch per spec.
+- [x] Run focused tests with locked Python; record RED/GREEN evidence and commit.
+- [x] Independent task review and fixes before Task 2.
 
 ### Task 2: Spatial solver and integration tests
 
@@ -45,20 +45,20 @@ only if needed for focused independently testable stepping (report ownership fir
 Consumes Task1 interfaces. Produces run(raw, report=lambda *args:None) -> distinct
 JSON result plus stdin/stdout CLI. No source-mutation injection or monkeypatch.
 
-- [ ] Write failing contract/energy/cooling/refinement/geometry/CLI tests.
-- [ ] Implement strict bounded request validation, field solve and accepted-step
+- [x] Write failing contract/energy/cooling/refinement/geometry/CLI tests.
+- [x] Implement strict bounded request validation, field solve and accepted-step
   ledgers; source dependency identity; labels/refusals per spec.
-- [ ] Use the same discrete step in manufactured cooling and actual moving-source
+- [x] Use the same discrete step in manufactured cooling and actual moving-source
   tests. Verify independent numeric acceptance, not only helper algebra.
-- [ ] Run focused suite and real CLI, commit, then independent task review/fixes.
+- [x] Run focused suite and real CLI, commit, then independent task review/fixes.
 
 ### Task 3: Parent verification and delivery
 
 Files: docs/research/RESULTS_ti64_evaporative_cpu_2026-10-20.md, PROOF.md, STATUS.md,
 workflow and this plan. Parent owns these, workers do not edit them.
 
-- [ ] Run combined new tests, relevant existing operator/default tests and frozen
+- [x] Run combined new tests, relevant existing operator/default tests and frozen
   parity on locked interpreter; record actual counts and limitations.
 - [ ] Run independent whole-branch review; fix important findings and re-review.
-- [ ] Document usage, declared assumptions, evidence and pending UI integration.
+- [x] Document usage, declared assumptions, evidence and pending UI integration.
 - [ ] Verify/stage only own files, local commits, no push.
