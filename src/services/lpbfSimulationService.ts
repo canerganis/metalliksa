@@ -1010,3 +1010,99 @@ export async function fetchIn625BareplateTemperatureField(jobId: string, result:
   }
   return { shapeXYZ: result.field.shapeXYZ, temperaturesK, sha256: actualSha256 };
 }
+
+/** Opt-in Ti-6Al-4V fixed-surface evaporative model (research). A separate job type: it is never parsed as a standard job. */
+export const TI64_EVAPORATIVE_JOB_TYPE = 'ti64-evaporative-surface' as const;
+export interface Ti64EvaporationScenario {
+  transitionLow_K: number; transitionHigh_K: number; ambientPressure_Pa: number; returnFraction: number;
+  maxTemperature_K: number; surfaceTension_N_m?: number;
+}
+export interface Ti64EvaporativeConfig {
+  power_W: number; speed_mm_s: number; beamDiameter_um: number; preheat_C: number; trackLength_um: number;
+  evaporation: Ti64EvaporationScenario;
+}
+export interface Ti64EvaporativeInput { jobType: typeof TI64_EVAPORATIVE_JOB_TYPE; config: Ti64EvaporativeConfig }
+export interface Ti64EvaporativeResult {
+  schema: 'lpbf-ti64-evaporative-result-v1'; modelId: 'ti64-fixed-surface-evaporation-v1';
+  jobType: typeof TI64_EVAPORATIVE_JOB_TYPE; status: 'completed';
+  settings: { jobType: typeof TI64_EVAPORATIVE_JOB_TYPE; config: Record<string, unknown> };
+  experimentalValidation: false; productionReady: false; tier: string;
+  acceptedStepCount: number; acceptedTime_s: number;
+  energy: { input_J: number; base_J: number; radiativeConvective_J: number; evaporative_J: number; stored_J: number; residual_J: number; relativeResidual: number };
+  peakTemperature_K: number; temperatureLabel: string;
+  diagnosticEmittedMass_kg: number; diagnosticMassLabel: string;
+  geometry: {
+    width_um: number | null; depth_um: number | null; length_um: number | null; volume_um3: number | null;
+    label: string; widthLabel: string; widthWarning: string | null; refusalReason: string | null; basis: string; liquidus_K: number;
+    cellResolution_um: number; truncated: boolean;
+  };
+  gate: { onset: boolean; unresolvedGeometry: boolean; firstOnsetTime_s: number | null; firstUnresolvedTime_s: number | null; geometryAvailable: boolean };
+  warnings: string[];
+  fieldSummary: { shape: [number, number, number]; dx_m: number };
+  provenance: { inputs: Record<string, unknown>; implementationHash: string; requestSha256: string; [key: string]: unknown };
+}
+export interface Ti64EvaporativeJob {
+  id: string;
+  status: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled' | 'timed_out';
+  requestSummary: { jobType: typeof TI64_EVAPORATIVE_JOB_TYPE; config: Record<string, unknown> };
+  progress: number; log: string; error: string | null;
+  errorKind?: 'validation'; refusal?: SimulationRefusal;
+  cacheHit?: boolean; deduplicated?: boolean;
+  result?: Ti64EvaporativeResult;
+}
+
+const isNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
+const nullableNumber = (value: unknown) => value === null || isNumber(value);
+
+export function parseTi64EvaporativeJob(value: unknown): Ti64EvaporativeJob {
+  const invalid = () => new Error('Invalid Ti64 evaporative job response');
+  if (!object(value) || !finiteTree(value) || typeof value.id !== 'string' || !/^[a-f0-9]{32}$/.test(value.id)
+    || !['queued', 'running', 'completed', 'failed', 'cancelled', 'timed_out'].includes(String(value.status))
+    || !isNumber(value.progress) || value.progress < 0 || value.progress > 1
+    || typeof value.log !== 'string' || !(value.error === null || typeof value.error === 'string')
+    || !object(value.requestSummary) || value.requestSummary.jobType !== TI64_EVAPORATIVE_JOB_TYPE
+    || !object(value.requestSummary.config)) throw invalid();
+  if (value.status !== 'completed') {
+    if (value.result !== undefined) throw new Error('Unfinished Ti64 evaporative job must not contain a result');
+    checkRefusal(value);
+    return value as unknown as Ti64EvaporativeJob;
+  }
+  const r = value.result;
+  if (!object(r) || r.schema !== 'lpbf-ti64-evaporative-result-v1' || r.modelId !== 'ti64-fixed-surface-evaporation-v1'
+    || r.jobType !== TI64_EVAPORATIVE_JOB_TYPE || r.status !== 'completed'
+    || r.experimentalValidation !== false || r.productionReady !== false || typeof r.tier !== 'string'
+    || !object(r.settings) || r.settings.jobType !== TI64_EVAPORATIVE_JOB_TYPE
+    || JSON.stringify(r.settings.config) !== JSON.stringify(value.requestSummary.config)
+    || !isNumber(r.acceptedStepCount) || !isNumber(r.acceptedTime_s) || !isNumber(r.peakTemperature_K)
+    || typeof r.temperatureLabel !== 'string' || !isNumber(r.diagnosticEmittedMass_kg)
+    || typeof r.diagnosticMassLabel !== 'string'
+    || !Array.isArray(r.warnings) || !r.warnings.every(w => typeof w === 'string')
+    || !object(r.provenance) || !object(r.provenance.inputs)) throw new Error('Invalid Ti64 evaporative result identity');
+  const e = r.energy;
+  if (!object(e) || !['input_J', 'base_J', 'radiativeConvective_J', 'evaporative_J', 'stored_J', 'residual_J', 'relativeResidual']
+    .every(key => isNumber(e[key])) || Math.abs(e.relativeResidual as number) > 1e-9) throw new Error('Invalid Ti64 evaporative energy ledger');
+  const g = r.geometry;
+  const gate = r.gate;
+  if (!object(g) || !object(gate) || typeof gate.onset !== 'boolean' || typeof gate.geometryAvailable !== 'boolean'
+    || !['width_um', 'depth_um', 'length_um', 'volume_um3'].every(key => nullableNumber(g[key]))
+    || typeof g.label !== 'string' || typeof g.widthLabel !== 'string'
+    || !(g.widthWarning === null || typeof g.widthWarning === 'string')
+    || !(g.refusalReason === null || typeof g.refusalReason === 'string')) throw new Error('Invalid Ti64 evaporative geometry');
+  // A refused extent must stay null and carry its reason: never accept a filled value beside a closed gate.
+  if (!gate.geometryAvailable && (['depth_um', 'length_um', 'volume_um3'].some(key => g[key] !== null)
+    || typeof g.refusalReason !== 'string' || g.refusalReason.length === 0)) throw new Error('Inconsistent Ti64 evaporative refusal');
+  return value as unknown as Ti64EvaporativeJob;
+}
+
+export const ti64EvaporativeApi = {
+  async submit(input: Ti64EvaporativeInput, options: { executionScope?: 'repeat' } = {}) {
+    const endpoint = options.executionScope === 'repeat' ? '/api/lpbf/jobs/repeat' : '/api/lpbf/jobs';
+    return parseTi64EvaporativeJob(await request(endpoint, { method: 'POST', body: JSON.stringify(input) }));
+  },
+  async get(id: string) {
+    return parseTi64EvaporativeJob(await request(`/api/lpbf/jobs/${encodeURIComponent(id)}`));
+  },
+  async cancel(id: string) {
+    return parseTi64EvaporativeJob(await request(`/api/lpbf/jobs/${encodeURIComponent(id)}`, { method: 'DELETE' }));
+  },
+};
