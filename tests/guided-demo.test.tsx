@@ -9,8 +9,10 @@ import { MELT_POOL_LITERATURE_CASES } from '../src/data/meltPoolLiteratureCases'
 import { checkedCalibrationScorecard } from '../src/data/lpbfCalibrationScorecard';
 import type { SimulationJob } from '../src/services/lpbfSimulationService';
 import { useMaterialSpecimenStore } from '../src/store/useMaterialSpecimenStore';
+import { useLpbfEngineeringStore } from '../src/store/useLpbfEngineeringStore';
+import { useLpbfResearchModelStore, type ResearchHostState } from '../src/store/useLpbfResearchModelStore';
 import { GUIDED_DEMO_STORAGE_KEY, readGuidedDemoOutcome, useGuidedDemoStore, writeGuidedDemoOutcome } from '../src/store/useGuidedDemoStore';
-import { compareToMeasurement, demoCase, demoProcessPatch, runMatchesCase, scorecardStatementFor } from '../src/utils/guidedDemo';
+import { compareToMeasurement, demoCase, demoProcessPatch, researchDepthForCase, runMatchesCase, scorecardStatementFor } from '../src/utils/guidedDemo';
 
 const c = demoCase();
 const caseZero = opticalTable4.cases.find(row => row.caseNumber === '0')!;
@@ -100,6 +102,127 @@ test('runMatchesCase uses a 1e-6 tolerance and the case material', () => {
   assert.equal(runMatchesCase({ ...base, material: '316L Stainless Steel' }, c), false);
   assert.equal(runMatchesCase({ ...base, speed_mm_s: Number.NaN }, c), false);
   assert.equal(runMatchesCase(undefined, c), false);
+});
+
+test('Screening without extent status exposes labelled arithmetic only for matching finite completed results', () => {
+  const screening = fixtureJob({ settings: { mode: 'screening' }, metrics: { extentStatus: undefined } });
+  screening.result!.effectiveMode = 'screening';
+  const result = compareToMeasurement(c, screening);
+  assert.ok(result.available);
+  if (result.available) {
+    assert.equal(result.screeningOnly, true);
+    assert.ok(Math.abs(result.rows[0].diff_um - 3.7) < 1e-9);
+    assert.ok(Math.abs(result.rows[1].diff_pct - (100 * (130 - 139.7)) / 139.7) < 1e-9);
+  }
+  const rejected = [
+    fixtureJob({ settings: { mode: 'screening', power_W: 286 }, metrics: { extentStatus: undefined } }),
+    fixtureJob({ settings: { mode: 'screening' }, metrics: { extentStatus: 'search-box-limited' } }),
+    fixtureJob({ settings: { mode: 'screening' }, metrics: { extentStatus: 'unknown-status' } }),
+    fixtureJob({ settings: { mode: 'screening' }, metrics: { extentStatus: undefined, width_um: Infinity } }),
+    fixtureJob({ settings: { mode: 'screening' }, metrics: { extentStatus: undefined, depth_um: null } }),
+    fixtureJob({ settings: { mode: 'screening' }, status: 'failed', metrics: { extentStatus: undefined } }),
+    fixtureJob({ settings: { mode: 'standard' }, metrics: { extentStatus: undefined } }),
+  ];
+  for (const job of rejected) { job.result!.effectiveMode = 'screening'; assert.equal(compareToMeasurement(c, job).available, false); }
+  screening.result!.effectiveMode = 'standard';
+  const standard = compareToMeasurement(c, screening);
+  assert.equal(standard.available, false);
+  if (!standard.available) assert.equal(standard.reason, 'The solver does not report a melt-pool extent status for this run, so the tour cannot confirm that width and depth are a closed liquidus isotherm and does not compare them.');
+});
+
+test('Screening comparison renders its evidence label, differences and analytical caveat', () => {
+  const tour = useGuidedDemoStore.getInitialState();
+  const engineering = useLpbfEngineeringStore.getInitialState();
+  const before = { step: tour.step, job: engineering.job };
+  try {
+    tour.step = 3;
+    engineering.job = fixtureJob({ settings: { mode: 'screening' }, metrics: { extentStatus: undefined } });
+    engineering.job.result!.effectiveMode = 'screening';
+    const html = renderToStaticMarkup(<TourPanel engine={null} engineChecking={false} scorecard={null} />);
+    assert.match(html, /Screening only, comparison not validation/);
+    assert.match(html, /analytical estimate, not a closed liquidus isotherm/);
+    assert.match(html, /Diff \(%\)/);
+    assert.doesNotMatch(html, /Comparison unavailable/);
+    assert.doesNotMatch(html, /Within 1 SD/);
+  } finally { tour.step = before.step; engineering.job = before.job; }
+});
+
+test('Run step panel stays in document flow so it cannot overlay mode or run controls', () => {
+  const tour = useGuidedDemoStore.getInitialState();
+  const before = tour.step;
+  try {
+    tour.step = 2;
+    const html = renderToStaticMarkup(<TourPanel engine={null} engineChecking={false} scorecard={null} />);
+    const section = html.match(/<section[^>]*>/)![0];
+    assert.match(section, /relative/);
+    assert.doesNotMatch(section, /fixed|sticky|absolute/);
+  } finally { tour.step = before; }
+});
+
+test('first-run intro promises labelled screening estimates beside the measurement', () => {
+  const html = renderToStaticMarkup(<FirstRunCard home storage={memoryStorage()} />);
+  assert.match(html, /analytical width and depth estimates beside the measurement/);
+  assert.doesNotMatch(html, /currently unavailable/);
+});
+
+test('P8 depth is read only from an existing completed matching research run, never a stale or refused value', () => {
+  // SYNTHETIC transport fixture: verifies identity gating, not research physics.
+  const host = {
+    identity: 'same-input',
+    run: {
+      status: 'complete', identity: 'same-input', requestKey: 'same-request',
+      input: { material: c.material, laserPower_W: c.laserPower_W, scanSpeed_mm_s: c.scanSpeed_mm_s, beamDiameter_um: c.beamDiameter_um, preheatTemp_C: c.preheatTemp_C },
+      result: { requestKey: 'same-request', progress: { complete: true }, researchModels: {
+        meltDepthLink: { modelId: 'fixture-p8', status: 'available', experimentalValidation: false, fields: { linkedMeltDepth_um: { value: 155, unit: 'um', reasonCode: null } } },
+      } },
+    },
+  } as unknown as ResearchHostState;
+  assert.equal(researchDepthForCase(c, host)?.depth.value, 155);
+  assert.equal(researchDepthForCase(c, { ...host, identity: 'stale' }), null);
+  assert.equal(researchDepthForCase(c, { ...host, run: { ...host.run, status: 'running-nominal' } }), null);
+  assert.equal(researchDepthForCase(c, { ...host, run: { ...host.run, requestKey: 'other-request' } }), null);
+  assert.equal(researchDepthForCase(c, { ...host, run: { ...host.run, input: { ...host.run.input!, laserPower_W: 999 } } }), null);
+  host.run.result!.researchModels!.meltDepthLink!.fields.linkedMeltDepth_um.value = null;
+  assert.equal(researchDepthForCase(c, host), null);
+});
+
+test('Screening comparison renders a separate held P8 research depth and suppresses a stale host', () => {
+  const tour = useGuidedDemoStore.getInitialState();
+  const engineering = useLpbfEngineeringStore.getInitialState();
+  const research = useLpbfResearchModelStore.getInitialState();
+  const before = { step: tour.step, job: engineering.job, hosts: research.hosts };
+  // SYNTHETIC values test presentation and identity gating only, not model accuracy.
+  const host = {
+    identity: 'fixture-current', run: {
+      status: 'complete', identity: 'fixture-current', requestKey: 'fixture-request',
+      input: { material: c.material, laserPower_W: c.laserPower_W, scanSpeed_mm_s: c.scanSpeed_mm_s, beamDiameter_um: c.beamDiameter_um, preheatTemp_C: c.preheatTemp_C },
+      result: { requestKey: 'fixture-request', progress: { complete: true }, researchModels: { meltDepthLink: {
+        modelId: 'fixture-p8-render', status: 'available', experimentalValidation: false, uiSentence: 'Synthetic research fixture.',
+        fields: { linkedMeltDepth_um: { value: 155, unit: 'um', reasonCode: null, uiSentence: 'Synthetic linked depth.' } },
+      } } },
+    },
+  } as unknown as ResearchHostState;
+  try {
+    tour.step = 3;
+    engineering.job = fixtureJob({ settings: { mode: 'screening' }, metrics: { extentStatus: undefined } });
+    engineering.job.result!.effectiveMode = 'screening';
+    research.hosts = { ...before.hosts, 'melt-pool': host };
+    const render = () => renderToStaticMarkup(<TourPanel engine={null} engineChecking={false} scorecard={null} />);
+    const html = render();
+    assert.match(html, /P8 conditional linked melt-depth scenario \(research\): 155\.0 um/);
+    assert.match(html, /Not experimentally validated; research diagnostic\/model only\./);
+    assert.match(html, /not vapour-cavity depth/);
+    assert.doesNotMatch(html, /at or below its own modeled onset/);
+    const cavityZero = { ...host, run: { ...host.run, result: { ...host.run.result!, researchModels: { ...host.run.result!.researchModels!,
+      keyholeCavity: { fields: { cavityDepth_um: { value: 0, unit: 'um', reasonCode: null } } } } } } } as unknown as ResearchHostState;
+    research.hosts = { ...before.hosts, 'melt-pool': cavityZero };
+    assert.match(render(), /P8 is at or below its own modeled onset\. Any available linked depth is its Gaussian conduction envelope/);
+    research.hosts = { ...before.hosts, 'melt-pool': host };
+    assert.match(html, /fixture-p8-render/);
+    assert.match(html, /<th scope="row">depth<\/th><td>130\.0<\/td>/);
+    research.hosts = { ...research.hosts, 'melt-pool': { ...host, identity: 'stale' } };
+    assert.doesNotMatch(render(), /P8 conditional linked melt-depth scenario/);
+  } finally { tour.step = before.step; engineering.job = before.job; research.hosts = before.hosts; }
 });
 
 test('the committed scorecard reports every IN718 row as no-data; a null record is explicit', () => {
