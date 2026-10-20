@@ -209,12 +209,19 @@ test('Screening comparison renders a separate held P8 research depth and suppres
     research.hosts = { ...before.hosts, 'melt-pool': host };
     const render = () => renderToStaticMarkup(<TourPanel engine={null} engineChecking={false} scorecard={null} />);
     const html = render();
-    assert.match(html, /Keyhole-mode research depth \(P8\): 155\.0 um/);
-    assert.match(html, /Research only, not experimentally validated; separate from the Screening estimate/);
+    assert.match(html, /P8 conditional linked melt-depth scenario \(research\): 155\.0 um/);
+    assert.match(html, /Not experimentally validated; research diagnostic\/model only\./);
+    assert.match(html, /not vapour-cavity depth/);
+    assert.doesNotMatch(html, /at or below its own modeled onset/);
+    const cavityZero = { ...host, run: { ...host.run, result: { ...host.run.result!, researchModels: { ...host.run.result!.researchModels!,
+      keyholeCavity: { fields: { cavityDepth_um: { value: 0, unit: 'um', reasonCode: null } } } } } } } as unknown as ResearchHostState;
+    research.hosts = { ...before.hosts, 'melt-pool': cavityZero };
+    assert.match(render(), /P8 is at or below its own modeled onset\. Any available linked depth is its Gaussian conduction envelope/);
+    research.hosts = { ...before.hosts, 'melt-pool': host };
     assert.match(html, /fixture-p8-render/);
     assert.match(html, /<th scope="row">depth<\/th><td>130\.0<\/td>/);
     research.hosts = { ...research.hosts, 'melt-pool': { ...host, identity: 'stale' } };
-    assert.doesNotMatch(render(), /Keyhole-mode research depth/);
+    assert.doesNotMatch(render(), /P8 conditional linked melt-depth scenario/);
   } finally { tour.step = before.step; engineering.job = before.job; research.hosts = before.hosts; }
 });
 

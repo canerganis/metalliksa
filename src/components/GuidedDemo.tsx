@@ -152,7 +152,9 @@ function CompareStep({ demo }: { demo: DemoCase }) {
         <tbody>{comparison.rows.map(row => <tr key={row.quantity}><th scope="row">{row.quantity}</th><td>{fmt1(row.predicted_um)}</td><td>{fmt1(row.measured_um)} ± {fmt1(row.sd_um)}</td><td>{fmt1(row.diff_um)}</td><td>{fmt1(row.diff_pct)}</td>{!comparison.screeningOnly && <td>{row.withinOneSd ? "yes" : "no"}</td>}</tr>)}</tbody>
       </table></div>
       {researchDepth && <div className="rounded border border-amber-500/30 p-2 text-amber-200">
-        <p>Keyhole-mode research depth (P8): {fmt1(researchDepth.depth.value as number)} {researchDepth.depth.unit}. Research only, not experimentally validated; separate from the Screening estimate.</p>
+        <p className="font-medium">P8 conditional linked melt-depth scenario (research): {fmt1(researchDepth.depth.value as number)} {researchDepth.depth.unit}</p>
+        <p>Independent quasi-steady cavity/conduction hypothesis for the same incident power, scan speed, Gaussian 1/e² diameter and preheat, separate from the Screening estimate. It does not resolve surface motion or melt flow. Linked depth is a liquidus envelope below the original surface, not vapour-cavity depth. Not experimentally validated; research diagnostic/model only.</p>
+        {researchDepth.atOrBelowOnset && <p>P8 is at or below its own modeled onset. Any available linked depth is its Gaussian conduction envelope, not a keyhole-depth result.</p>}
         <p>Model <span className="font-mono">{researchDepth.module.modelId}</span>. {researchDepth.module.uiSentence} {researchDepth.depth.uiSentence}</p>
       </div>}
       {comparison.surface.bareTrack

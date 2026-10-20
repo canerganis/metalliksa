@@ -121,7 +121,10 @@ export function researchDepthForCase(c: DemoCase, host: ResearchHostState) {
   const depth = module?.fields.linkedMeltDepth_um;
   if (!module || module.status !== "available" || module.experimentalValidation !== false || !depth
     || depth.reasonCode || typeof depth.value !== "number" || !Number.isFinite(depth.value)) return null;
-  return { module, depth };
+  const cavity = run.result.researchModels?.keyholeCavity?.fields.cavityDepth_um;
+  // P8 sets the cavity depth to exactly zero at or below its own modeled onset; null means unknown, not below onset.
+  const atOrBelowOnset = cavity?.value === 0;
+  return { module, depth, atOrBelowOnset };
 }
 
 /** What the committed calibration scorecard says about one material, stated only from its headline rows. */
