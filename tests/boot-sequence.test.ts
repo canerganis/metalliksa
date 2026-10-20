@@ -303,6 +303,14 @@ test("telemetry cells show source values", () => {
   });
 });
 
+test("a start-up engine failure is not repeated once the live status reports the engine online", () => {
+  const rows = bootRows(["Runtime configuration", "ok"], ["Python engine", "unavailable"]);
+  const online = cellMap({ ...baseInputs, boot: { finished: 5, total: 5, stopped: false, rows } });
+  assert.equal(online["Start-up checks"], "5/5|neutral");
+  const offline = cellMap({ ...baseInputs, engine: { online: false, status: "client_fallback" }, boot: { finished: 5, total: 5, stopped: false, rows } });
+  assert.equal(offline["Start-up checks"], "5/5 · unavailable: Python engine|fail");
+});
+
 test("telemetry cells read 'unavailable' with no data and never show placeholder numbers", () => {
   const cells = cellMap({
     ...baseInputs,
@@ -336,7 +344,8 @@ test("start-up checks cell names stopped, unavailable, timed-out and limited ste
   const boot = (stopped: boolean, ...pairs: Array<[string, BootStepState]>) =>
     cellMap({ ...baseInputs, boot: { finished: pairs.length, total: 5, stopped, rows: bootRows(...pairs) } })["Start-up checks"];
   assert.equal(boot(true, ["Runtime configuration", "limited"], ["Access", "blocked"], ["Air-gap", "not-run"]), "stopped at Access|fail");
-  assert.equal(boot(false, ["Air-gap", "unavailable"], ["Python engine", "timed-out"]), "2/5 · unavailable: Air-gap · timed out: Python engine|fail");
+  // baseInputs reports the engine online now, so its start-up time-out is stale and not repeated.
+  assert.equal(boot(false, ["Air-gap", "unavailable"], ["Python engine", "timed-out"]), "2/5 · unavailable: Air-gap|fail");
   assert.equal(boot(false, ["Runtime configuration", "limited"]), "1/5 · limited: Runtime configuration|warn");
   assert.equal(boot(false, ["Runtime configuration", "ok"]), "1/5|neutral");
 });

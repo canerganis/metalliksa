@@ -29,8 +29,12 @@ export interface TelemetryInputs {
 }
 
 /** Start-up checks cell: k/N plus every step that did not pass, or "stopped" after a sign-in stop. */
-function bootCell(boot: TelemetryInputs["boot"]): TelemetryCell {
-  const named = (state: BootStepState) => boot.rows.filter((r) => r.state === state).map((r) => r.label);
+function bootCell(boot: TelemetryInputs["boot"], engineOnlineNow: boolean): TelemetryCell {
+  // The boot row is a start-up snapshot; once the live status reports the engine online, a start-up
+  // "unavailable" or "timed out" for it is stale (the daemon finished starting later) and is not repeated.
+  const staleEngine = (r: { id?: string; label: string; state: BootStepState }) =>
+    engineOnlineNow && r.label === "Python engine" && (r.state === "unavailable" || r.state === "timed-out");
+  const named = (state: BootStepState) => boot.rows.filter((r) => r.state === state && !staleEngine(r)).map((r) => r.label);
   if (boot.stopped) return { label: "Start-up checks", value: `stopped at ${named("blocked").join(", ") || "a check"}`, tone: "fail" };
   const groups: Array<[string, string[]]> = [
     ["unavailable", named("unavailable")],
@@ -86,7 +90,7 @@ export function telemetryCells(input: TelemetryInputs): TelemetryCell[] {
       value: input.moduleCount > 0 ? `${input.moduleCount} registered` : "unavailable",
       tone: input.moduleCount > 0 ? "neutral" : "fail",
     },
-    bootCell(input.boot),
+    bootCell(input.boot, engine?.online === true),
   ];
   return cells;
 }
