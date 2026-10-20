@@ -1,3 +1,10 @@
+## Güncel devam noktası — 2026-10-20 akşam / Paylaşım öncesi kullanılabilirlik denetimi
+
+- **Push:** `main` = `cfc7d2dc` GitHub'da (27 commit). Yerel dal `release/0.2.0-prep`, üstünde `52b6ab3e` (alt bilgide bayat "Python engine unavailable" düzeltmesi), push yok.
+- **Ana bulgu:** Standard (transient) mod tipik parametrelerde tamamlanmıyor; IN718 200 W/800, Ti64 60 ve 150 W/1000, AlSi10Mg 300 W/1300, 316L 200 W/800 ve NIST IN718 285 W/960 hepsi `THERMAL_BOILING_LIMIT`. Tur 3. adım (ölçüm karşılaştırması) bu yüzden hiç açılmıyor; Screening extent status raporlamıyor.
+- **Karar (bakımcı onayı):** önce tur/UX, sonra W1 buharlaşmalı çözücüyü Standard moda opt-in bağlamak (önce Ti64), diğer alaşımlar sonraki sürüm. Kaynama tavanı (`evaporationModel=True`, sıcaklık kırpar) UI'a açılmayacak. Paylaşım (LinkedIn, v0.2.0) Ti64 transient çalışınca.
+- **Kalan UX:** tur mod seçicisini kendisi açmıyor, tur paneli kartları kapatıyor, sayfada dört "Run" düğmesi, NIST turunda IN718 kaynaksız varsayılanlar. Kota nedeniyle hackathon sonrasına ertelendi.
+
 ## Güncel devam noktası — 2026-10-20 / Ti64 buharlaşmalı CPU çözücüsü
 
 - **Uygulama:** `python/lpbf_ti64_evaporative_solver.py`, ayrı `ti64-fixed-surface-evaporation-v1` modeli. Mevcut Ti64 otoritesi ve yerel Gan Ti buhar sabitleriyle gerçek 3D entalpi çözümüne üst-yüzey enerji kaybı eklendi. Python API/JSON CLI kullanılabilir; UI/HTTP bağlantısı henüz yok. [Sözleşme](docs/research/SPEC_ti64_evaporative_cpu_2026-10-20.md), [sonuçlar ve kullanım](docs/research/RESULTS_ti64_evaporative_cpu_2026-10-20.md).
