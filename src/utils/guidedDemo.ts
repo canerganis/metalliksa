@@ -7,6 +7,7 @@ import { MELT_POOL_LITERATURE_CASES, relativeErrorPct, type MeltPoolLiteratureCa
 import type { LpbfCalibrationScorecardDocument } from "../data/lpbfCalibrationScorecard";
 import type { LpbfProcessPatch } from "../store/useMaterialSpecimenStore";
 import type { SimulationInput, SimulationJob } from "../services/lpbfSimulationService";
+import type { ResearchHostState } from "../store/useLpbfResearchModelStore";
 import { canonicalLpbfMaterialName } from "./lpbfMaterialIdentity";
 import { meltPoolExtentInfo, type MeltPoolExtentFields } from "./meltPoolExtentStatus";
 
@@ -66,7 +67,7 @@ export interface ComparisonRow {
   withinOneSd: boolean;
 }
 export type MeasurementComparison =
-  | { available: true; n: number; rows: [ComparisonRow, ComparisonRow]; solverId: string; implementationHash: string | null; caseId: string; doi: string; surface: { mode: string | null; layer_um: number | null; hatch_um: number | null; bareTrack: boolean } }
+  | { available: true; screeningOnly: boolean; n: number; rows: [ComparisonRow, ComparisonRow]; solverId: string; implementationHash: string | null; caseId: string; doi: string; surface: { mode: string | null; layer_um: number | null; hatch_um: number | null; bareTrack: boolean } }
   | { available: false; reason: string };
 
 function extentFields(job: SimulationJob): MeltPoolExtentFields | undefined {
@@ -83,7 +84,11 @@ export function compareToMeasurement(c: DemoCase, job: SimulationJob | undefined
     return { available: false, reason: "The completed job was run with different material or process inputs than the NIST case, so it is not comparable. Run again after loading the case." };
   }
   const extent = meltPoolExtentInfo(extentFields(job));
-  if (!extent.computed) {
+  const { width_um, depth_um } = result.metrics;
+  const screeningOnly = extent.status === "not-reported"
+    && result.effectiveMode === "screening" && result.settings.mode === "screening"
+    && Number.isFinite(width_um) && Number.isFinite(depth_um);
+  if (!extent.computed && !screeningOnly) {
     const why = extent.status === "not-reported"
       ? "The solver does not report a melt-pool extent status for this run, so the tour cannot confirm that width and depth are a closed liquidus isotherm and does not compare them."
       : `The melt-pool extent is not computed (status: ${extent.status}; ${extent.description}). Width and depth from this run are not an isotherm and are excluded from the comparison.`;
@@ -91,18 +96,32 @@ export function compareToMeasurement(c: DemoCase, job: SimulationJob | undefined
   }
   const settingsExtra = result.settings as unknown as { surfaceMode?: string; layer_um?: unknown; hatch_um?: unknown };
   const finiteOrNull = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : null);
-  const { width_um, depth_um } = result.metrics;
   if (!Number.isFinite(width_um) || !Number.isFinite(depth_um)) return { available: false, reason: "The completed job reports no finite width and depth." };
   const row = (quantity: "width" | "depth", predicted: number, measured: number, sd: number): ComparisonRow => {
     const diff = predicted - measured;
     return { quantity, predicted_um: predicted, measured_um: measured, sd_um: sd, diff_um: diff, diff_pct: relativeErrorPct(predicted, measured), withinOneSd: Math.abs(diff) <= sd };
   };
   return {
-    available: true, n: c.measurementCount, caseId: c.id, doi: c.doi,
+    available: true, screeningOnly, n: c.measurementCount, caseId: c.id, doi: c.doi,
     rows: [row("width", width_um, c.publishedWidth_um, c.widthStdDev_um), row("depth", depth_um, c.publishedDepth_um, c.depthStdDev_um)],
     surface: { mode: settingsExtra.surfaceMode ?? null, layer_um: finiteOrNull(settingsExtra.layer_um), hatch_um: finiteOrNull(settingsExtra.hatch_um), bareTrack: settingsExtra.surfaceMode === "bare-plate" },
     solverId: result.solver.id, implementationHash: result.provenance?.implementationHash ?? null,
   };
+}
+
+/** Read a held P8 result only when both its current and executed identities still match. Never runs a model. */
+export function researchDepthForCase(c: DemoCase, host: ResearchHostState) {
+  const { run } = host;
+  const input = run.input;
+  if (run.status !== "complete" || !input || !run.identity || host.identity !== run.identity
+    || !run.result?.progress.complete || !run.requestKey || run.requestKey !== run.result.requestKey
+    || !runMatchesCase({ material: input.material, power_W: input.laserPower_W,
+      speed_mm_s: input.scanSpeed_mm_s, beamDiameter_um: input.beamDiameter_um, preheat_C: input.preheatTemp_C }, c)) return null;
+  const module = run.result.researchModels?.meltDepthLink;
+  const depth = module?.fields.linkedMeltDepth_um;
+  if (!module || module.status !== "available" || module.experimentalValidation !== false || !depth
+    || depth.reasonCode || typeof depth.value !== "number" || !Number.isFinite(depth.value)) return null;
+  return { module, depth };
 }
 
 /** What the committed calibration scorecard says about one material, stated only from its headline rows. */

@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useMaterialSpecimenStore } from "../store/useMaterialSpecimenStore";
 import { useEngineeringField, useLpbfEngineeringStore } from "../store/useLpbfEngineeringStore";
+import { useLpbfResearchModelStore } from "../store/useLpbfResearchModelStore";
 import { GUIDED_DEMO_STEPS, readGuidedDemoOutcome, useGuidedDemoStore, writeGuidedDemoOutcome, type GuidedDemoStep } from "../store/useGuidedDemoStore";
 import { COMMITTED_CALIBRATION_SCORECARD } from "../data/lpbfCalibrationScorecardRecord";
 import type { LpbfCalibrationScorecardDocument } from "../data/lpbfCalibrationScorecard";
 import type { PythonEngineStatus } from "../services/pythonComputationService";
 import type { SimulationJob } from "../services/lpbfSimulationService";
-import { compareToMeasurement, demoCase, scorecardStatementFor, type DemoCase } from "../utils/guidedDemo";
+import { compareToMeasurement, demoCase, researchDepthForCase, scorecardStatementFor, type DemoCase } from "../utils/guidedDemo";
 import { visibleModalOpen } from "../hooks/useCommandPaletteShortcut";
 import { formatExactNumber } from "../utils/numberFormat";
 import { IS_STATIC_DEMO } from "../demo/flag.ts";
@@ -45,7 +46,7 @@ export function FirstRunCard({ home, storage }: { home: boolean; storage?: Stora
   const start = () => { void useGuidedDemoStore.getState().start(); };
   return <section role="region" aria-labelledby="guided-demo-card-title" className="mk-plate mb-5 px-4 py-3 text-sm text-slate-300 print:hidden">
     <h2 id="guided-demo-card-title" className="text-sm font-medium text-slate-100">New here? Take a 4-step tour</h2>
-    <p className="mt-1 text-xs text-slate-400">Load one published NIST AMB2022-03 Inconel 718 track and run a screening job. The comparison with the measurement is currently unavailable for Screening runs, because the solver does not report a melt-pool extent status. Starting replaces the shared material and process values; you can restore them. Nothing runs without your confirmation.</p>
+    <p className="mt-1 text-xs text-slate-400">Load one published NIST AMB2022-03 Inconel 718 track and run a screening job. See its analytical width and depth estimates beside the measurement, labelled Screening only, comparison not validation. Starting replaces the shared material and process values; you can restore them. Nothing runs without your confirmation.</p>
     {error && <p role="alert" className="mt-2 text-xs text-amber-200">{error}</p>}
     <div className="mt-3 flex flex-wrap gap-2"><button type="button" className={button} onClick={start}>Start tour</button><button type="button" className={button} onClick={skip}>Skip</button></div>
   </section>;
@@ -79,7 +80,7 @@ export function TourPanel({ engine, engineChecking, scorecard }: { engine: Pytho
   }, []);
 
   return <section ref={panel} role="region" aria-labelledby="guided-demo-title"
-    className="fixed inset-x-0 bottom-0 z-40 flex h-[50vh] flex-col overflow-hidden rounded-t-xl border border-slate-600 bg-slate-950 p-4 text-sm text-slate-300 shadow-xl sm:inset-x-auto sm:bottom-4 sm:right-4 sm:h-auto sm:max-h-[80vh] sm:w-[26rem] sm:rounded-xl print:hidden">
+    className={`${step === 2 ? "relative mb-5 rounded-xl" : "fixed inset-x-0 bottom-0 z-40 h-[50vh] rounded-t-xl sm:inset-x-auto sm:bottom-4 sm:right-4 sm:h-auto sm:max-h-[80vh] sm:w-[26rem] sm:rounded-xl"} flex flex-col overflow-hidden border border-slate-600 bg-slate-950 p-4 text-sm text-slate-300 shadow-xl print:hidden`}>
     <p className="text-[11px] uppercase tracking-widest text-sky-300">{`Guided tour · Step ${step} of ${GUIDED_DEMO_STEPS}`}</p>
     <h2 id="guided-demo-title" ref={heading} tabIndex={-1} className="mt-1 text-base font-medium text-slate-100">{STEP_TITLES[step]}</h2>
     <div className="mt-2 min-h-0 flex-1 space-y-2 overflow-y-auto text-xs leading-5">
@@ -126,7 +127,7 @@ function RunStep({ engine, engineChecking }: { engine: PythonEngineStatus | null
   const error = useLpbfEngineeringStore(s => s.error);
   const engineText = IS_STATIC_DEMO ? "Engine: static snapshot (no engine)." : engineChecking ? "Checking the Python engine…" : engine?.online ? "Python engine: available." : "Python engine: unavailable. A run cannot start until it is reachable; no result is faked.";
   return <>
-    <p>Choose <strong className="text-slate-100">Quick Screening</strong> on the Thermal Simulation stage and press Run yourself. The tour never submits a run.</p>
+    <p><strong className="text-slate-100">Quick Screening</strong> is preselected on the Thermal Simulation stage below. Press Run simulation yourself. The tour never submits a run.</p>
     <p>Selected mode: <span className="font-mono text-slate-100">{mode}</span>. <button type="button" className="underline" disabled={mode === "screening"} onClick={() => setMode("screening")}>Preselect Screening</button></p>
     <p className="text-amber-200">A new run replaces the current result{job ? ` (currently ${job.status})` : ""}.</p>
     <p role="status" aria-live="polite">{jobLine(job, error)}</p>
@@ -136,15 +137,24 @@ function RunStep({ engine, engineChecking }: { engine: PythonEngineStatus | null
 
 function CompareStep({ demo }: { demo: DemoCase }) {
   const job = useLpbfEngineeringStore(s => s.job);
+  const researchHosts = useLpbfResearchModelStore(s => s.hosts);
   const comparison = compareToMeasurement(demo, job);
+  const researchDepth = comparison.available && comparison.screeningOnly
+    ? researchDepthForCase(demo, researchHosts["melt-pool"]) ?? researchDepthForCase(demo, researchHosts["build-job"])
+    : null;
   return <>
     <p className="font-medium text-slate-100">One published case. A comparison, not validation.</p>
     {"rows" in comparison ? <>
-      <table className="w-full text-left text-[11px]">
-        <caption className="sr-only">Predicted versus measured melt pool, NIST case 0</caption>
-        <thead><tr><th scope="col">Quantity</th><th scope="col">Predicted (µm)</th><th scope="col">Measured ± SD (µm)</th><th scope="col">Diff (µm)</th><th scope="col">Diff (%)</th><th scope="col">Within 1 SD</th></tr></thead>
-        <tbody>{comparison.rows.map(row => <tr key={row.quantity}><th scope="row">{row.quantity}</th><td>{fmt1(row.predicted_um)}</td><td>{fmt1(row.measured_um)} ± {fmt1(row.sd_um)}</td><td>{fmt1(row.diff_um)}</td><td>{fmt1(row.diff_pct)}</td><td>{row.withinOneSd ? "yes" : "no"}</td></tr>)}</tbody>
-      </table>
+      {comparison.screeningOnly && <p className="text-amber-200">Screening is an analytical estimate, not a closed liquidus isotherm. Differences below are descriptive, not a validation score.</p>}
+      <div className="overflow-x-auto"><table className="w-full text-left text-[11px]">
+        <caption className={comparison.screeningOnly ? "mb-2 text-left font-medium text-amber-200" : "sr-only"}>{comparison.screeningOnly ? "Screening only, comparison not validation" : "Predicted versus measured melt pool, NIST case 0"}</caption>
+        <thead><tr><th scope="col">Quantity</th><th scope="col">{comparison.screeningOnly ? "Screening" : "Predicted"} (µm)</th><th scope="col">Measured ± SD (µm)</th><th scope="col">Diff (µm)</th><th scope="col">Diff (%)</th>{!comparison.screeningOnly && <th scope="col">Within 1 SD</th>}</tr></thead>
+        <tbody>{comparison.rows.map(row => <tr key={row.quantity}><th scope="row">{row.quantity}</th><td>{fmt1(row.predicted_um)}</td><td>{fmt1(row.measured_um)} ± {fmt1(row.sd_um)}</td><td>{fmt1(row.diff_um)}</td><td>{fmt1(row.diff_pct)}</td>{!comparison.screeningOnly && <td>{row.withinOneSd ? "yes" : "no"}</td>}</tr>)}</tbody>
+      </table></div>
+      {researchDepth && <div className="rounded border border-amber-500/30 p-2 text-amber-200">
+        <p>Keyhole-mode research depth (P8): {fmt1(researchDepth.depth.value as number)} {researchDepth.depth.unit}. Research only, not experimentally validated; separate from the Screening estimate.</p>
+        <p>Model <span className="font-mono">{researchDepth.module.modelId}</span>. {researchDepth.module.uiSentence} {researchDepth.depth.uiSentence}</p>
+      </div>}
       {comparison.surface.bareTrack
         ? <p>The run used a bare plate, like the measurement.</p>
         : <p className="text-amber-200">Caveat: the run used a powder layer{comparison.surface.layer_um !== null ? ` (layer ${fmt1(comparison.surface.layer_um)} µm` : ""}{comparison.surface.hatch_um !== null ? `, hatch ${fmt1(comparison.surface.hatch_um)} µm)` : comparison.surface.layer_um !== null ? ")" : ""}, while the NIST measurement is a single track on a bare plate. The two are not the same configuration.</p>}

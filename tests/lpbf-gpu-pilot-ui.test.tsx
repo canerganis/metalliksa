@@ -4,30 +4,58 @@ import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { GpuPilotArchiveAction, GpuPilotExecutedInputSummary, LpbfEngineeringSimulation, gpuPilotRuntimeLabel,
+import { GpuPilotArchiveAction, GpuPilotControls, GpuPilotExecutedInputSummary, LpbfEngineeringSimulation, gpuPilotRuntimeLabel,
   materialSourceEvidenceReadiness, materialTableAvailabilityReadiness, recoverMissingSavedGpuPilot, gpuDevicesForEngine, sameGpuDeviceIdentity } from '../src/components/3d-distortion-lab/LpbfEngineeringSimulation';
 import { ArchivedRunMaterialProvenance, ExecutedMaterialProvenance, GpuPilotParityTable, gpuPilotEngineLabel, persistRunSelectionForArchive,
   restoreRunSelectionForArchive } from '../src/components/LpbfRunArchivePanel';
 import { buildGpuPilotInput, parseGpuPilotJob, type GpuPilotInput } from '../src/services/lpbfSimulationService';
 
-test('engineering screen keeps the CUDA pilot visibly separate from standard CPU results', () => {
+test('engineering screen exposes only the primary run action before CUDA inventory is reported', () => {
   const html = renderToStaticMarkup(<LpbfEngineeringSimulation input={{
     material: 'Inconel 718', power_W: 60, speed_mm_s: 1200,
     beamDiameter_um: 80, preheat_C: 25, layer_um: 80, hatch_um: 100,
   }}/>);
-  for (const text of ['CUDA thermal parity pilot', 'Run CUDA parity pilot',
+  assert.equal((html.match(/>Run simulation<\/button>/g) ?? []).length, 1);
+  for (const text of ['Advanced (GPU pilots)', 'CUDA thermal parity pilot', 'Run CUDA parity pilot', 'Run CPU screen', 'Run CUDA screen']) {
+    assert.ok(!html.includes(text), text);
+  }
+});
+
+const pilotProps = {
+  input: { material: 'Inconel 718', power_W: 60, speed_mm_s: 1200,
+    beamDiameter_um: 80, preheat_C: 25, layer_um: 80, hatch_um: 100 },
+  settings: {}, material: 'Inconel 718', properties: '', strategy: 'stripe' as const, blocked: false,
+};
+const cudaDevice = { ordinal: 0, device: 'cuda:0', name: 'Test CUDA device', computeCapability: [8, 9], memoryBytes: 8000 };
+const workerCaps = { openfoamVersion: null, openfoamThermal: false, freeSurfaceSolver: false,
+  platform: 'test', limitation: '', materials: [] };
+
+test('GPU pilot disclosure starts closed and retains both parity and bare-plate controls with a reported CUDA device', () => {
+  const caps = { ...workerCaps, gpuDevices: { torch: { runtimeAvailable: true, devices: [cudaDevice] } } };
+  const html = renderToStaticMarkup(<GpuPilotControls {...pilotProps} caps={caps}/>);
+  assert.match(html, /^<details[^>]*><summary[^>]*>Advanced \(GPU pilots\)<\/summary>/);
+  assert.doesNotMatch(html, /^<details[^>]*\bopen(?:=|\s|>)/);
+  for (const text of ['CUDA thermal parity pilot', 'Run CUDA parity pilot', 'Run CPU screen', 'Run CUDA screen',
     'Explicit CUDA device', 'Numerical CPU/GPU parity only',
     'Experimental validation and qualification are unavailable',
     'A completed bound GPU result can be imported with Save to Archive below',
-    'field bytes and numerical evidence are rechecked during import and bundle restore', 'Run simulation']) {
+    'field bytes and numerical evidence are rechecked during import and bundle restore']) {
     assert.ok(html.includes(text), text);
   }
   assert.ok(!html.includes('Permanent archive export and restoration remain unavailable'));
   assert.match(html, /aria-label="CUDA device"/);
   assert.match(html, /aria-label="GPU engine"/);
   assert.ok(html.includes('NVIDIA Warp candidate · v2'));
-  assert.ok(html.includes('No PyTorch CUDA devices available'));
   assert.match(html, /type="submit"/);
+});
+
+test('GPU pilot controls stay hidden for missing, unavailable or malformed CUDA inventory and support Warp-only devices', () => {
+  for (const caps of [undefined, workerCaps,
+    { ...workerCaps, gpuDevices: { torch: { runtimeAvailable: false, devices: [cudaDevice] } } },
+    { ...workerCaps, gpuDevices: { torch: { runtimeAvailable: true, devices: [{ ...cudaDevice, memoryBytes: 0 }] } } },
+  ]) assert.equal(renderToStaticMarkup(<GpuPilotControls {...pilotProps} caps={caps}/>), '');
+  const caps = { ...workerCaps, gpuDevices: { warp: { runtimeAvailable: true, devices: [cudaDevice] } } };
+  assert.match(renderToStaticMarkup(<GpuPilotControls {...pilotProps} caps={caps}/>), /Advanced \(GPU pilots\)/);
 });
 
 test('material availability does not pass source and uncertainty evidence readiness', () => {

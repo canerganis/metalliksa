@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { useMaterialSpecimenStore, type ActiveSpecimenState } from "./useMaterialSpecimenStore";
+import { useLpbfEngineeringStore } from "./useLpbfEngineeringStore";
+import { useLpbfWorkflowStore, type LpbfWorkflowStage } from "./useLpbfWorkflowStore";
 
 export const GUIDED_DEMO_STORAGE_KEY = "metalliksa.guidedDemo.v1";
 export type GuidedDemoOutcome = "dismissed" | "completed";
@@ -31,7 +33,7 @@ export function writeGuidedDemoOutcome(outcome: GuidedDemoOutcome, storage?: Sto
 }
 
 /** Where each step is shown: the LPBF workspace stage, or another module. */
-const STEP_TARGET: Record<GuidedDemoStep, { tabId: string; lpbfStage?: string }> = {
+const STEP_TARGET: Record<GuidedDemoStep, { tabId: string; lpbfStage?: LpbfWorkflowStage }> = {
   1: { tabId: "3d-distortion-lab", lpbfStage: "material" },
   2: { tabId: "3d-distortion-lab", lpbfStage: "thermal" },
   3: { tabId: "3d-distortion-lab", lpbfStage: "melt-pool" },
@@ -42,15 +44,25 @@ const WORKSPACE_SELECTOR = 'section[aria-label="LPBF Engineering workspace"]';
 
 /** Existing navigation event. The LPBF workspace only listens once mounted, so a first visit re-sends the stage when it appears. */
 function showStep(step: GuidedDemoStep): void {
-  if (typeof window === "undefined") return;
   const detail = STEP_TARGET[step];
+  if (step === 2) useLpbfEngineeringStore.setState({ mode: "screening" });
+  if (detail.lpbfStage) useLpbfWorkflowStore.getState().setStage(detail.lpbfStage);
+  if (typeof window === "undefined") return;
+  // A newly mounted workspace reads the URL before its navigation listener is ready.
+  if (detail.lpbfStage) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("lpbfStage", detail.lpbfStage);
+    url.searchParams.delete("lpbfSubTab");
+    window.history.replaceState(null, "", url);
+  }
   const send = () => window.dispatchEvent(new CustomEvent("metallix-navigate-tab", { detail }));
   send();
   if (!detail.lpbfStage) return;
   let tries = 0;
   const wait = () => {
+    if (!useGuidedDemoStore.getState().active || useGuidedDemoStore.getState().step !== step) return;
     if (document.querySelector(WORKSPACE_SELECTOR)) { if (tries > 0) send(); return; }
-    if (++tries <= 50 && useGuidedDemoStore.getState().active && useGuidedDemoStore.getState().step === step) setTimeout(wait, 100);
+    if (++tries <= 50) setTimeout(wait, 100);
   };
   wait();
 }
