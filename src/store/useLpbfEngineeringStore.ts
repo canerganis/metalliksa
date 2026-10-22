@@ -26,7 +26,7 @@ export interface LpbfEngineeringState {
 
 /** Run state survives route changes. Large worker fields remain server artifacts. */
 export const useLpbfEngineeringStore = create<LpbfEngineeringState>(() => ({
-  settings: {...LPBF_ENGINEERING_DEFAULTS}, mode: "standard", job: undefined,
+  settings: {...LPBF_ENGINEERING_DEFAULTS}, mode: "screening", job: undefined,
   error: "", busy: false, material: "", properties: "", measurements: "", specimen: "",
   uncertainty: "", holdout: "unknown", width: "", depth: "", source: "",
   submittedSignature: "", resultSignature: "", submittedInput: undefined,
