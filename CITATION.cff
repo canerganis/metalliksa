@@ -10,6 +10,9 @@ authors:
 doi: 10.5281/zenodo.23233081
 identifiers:
   - type: doi
+    value: 10.5281/zenodo.23572627
+    description: Version 0.2.0
+  - type: doi
     value: 10.5281/zenodo.23233082
     description: Version 0.1.0
 repository-code: "https://github.com/canerganis/metalliksa"

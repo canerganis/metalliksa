@@ -192,7 +192,7 @@ When adding a comparison, retain the source file identity and hash, the measurem
 
 ## Citation
 
-If you use Metalliksa in research, please cite it: [doi.org/10.5281/zenodo.23233081](https://doi.org/10.5281/zenodo.23233081) (all versions; v0.1.0 is [10.5281/zenodo.23233082](https://doi.org/10.5281/zenodo.23233082)). GitHub's "Cite this repository" button uses [CITATION.cff](CITATION.cff).
+If you use Metalliksa in research, please cite it: [doi.org/10.5281/zenodo.23233081](https://doi.org/10.5281/zenodo.23233081) (all versions; v0.2.0 is [10.5281/zenodo.23572627](https://doi.org/10.5281/zenodo.23572627), v0.1.0 is [10.5281/zenodo.23233082](https://doi.org/10.5281/zenodo.23233082)). GitHub's "Cite this repository" button uses [CITATION.cff](CITATION.cff).
 
 ## License
 
