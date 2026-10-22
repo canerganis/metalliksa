@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { GrSolidificationMapCard, GrHeatmap, GrCellDetail } from "../src/components/GrSolidificationMapCard";
-import { checkedGrSolidification, METRICS, metricValue, metricRange, scaleStyle, NO_VALUE_STYLE, moveCell } from "../src/data/lpbfGrSolidification";
+import { checkedGrSolidification, noValueExplanation, METRICS, metricValue, metricRange, scaleStyle, NO_VALUE_STYLE, moveCell } from "../src/data/lpbfGrSolidification";
 const fixture = (name: string) => JSON.parse(readFileSync(new URL(`./fixtures/solidification-payloads/${name}.json`, import.meta.url), "utf8"));
 test("real schema2 point and map fixtures parse, including non-Ni alloys with unavailable quantities", () => {
   for (const name of ["gr-point-in718", "gr-map-in718", "gr-point-ti6al4v"]) {
@@ -60,4 +60,21 @@ test("group 6: the cell detail shows the CET projection with its tier label, fir
   const broken = structuredClone(fixture("gr-point-in718"));
   broken.point.cet.projectionId = "knapp-legacy";
   assert.throws(() => checkedGrSolidification(broken));
+});
+
+test("bug 1: a map whose cells carry no G/R value says why in one sentence (real engine fixture: partial cells, gate sol-c-local-samples-not-installed)", () => {
+  const result = checkedGrSolidification(fixture("gr-map-in718"));
+  assert.equal(result.counts.computed, 0);
+  assert.ok(result.counts.partial > 0);
+  for (const metric of ["goverr", "cooling", "laves"] as const) {
+    const sentence = noValueExplanation(result.cells!, metric);
+    assert.ok(sentence && sentence.startsWith("No cell has a value for this metric."), metric);
+  }
+  assert.match(noValueExplanation(result.cells!, "goverr")!, /computed on request on the solidification estimate channel/);
+  const card = renderToStaticMarkup(<GrSolidificationMapCard initialResult={result} />);
+  assert.match(card, /data-testid="gr-no-values"/);
+  // A map with a value on one cell shows no explanation.
+  const withValue = structuredClone(result);
+  (withValue.cells![0].front.quantities.gOverR as { value: unknown }).value = 1e6;
+  assert.equal(noValueExplanation(withValue.cells!, "goverr"), null);
 });

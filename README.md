@@ -159,6 +159,8 @@ npm run dev
 
 CALPHAD works in that default runtime (pycalphad 0.11.2 is pinned in `python/requirements-lpbf.in` and the platform locks). Only CUDA and the optional ML training tools need the full set in `python/requirements.txt` (it pulls PyTorch; install it only if you want those features).
 
+Keyhole ray tracing and the GPU solvers need NVIDIA Warp (`pip install warp-lang==1.17.0`) in the Python runtime the app uses (`METALLIX_PYTHON`). The default CPU requirements do not include it.
+
 ## Workstation layout
 
 The browser application provides the navigation, inputs, plots and report export. LPBF solvers and evidence records supply the results; the workstation keeps their scope and provenance with the displayed output. The Core sequence is process setup, process-window screening, comparison with published data, then the scorecard. Labs contains the specialist and materials research modules. Navigation grouping describes where a tool sits in the product, not the evidence strength of its output.
