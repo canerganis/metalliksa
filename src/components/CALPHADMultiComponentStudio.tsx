@@ -98,6 +98,48 @@ import {
   type CalphadSystemCoverage,
 } from "../utils/calphadResultDisplay";
 
+type PhaseProfilePoint = { temperatureC: number; phases: ReadonlyArray<{ phaseId: string; fraction: number }> };
+
+/** Distinct phase ids over the whole profile, in first-seen order. */
+export function phaseIdsOf(profile: ReadonlyArray<PhaseProfilePoint>): string[] {
+  const set = new Set<string>();
+  profile.forEach((p) => p.phases.forEach((ph) => set.add(ph.phaseId)));
+  return Array.from(set);
+}
+
+/**
+ * Stacked-area rows for the phase-fraction chart (percent). Every row carries every phase: a phase absent at a
+ * point is 0 %, not a gap, because a missing key breaks the stack (the layers above lose their base and draw false
+ * gaps and spikes). Repeated composition sets of one phase are summed. A clipped point is null for every phase.
+ */
+export function buildPhaseChartData(profile: ReadonlyArray<PhaseProfilePoint>, phaseIds: ReadonlyArray<string>,
+  clipped: (temperatureC: number) => boolean = () => false): Array<Record<string, number | null>> {
+  return profile.map((point) => {
+    const entry: Record<string, number | null> = { temperatureC: point.temperatureC };
+    const sums = new Map<string, number>(phaseIds.map((id) => [id, 0]));
+    point.phases.forEach((ph) => sums.set(ph.phaseId, (sums.get(ph.phaseId) ?? 0) + ph.fraction));
+    const hide = clipped(point.temperatureC);
+    sums.forEach((fraction, id) => { entry[id] = hide ? null : +(fraction * 100).toFixed(1); });
+    return entry;
+  });
+}
+
+/**
+ * Probe chips for one equilibrium point. A phase that appears in more than one composition set keeps one chip per
+ * set (they are distinct equilibrium phases), numbered "set 1", "set 2" so two chips never read identically.
+ */
+export function phaseChipLabels(phases: ReadonlyArray<{ phaseId: string; phaseName: string; fraction: number }>) {
+  const total = new Map<string, number>();
+  phases.forEach((p) => total.set(p.phaseId, (total.get(p.phaseId) ?? 0) + 1));
+  const seen = new Map<string, number>();
+  return phases.map((p) => {
+    const n = (seen.get(p.phaseId) ?? 0) + 1;
+    seen.set(p.phaseId, n);
+    const base = p.phaseName.split("(")[0].trim();
+    return { key: `${p.phaseId}#${n}`, label: (total.get(p.phaseId) ?? 1) > 1 ? `${base} set ${n}` : base, fraction: p.fraction };
+  });
+}
+
 export interface CALPHADMultiComponentStudioProps {
   /** Test seam: a solved result to show on first paint (the live solve still replaces it). */
   initialResult?: PythonCalphadSolveResult;
@@ -404,18 +446,12 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
   // Chart Data for Phase Fractions vs Temperature
   // mc_ti is not valid for alpha/beta fractions below about 900 C: those grid points are not plotted (null, no area).
   const phaseFractionsClipped = isMcTiResult(solveResult);
-  const phaseChartData = useMemo(() => {
-    return solveResult.equilibriumProfile.map((point) => {
-      const entry: any = {
-        temperatureC: point.temperatureC,
-      };
-      const clipped = phaseFractionsClipped && point.temperatureC < MC_TI_PHASE_FRACTION_MIN_C;
-      point.phases.forEach((ph) => {
-        entry[ph.phaseId] = clipped ? null : +(ph.fraction * 100).toFixed(1);
-      });
-      return entry;
-    });
-  }, [solveResult, phaseFractionsClipped]);
+  // All distinct phase IDs
+  const allPhaseIds = useMemo(() => phaseIdsOf(solveResult.equilibriumProfile), [solveResult]);
+  const phaseChartData = useMemo(
+    () => buildPhaseChartData(solveResult.equilibriumProfile, allPhaseIds,
+      (t) => phaseFractionsClipped && t < MC_TI_PHASE_FRACTION_MIN_C),
+    [solveResult, phaseFractionsClipped, allPhaseIds]);
   const clippedGridTemps = phaseFractionsClipped
     ? solveResult.equilibriumProfile.map((p) => p.temperatureC).filter((t) => t < MC_TI_PHASE_FRACTION_MIN_C).sort((a, b) => a - b)
     : [];
@@ -441,15 +477,6 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
       }
       return entry;
     });
-  }, [solveResult]);
-
-  // All distinct phase IDs
-  const allPhaseIds = useMemo(() => {
-    const set = new Set<string>();
-    solveResult.equilibriumProfile.forEach((p) => {
-      p.phases.forEach((ph) => set.add(ph.phaseId));
-    });
-    return Array.from(set);
   }, [solveResult]);
 
   // Equilibrium fraction solid vs T (grid points inside the freezing range plus its two ends), for the Scheil tab.
@@ -1220,9 +1247,9 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
                   <span className="text-slate-400">At {currentEquilibriumPoint.temperatureC}°C (nearest grid point):</span>
                   {phaseFractionsClipped && currentEquilibriumPoint.temperatureC < MC_TI_PHASE_FRACTION_MIN_C ? (
                     <span className="text-[10px] text-amber-200" data-testid="phase-fraction-probe-clipped">{MC_TI_PHASE_FRACTION_NOTE}</span>
-                  ) : currentEquilibriumPoint.phases.map((p) => (
-                    <span key={p.phaseId} className="px-2 py-0.5 rounded bg-violet-500/10 text-violet-300 font-bold border border-violet-500/20 text-[10px]">
-                      {p.phaseName.split("(")[0]}: {(p.fraction * 100).toFixed(1)}%
+                  ) : phaseChipLabels(currentEquilibriumPoint.phases).map(({ key, label, fraction }) => (
+                    <span key={key} className="px-2 py-0.5 rounded bg-violet-500/10 text-violet-300 font-bold border border-violet-500/20 text-[10px]">
+                      {label}: {(fraction * 100).toFixed(1)}%
                     </span>
                   ))}
                 </div>
