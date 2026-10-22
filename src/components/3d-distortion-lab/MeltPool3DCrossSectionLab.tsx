@@ -58,6 +58,7 @@ import { DepthBiasNotice } from "../DepthBiasNotice";
 import { STRESS_PROXY_LABEL, STRESS_PROXY_UNIT_NOTE } from "../../utils/residualStressYieldCheck";
 import { resolveDepthBiasWarning } from "../../utils/depthBiasWarning";
 import { PublishedTrackBands } from "../PublishedTrackBands";
+import { HowCalculated } from "../HowCalculated";
 import { DISTORTION_HEURISTIC_NOTE } from "../../utils/distortionHeuristic";
 import { SolidificationQuantities } from "../SolidificationQuantities";
 
@@ -770,6 +771,8 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
           </div>
         </div>
 
+        {pyResult && <HowCalculated explainerId="enthalpy-gates" result={pyResult} />}
+
         {/* Presets Quick Bar */}
         <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80">
           <span className="text-[10px] text-slate-400">Regime Presets:</span>
@@ -1144,6 +1147,7 @@ export const MeltPool3DCrossSectionLab: React.FC<MeltPool3DCrossSectionProps> = 
                 <MeltPoolExtentNotice geometry={pyResult.meltPoolGeometry} />
                 <DepthBiasNotice geometry={pyResult.meltPoolGeometry} material={pyResult.material} heatSource={pyResult.processParameters?.heatSource} enthalpy={pyResult.processParameters?.normalizedEnthalpy} />
                 <PublishedTrackBands thermal={pyResult} />
+                <HowCalculated explainerId="meltpool-geometry" result={pyResult} />
 
                 <div className="space-y-1 text-[11px] text-slate-300">
                   <div className="flex justify-between py-0.5 border-b border-slate-800/60">

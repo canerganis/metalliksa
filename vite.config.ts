@@ -32,6 +32,8 @@ export default defineConfig(({mode}) => {
             if (/node_modules[\\/](jspdf|jspdf-autotable|html2canvas|canvg|dompurify)[\\/]/.test(id)) return 'vendor-pdf';
             if (/node_modules[\\/][^\\/]*plotly[^\\/]*[\\/]/.test(id)) return 'vendor-plotly';
             if (/node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id)) return 'vendor-react';
+            // Loaded only when a "How this is calculated" panel opens (src/utils/loadKatex.ts).
+            if (/node_modules[\\/]katex[\\/]/.test(id)) return 'vendor-katex';
             return undefined;
           },
         },
