@@ -328,3 +328,89 @@ export function checkedProcessWindow(raw: unknown): LpbfProcessWindowResponse {
   if (!isFiniteNumber(raw.computeMs)) return fail("computeMs missing");
   return raw as unknown as LpbfProcessWindowResponse;
 }
+
+// ---------------------------------------------------------------------------------------------------------
+// Plain-language gate explanations (presentation only: every gate id, list and count is read from the cells)
+// ---------------------------------------------------------------------------------------------------------
+const KEYHOLE_GATE = "keyhole";
+const TANG_GATE = "lof_tang";
+
+const GATE_NAMES: Readonly<Record<string, string>> = {
+  [KEYHOLE_GATE]: "the keyhole risk gate",
+  [TANG_GATE]: "the Tang lack-of-fusion criterion",
+  lof_wh: "the width-over-hatch diagnostic",
+  lof_dt: "the depth-over-layer diagnostic",
+  balling: "the balling aspect-ratio screen",
+  literature_pv: "the literature P-v box check",
+  keyhole_level30: "the legacy porosity level",
+  downskin: "the downskin overhang check",
+  recoater: "the recoater check",
+  distortion: "the distortion check",
+};
+
+const gateName = (gate: string): string => GATE_NAMES[gate] ?? `gate ${gate}`;
+
+/** True for the IN625 alloy ids: its keyhole cut is derived per alloy, so the transferred-threshold sentence does not apply. */
+const isIn625 = (alloyId: string | null | undefined): boolean => /625/.test(alloyId ?? "");
+
+/** The keyhole gate's cut and provenance in one clause, worded for the alloy that was computed. */
+export function keyholeGateClause(alloyId: string | null | undefined): string {
+  return isIn625(alloyId)
+    ? "the keyhole risk gate (dH/hs at or above the keyhole cut of this alloy)"
+    : "the keyhole risk gate (dH/hs at or above 20, a threshold transferred from 316L and Ti-6Al-4V and not derived for this alloy)";
+}
+
+const TANG_CLAUSE = "the Tang lack-of-fusion criterion (its source notes the criterion is problematic with modelled geometry)";
+
+/** One plain sentence per gate that touched the cell: failing, risk, advisory and unavailable gates in that order. */
+export function cellGateSentences(cell: LpbfProcessWindowCell, alloyId?: string | null): string[] {
+  if (cell.verdict === "error") return [];
+  const out: string[] = [];
+  const clause = (gate: string): string => (gate === KEYHOLE_GATE ? keyholeGateClause(alloyId) : gate === TANG_GATE ? TANG_CLAUSE : gateName(gate));
+  const cap = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
+  for (const gate of cell.blockingGates) out.push(`${cap(clause(gate))} fails here, which makes this cell do-not-print.`);
+  for (const gate of cell.riskGates) out.push(`${cap(clause(gate))} flags this cell, which makes it risky.`);
+  for (const gate of cell.advisoryGates) out.push(`${cap(gateName(gate))} gives an advisory only and does not change the verdict.`);
+  for (const gate of cell.unavailableGates) out.push(`${cap(gateName(gate))} could not be evaluated for this cell.`);
+  return out;
+}
+
+export interface NoPrintableExplanation {
+  total: number;
+  /** Cells where the keyhole gate is a risk gate. */
+  keyholeRiskCells: number;
+  /** Cells where the Tang criterion is a failing gate. */
+  tangFailCells: number;
+  /** Cells with an inconclusive or error verdict (no gate decided them). */
+  unresolvedCells: number;
+}
+
+/**
+ * When no cell is printable: how many cells each of the two verdict-driving gates holds back, counted from the returned
+ * cell gate data. Returns null when at least one cell is printable or the grid is empty.
+ */
+export function noPrintableExplanation(result: Pick<LpbfProcessWindowResponse, "cells">): NoPrintableExplanation | null {
+  const cells = result.cells;
+  if (cells.length === 0 || cells.some(c => c.verdict === "printable")) return null;
+  return {
+    total: cells.length,
+    keyholeRiskCells: cells.filter(c => c.riskGates.includes(KEYHOLE_GATE)).length,
+    tangFailCells: cells.filter(c => c.blockingGates.includes(TANG_GATE)).length,
+    unresolvedCells: cells.filter(c => c.verdict === "inconclusive" || c.verdict === "error").length,
+  };
+}
+
+const cellsText = (n: number): string => `${n} cell${n === 1 ? "" : "s"}`;
+
+/** The single note shown above the map when no cell is printable; every number comes from `noPrintableExplanation`. */
+export function noPrintableNoteText(result: Pick<LpbfProcessWindowResponse, "cells" | "alloyId">): string | null {
+  const x = noPrintableExplanation(result);
+  if (!x) return null;
+  const parts: string[] = [];
+  if (x.keyholeRiskCells > 0) parts.push(`${keyholeGateClause(result.alloyId)} flags ${cellsText(x.keyholeRiskCells)} of ${x.total} as a keyhole risk`);
+  if (x.tangFailCells > 0) parts.push(`${TANG_CLAUSE} fails in ${cellsText(x.tangFailCells)} of ${x.total}, which makes them do-not-print`);
+  if (x.unresolvedCells > 0) parts.push(`${cellsText(x.unresolvedCells)} of ${x.total} could not be resolved`);
+  const lead = "No cell in this P-v range is printable.";
+  if (parts.length === 0) return `${lead} Select a cell to see which gates held it back.`;
+  return `${lead} ${parts.map((p, i) => (i === 0 ? p.charAt(0).toUpperCase() + p.slice(1) : p)).join("; ")}.`;
+}

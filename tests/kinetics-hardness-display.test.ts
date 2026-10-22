@@ -192,7 +192,7 @@ test("formatCoolingRate: short, never a long float", () => {
   assert.equal(formatCoolingRate(0.05), "0.05");
   assert.equal(formatCoolingRate(1523.456789123), "1523");
   assert.equal(formatCoolingRate(30.123456), "30.12");
-  assert.equal(formatCoolingRate(1089047), "1.09e+6");
+  assert.equal(formatCoolingRate(1089047), "1.09 × 10⁶");
 });
 
 // ---------------------------------------------------------------------------------------------------------------

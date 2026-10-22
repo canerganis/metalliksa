@@ -1,4 +1,5 @@
 import React from "react";
+import { formatScientific } from "../../utils/numberFormat";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import type { AcceptedPrefix, SimulationRefusal } from "../../services/lpbfSimulationService";
 import { EstimateWarnings } from "../SolidificationEstimates";
@@ -6,7 +7,7 @@ import { EstimateWarnings } from "../SolidificationEstimates";
 /** Significant-figure formatting for the prefix values (displaySignificantDigits comes from the payload). */
 export function sig(value: number, digits: number): string {
   const rounded = Number(value.toPrecision(digits));
-  return rounded !== 0 && (Math.abs(rounded) < 1e-3 || Math.abs(rounded) >= 1e6) ? rounded.toExponential(digits - 1) : String(rounded);
+  return rounded !== 0 && (Math.abs(rounded) < 1e-3 || Math.abs(rounded) >= 1e6) ? formatScientific(rounded, digits) : String(rounded);
 }
 
 /** Partial transient temperature history shown when the run is refused at the material boiling limit. */

@@ -90,7 +90,7 @@ export function ExperimentPlanView({ plan }: { plan: ExperimentPlanDocument }) {
           <thead>
             <tr>
               <th scope="col">Rank</th><th scope="col">Track</th><th scope="col">Print order</th><th scope="col">Power (W)</th><th scope="col">Speed (mm/s)</th>
-              <th scope="col">Spot (um)</th><th scope="col">Regime class</th><th scope="col">Score</th><th scope="col">Kernel disagreement</th>
+              <th scope="col">Spot (µm)</th><th scope="col">Regime class</th><th scope="col">Score</th><th scope="col">Kernel disagreement</th>
               <th scope="col">Interval width</th><th scope="col">Coverage</th>
             </tr>
           </thead>

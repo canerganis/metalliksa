@@ -1,3 +1,4 @@
+import { THIN_SPACE, displayUnit, formatScientific } from "./numberFormat";
 import { checkedQuantityContainer, reasonText, sourceLabelText, type Quantity, type QuantityContainer } from "../data/quantityEnvelope";
 
 // Wording table: pending maintainer approval (SOL-A, L6).
@@ -21,11 +22,11 @@ export function quantityReason(q: Quantity): string {
 }
 export function quantityText(q: Quantity): string {
   if (q.value === null) return quantityReason(q);
-  const value = typeof q.value === "number" ? q.value.toExponential(3) : typeof q.value === "string" ? q.value
+  const value = typeof q.value === "number" ? formatScientific(q.value, 4) : typeof q.value === "string" ? q.value
     : Object.entries(q.value).map(([name, v]) => `${SOLIDIFICATION_WORDING.alternatives[name] ?? name}: ${(v * (q.unit === "m" ? 1e6 : 1)).toFixed(3)}`).join("; ");
   const unit = typeof q.value === "object" && q.unit === "m" ? "µm" : q.unit;
   const label = q.sourceEvidenceKind ? sourceLabelText(q.sourceEvidenceKind, q.weakestInputs) : "";
-  return `${value} ${unit}${label ? ` · ${label}` : ""}`;
+  return `${value}${THIN_SPACE}${displayUnit(unit)}${label ? ` · ${label}` : ""}`;
 }
 export function checkedFront(raw: unknown): QuantityContainer {
   const container = checkedQuantityContainer(raw);

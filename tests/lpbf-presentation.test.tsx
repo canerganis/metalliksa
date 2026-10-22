@@ -35,7 +35,7 @@ assert.match(render({...job, cacheHit:true}), /Cached · completed/);
     assert.match(html, /Completed for earlier inputs · 100% reported/);
     assert.match(html, /Stale simulation result/);
     // Old numbers are de-emphasised.
-    for (const value of ["321", "123", "45"]) assert.match(html, new RegExp(`<dd class="[^"]*opacity-75[^"]*">${value} `), value);
+    for (const value of ["321", "123", "45"]) assert.match(html, new RegExp(`<dd class="[^"]*opacity-75[^"]*"[^>]*>${value} `), value);
     assert.match(html, /<p class="mt-2 text-sm leading-6 opacity-75">Reduce hatch spacing/);
     // Evidence and limitation labels stay at full emphasis.
     for (const label of [">Experimental validation pending<", ">Calibration incomplete<", "Goldak · analytical liquidus extent", "Regime · conduction assumption", "Confidence</dt><dd class=\"mt-1.5 break-words text-sm\">low · model evidence limited"]) assert.ok(html.includes(label), label);

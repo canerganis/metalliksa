@@ -1,6 +1,7 @@
 import { QUANTITY_ENVELOPE } from "../generated/quantityEnvelope";
 import { checkedEstimateContainer, checkedQuantityContainer } from "./quantityEnvelope";
 import { checkedFront, quantityReason } from "../utils/solidificationDisplay";
+import { formatScientific } from "../utils/numberFormat";
 /**
  * Pure helpers for the LPBF G/R solidification map card (python/lpbf_gr_solidification.py is the result authority).
  *
@@ -157,7 +158,7 @@ export function noValueExplanation(cells: readonly GrCellBody[], metric: GrMetri
 export const STATUS_LABELS: Readonly<Record<GrCellStatus, string>> = QUANTITY_ENVELOPE.statusLabels;
 
 export function formatSci(value: number | null | undefined, digits = 3): string {
-  return typeof value === "number" && Number.isFinite(value) ? value.toExponential(digits) : "not available";
+  return typeof value === "number" && Number.isFinite(value) ? formatScientific(value, digits + 1) : "not available";
 }
 
 export function formatMetric(value: number | null, metric: GrMetric): string {

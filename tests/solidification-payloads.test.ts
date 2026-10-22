@@ -37,10 +37,10 @@ test("F16 synthetic admitted values stay non-null and keep their per-value sourc
   const raw = JSON.parse(readFileSync(new URL("./fixtures/quantity-envelope/synthetic-admitted-liquidus.json", import.meta.url), "utf8"));
   const container = checkedQuantityContainer(raw);
   assert.equal(container.quantities.thermalGradient.value, 12345678.901234567);
-  assert.match(quantityText(container.quantities.thermalGradient), /1.235e\+7 K\/m · Literature estimate/);
+  assert.match(quantityText(container.quantities.thermalGradient), /1\.235 × 10⁷ K\/m · Literature estimate/);
   const html = renderToStaticMarkup(React.createElement(SolidificationQuantities, { container, frontOnly: false }));
   assert.match(html, /data-solidification-envelope/);
-  assert.match(html, /1.235e\+7 K\/m · Literature estimate/);
+  assert.match(html, /1\.235 × 10⁷ K\/m · Literature estimate/);
   assert.doesNotMatch(html, /Older solver result/);
 });
 
@@ -49,7 +49,7 @@ test("PDAS displays two named SI-to-micrometre alternatives, without interval wo
   const raw = JSON.parse(readFileSync(new URL("thermal-in718.json", directory), "utf8"));
   const template = checkedQuantityContainer(raw).quantities.pdas;
   const text = quantityText({ ...template, status: "computed", value: { hunt: 2e-6, kurzFisher: 3e-6 }, reasons: [] });
-  assert.equal(text, "Hunt: 2.000; Kurz-Fisher: 3.000 µm");
+  assert.equal(text, "Hunt: 2.000; Kurz-Fisher: 3.000 µm");
   assert.doesNotMatch(text, / to |–/);
 });
 
