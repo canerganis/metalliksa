@@ -141,3 +141,10 @@ test('fetchP8Depth sends nominal then band on the executed inputs and reports ea
   assert.deepEqual(views, ['available', 'available']);
   assert.deepEqual((sent[0].process as { laserPower_W: number }).laserPower_W, 150);
 });
+
+test("an out-of-range evaporative run gets a plain hint before the solver's own message", async () => {
+  const { evaporativeErrorHint } = await import("../src/components/Ti64EvaporativePanel");
+  const solver = "Thermal candidate exceeds finite enthalpy/scenario range after bounded retries; no clipping";
+  assert.match(evaporativeErrorHint(solver), /leaves the model's declared range \(up to 5000 K\).*Lower the laser power or raise the scan speed/);
+  assert.equal(evaporativeErrorHint("some other failure"), "");
+});

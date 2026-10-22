@@ -6,7 +6,7 @@ import {
   ti64EvaporativeApi, type Ti64EvaporativeJob, type Ti64EvaporativeResult,
 } from '../services/lpbfSimulationService';
 import {
-  TI64_EVAPORATIVE_LABEL, TI64_EVAPORATIVE_TRACK_UM, buildTi64EvaporativeInput, ti64EvaporativeAvailability,
+  TI64_EVAPORATION_SCENARIO, TI64_EVAPORATIVE_LABEL, TI64_EVAPORATIVE_TRACK_UM, buildTi64EvaporativeInput, ti64EvaporativeAvailability,
   type Ti64SurfaceMode,
 } from '../utils/ti64EvaporativeModel';
 import {
@@ -18,6 +18,15 @@ const fmt = (value: number | null | undefined) => value === null || value === un
 const surface = 'rounded-xl border border-slate-700/50 bg-slate-900/40 p-4';
 
 export interface Ti64ProcessInput { power_W: number; speed_mm_s: number; beamDiameter_um: number; preheat_C: number }
+
+/**
+ * Plain explanation placed before the solver's own error text (which is kept verbatim). The solver refuses rather than
+ * clips when the surface temperature leaves the declared scenario range (TI64_EVAPORATION_SCENARIO.maxTemperature_K).
+ */
+export function evaporativeErrorHint(message: string): string {
+  if (!/exceeds finite enthalpy\/scenario range/.test(message)) return '';
+  return `At these settings the surface temperature leaves the model's declared range (up to ${TI64_EVAPORATION_SCENARIO.maxTemperature_K} K), so the run stops instead of clipping values. Lower the laser power or raise the scan speed and run again. Solver message: `;
+}
 
 export function P8PairedRow({ view }: { view: P8DepthView | 'loading' | 'error' }) {
   if (view === 'loading') return <section aria-label={P8_ROW_TITLE} className={surface}><h5 className="font-medium">{P8_ROW_TITLE}</h5><p role="status" className="mt-2 text-sm text-slate-400">Requesting the independent P8 research scenario…</p></section>;
@@ -166,7 +175,7 @@ export function Ti64EvaporativePanel({ material, process }: { material: string; 
       {active && <button className="rounded-lg border border-slate-500 px-3 py-2 text-sm" onClick={cancel}>Cancel</button>}
     </div>
     {job && <p role="status" className="text-xs text-slate-400">Job {job.id} · {job.status}{active ? ` · ${Math.round(job.progress * 100)}%` : ''}</p>}
-    {(error || job?.error) && <p role="alert" className="rounded-xl border border-red-400/30 p-3 text-sm text-red-200 whitespace-pre-wrap">{error || job?.error}</p>}
+    {(error || job?.error) && <p role="alert" className="rounded-xl border border-red-400/30 p-3 text-sm text-red-200 whitespace-pre-wrap">{evaporativeErrorHint(error || job?.error || '')}{error || job?.error}</p>}
     {result && <Ti64EvaporativeResultView result={result} p8={p8} stale={stale} />}
   </section>;
 }
