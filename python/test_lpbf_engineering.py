@@ -11,6 +11,14 @@ import unittest
 from unittest.mock import patch
 import numpy as np
 from lpbf_material_registry import catalog, material, enthalpy_table
+
+
+def supplied_snapshot(name):
+    """A registry snapshot reused as user-supplied properties. endpointAdmission is the registry's own admission
+    decision for its table, not a property a user supplies, so it is removed like the identity fields."""
+    snapshot = copy.deepcopy(material(name))
+    snapshot.pop("endpointAdmission", None)
+    return snapshot
 from lpbf_simulation import validate, run, transient, scan_segments, fingerprint
 from lpbf_verification import compare, convergence
 from lpbf_worker import Queue, capabilities
@@ -142,7 +150,7 @@ class Verification(unittest.TestCase):
         })
 
     def test_supplied_material_revision_changes_with_source_and_is_unverified(self):
-        supplied = copy.deepcopy(material("Inconel 718"))
+        supplied = supplied_snapshot("Inconel 718")
         for key in ("materialId", "provenanceClass", "materialIdentitySchemaVersion", "materialRevisionSha256",
                     "materialAuthority", "materialAuthorityRevisionSha256"):
             supplied.pop(key)
@@ -160,7 +168,7 @@ class Verification(unittest.TestCase):
         self.assertNotIn("sourceValidityRange_K", first)
 
     def test_source_validity_range_is_separate_and_must_cover_model_table(self):
-        supplied = copy.deepcopy(material("Inconel 718"))
+        supplied = supplied_snapshot("Inconel 718")
         for key in ("materialId", "provenanceClass", "materialIdentitySchemaVersion", "materialRevisionSha256",
                     "materialAuthority", "materialAuthorityRevisionSha256"):
             supplied.pop(key)
@@ -183,7 +191,7 @@ class Verification(unittest.TestCase):
                 material("Inconel 718", bad)
 
     def test_supplied_identity_is_rederived_but_authority_claims_are_rejected(self):
-        canonical = copy.deepcopy(material("Inconel 718"))
+        canonical = supplied_snapshot("Inconel 718")
         for key in ("materialAuthority", "materialAuthorityRevisionSha256"):
             supplied = copy.deepcopy(canonical)
             for identity in ("materialId", "provenanceClass", "materialIdentitySchemaVersion", "materialRevisionSha256",
@@ -202,7 +210,7 @@ class Verification(unittest.TestCase):
 
     def test_supplied_data_for_additional_alloy(self):
         # Synthetic table exercises schema only; explicitly marked synthetic source.
-        supplied = copy.deepcopy(material("Inconel 718"))
+        supplied = supplied_snapshot("Inconel 718")
         for key in ("materialId", "provenanceClass", "materialIdentitySchemaVersion", "materialRevisionSha256",
                     "materialAuthority", "materialAuthorityRevisionSha256"):
             supplied.pop(key)

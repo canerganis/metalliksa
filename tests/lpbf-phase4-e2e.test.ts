@@ -7,6 +7,20 @@ import { LpbfSourceArchiveService } from '../server/lpbfSourceArchiveService';
 import { LpbfRunArchiveService } from '../server/lpbfRunArchiveService';
 import { lpbfWorker } from '../server/lpbfWorkerBridge';
 
+// The bridge answers LPBF_WORKER_STARTING while the Python worker is still importing modules ("Retry shortly").
+// Under full-suite load that can take longer than one request deadline, so the test retries that one code a
+// bounded number of times, as an HTTP caller would. Any other error fails the test immediately.
+async function requestWhenStarted(op: string, payload: unknown, attempts = 6): Promise<any> {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await (lpbfWorker as any).request(op, payload);
+    } catch (error: any) {
+      if (error?.code !== 'LPBF_WORKER_STARTING' || attempt >= attempts) throw error;
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+}
+
 test('Phase 4: Uçtan Uca Test - Calisma Secimi -> Is Calistirma -> Karsilastirma -> Export/Import', async t => {
   const optionalRawRoot = path.resolve('data/benchmark/cmu-ti64-meltpool-v1/raw');
   const requiredPayloads = ['STMeasurements.csv', 'MTMeasurements.csv', 'README.txt'];
@@ -64,7 +78,7 @@ test('Phase 4: Uçtan Uca Test - Calisma Secimi -> Is Calistirma -> Karsilastirm
     
     let submitResponse: any;
     try {
-      submitResponse = await lpbfWorker.request('submit', request);
+      submitResponse = await requestWhenStarted('submit', request);
     } catch (err: any) {
       console.error("SUBMIT ERROR:", err);
       throw err;
