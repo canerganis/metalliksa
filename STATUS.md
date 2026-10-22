@@ -1,3 +1,11 @@
+## Güncel devam noktası — 2026-10-22 / Paylaşım öncesi kullanılabilirlik (main `111cfc62`, push edildi)
+
+- **Push'lar:** `78b5619a` (Ti64 entegrasyonu, tur, CALPHAD grafik düzeltmesi, arayüz sadeleştirme, G/R açıklaması) ve `111cfc62` (bakımcının onayladığı 33 sade etiket, "How this is calculated" panelleri, sonuç özeti kartı, tutarlı sayı/birim, proses penceresi açıklaması, varsayılan mod Screening).
+- **Kanıt:** unit 1531/1531, lint ve bundle bütçeleri PASS, parity 25 PASS (son Python değişikliğinden sonra), modül sözleşme testleri PASS, ceiling 0. Tarayıcı kontrolleri GPU gizli (`CUDA_VISIBLE_DEVICES=-1`) yapıldı; GPU bölümü yalnız testlerle doğrulandı.
+- **Formüller:** 42 denklem; tablo [EQUATIONS_SHOWN_2026-10-22.md](docs/research/EQUATIONS_SHOWN_2026-10-22.md). Lead kapısı Screening, buharlaşma ve P8 satırlarını kodla/spec ile karşılaştırdı; Quick Screening işi `lpbf_simulation.screening` (Goldak, sabit ızgara) farklı yol olduğu için ayrı açıklama eklendi.
+- **Açık kararlar:** proses penceresinde IN718 için hiç "Printable" yok (ΔH/hs ≥ 20 keyhole kapısı aktarılmış, Tang kriteri modellenmiş geometride sorunlu); karar: şimdilik açıklama, Tang'ı uyarıya düşürmek paylaşım sonrası planlı bump. Tur bare-plate'e geçemiyor (kaynaklı `sourcePenetration_um` yok). Diğer alaşımlar için buharlaşma modeli yok (tahmini 1 ila 2 hafta).
+- **Ortam notu:** uygulama `.env` ile sistem Python'unu kullanır (torch CUDA + Warp 1.17); kilitli test ortamına da Warp 1.17 kuruldu.
+
 ## Güncel devam noktası — 2026-10-20 gece / Ti64 Standard entegrasyonu ve kullanılabilir tur (`release/0.2.0-prep`, push yok)
 
 - **Birleşen şeritler:** tur/UX `4a05f4b5` + `f2cc146d` (Codex Sol yazdı, sandbox commit edemediği için lead commitledi), Ti64 `91928050` + `bad35b59` (Claude Sonnet; Codex sandbox Python/tsx başlatamadı), Astra incelemesi `6b407671`. Merge: `d552a863`, `abd1f79e`, `f089b4bf`. Sözleşme [SPEC_ti64_standard_integration_2026-10-20.md](docs/research/SPEC_ti64_standard_integration_2026-10-20.md), fizik incelemesi [REVIEW_ti64_w1_p8_pairing_2026-10-20.md](docs/research/REVIEW_ti64_w1_p8_pairing_2026-10-20.md) (C2 bu incelemeyle değiştirildi).
