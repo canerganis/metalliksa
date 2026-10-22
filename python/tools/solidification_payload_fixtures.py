@@ -91,7 +91,8 @@ def main():
         print(f"Wrote {len(expected)} SOL-A fixtures to {FIXTURE_DIR}")
     else:
         actual = {path.name: path.read_text(encoding="utf-8") for path in FIXTURE_DIR.glob("*.json")}
-        if actual != expected:
+        from tools.fixture_compare import mapping_differences
+        if mapping_differences(actual, expected):
             parser.exit(1, "SOL-A fixtures are stale; rerun with --write\n")
         print(f"PASS: {len(expected)} SOL-A fixtures match the real Python producers")
 
