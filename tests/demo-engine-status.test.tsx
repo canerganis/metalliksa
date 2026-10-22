@@ -34,7 +34,7 @@ test('demo mode never claims a live engine: start page, boot steps and engine no
   const note = renderToStaticMarkup(<DemoEngineNote onClose={() => {}} />);
 
   for (const text of [atrium, note, ...details]) {
-    assert.ok(!text.includes('Python daemon ready'), text);
+    assert.ok(!text.includes('Calculation engine ready'), text);
     assert.ok(!/online/i.test(text.replace(/\bsnapshot\b/g, '')), text);
     assert.ok(!text.includes('Refresh status'), text);
   }

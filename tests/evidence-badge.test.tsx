@@ -21,7 +21,7 @@ test('the badge shows exactly the contract ceiling and no stronger evidence clas
     const ceiling = contract.evidence.ceiling;
     assert.match(html, new RegExp(`data-evidence-ceiling="${ceiling}"`), contract.id);
     assert.match(html, new RegExp(`data-oracle="${contract.tests.oracle.status}"`), contract.id);
-    assert.ok(html.includes(`Max claim: ${LABELS[rank(ceiling)]}`), contract.id);
+    assert.ok(html.includes(`Strongest claim allowed: ${LABELS[rank(ceiling)]}`), contract.id);
     for (const stronger of LABELS.slice(0, rank(ceiling))) assert.ok(!html.includes(stronger), `${contract.id} shows ${stronger}`);
     assert.ok(!/qualified|certified|validated|airworthy/i.test(html), contract.id);
   }
@@ -45,10 +45,10 @@ test('the view is a pure projection of whatever ceiling the contract holds', () 
     const contract = { ...base, evidence: { ...base.evidence, ceiling } } as RegisteredContract;
     const view = evidenceBadgeView(contract);
     assert.equal(view?.ceiling, ceiling);
-    assert.ok(view?.text.startsWith(`Max claim: ${LABELS[rank(ceiling)]} ·`), ceiling);
+    assert.ok(view?.text.startsWith(`Strongest claim allowed: ${LABELS[rank(ceiling)]}. Reference check: `), ceiling);
   }
   const pending = { ...base, tests: { oracle: { status: 'pending', ciNote: null, scope: null } } } as unknown as RegisteredContract;
-  assert.match(evidenceBadgeView(pending)?.description ?? '', /Oracle pending/);
+  assert.match(evidenceBadgeView(pending)?.description ?? '', /No independent reference check exists yet/);
   assert.equal(evidenceBadgeView({ ...base, migrationState: 'legacy' } as unknown as RegisteredContract), null);
 });
 
@@ -68,7 +68,7 @@ test('the rendered badge follows every ceiling and oracle state of the contract 
       const label = `${ceiling}/${oracle.status}`;
       assert.match(html, new RegExp(`data-evidence-ceiling="${ceiling}"`), label);
       assert.match(html, new RegExp(`data-oracle="${oracle.status}"`), label);
-      assert.equal(visible, `Max claim: ${LABELS[rank(ceiling)]} · Oracle ${oracle.status}`, label);
+      assert.equal(visible, `Strongest claim allowed: ${LABELS[rank(ceiling)]}. Reference check: ${oracle.status === 'present' ? 'available' : 'not yet available'}`, label);
       for (const other of LABELS.filter(item => item !== LABELS[rank(ceiling)])) assert.ok(!visible.includes(other), `${label} shows ${other}`);
       // The screen-reader description (not only the tooltip) carries the contract's oracle text.
       const sr = /class="mk-sr-only">([^<]*)</.exec(html)?.[1] ?? '';
@@ -88,7 +88,7 @@ test('the disclaimer is screen-reader text tied to the badge, not only a tooltip
     const describedBy = /aria-describedby="([^"]+)"/.exec(html)?.[1];
     assert.ok(describedBy, contract.id);
     const sr = new RegExp(`<span id="${describedBy}" class="mk-sr-only">([^<]+)</span>`).exec(html)?.[1] ?? '';
-    assert.match(sr, /not the status of a result and not a validation claim/, contract.id);
+    assert.match(sr, /a limit, not a grade for any single result, and not a validation/, contract.id);
     assert.match(html, /class="mk-count-badge/, contract.id);
     assert.ok(!/slate-/.test(html), 'mk-* tokens, not raw slate classes');
     assert.ok(!html.includes('python/') && !html.includes('.py'), 'no repository paths in user-facing text');
@@ -104,7 +104,7 @@ test('a recorded oracle CI gap is shown with the badge', () => {
     if (ciNote) assert.ok(view?.description.includes(ciNote), contract.id);
   }
   const keyhole = MODULE_CONTRACTS.find(contract => contract.id === 'keyhole-raytracing');
-  assert.equal(keyhole?.tests.oracle.ciNote, 'Oracle not run in CI (requires Warp/GPU stack).');
+  assert.equal(keyhole?.tests.oracle.ciNote, 'The reference check is not run automatically here (it needs the Warp GPU stack).');
 });
 
 test('the badge reads only the committed contract (no store, service or fetch)', () => {
@@ -120,13 +120,13 @@ test('App.tsx header keeps title and maturity badge, then the plain purpose sent
   assert.ok(!/<EvidenceBadge /.test(app), 'the max-claim badge is no longer printed in the header');
 });
 
-test('module header: max-claim and oracle text sit behind "About this evidence level", wording unchanged', () => {
+test('module header: max-claim and oracle text sit behind "What this result can claim"', () => {
   for (const contract of MODULE_CONTRACTS.filter(item => item.migrationState === 'contracted')) {
     const view = evidenceBadgeView(contract);
     const html = renderToStaticMarkup(<ModuleEvidenceDisclosure moduleId={contract.id} />);
     assert.match(html, /^<details class="mk-about"/, contract.id);
     assert.ok(!/^<details[^>]*\bopen/.test(html), `${contract.id} starts closed`);
-    assert.ok(html.includes('<summary>About this evidence level</summary>'), contract.id);
+    assert.ok(html.includes('<summary>What this result can claim</summary>'), contract.id);
     assert.match(html, new RegExp(`data-evidence-ceiling="${contract.evidence.ceiling}"`), contract.id);
     const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
     assert.ok(html.includes(escape(view!.text)), `${contract.id} max-claim text unchanged`);

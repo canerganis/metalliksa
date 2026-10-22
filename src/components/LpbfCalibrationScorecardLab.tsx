@@ -394,7 +394,7 @@ function ScorecardView({ document: doc = COMMITTED_CALIBRATION_SCORECARD }: { do
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>Held-out errors (leave-one-source-out)</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Errors on data the model was not fitted to (each source left out in turn)</CardTitle></CardHeader>
         <CardContent><P2Table rows={doc.headline} /></CardContent>
       </Card>
 

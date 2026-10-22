@@ -20,7 +20,7 @@ test('approved functional names retain module identities and conservative condit
   const expected = {
     '3d-distortion-lab': 'LPBF Workflow',
     'lpbf-optimizer': 'Process Parameter Search',
-    'experimental-validation': 'Melt Pool vs Measurements',
+    'experimental-validation': 'Melt Pool vs Published Measurements',
   } as const;
   for (const [id, label] of Object.entries(expected)) {
     assert.equal(labels.get(id as typeof MODULES[number]['id']), label, id);

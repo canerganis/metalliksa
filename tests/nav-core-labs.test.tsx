@@ -107,7 +107,7 @@ test("Atrium: four flow steps in order with registry labels, the screening note 
     assert.ok(flow.includes(step.verb));
     from = at;
   }
-  assert.ok(flow.includes("Module maturity; this is not a validation claim"), "maturity badge title");
+  assert.ok(flow.includes("How finished this module is. It says nothing about whether a result is validated."), "maturity badge title");
   assert.ok(html.includes("Flagship - LPBF melt-pool and process screening"));
   assert.ok(html.includes("Start the LPBF flow"));
   assert.ok(html.includes("Screening only. No result in this flow is experimental validation."));

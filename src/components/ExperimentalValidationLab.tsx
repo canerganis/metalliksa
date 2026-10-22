@@ -67,7 +67,7 @@ export const ExperimentalValidationLab: React.FC = () => {
       <div className="flex items-center gap-3 bg-cyan-950/40 p-4 rounded-xl border border-cyan-800/50">
         <FlaskConical aria-hidden="true" className="w-8 h-8 text-cyan-400 shrink-0" />
         <div>
-          <h2 id="lpbf-experiment-heading" className="text-lg font-bold text-white">Melt Pool vs Measurements</h2>
+          <h2 id="lpbf-experiment-heading" className="text-lg font-bold text-white">Melt Pool vs Published Measurements</h2>
           <p className="text-sm text-cyan-100">Compare traceable measurements with an identified simulation.</p>
         </div>
       </div>

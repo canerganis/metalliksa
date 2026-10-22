@@ -73,7 +73,7 @@ test('every option shows its maturity and, when contracted, the unchanged eviden
       assert.ok(option.includes(view.description.replace(/&/g, '&amp;')), `${module.id} keeps the badge description`);
       assert.match(option, new RegExp(`class="mk-count-badge[^"]*"[^>]*data-evidence-ceiling="${view.ceiling}"`));
     } else {
-      assert.doesNotMatch(option, /Max claim/, `${module.id}: legacy modules show no ceiling, as in the header`);
+      assert.doesNotMatch(option, /Strongest claim allowed/, `${module.id}: legacy modules show no ceiling, as in the header`);
     }
   }
   assert.ok(MODULES.some(module => evidenceBadgeView(contractById(module.id))), 'at least one contracted module is covered');
@@ -164,7 +164,7 @@ test('details: aria-expanded follows the results, hover never moves the active o
     assert.match(text, /<span title=\{MATURITY_BADGE_TITLE\} className=\{`mk-scope-badge/, file);
     assert.doesNotMatch(text, /not a validation claim/, `${file} uses the shared title`);
   }
-  assert.equal(MATURITY_BADGE_TITLE, 'Module maturity; this is not a validation claim for any result.');
+  assert.equal(MATURITY_BADGE_TITLE, 'How finished this module is. It says nothing about whether a result is validated.');
   const css = read('src/styles/palette.css');
   assert.match(css, /max-height: min\(36rem, 76vh\);\s*max-height: min\(36rem, 76dvh\);/, 'dvh with a vh fallback');
   assert.match(css, /max-height: calc\(100vh - 2 \* var\(--mk-space-4\)\); max-height: calc\(100dvh - 2 \* var\(--mk-space-4\)\);/);

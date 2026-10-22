@@ -3,7 +3,7 @@ import { test } from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ModuleNav, navTabStop, syncNavFocus } from "../src/components/ModuleNav";
-import { LAB_MODULES, MODULES } from "../src/data/workspaces";
+import { LAB_MODULES, MODULES, MODULE_PURPOSE } from "../src/data/workspaces";
 
 const mods = [
   { id: "a", workspace: "lpbf" },
@@ -48,7 +48,7 @@ test("every module entry is described by the hint AND its own description", () =
   const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
   for (const module of MODULES) {
     assert.match(html, new RegExp(`aria-describedby="module-nav-hint nav-desc-${module.id}"`), module.id);
-    assert.ok(html.includes(`<span id="nav-desc-${module.id}">${escape(module.description)}</span>`), `${module.id} description element`);
+    assert.ok(html.includes(`<span id="nav-desc-${module.id}">${escape(MODULE_PURPOSE[module.id])}</span>`), `${module.id} description element`);
   }
   assert.match(html, /<div hidden="">/, "descriptions are referenced, not displayed");
   assert.match(html, /<p id="module-nav-hint" class="mk-sr-only">Arrow keys move between modules\.<\/p>/);

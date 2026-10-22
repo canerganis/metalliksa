@@ -11,10 +11,10 @@ export function LpbfDefaultsNote({ lpbf, className }: { lpbf: LpbfSpecimenState;
   if (!flagged.length) return null;
   return (
     <span role="note" data-testid="lpbf-defaults-applied" className={className ?? "text-amber-300"}>
-      Unsourced defaults in use ({flagged.length}){" "}
+      {flagged.length} input{flagged.length === 1 ? " uses an unsourced default" : "s use unsourced defaults"}{" "}
       <details className="inline">
         <summary className="inline cursor-pointer underline underline-offset-2">show which</summary>
-        <span className="block">Unsourced defaults or class heuristics in use: {flagged.map(key => describeLpbfDefault(key, lpbf)).join("; ")}</span>
+        <span className="block">Inputs filled in without a source (default values or rules of thumb for this alloy class): {flagged.map(key => describeLpbfDefault(key, lpbf)).join("; ")}</span>
       </details>
     </span>
   );

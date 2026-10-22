@@ -577,7 +577,7 @@
       "version": "0.2.0",
       "owner": "unassigned (needs maintainer)",
       "workspace": "lpbf",
-      "label": "Solidification Map (G/R)",
+      "label": "Solidification Map (cooling and grain structure)",
       "description": "Screening G/R, cooling rate, dendrite arm spacing (Hunt–Lu, Kirkwood) and morphology tendency from the Python conduction field; not validated.",
       "next": "experimental-validation",
       "maturity": "Research",
@@ -2294,7 +2294,7 @@
       "version": "0.0.0",
       "owner": "TODO(maintainer-review): unassigned",
       "workspace": "lpbf",
-      "label": "Melt Pool vs Measurements",
+      "label": "Melt Pool vs Published Measurements",
       "description": "Plots measured multi-track, powder-entrained melt-pool width and depth (CMU Ti-6Al-4V, 370 W) against the current workflow result; a comparison, not validation.",
       "next": "keyhole-raytracing",
       "maturity": "Research",
@@ -2365,7 +2365,7 @@
       "version": "0.1.0",
       "owner": "unassigned (needs maintainer)",
       "workspace": "lpbf",
-      "label": "Keyhole Ray Tracing",
+      "label": "Keyhole Laser Absorption",
       "description": "Seeded Monte Carlo ray optics in a prescribed Gaussian cavity (NVIDIA Warp; CPU by default, CUDA optional); prescribed cavity, not a solved free surface; empirical absorption law is not calibrated.",
       "next": "lpbf-dataset-comparison",
       "maturity": "Research",
@@ -2663,7 +2663,7 @@
           "productionReady",
           "airworthy"
         ],
-        "note": "Emits no evidence status: the output has no status key ('status' is the transport value 'success'). Ceiling screening-only: a prescribed Gaussian cavity (not a solved free surface) with an empirical angular absorption law, no material optical data and no experimental comparison (python/lpbf_keyhole_raytracing.py docstring and 'limitations'). The oracle is analytic: it compares the Monte Carlo result with the Gaussian square-aperture integral and the flat-surface normal-incidence fraction in python/test_keyhole_contract.py. It checks sampling and energy bookkeeping on a flat surface only, not the physics, and does not raise the ceiling. Oracle not run in CI (requires Warp/GPU stack)."
+        "note": "Emits no evidence status: the output has no status key ('status' is the transport value 'success'). Ceiling screening-only: a prescribed Gaussian cavity (not a solved free surface) with an empirical angular absorption law, no material optical data and no experimental comparison (python/lpbf_keyhole_raytracing.py docstring and 'limitations'). The oracle is analytic: it compares the Monte Carlo result with the Gaussian square-aperture integral and the flat-surface normal-incidence fraction in python/test_keyhole_contract.py. It checks sampling and energy bookkeeping on a flat surface only, not the physics, and does not raise the ceiling. The reference check is not run automatically here (it needs the Warp GPU stack)."
       },
       "lifecycle": {
         "backgroundWork": "none",
@@ -2678,7 +2678,7 @@
         "oracle": {
           "status": "present",
           "ref": "python/test_keyhole_contract.py::KeyholeContract.test_gaussian_aperture_matches_independent_integral_at_three_sample_counts",
-          "ciNote": "Oracle not run in CI (requires Warp/GPU stack).",
+          "ciNote": "The reference check is not run automatically here (it needs the Warp GPU stack).",
           "scope": "It checks sampling and energy bookkeeping on a flat surface only."
         },
         "docs": "docs/modules/keyhole-raytracing.md"
@@ -2711,7 +2711,7 @@
       "version": "0.1.0",
       "owner": "unassigned (needs maintainer)",
       "workspace": "lpbf",
-      "label": "Dataset Comparison (LPBF)",
+      "label": "Model vs Published Datasets (LPBF)",
       "description": "Screening kernels (Rosenthal, Eagar–Tsai v2, Goldak v3) against published single-track measurements (Hofmann 316L 2026, Totis Ti-6Al-4V 2021); comparison, not validation; Python-generated record",
       "next": "lpbf-calibration-scorecard",
       "maturity": "Research",
@@ -2811,8 +2811,8 @@
       "version": "0.1.0",
       "owner": "unassigned (needs maintainer)",
       "workspace": "lpbf",
-      "label": "Calibration Scorecard (LPBF)",
-      "description": "Held-out errors of the screening melt-pool kernels with nuisance absorptivity fitted outside the frozen code: leave-one-source-out per kernel, alloy and regime, interval coverage, regime confusion, Guo N01 failure; screening only, not validation; Python-generated record",
+      "label": "Model Error Scorecard (LPBF)",
+      "description": "Errors on data the model was not fitted to (each source left out in turn) for the screening melt-pool kernels, with laser absorptivity fitted separately from the solver: per kernel, alloy and regime, interval coverage, regime confusion, Guo N01 failure; screening only, not validation; Python-generated record",
       "next": "database",
       "maturity": "Research",
       "navigation": "listed",
@@ -4843,7 +4843,7 @@
       "version": "1.0.0",
       "owner": "unassigned (needs maintainer)",
       "workspace": "evidence",
-      "label": "Measured Findings",
+      "label": "Measured Findings (user-labelled)",
       "description": "Registry findings labelled as measured, with method, source and uncertainty gaps; the label is user-declared, not verified.",
       "next": "traceability",
       "maturity": "Research",

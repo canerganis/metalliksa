@@ -18,7 +18,7 @@
   {
     "id": "solidification-microstructure",
     "workspace": "lpbf",
-    "label": "Solidification Map (G/R)",
+    "label": "Solidification Map (cooling and grain structure)",
     "scope": "Research",
     "description": "Screening G/R, cooling rate, dendrite arm spacing (Hunt–Lu, Kirkwood) and morphology tendency from the Python conduction field; not validated.",
     "next": "experimental-validation"
@@ -26,7 +26,7 @@
   {
     "id": "experimental-validation",
     "workspace": "lpbf",
-    "label": "Melt Pool vs Measurements",
+    "label": "Melt Pool vs Published Measurements",
     "scope": "Research",
     "description": "Plots measured multi-track, powder-entrained melt-pool width and depth (CMU Ti-6Al-4V, 370 W) against the current workflow result; a comparison, not validation.",
     "next": "keyhole-raytracing"
@@ -34,7 +34,7 @@
   {
     "id": "keyhole-raytracing",
     "workspace": "lpbf",
-    "label": "Keyhole Ray Tracing",
+    "label": "Keyhole Laser Absorption",
     "scope": "Research",
     "description": "Seeded Monte Carlo ray optics in a prescribed Gaussian cavity (NVIDIA Warp; CPU by default, CUDA optional); prescribed cavity, not a solved free surface; empirical absorption law is not calibrated.",
     "next": "lpbf-dataset-comparison"
@@ -42,7 +42,7 @@
   {
     "id": "lpbf-dataset-comparison",
     "workspace": "lpbf",
-    "label": "Dataset Comparison (LPBF)",
+    "label": "Model vs Published Datasets (LPBF)",
     "scope": "Research",
     "description": "Screening kernels (Rosenthal, Eagar–Tsai v2, Goldak v3) against published single-track measurements (Hofmann 316L 2026, Totis Ti-6Al-4V 2021); comparison, not validation; Python-generated record",
     "next": "lpbf-calibration-scorecard"
@@ -50,9 +50,9 @@
   {
     "id": "lpbf-calibration-scorecard",
     "workspace": "lpbf",
-    "label": "Calibration Scorecard (LPBF)",
+    "label": "Model Error Scorecard (LPBF)",
     "scope": "Research",
-    "description": "Held-out errors of the screening melt-pool kernels with nuisance absorptivity fitted outside the frozen code: leave-one-source-out per kernel, alloy and regime, interval coverage, regime confusion, Guo N01 failure; screening only, not validation; Python-generated record",
+    "description": "Errors on data the model was not fitted to (each source left out in turn) for the screening melt-pool kernels, with laser absorptivity fitted separately from the solver: per kernel, alloy and regime, interval coverage, regime confusion, Guo N01 failure; screening only, not validation; Python-generated record",
     "next": "database"
   },
   {
@@ -82,7 +82,7 @@
   {
     "id": "experimental-data",
     "workspace": "evidence",
-    "label": "Measured Findings",
+    "label": "Measured Findings (user-labelled)",
     "scope": "Research",
     "description": "Registry findings labelled as measured, with method, source and uncertainty gaps; the label is user-declared, not verified.",
     "next": "traceability"

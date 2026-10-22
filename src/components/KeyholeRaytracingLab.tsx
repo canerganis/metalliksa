@@ -113,7 +113,7 @@ export const KeyholeRaytracingLab: React.FC = () => {
   return (
     <div className="grid min-h-[700px] grid-cols-1 gap-4 lg:grid-cols-[340px_1fr]">
       <section className="mk-plate space-y-4 p-5" aria-label="Keyhole optics controls and results">
-        <h1 className="text-xl font-semibold">Keyhole Ray Tracing</h1>
+        <h1 className="text-xl font-semibold">Keyhole Laser Absorption</h1>
         <p className="text-sm text-gray-400">Prescribed cavity, not a solved free surface; the absorption law is empirical and not calibrated. Power and beam diameter use the shared LPBF process.</p>
         <div className="grid grid-cols-2 gap-3">
           {numberControl('Laser power (W)', process.laserPower_W, 0, 1000, 10, value => updateProcess({ laserPower_W: value }))}
