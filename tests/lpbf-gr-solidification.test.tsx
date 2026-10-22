@@ -75,6 +75,6 @@ test("bug 1: a map whose cells carry no G/R value says why in one sentence (real
   assert.match(card, /data-testid="gr-no-values"/);
   // A map with a value on one cell shows no explanation.
   const withValue = structuredClone(result);
-  withValue.cells![0].front.quantities.gOverR.value = 1e6;
+  (withValue.cells![0].front.quantities.gOverR as { value: unknown }).value = 1e6;
   assert.equal(noValueExplanation(withValue.cells!, "goverr"), null);
 });
