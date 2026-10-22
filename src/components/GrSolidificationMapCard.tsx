@@ -26,6 +26,7 @@ import {
   checkedGrSolidification,
   formatSci,
   isOutsideRegime,
+  noValueExplanation,
   metricRange,
   moveCell,
   type GrMetric,
@@ -367,6 +368,9 @@ export const GrSolidificationMapCard: React.FC<Props> = ({ initialResult = null 
             <div className="space-y-2">
               <GrHeatmap result={result} metric={metric} selected={selected} onSelect={setSelected} stale={stale} />
               <GrLegend result={result} metric={metric} />
+              {noValueExplanation(result.cells ?? [], metric) && (
+                <p data-testid="gr-no-values" role="status" className="text-xs text-amber-200">{noValueExplanation(result.cells ?? [], metric)}</p>
+              )}
             </div>
             <GrCellDetail body={selectedCell} result={result} />
           </div>

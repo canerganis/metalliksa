@@ -1,6 +1,6 @@
 import { QUANTITY_ENVELOPE } from "../generated/quantityEnvelope";
 import { checkedEstimateContainer, checkedQuantityContainer } from "./quantityEnvelope";
-import { checkedFront } from "../utils/solidificationDisplay";
+import { checkedFront, quantityReason } from "../utils/solidificationDisplay";
 /**
  * Pure helpers for the LPBF G/R solidification map card (python/lpbf_gr_solidification.py is the result authority).
  *
@@ -139,6 +139,20 @@ export function cellStyle(cell: GrCellBody, metric: GrMetric, range: ScaleRange 
 }
 export function cellGlyph(cell: GrCellBody, metric: GrMetric): string {
   return cell.status === "failed" ? "!" : metricValue(cell, metric) === null ? "-" : "";
+}
+/**
+ * One sentence saying why a metric has no value on any cell of the map, or null when at least one cell has a value.
+ * The reason text is the engine's own (first cell that carries one); nothing is invented here.
+ */
+export function noValueExplanation(cells: readonly GrCellBody[], metric: GrMetric): string | null {
+  if (cells.length === 0 || metricRange(cells, metric) !== null) return null;
+  const quantityOf = (cell: GrCellBody) => metric === "laves" ? cell.laves.quantities.fraction
+    : metric === "cooling" ? cell.front.quantities.coolingRate : cell.front.quantities.gOverR;
+  for (const cell of cells) {
+    const q = quantityOf(cell);
+    if (q.value === null && q.reasons.length > 0) return `No cell has a value for this metric. ${quantityReason(q)}`;
+  }
+  return "No cell has a value for this metric. Select a cell to see the reason.";
 }
 export const STATUS_LABELS: Readonly<Record<GrCellStatus, string>> = QUANTITY_ENVELOPE.statusLabels;
 
