@@ -47,6 +47,7 @@
     "idb-keyval": "^6.3.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
+    "katex": "0.16.11",
     "leva": "^0.10.1",
     "lucide-react": "^0.546.0",
     "plotly.js-dist-min": "^4.0.0",
@@ -60,6 +61,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/katex": "0.16.7",
     "@types/node": "^22.14.0",
     "@types/plotly.js-dist-min": "^2.3.4",
     "autoprefixer": "^10.4.21",

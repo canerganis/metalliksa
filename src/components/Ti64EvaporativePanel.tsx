@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { WarningNotes } from './SolidificationEstimates';
+import { HowCalculated } from './HowCalculated';
 import { useVisiblePolling } from '../hooks/useVisiblePolling';
 import {
   ti64EvaporativeApi, type Ti64EvaporativeJob, type Ti64EvaporativeResult,
@@ -45,6 +46,17 @@ export function P8PairedRow({ view }: { view: P8DepthView | 'loading' | 'error' 
   </section>;
 }
 
+/** Values the P8 panel reads: the evaporative run's process inputs and the served P8 view; nothing is recomputed. */
+export function p8ExplainerContext(result: Ti64EvaporativeResult, view: P8DepthView) {
+  return {
+    inputs: result.provenance.inputs,
+    p8: {
+      modelId: view.modelId, powerOverOnset: view.powerOverOnset, linkedMeltDepth_um: view.linked ? view.linked.value : null,
+      uiSentence: view.uiSentence, consistencySentence: view.consistencySentence, validationStatus: view.validationStatus,
+    },
+  };
+}
+
 export function Ti64EvaporativeResultView({ result, p8, stale }: { result: Ti64EvaporativeResult; p8?: P8DepthView | 'loading' | 'error'; stale?: boolean }) {
   const g = result.geometry;
   const e = result.energy;
@@ -75,7 +87,9 @@ export function Ti64EvaporativeResultView({ result, p8, stale }: { result: Ti64E
       </tbody></table>
     <p className="text-xs text-slate-400">{result.diagnosticMassLabel}: {fmt(result.diagnosticEmittedMass_kg)} kg</p>
     <WarningNotes className="text-xs text-slate-400" warnings={result.warnings} />
+    <HowCalculated explainerId="ti64-evaporation" result={result} />
     {p8 && !stale && <P8PairedRow view={p8} />}
+    {p8 && !stale && typeof p8 !== 'string' && p8.status === 'available' && <HowCalculated explainerId="p8-linked-depth" result={p8ExplainerContext(result, p8)} />}
   </div>;
 }
 
