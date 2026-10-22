@@ -1,3 +1,4 @@
+import { HowCalculated } from "../HowCalculated";
 import React from "react";
 import type { SimulationResult } from "../../services/lpbfSimulationService";
 import { SIMULATION_MODES, simulationModeLimitations } from "../../data/simulationModes";
@@ -22,5 +23,7 @@ export function MeltPoolSummaryCard({ result, stale = false }: { result: Simulat
       Produced by {result.solver.id}{mode ? ` in ${mode.name} mode` : ""}{mode ? `, scope: ${mode.scope}` : ""}. {simulationModeLimitations(result.effectiveMode)}
     </p>
     {regime && <p className="mt-2 text-sm text-slate-200" data-testid="melt-pool-summary-regime">Regime verdict: {regime}{result.riskScope ? ` · ${result.riskScope}` : ""}</p>}
+    {/* Only Quick Screening: its geometry is the Goldak field read on a fixed grid (lpbf_simulation.screening). */}
+    {result.effectiveMode === "screening" && <HowCalculated explainerId="screening-job-geometry" result={result} className="mt-3" />}
   </section>;
 }

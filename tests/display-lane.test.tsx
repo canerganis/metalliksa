@@ -198,3 +198,16 @@ test("process window and G/R map cells carry a tooltip with values and units", (
   assert.match(html, new RegExp(`<title>100${THIN_SPACE}W, 500${THIN_SPACE}mm/s: [^<]*\\. Width 100${THIN_SPACE}µm, depth 50${THIN_SPACE}µm\\.</title>`));
   assert.match(read("src/components/GrSolidificationMapCard.tsx"), /<title>\{`\$\{cellAriaLabel\(cell, metric\)\}/);
 });
+
+test("the Quick Screening summary card offers its own calculation panel, not the specialist-lab one", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { renderToStaticMarkup } = await import("react-dom/server");
+  const React = await import("react");
+  const { MeltPoolSummaryCard } = await import("../src/components/3d-distortion-lab/MeltPoolSummaryCard");
+  const result = JSON.parse(readFileSync(new URL("./fixtures/how-calculated/screening-job-in718.json", import.meta.url), "utf8"));
+  const html = renderToStaticMarkup(React.createElement(MeltPoolSummaryCard, { result }));
+  assert.match(html, /How the Quick Screening length, width and depth are calculated/);
+  assert.doesNotMatch(html, /How the melt pool length, width, depth and VED are calculated/);
+  const standard = renderToStaticMarkup(React.createElement(MeltPoolSummaryCard, { result: { ...result, effectiveMode: "standard" } }));
+  assert.doesNotMatch(standard, /How the Quick Screening/);
+});

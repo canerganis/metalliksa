@@ -87,6 +87,8 @@ const p8Context = () => p8ExplainerContext(ti64Result(), p8ViewFromRun(ti64Fixtu
 test("every input path of every explainer exists in a real solver result", () => {
   const contexts: Record<string, any> = {
     "meltpool-geometry": fixture("rosenthal"),
+    // Real worker output of a Quick Screening job (NIST AMB2022-03 case 0 inputs), captured 2026-10-22.
+    "screening-job-geometry": JSON.parse(readFileSync(new URL("./fixtures/how-calculated/screening-job-in718.json", import.meta.url), "utf8")),
     "enthalpy-gates": fixture("rosenthal"),
     "ti64-evaporation": ti64Result(),
     "p8-linked-depth": p8Context(),

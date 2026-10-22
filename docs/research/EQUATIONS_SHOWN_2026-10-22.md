@@ -79,3 +79,15 @@ Panel id `solidification-estimates`. Mounted in src/components/SolidificationEst
 | 39 | Dendrite arm spacings, IN718 and IN625 (`spacing-ni`) | alloy in718, in625 | `lambda_1(Hunt) = 1.1773863e-3 G^-0.5 R^-0.25 m; lambda_1(Kurz-Fisher) = 2.5821436e-3 G^-0.5 R^-0.25 m; both only for G D / dT0 < R < dT0 D / (k Gamma) with dT0 = 57 K, D = 3e-9 m^2/s, k = 0.48, Gamma = 3.65e-7 K m; lambda_2 = 19.5 q^-0.63 um, q = G R` | python/lpbf_solidification_estimates.py:raw_spacing (Ni branch), NI_HUNT_A, NI_KF_A, NI_VAB, SPACING["in718"], SPACING["in625"] | Ghosh et al. 2017, Table 2/PDF8, Eq. 7 (Hunt) and Eq. 8 (Kurz-Fisher); secondary: Mitchell 2005, Superalloys 2005, 299 to 310, PDF4/printed 302 Eq. 1. | Two named binary Ni-Nb models transferred to IN718 (explicitly to IN625 for the Ni-family transfer). Their difference is model disagreement, not an interval. The coefficients are the code's numeric constants; the source form is not reconstructed here. Source domain: Ni-5Nb binary on the fixed-G line G = 1e7 K/m. |
 
 Total: 39 equations in 5 panels.
+
+## How the Quick Screening length, width and depth are calculated
+
+Added by the lead at the merge gate (2026-10-22). The LPBF Workflow's Quick Screening job is computed by `python/lpbf_simulation.py:screening`, not by `python/lpbf_thermal_solver.py:calculate_meltpool_physics`, so the melt-pool-geometry rows above do not describe it (no regularised Rosenthal, no 0.55 d width floor, no Fabbro depth leg). Its served metrics are the Goldak field's (`run()`: `result["metrics"] = analytical["goldak"]`).
+
+| # | Equation | Applies to | Plain form | Code locator | Source locator | As implemented |
+|---|---|---|---|---|---|---|
+| 40 | Absorbed power and properties (`screening-power`) | Quick Screening job | `P_f = A P; rho_k, k, c_p at T_0; alpha = k / (rho_k c_p)` | python/lpbf_simulation.py:screening | Defined in the code | none |
+| 41 | Goldak double-ellipsoid field (`screening-goldak`) | Quick Screening job | as row 5, with P_f = A P and properties at T_0 | python/lpbf_simulation.py:screening; python/goldak_solver.py:GoldakField | Goldak 1984 with the Fachinotti and Cardona 2008 erf correction | Axes a beam seed: r = max(d/2, 8 um), a_f = r, a_r = 2r, b = c = r |
+| 42 | Liquidus extent on a fixed grid (`screening-extent`) | Quick Screening job | `W = 2 max y, D = max z, L = range of x where T >= T_liq; x in [-3, 0.5] mm (301), y, z in [0, 1] mm (121)` | python/lpbf_simulation.py:screening | Defined in the code | No keyhole correction, no width floor; quantised to the grid |
+
+Correction at the gate: the Goldak axis note now says r = max(d/2, 8 um) (seed_goldak_axes); the field class also floors each axis at 4 um.

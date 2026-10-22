@@ -184,7 +184,7 @@ const MELTPOOL_GEOMETRY: Explainer = {
         ["xh", "x + v tau"],
         ["s_i", "12 alpha tau + a_i^2, with a_i = b, c, a_f, a_r for i = b, c, f, r"],
         ["f_f, f_r", "2 a_f / (a_f + a_r) and 2 - f_f"],
-        ["a_f, a_r, b, c", "semi-axes seeded from the beam radius r = d/2: a_f = r, a_r = 2r, b = c = r, each at least 4 um"],
+        ["a_f, a_r, b, c", "semi-axes seeded from the beam radius r = max(d/2, 8 um): a_f = r, a_r = 2r, b = c = r (the field also floors each axis at 4 um)"],
       ],
       codeLocator: "python/goldak_solver.py:GoldakField (__init__ pref, temperature_C), goldak_fractions, seed_goldak_axes",
       sourceLocator: "Goldak et al. 1984 Metall. Trans. B, with the Fachinotti and Cardona 2008 erf correction (module docstring); Fachinotti eq. 15 and 18 named in the code comments.",
@@ -807,8 +807,69 @@ const SOLIDIFICATION_ESTIMATES: Explainer = {
   ],
 };
 
+
+/**
+ * Quick Screening job of the LPBF Workflow (python/lpbf_simulation.py:screening). A different code path from
+ * MELTPOOL_GEOMETRY (python/lpbf_thermal_solver.py): no regularised Rosenthal, no 0.55 d width floor, no Fabbro depth
+ * leg. The served metrics are the Goldak field's (lpbf_simulation.py run(): result["metrics"] = analytical["goldak"]).
+ */
+const SCREENING_GOLDAK = MELTPOOL_GEOMETRY.equations.find((eq) => eq.id === "goldak")!;
+const SCREENING_JOB: Explainer = {
+  id: "screening-job-geometry",
+  title: "How the Quick Screening length, width and depth are calculated",
+  summary:
+    "Quick Screening evaluates a Goldak double-ellipsoid conduction field with axes seeded from the beam, using material properties at the preheat temperature, and reads the liquidus extent on a fixed grid. No keyhole correction. Screening only, not experimentally validated.",
+  inputs: [
+    { symbol: "P", label: "laser power", unit: "W", path: "settings.power_W" },
+    { symbol: "v", label: "scan speed", unit: "mm/s", path: "settings.speed_mm_s" },
+    { symbol: "d", label: "beam diameter (1/e^2)", unit: "um", path: "settings.beamDiameter_um" },
+    { symbol: "T_0", label: "preheat", unit: "degC", path: "settings.preheat_C" },
+    { symbol: "A", label: "absorptivity of the material record", unit: "", path: "material.absorptivity" },
+    { symbol: "T_liq", label: "liquidus", unit: "K", path: "material.liquidus_K" },
+    { symbol: "W", label: "width", unit: "um", path: "metrics.width_um" },
+    { symbol: "D", label: "depth", unit: "um", path: "metrics.depth_um" },
+    { symbol: "L", label: "length", unit: "um", path: "metrics.length_um" },
+  ],
+  notes: [{ label: "Assumptions stated by the solver", path: "metrics.assumptions" }],
+  equations: [
+    {
+      id: "screening-power",
+      label: "Absorbed power and properties",
+      latex: String.raw`P_f = A\,P,\qquad \rho_k,\ k,\ c_p \text{ at } T_0,\qquad \alpha = \frac{k}{\rho_k\,c_p}`,
+      plain: "P_f = A P; rho_k, k, c_p evaluated once at the preheat temperature T_0; alpha = k / (rho_k c_p)",
+      symbols: [
+        ["P_f", "absorbed power used by the field, W"],
+        ["rho_k, k, c_p", "density, conductivity and specific heat from the material table at T_0, constant over the field"],
+      ],
+      codeLocator: "python/lpbf_simulation.py:screening (power = power_W * absorptivity; rho, k, cp = property_at(m, t0 + 273.15); alpha = k / (rho * cp))",
+      sourceLocator: "Defined in the code; the constant-property assumption is stated in the result's assumptions text.",
+    },
+    {
+      ...SCREENING_GOLDAK,
+      id: "screening-goldak",
+      label: "Goldak double-ellipsoid field",
+      kernels: undefined,
+      codeLocator: "python/lpbf_simulation.py:screening (GoldakField(t0, power, rho, cp, alpha, **seed_goldak_axes(d/2)).bind_speed(v)); python/goldak_solver.py:GoldakField",
+      asImplemented: "Same GoldakField class as the specialist melt-pool lab, called with absorbed power and properties at the preheat temperature. The axes are a beam-based seed, not a fit to the pool.",
+    },
+    {
+      id: "screening-extent",
+      label: "Length, width and depth from the liquidus on a fixed grid",
+      latex: String.raw`W = 2\max\{y : T(x,y,0)\ge T_{\mathrm{liq}}\},\quad D = \max\{z : T(x,0,z)\ge T_{\mathrm{liq}}\},\quad L = \max x-\min x\ \text{where}\ T(x,y,0)\ge T_{\mathrm{liq}}`,
+      plain: "W = 2 * largest y with T(x, y, 0) >= T_liq; D = largest z with T(x, 0, z) >= T_liq; L = range of x where T(x, y, 0) >= T_liq; grid x from -3 to 0.5 mm (301 points), y and z from 0 to 1 mm (121 points)",
+      symbols: [
+        ["grid", "x in [-3, 0.5] mm with 301 points; y and z in [0, 1] mm with 121 points; the result reports this spacing as gridResolution_um"],
+      ],
+      codeLocator: "python/lpbf_simulation.py:screening (ax = linspace(-0.003, 0.0005, 301), transverse = linspace(0, 0.001, 121); width_um, depth_um, length_um)",
+      sourceLocator: "Defined in the code (discrete liquidus extent).",
+      asImplemented: "No keyhole correction and no width floor; values are quantised to the grid spacing.",
+    },
+  ],
+};
+
 export const CALCULATION_EXPLAINERS: Readonly<Record<string, Explainer>> = {
   [MELTPOOL_GEOMETRY.id]: MELTPOOL_GEOMETRY,
+  [SCREENING_JOB.id]: SCREENING_JOB,
   [ENTHALPY_GATES.id]: ENTHALPY_GATES,
   [TI64_EVAPORATION.id]: TI64_EVAPORATION,
   [P8_LINKED_DEPTH.id]: P8_LINKED_DEPTH,

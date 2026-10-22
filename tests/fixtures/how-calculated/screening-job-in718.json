@@ -1,0 +1,374 @@
+{
+ "schemaVersion": 1,
+ "requestedMode": "screening",
+ "effectiveMode": "screening",
+ "solver": {
+  "id": "rosenthal+goldak",
+  "version": "enthalpy-fv-6",
+  "openfoam": null
+ },
+ "settings": {
+  "mode": "screening",
+  "material": "Inconel 718",
+  "power_W": 285,
+  "speed_mm_s": 960,
+  "beamDiameter_um": 67,
+  "preheat_C": 23.5,
+  "layer_um": 40,
+  "hatch_um": 100,
+  "mesh_um": 20,
+  "maxDt_s": 1e-06,
+  "trackLength_um": 600,
+  "tracks": 1,
+  "layers": 1,
+  "dwell_s": 0.0002,
+  "cooling_s": 0.0005,
+  "scanAngle_deg": 0,
+  "layerRotation_deg": 67,
+  "strategy": "stripe",
+  "stripeWidth_um": 500,
+  "islandSize_um": 200,
+  "packingFraction": 0.55,
+  "powderConductivityRatio": 0.12,
+  "convection_W_m2K": 20,
+  "timeout_s": 300,
+  "study": "none",
+  "backend": "auto",
+  "surfaceMode": "powder-layer",
+  "sourcePenetration_um": null,
+  "barePlateGeometry": "square",
+  "evaporationModel": false,
+  "marangoniMultiplier": 2.2,
+  "opticalObserver": null,
+  "absorptivity": 0.32,
+  "emissivity": 0.35
+ },
+ "material": {
+  "solidus_K": 1533.15,
+  "liquidus_K": 1609.15,
+  "boiling_K": 3123.15,
+  "latentHeat_J_kg": 270000.0,
+  "absorptivity": 0.32,
+  "emissivity": 0.35,
+  "dGamma_dT": -0.0004,
+  "source": "Existing four_alloy_materials.py / lpbf_thermal_solver.py; endpoint provenance not independently verified",
+  "quality": "estimated",
+  "table": [
+   [
+    273.15,
+    8190.0,
+    11.4,
+    435.0,
+    0.0055
+   ],
+   [
+    1609.15,
+    7450.0,
+    29.0,
+    730.0,
+    0.0055
+   ],
+   [
+    3123.15,
+    7450.0,
+    29.0,
+    730.0,
+    0.0055
+   ]
+  ],
+  "name": "Inconel 718",
+  "version": "lpbf-materials-1",
+  "temperatureCoverage_K": [
+   273.15,
+   3123.15
+  ],
+  "uncertaintyNote": "Property uncertainties not quantified; source string does not establish validation.",
+  "materialId": "in718",
+  "provenanceClass": "estimated-legacy",
+  "materialIdentitySchemaVersion": 1,
+  "endpointAdmission": {
+   "record": {
+    "id": "in718",
+    "decision": "admit-nominal-research-convention",
+    "sourceId": "SMC718",
+    "sourceCheck": "smc718-celsius-pair",
+    "original": {
+     "values": [
+      1260,
+      1336
+     ],
+     "unit": "degC"
+    },
+    "endpoint_K": [
+     1533.15,
+     1609.15
+    ],
+    "baseline_C": [
+     1260,
+     1336
+    ],
+    "delta_K": [
+     0,
+     0
+    ],
+    "admissionClass": "fixed-front-literature-model",
+    "chemistryMatch": "not-established",
+    "uncertainty": {
+     "type": "not-quantified",
+     "coverage": "No statistical coverage; unknown model, rate, chemistry/state-transfer biases"
+    },
+    "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance.",
+    "refusedScope": "Measured or assessed exact-specimen endpoints; automatic user-composition admission; physical validation; restoration of local SOL-A1 quantities before SOL-C",
+    "sourceChemistry": "Named nominal IN718; endpoint-batch assay and state unknown; not Pottlacher Mo4.34 batch",
+    "solidusDefinition": "Lower compiled melting-range boundary; experimental signal criterion unknown; Mills tentative 1170 C eutectic solidus remains an unselected alternative",
+    "liquidusDefinition": "Upper compiled melting-range boundary; experimental signal criterion unknown",
+    "method": "SMC-045 September2007 PDF1 Table2 compiled melting-range prescription; Mills2002 PDF1 agrees at 1260/1336 C but tentatively adopts 1170 C solidus separately",
+    "rate": "not applicable to adopted model; underlying measurement rate unknown",
+    "cycle": "not applicable to adopted model; underlying measurement cycle unknown",
+    "direction": "not applicable to adopted model; upstream direction unknown",
+    "pairingStatus": "same manufacturer compiled range; no same-cycle measurement claim",
+    "transfer": "SMC-045 nominal IN718 compiled convention to nominal IN718 screening; Knapp1533/1609 K recorded as same-lineage integer-273 rendering (interpretation, not independently verified ancestry). Pottlacher DTA transfer refused.",
+    "parentIdentity": {
+     "recordId": "SOL-T-A4-in718",
+     "endpoint_K": [
+      1533.15,
+      1609.15
+     ],
+     "sourceSha256": "6c9c60dc272cb4f7275091e02779879760afcb1801fc9bd04fbfca239907da90",
+     "requiredRuntimeBindings": [
+      "complete original and solved chemistry with units",
+      "material state",
+      "source locator and transfer scope",
+      "field/model/solver revision and full process vector",
+      "threshold-dependent property convention and numerical settings",
+      "admission-record canonical hash"
+     ],
+     "conversion": {
+      "rule": "degC-plus-273.15",
+      "offset_K": 273.15,
+      "sameLineageKChecks": [
+       "knapp718-pair"
+      ]
+     }
+    },
+    "conversion": {
+     "rule": "degC-plus-273.15",
+     "offset_K": 273.15,
+     "sameLineageKChecks": [
+      "knapp718-pair"
+     ]
+    }
+   },
+   "recordSha256": "e4170adc48b284e986ad8e1a46052c4611b05f97415e20fc7ecd99e08ed2b4b4",
+   "sourceLocator": "SMC-045 PDF1 Table2; Mills PDF1 compiled IN718",
+   "scope": "Named nominal-alloy fixed-front research approximation only; complete request chemistry/state retained. Explicit per-quantity convention/transfer disclosure required. No arbitrary composition inheritance. SMC-045 nominal IN718 compiled convention to nominal IN718 screening; Knapp1533/1609 K recorded as same-lineage integer-273 rendering (interpretation, not independently verified ancestry). Pottlacher DTA transfer refused.",
+   "sourceEvidenceKind": "Literature estimate",
+   "kind": "modelConvention",
+   "status": "admitted-convention"
+  },
+  "materialAuthority": "four_alloy_materials.py",
+  "materialAuthorityRevisionSha256": "f1b1e1bcd574d9a1397cffaeefcab3b98a3981ca6a62fa60c96fc06f28039270",
+  "materialRevisionSha256": "4562ad022349e2dcff1681c1aca43da44aebb1dbe7ceed4dcb1f8f6b84e66fbb"
+ },
+ "requestedBackend": "auto",
+ "confidence": "low",
+ "validationStatus": "unvalidated",
+ "productionReady": false,
+ "label": "Screening only",
+ "provenance": {
+  "inputHash": "83a08a7d39c91c7931a5012e987cdbeecd97790930c8f5ca98680caafa68d993",
+  "executionInputHash": "83a08a7d39c91c7931a5012e987cdbeecd97790930c8f5ca98680caafa68d993",
+  "implementationHash": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
+  "implementationFingerprintSchema": "lpbf-thermal-implementation-manifest-v3-canonical-utf8-crlf",
+  "materialVersion": "lpbf-materials-1",
+  "solverBinaryHash": "eaee5ddae7cdd0c05eff73430177b4c30cd31ecba729254237a78a543b13fb52",
+  "createdAt": "2026-10-22T11:42:06.219024+00:00",
+  "runtime_s": 0.9529999999795109,
+  "executionRuntime": {
+   "executable": "C:\\Users\\can02\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+   "python": "3.12.10",
+   "platform": "Windows-11-10.0.26300-SP0",
+   "numpy": "2.5.3"
+  }
+ },
+ "analyticalComparison": {
+  "rosenthal": {
+   "width_um": 133.33333333333334,
+   "depth_um": 66.66666666666667,
+   "length_um": 945.0000000000001,
+   "gridResolution_um": [
+    11.666666666666769,
+    8.333333333333334
+   ],
+   "truncated": false,
+   "assumptions": "Constant preheat properties; conduction only; discrete liquidus extent; no keyhole correction."
+  },
+  "goldak": {
+   "width_um": 133.33333333333334,
+   "depth_um": 66.66666666666667,
+   "length_um": 944.9999999999997,
+   "gridResolution_um": [
+    11.666666666666769,
+    8.333333333333334
+   ],
+   "truncated": false,
+   "assumptions": "Constant preheat properties; conduction only; discrete liquidus extent; no keyhole correction."
+  }
+ },
+ "assumptions": [
+  "SI internal units; beam diameter is 1/e^2 intensity diameter.",
+  "No resolved momentum, Marangoni flow, evaporation, recoil, VOF, keyhole or pores.",
+  "Estimated material laws; fixed reference density conserves mass on a stationary grid.",
+  "Uniform effective powder, irreversible conductivity densification; no resolved powder particles.",
+  "Analytical screening has no resolved transient heat source or time integration.",
+  "Transient layer activation uses whole cells selected by their centers; source surface clipping does not implement cut-cell mass or conduction. Inspect numerical resolution diagnostics when available.",
+  "Geometry is the molten-domain extent at the earliest maximum volume over accepted timesteps; playback is sparse and multi-track pools may be disconnected. Sampling loss does not bound timestep or mesh error.",
+  "Cross section is the largest scan-normal slab of liquidus cells at the peak-volume step (slab one projected cell wide, cell volume over slab thickness); within about 6 % of pi/4*W*D on a fine grid, coarse-grid voxel scatter remains.",
+  "R = -dT/dt / |grad T| at linearly reconstructed cooling liquidus crossings; gradient vectors are interpolated in time. G, R, G×R are separately event-averaged; G <= 1e-6 K/m is excluded.",
+  "Ma and laser-travel Pe are screening numbers, not resolved velocities.",
+  "Thermal history is input for subsequent mechanics; no residual stress, distortion or cracking prediction."
+ ],
+ "fallbackReason": null,
+ "metrics": {
+  "width_um": 133.33333333333334,
+  "depth_um": 66.66666666666667,
+  "length_um": 944.9999999999997,
+  "gridResolution_um": [
+   11.666666666666769,
+   8.333333333333334
+  ],
+  "truncated": false,
+  "assumptions": "Constant preheat properties; conduction only; discrete liquidus extent; no keyhole correction."
+ },
+ "geometricDefectScreen": {
+  "modelId": "elliptic-overlap-screening-v2",
+  "scope": "single-track-cross-section",
+  "status": "geometry-screened",
+  "limitations": [
+   "Geometric screening only; no pore probability, porosity estimate, or certification.",
+   "Requires local single-track width and penetration depth for an aligned semi-elliptical cross-section.",
+   "Ignores local pool fluctuations, track registration, powder packing, and remelting history.",
+   "Accuracy depends on supplied geometry; Rosenthal-derived dimensions can fail this screen.",
+   "No Ti-6Al-4V-specific correction or universal keyhole/balling threshold is applied."
+  ],
+  "lackOfFusion": {
+   "status": "covered-geometrically",
+   "ellipseIndex": 0.9225,
+   "signedMargin": 0.07750000000000001,
+   "overlapDepth_um": 44.09585518440985,
+   "maximumHatch_um": 106.66666666666669,
+   "riskScreened": false,
+   "reason": "Only the idealized elliptical overlap condition is evaluated."
+  },
+  "keyhole": {
+   "depthToWidth": 0.5,
+   "risk": null,
+   "kingModeIndicator": "conduction-mode",
+   "reason": "D/W 0.50 <= 0.5: conduction-mode by the King et al. 2014 depth > half-width classification. Aspect ratio alone cannot resolve vapor depression stability or keyhole pore formation, so no risk is assigned."
+  },
+  "balling": {
+   "lengthToWidth": 7.087499999999997,
+   "risk": null,
+   "reason": "No balling risk from this geometry: the balling screen uses the Eagar-Tsai liquidus L/W (eagar-tsai-aspect-balling-screen-v1), which was not supplied for this result."
+  },
+  "gasPore": {
+   "risk": null,
+   "reason": "Gas inventory, transport, and pore nucleation are not resolved."
+  },
+  "porosity": {
+   "value": null,
+   "reason": "Geometry screening does not predict volumetric porosity."
+  },
+  "provenance": [
+   {
+    "title": "Harkin et al. (2023), Equation 5",
+    "url": "https://link.springer.com/article/10.1007/s00170-023-11163-0",
+    "use": "Semi-elliptical overlap criterion; empirical material-specific correction excluded."
+   },
+   {
+    "title": "King et al. (2014), J. Mater. Process. Technol. 214, 2915, sec. 5.2",
+    "url": "https://doi.org/10.1016/j.jmatprotec.2014.06.005",
+    "use": "Keyhole-mode classification when melt-pool depth exceeds the half-width (D/W > 0.5); label only."
+   }
+  ]
+ },
+ "regime": "conduction assumption",
+ "mainRisk": "not established",
+ "recommendation": "Compare with measured tracks before changing process parameters.",
+ "riskScope": "Geometric screening only; no probability, density qualification or solidification cracking assessment.",
+ "resourceEstimate": {
+  "cells": 31939,
+  "spacing_m": 1.9536585365853656e-05,
+  "shape": [
+   41,
+   41,
+   19
+  ],
+  "duration_s": 0.001325,
+  "minimumEstimatedSteps": 1325,
+  "workingMemoryEstimate_MB": 6.3878,
+  "minimumRequiredSteps": 1325,
+  "stepBudget": 250000,
+  "exceedsStepBudget": false,
+  "runs": 1,
+  "cellBudget": 600000,
+  "exceedsCellBudget": false,
+  "runtimeEstimate": "Seconds to minutes; hardware and adaptive timestep dependent",
+  "note": "Uniform orthogonal mesh; memory is approximate. Source limiting can increase steps. No calibrated wall-time estimate."
+ },
+ "unresolvedPhysics": {
+  "freeSurface": null,
+  "velocity": null,
+  "evaporationMassFlux": null,
+  "evaporationLoss": null,
+  "recoilPressure": null,
+  "keyholeDepth": null,
+  "porosityProbability": null,
+  "residualStress": null
+ },
+ "confidenceReason": "estimated material data and unresolved flow; no independent experimental validation.",
+ "coreContract": {
+  "schemaVersion": 1,
+  "modelId": "analytical-conduction-screening-v1",
+  "actualBackend": "analytical",
+  "requestedBackend": "auto",
+  "effectiveMode": "screening",
+  "solverId": "rosenthal+goldak",
+  "inputSha256": "9a16f1fef614b7ac3f47637bd7df86b3de8a281560ed776aedd4eea70f5ad3d3",
+  "materialSha256": "1aaab644e813174edbd6e16e0cdc8484bf24965a74b3715422a2879865cb804f",
+  "units": {
+   "power": "W",
+   "speed": "mm/s",
+   "length": "um",
+   "preheat": "degC",
+   "temperature": "K",
+   "internalLength": "m",
+   "time": "s",
+   "energy": "J",
+   "beamDiameter": "1/e2-intensity"
+  },
+  "resolvedPhysics": {
+   "conduction": true,
+   "transient": false,
+   "latentHeat": false,
+   "momentum": false,
+   "freeSurface": false,
+   "evaporation": false
+  },
+  "evidenceClass": "unvalidated-model"
+ },
+ "artifacts": [
+  {
+   "path": "capabilities.json",
+   "size_bytes": 4494,
+   "sha256": "12d75a43ee5a71ac18ff00f3465a71909af8a8b5dd4aab73702178dbff24a944"
+  },
+  {
+   "path": "input.json",
+   "size_bytes": 742,
+   "sha256": "5462a348a377acf0c492058457afbc7edc50180d4e3b45bf5a3f82152a26047a"
+  }
+ ],
+ "retentionPolicy": "Retained locally until explicit operator deletion; no automatic expiry. Paths relative to job directory.",
+ "runKind": "analytical-screening"
+}
