@@ -16,6 +16,19 @@ function warningLine(w: string) {
   return <>{DOMAIN_PREFIXES.some(p => w.startsWith(p)) ? <strong className="mr-1">Out of domain:</strong> : null}{w}</>;
 }
 
+/** Label of every "rest of the warnings" disclosure: the first warning stays visible, the rest are N more notes. */
+export function moreNotesLabel(count: number): string { return `${count} more note${count === 1 ? "" : "s"}`; }
+
+/** Plain list form of the same fold, for result lists rendered as bullets: first warning visible, the rest under a native disclosure. */
+export function WarningNotes({ warnings, className }: { warnings: readonly string[]; className?: string }) {
+  if (!warnings.length) return null;
+  const rest = warnings.slice(1);
+  return <div className={className} data-warning-notes>
+    <p data-warning-note>{warnings[0]}</p>
+    {rest.length > 0 && <details className="mt-1"><summary className="cursor-pointer text-cyan-200 underline">{moreNotesLabel(rest.length)}</summary><ul className="mt-1 list-disc space-y-1 pl-5">{rest.map(w => <li key={w} data-warning-note>{w}</li>)}</ul></details>}
+  </div>;
+}
+
 /** First warning visible; the rest folded under an accessible "More" disclosure (native button, keyboard operable). */
 export function EstimateWarnings({ warnings, initiallyOpen = false }: { warnings: readonly string[]; initiallyOpen?: boolean }) {
   const [open, setOpen] = useState(initiallyOpen);
@@ -27,7 +40,7 @@ export function EstimateWarnings({ warnings, initiallyOpen = false }: { warnings
     {rest.length > 0 && <>
       <button type="button" className="mt-1 text-[11px] text-cyan-200 underline focus:outline-none focus:ring-2 focus:ring-cyan-300/40"
         aria-expanded={open} aria-controls={id} onClick={() => setOpen(value => !value)} data-estimate-warnings-toggle>
-        {open ? "Less" : `More (${rest.length} more warning${rest.length === 1 ? "" : "s"})`}
+        {open ? "Less" : moreNotesLabel(rest.length)}
       </button>
       <span id={id} hidden={!open} className="block" data-estimate-warnings-more>
         {rest.map(w => <span key={w} className="block" data-estimate-warning>{warningLine(w)}</span>)}

@@ -40,7 +40,7 @@ test("keyhole default shows values with the keyhole warning as the one visible l
 test("further warnings sit behind an accessible More button", () => {
   const closed = renderToStaticMarkup(<EstimateWarnings warnings={["first", "second", "third"]} />);
   assert.match(closed, /<button type="button"[^>]*aria-expanded="false"[^>]*aria-controls="[^"]+"/);
-  assert.ok(closed.includes("More (2 more warnings)"));
+  assert.ok(closed.includes("2 more notes"));
   assert.match(closed, /<span id="[^"]+" hidden="" class="block" data-estimate-warnings-more="true">/);
   const open = renderToStaticMarkup(<EstimateWarnings warnings={["first", "second"]} initiallyOpen />);
   assert.match(open, /aria-expanded="true"/);

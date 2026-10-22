@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { WarningNotes } from './SolidificationEstimates';
 import { useVisiblePolling } from '../hooks/useVisiblePolling';
 import {
   ti64EvaporativeApi, type Ti64EvaporativeJob, type Ti64EvaporativeResult,
@@ -73,7 +74,7 @@ export function Ti64EvaporativeResultView({ result, p8, stale }: { result: Ti64E
         <tr><th scope="row" className="font-normal">Relative residual</th><td className="tabular-nums">{fmt(e.relativeResidual)}</td></tr>
       </tbody></table>
     <p className="text-xs text-slate-400">{result.diagnosticMassLabel}: {fmt(result.diagnosticEmittedMass_kg)} kg</p>
-    <ul className="list-disc space-y-1 pl-5 text-xs text-slate-400">{result.warnings.map(w => <li key={w}>{w}</li>)}</ul>
+    <WarningNotes className="text-xs text-slate-400" warnings={result.warnings} />
     {p8 && !stale && <P8PairedRow view={p8} />}
   </div>;
 }

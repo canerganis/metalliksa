@@ -63,6 +63,7 @@ import {
   calphadUnreachableResult,
 } from "../services/pythonComputationService";
 import { useMaterialSpecimenStore } from "../store/useMaterialSpecimenStore";
+import { createDeferredCommit, type DeferredCommit } from "../utils/deferredCommit";
 import { isPythonValidationError } from "../utils/pythonValidationError";
 import {
   CLIENT_DATABASE_LABEL,
@@ -97,6 +98,9 @@ import {
   formatChemicalPotentialKJ,
   type CalphadSystemCoverage,
 } from "../utils/calphadResultDisplay";
+
+/** A slider change starts a calculation after the slider is released or this long after the last change. */
+export const SLIDER_COMMIT_DELAY_MS = 800;
 
 type PhaseProfilePoint = { temperatureC: number; phases: ReadonlyArray<{ phaseId: string; fraction: number }> };
 
@@ -176,6 +180,15 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
       unit: "wt_pct",
     };
   });
+  // The composition a calculation is started for. It follows customAlloy at once, except while a slider is being
+  // dragged or has just been changed: then it catches up when the slider is released or 800 ms after the last
+  // change, so a drag starts one calculation, not one per input event.
+  const [committedAlloy, setCommittedAlloy] = useState<MultiComponentAlloyComposition>(customAlloy);
+  const committer = useRef<DeferredCommit<MultiComponentAlloyComposition> | null>(null);
+  if (!committer.current) committer.current = createDeferredCommit(setCommittedAlloy, SLIDER_COMMIT_DELAY_MS);
+  useEffect(() => { committer.current!.value(customAlloy); }, [customAlloy]);
+  useEffect(() => () => committer.current!.dispose(), []);
+  const releaseSlider = () => committer.current!.release();
   const [selectedTdbIndex, setSelectedTdbIndex] = useState<number>(0);
   const [activeTdbContent, setActiveTdbContent] = useState<string>(
     PRELOADED_MULTI_COMPONENT_TDB[0].rawTdbText
@@ -252,11 +265,11 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
 
   // Identity of the request this input state asks for. Equal keys are identical request bodies, so the
   // same request is never sent twice (a new customAlloy object with the same content sends nothing).
-  const scheilScopeKey = `${compositionKey(customAlloy.elements)}|${selectedDatabaseId}`;
+  const scheilScopeKey = `${compositionKey(committedAlloy.elements)}|${selectedDatabaseId}`;
   const scheilOn = usePythonEngine && scheilRequestedFor === scheilScopeKey;
-  const requestWindow = calphadTemperatureWindow(customAlloy.elements);
+  const requestWindow = calphadTemperatureWindow(committedAlloy.elements);
   const requestKey = calphadRequestKey(
-    customAlloy.elements, customAlloy.unit || "wt_pct", requestWindow, usePythonEngine,
+    committedAlloy.elements, committedAlloy.unit || "wt_pct", requestWindow, usePythonEngine,
     selectedDatabaseId, boundaryRefinement, minRefineStep, scheilOn,
   );
   const inflightRef = useRef<{ key: string; controller: AbortController } | null>(null);
@@ -299,7 +312,7 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
       fired = true;
       pythonComputationService
         .solveCalphadEquilibrium(
-          customAlloy,
+          committedAlloy,
           win.tMin,
           win.tMax,
           win.tStep,
@@ -335,7 +348,7 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
           console.warn("Async solve error:", err);
           if (!finish(true)) return;
           setPythonValidationMessage(null);
-          setAsyncSolveResult(calphadUnreachableResult(customAlloy, win.tMin, win.tMax, win.tStep,
+          setAsyncSolveResult(calphadUnreachableResult(committedAlloy, win.tMin, win.tMax, win.tStep,
             `the CALPHAD request failed in the browser (${err instanceof Error ? err.message : String(err)})`));
           setIsSolving(false);
         });
@@ -360,6 +373,7 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
 
   // Switch preloaded alloy
   const handleSelectPreload = (idx: number) => {
+    committer.current!.reset();
     setSelectedAlloyIndex(idx);
     const standard = STANDARD_MULTI_COMPONENT_ALLOYS[idx];
     if (standard) {
@@ -375,6 +389,7 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
 
   // Adjust element composition
   const handleElementChange = (element: string, val: number) => {
+    committer.current!.touch(); // the calculation waits for release or 800 ms of quiet
     const updated = {
       ...customAlloy.elements,
       [element]: +val.toFixed(2),
@@ -616,7 +631,7 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
           className="px-4 py-2 rounded-xl bg-sky-500/10 border border-sky-500/40 text-sky-200 text-xs space-y-0.5">
           <div className="flex items-center gap-2">
             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-            <strong>Calculating{usePythonEngine ? " with pycalphad" : ""}…</strong>
+            <strong>Calculating, typically 20 to 45 s (the first run per element set compiles models)</strong>
             <span>{(solveElapsedMs / 1000).toFixed(1)} s elapsed</span>
           </div>
           {usePythonEngine && (
@@ -954,6 +969,8 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
                     step="0.1"
                     value={val}
                     onChange={(e) => handleElementChange(el, parseFloat(e.target.value))}
+                    onPointerUp={releaseSlider}
+                    onBlur={releaseSlider}
                     className="w-full accent-violet-500"
                   />
                 </div>

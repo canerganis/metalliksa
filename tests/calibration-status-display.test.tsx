@@ -20,7 +20,7 @@ test('Ti64 stale: status text, both cell texts, parent 110 and 77, keyhole warni
   assert.match(out, /data-testid="uncal-depth"[^>]*>77 µm/);
   assert.ok(out.indexOf('Keyhole regime') < out.indexOf('Transferred inputs'));
   assert.match(out, /data-estimate-warnings-toggle/);
-  assert.match(out, /More \(1 more warning\)/);
+  assert.match(out, /1 more note/);
   assert.ok(out.includes('Calibrate to your machine for better accuracy.'));
   assert.doesNotMatch(out, /error bar/i);
 });

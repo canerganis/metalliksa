@@ -703,3 +703,10 @@ html { scroll-padding-top: calc(var(--mk-header-h) + 0.5rem); }
 .animate-fadeIn {
   animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Module header disclosure ("About this evidence level"): quiet summary, text revealed on demand. */
+.mk-about { margin-top: 0.75rem; font-size: 12px; color: var(--mk-text-dim); }
+.mk-about > summary { display: inline-block; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.mk-about > summary:hover { color: var(--mk-text); }
+.mk-about > summary:focus-visible { outline: 2px solid var(--mk-ice); outline-offset: 2px; }
+.mk-about-body { margin-top: 0.5rem; max-width: 48rem; display: grid; gap: 0.5rem; line-height: 1.6; }

@@ -3,7 +3,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { ContractEvidenceBadge, EvidenceBadge, evidenceBadgeView } from '../src/components/sdk/EvidenceBadge';
+import { ContractEvidenceBadge, EvidenceBadge, ModuleEvidenceDisclosure, evidenceBadgeView } from '../src/components/sdk/EvidenceBadge';
+import { MODULES, MODULE_PURPOSE } from '../src/data/workspaces';
 import { MODULE_CONTRACTS, MODULE_REGISTRY_CORE as MODULE_REGISTRY, type EvidenceType, type RegisteredContract } from '../src/modules/registry';
 
 const EVIDENCE_TYPES = MODULE_REGISTRY.vocabulary.evidenceTypes as readonly EvidenceType[];
@@ -113,7 +114,37 @@ test('the badge reads only the committed contract (no store, service or fetch)',
   assert.ok(!/fetch\(|useStore|Service/.test(source));
 });
 
-test('App.tsx renders the badge right after the maturity badge in the module header', () => {
+test('App.tsx header keeps title and maturity badge, then the plain purpose sentence and the evidence disclosure', () => {
   const app = read('src/App.tsx');
-  assert.match(app, /\{activeModule\.scope\}<\/span><EvidenceBadge moduleId=\{activeModule\.id\} \/>/);
+  assert.match(app, /\{activeModule\.scope\}<\/span><\/div><p [^>]*>\{MODULE_PURPOSE\[activeModule\.id\]\}<\/p><ModuleEvidenceDisclosure moduleId=\{activeModule\.id\} detail=\{activeModule\.description\} \/>/);
+  assert.ok(!/<EvidenceBadge /.test(app), 'the max-claim badge is no longer printed in the header');
+});
+
+test('module header: max-claim and oracle text sit behind "About this evidence level", wording unchanged', () => {
+  for (const contract of MODULE_CONTRACTS.filter(item => item.migrationState === 'contracted')) {
+    const view = evidenceBadgeView(contract);
+    const html = renderToStaticMarkup(<ModuleEvidenceDisclosure moduleId={contract.id} />);
+    assert.match(html, /^<details class="mk-about"/, contract.id);
+    assert.ok(!/^<details[^>]*\bopen/.test(html), `${contract.id} starts closed`);
+    assert.ok(html.includes('<summary>About this evidence level</summary>'), contract.id);
+    assert.match(html, new RegExp(`data-evidence-ceiling="${contract.evidence.ceiling}"`), contract.id);
+    const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+    assert.ok(html.includes(escape(view!.text)), `${contract.id} max-claim text unchanged`);
+    assert.ok(html.includes(escape(view!.description)), `${contract.id} description unchanged`);
+  }
+  // A legacy module has no evidence level: no disclosure unless a detail is given, then a plain "About this module".
+  const legacy = MODULE_CONTRACTS.find(item => item.migrationState === 'legacy');
+  if (legacy) {
+    assert.equal(renderToStaticMarkup(<ModuleEvidenceDisclosure moduleId={legacy.id} />), '');
+    assert.match(renderToStaticMarkup(<ModuleEvidenceDisclosure moduleId={legacy.id} detail="Technical text." />), /<summary>About this module<\/summary>.*Technical text\./);
+  }
+});
+
+test('every listed module has one plain purpose sentence', () => {
+  assert.deepEqual(Object.keys(MODULE_PURPOSE).sort(), MODULES.map(module => module.id).sort());
+  for (const [id, sentence] of Object.entries(MODULE_PURPOSE)) {
+    assert.ok(sentence.length > 20 && sentence.length < 170, id);
+    assert.ok(sentence.endsWith('.') && (sentence.match(/\. /g) ?? []).length <= 1, `${id}: one sentence (a second one is allowed only as a short caveat)`);
+    assert.ok(!/max claim|oracle|ceiling/i.test(sentence), `${id}: no internal jargon`);
+  }
 });

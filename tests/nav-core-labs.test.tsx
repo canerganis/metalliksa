@@ -3,9 +3,10 @@ import { test } from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { registerHooks } from "node:module";
+import { readFileSync } from "node:fs";
 import type { AtriumProps } from "../src/components/Atrium";
-import { ModuleNav, labHeadingTarget, navTabStop } from "../src/components/ModuleNav";
-import { CORE_FLOW, CORE_MODULE_IDS, LAB_MODULES, MODULES, WORKSPACES, isCoreModule } from "../src/data/workspaces";
+import { ModuleNav, navGroups, navTabStop } from "../src/components/ModuleNav";
+import { CORE_FLOW, CORE_MODULE_IDS, LAB_MODULES, MODULES, NAV_GROUPS, isCoreModule } from "../src/data/workspaces";
 
 // Atrium imports stylesheets, which plain Node cannot load: stub .css modules before importing it.
 registerHooks({
@@ -29,47 +30,67 @@ test("core and labs partition the listed modules; core ids are listed and in flo
   assert.deepEqual(CORE_FLOW.map(step => step.verb), ["Set up and run", "Screen the process window", "Compare with published data", "Check the scorecard"]);
 });
 
-test("collapsed render (active core module): core buttons, Labs aria-expanded=false, no lab buttons", () => {
+test("the sidebar lists every module at once, grouped Simulate / Compare with data / Materials and phases / Evidence and export", () => {
+  assert.deepEqual(NAV_GROUPS.map(g => g.label), ["Simulate", "Compare with data", "Materials and phases", "Evidence and export"]);
+  assert.deepEqual(NAV_GROUPS.flatMap(g => g.modules).sort(), MODULES.map(m => m.id).sort(), "every listed module is in exactly one group");
+  for (const active of [CORE_MODULE_IDS[0], LAB_MODULES[0].id]) {
+    const html = nav(active);
+    assert.equal(moduleButtons(html, MODULES.map(m => m.id)).length, MODULES.length, "no collapsed Labs: every module has a button");
+    assert.doesNotMatch(html, /Labs \(/);
+    assert.doesNotMatch(html, /aria-controls="module-nav-labs"/);
+  }
   const html = nav(CORE_MODULE_IDS[0]);
-  assert.match(html, /Core - LPBF screening flow/);
-  assert.deepEqual(moduleButtons(html, CORE_MODULE_IDS), [...CORE_MODULE_IDS]);
-  assert.deepEqual(moduleButtons(html, LAB_MODULES.map(m => m.id)), []);
-  const toggle = buttons(html).find(b => /aria-controls="module-nav-labs"/.test(b))!;
-  assert.match(toggle, /aria-expanded="false"/);
-  assert.ok(html.includes(`Labs (${LAB_MODULES.length})`), "Labs (N) label");
+  let from = 0;
+  for (const group of NAV_GROUPS) {
+    const at = html.indexOf(`>${group.label}</p>`, from);
+    assert.ok(at >= from, `${group.label} heading in order`);
+    from = at;
+  }
+  for (const group of NAV_GROUPS) assert.match(html, new RegExp(`role="group" aria-labelledby="module-nav-group-${group.id}"`));
+});
+
+test("navGroups keeps a module that is in no group under More, and drops empty groups", () => {
+  const groups = navGroups([{ id: "database" }, { id: "brand-new-module" }]);
+  assert.deepEqual(groups.map(g => g.label), ["Materials and phases", "More"]);
+  assert.deepEqual(groups[1].entries.map(e => e.id), ["brand-new-module"]);
+  assert.deepEqual(navGroups([]), []);
+});
+
+test("exactly one Tab stop on the aria-current module, aria-current owned by it, for core and lab modules", () => {
+  for (const id of [CORE_MODULE_IDS[0], LAB_MODULES[0].id]) {
+    const all = buttons(nav(id));
+    assert.equal(all.filter(b => /aria-current="page"/.test(b)).length, 1);
+    const stops = all.filter(b => /tabindex="0"/.test(b));
+    assert.equal(stops.length, 1);
+    assert.match(stops[0], /aria-current="page"/);
+    assert.ok(stops[0].includes(`nav-desc-${id}`));
+    assert.ok(all.every(b => /tabindex="(0|-1)"/.test(b)));
+  }
+});
+
+test("a filtered list shows only the matching groups; the Tab stop falls back to the first visible module", () => {
+  const html = nav(CORE_MODULE_IDS[0], MODULES.filter(m => m.id === "database"));
+  assert.match(html, />Materials and phases<\/p>/);
+  assert.doesNotMatch(html, />Simulate<\/p>/);
   assert.equal(buttons(html).filter(b => /tabindex="0"/.test(b)).length, 1);
 });
 
-test("active lab module expands Labs, owns aria-current and the single tabindex=0", () => {
-  const lab = LAB_MODULES[0];
-  const html = nav(lab.id);
-  const all = buttons(html);
-  assert.match(all.find(b => /aria-controls="module-nav-labs"/.test(b))!, /aria-expanded="true"/);
-  assert.deepEqual(moduleButtons(html, LAB_MODULES.map(m => m.id)), LAB_MODULES.map(m => m.id));
-  assert.equal(all.filter(b => /aria-current="page"/.test(b)).length, 1);
-  const stops = all.filter(b => /tabindex="0"/.test(b));
-  assert.equal(stops.length, 1);
-  assert.match(stops[0], /aria-current="page"/);
-  assert.ok(stops[0].includes(`nav-desc-${lab.id}`));
-});
-
-test("a filtered list is expanded; the Core heading is hidden when search hides every core entry", () => {
-  const html = nav(CORE_MODULE_IDS[0], [...LAB_MODULES].slice(0, 2).concat(MODULES.filter(m => m.id === CORE_MODULE_IDS[0])));
-  assert.match(buttons(html).find(b => /aria-controls="module-nav-labs"/.test(b))!, /aria-expanded="true"/);
-  const labsOnly = renderToStaticMarkup(<ModuleNav modules={[...LAB_MODULES]} activeTab={LAB_MODULES[0].id} activeWorkspace={LAB_MODULES[0].workspace} onNavigate={() => undefined} />);
-  assert.doesNotMatch(labsOnly, /Core - LPBF screening flow/);
-});
-
-test("a throwing localStorage still renders (collapsed by default)", () => {
+test("a throwing localStorage no longer matters: the navigation has no stored state", () => {
   const g = globalThis as unknown as { window?: unknown };
   const previous = g.window;
   g.window = { localStorage: { getItem() { throw new Error("blocked"); }, setItem() { throw new Error("blocked"); } } };
   try {
-    const html = nav(CORE_MODULE_IDS[1]);
-    assert.match(buttons(html).find(b => /aria-controls="module-nav-labs"/.test(b))!, /aria-expanded="false"/);
+    assert.equal(moduleButtons(nav(CORE_MODULE_IDS[1]), MODULES.map(m => m.id)).length, MODULES.length);
   } finally {
     if (previous === undefined) delete g.window; else g.window = previous;
   }
+});
+
+test("module ids, hashes and navigate events are untouched: each button calls onNavigate with its own id", () => {
+  const html = nav(CORE_MODULE_IDS[0]);
+  for (const m of MODULES) assert.ok(html.includes(`nav-desc-${m.id}`), m.id);
+  const src = readFileSync(new URL("../src/components/ModuleNav.tsx", import.meta.url), "utf8");
+  assert.match(src, /onClick=[{]\(\) => onNavigate\(module\.id\)[}]/);
 });
 
 test("Atrium: four flow steps in order with registry labels, the screening note and the Labs count", async () => {
@@ -95,39 +116,7 @@ test("Atrium: four flow steps in order with registry labels, the screening note 
   assert.match(html, new RegExp(`class="mk-at-section-label"><span>(?:<!-- -->)?0?${LAB_MODULES.length}(?:<!-- -->)?</span>Labs`));
 });
 
-test("stored preference expands Labs for a core module; still one tabindex=0", () => {
-  const g = globalThis as unknown as { window?: unknown };
-  const previous = g.window;
-  g.window = { localStorage: { getItem: () => "1", setItem() { /* unused */ } } };
-  try {
-    const html = nav(CORE_MODULE_IDS[0]);
-    assert.match(buttons(html).find(b => /aria-controls="module-nav-labs"/.test(b))!, /aria-expanded="true"/);
-    assert.deepEqual(moduleButtons(html, LAB_MODULES.map(m => m.id)), LAB_MODULES.map(m => m.id));
-    assert.equal(buttons(html).filter(b => /tabindex="0"/.test(b)).length, 1);
-  } finally {
-    if (previous === undefined) delete g.window; else g.window = previous;
-  }
-});
-
-test("no Labs heading targets a core module", () => {
-  for (const workspace of WORKSPACES) {
-    const entries = LAB_MODULES.filter(m => m.workspace === workspace.id);
-    if (!entries.length) continue;
-    const target = labHeadingTarget(workspace.id, workspace.defaultModule, entries);
-    assert.ok(!isCoreModule(target), `${workspace.id} heading target ${target} is a lab`);
-    assert.ok(entries.some(m => m.id === target));
-  }
-});
-
-test("focus key 'labs' with a core-only filtered list leaves exactly one Tab stop", () => {
+test("focus key of a hidden entry falls back to the active module", () => {
   const core = MODULES.filter(m => m.id === CORE_MODULE_IDS[0]);
-  assert.equal(navTabStop(core, { key: "labs", tab: CORE_MODULE_IDS[0] }, CORE_MODULE_IDS[0], false), CORE_MODULE_IDS[0]);
-  assert.equal(navTabStop(core, { key: "labs", tab: CORE_MODULE_IDS[0] }, CORE_MODULE_IDS[0], true), "labs");
-});
-
-test("forced-open Labs toggle is aria-disabled with a reason", () => {
-  const html = nav(LAB_MODULES[0].id);
-  const toggle = buttons(html).find(b => /aria-controls="module-nav-labs"/.test(b))!;
-  assert.match(toggle, /aria-disabled="true"/);
-  assert.ok(html.includes("Labs stay open while a lab is active or a search is applied."));
+  assert.equal(navTabStop(core, { key: "gone", tab: CORE_MODULE_IDS[0] }, CORE_MODULE_IDS[0]), CORE_MODULE_IDS[0]);
 });
