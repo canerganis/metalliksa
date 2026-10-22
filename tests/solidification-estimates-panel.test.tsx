@@ -14,7 +14,7 @@ test("conduction fixtures show Uncalibrated estimate badges with the Physics est
     assert.ok(html.includes("Uncalibrated estimate"), name);
     assert.ok(html.includes('data-estimate-tier="Physics estimate"'), name);
     assert.ok(html.includes("Thermal gradient G"), name);
-    assert.ok(html.includes("Out of domain:"), name);
+    assert.ok(html.includes("Outside the tested range of the model:"), name);
   }
 });
 
@@ -59,6 +59,6 @@ test("a rejected payload renders the rejection and no numeric value", () => {
 
 test("surrogate sensitivity fixture shows the surrogate note and the auxiliary range label", () => {
   const html = renderToStaticMarkup(<SolidificationEstimates payload={load("ti64-surrogate-sensitivity")} />);
-  assert.ok(html.includes("Conduction-field surrogate: the temperature field does not include the keyhole cavity."));
+  assert.ok(html.includes("Simplified temperature field: it does not include the keyhole cavity."));
   assert.ok(html.includes("Auxiliary input sensitivity range (not an error bar)"));
 });

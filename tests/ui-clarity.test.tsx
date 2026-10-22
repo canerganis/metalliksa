@@ -17,10 +17,10 @@ test("unsourced-defaults notice is compact with a 'show which' disclosure holdin
   assert.ok((lpbf.defaultsApplied ?? []).length > 0, "fixture flags at least one default");
   const html = renderToStaticMarkup(<LpbfDefaultsNote lpbf={lpbf} />);
   assert.match(html, /^<span role="note" data-testid="lpbf-defaults-applied"/);
-  assert.ok(html.includes(`Unsourced defaults in use (${lpbf.defaultsApplied!.length})`));
+  assert.ok(html.includes(`${lpbf.defaultsApplied!.length} inputs use unsourced defaults`));
   assert.match(html, /<details class="inline"><summary[^>]*>show which<\/summary>/);
   assert.ok(!/<details[^>]*\bopen/.test(html), "closed by default");
-  assert.match(html, /Unsourced defaults or class heuristics in use: /);
+  assert.match(html, /Inputs filled in without a source \(default values or rules of thumb for this alloy class\): /);
   assert.equal(renderToStaticMarkup(<LpbfDefaultsNote lpbf={{ ...lpbf, defaultsApplied: [] }} />), "");
 });
 

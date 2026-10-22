@@ -233,7 +233,7 @@ export function DatasetComparisonView({ document }: { document: LpbfDatasetCompa
     <div className="space-y-4 p-4">
       <Card>
         <CardHeader>
-          <CardTitle>Dataset Comparison (LPBF)</CardTitle>
+          <CardTitle>Model vs Published Datasets (LPBF)</CardTitle>
           <p className="mt-1 text-sm font-medium text-amber-800" data-testid="honesty-statement">{document.honesty.statement}</p>
           {document.absorption?.path ? <p className="mt-1 text-xs text-slate-600" data-testid="absorption-path">{`Absorption path: ${document.absorption.path}`}</p> : null}
           <p className="mt-1 text-xs text-slate-500">
@@ -393,7 +393,7 @@ export function NoComparisonRecord() {
     <div className="p-4">
       <Card>
         <CardHeader>
-          <CardTitle>Dataset Comparison (LPBF)</CardTitle>
+          <CardTitle>Model vs Published Datasets (LPBF)</CardTitle>
         </CardHeader>
         <CardContent className="flex items-start gap-3 text-sm text-slate-700" data-testid="no-record">
           <FileSearch aria-hidden="true" className="mt-0.5 h-5 w-5 text-slate-400" />

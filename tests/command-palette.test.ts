@@ -95,7 +95,7 @@ test('real registry: one letter never lists every module; each hit has a label w
   }
   // The review's measured cases: e, r and i used to match all 37 through workspace and maturity names.
   for (const letter of ['e', 'r', 'i', 'İ', 'ı']) assert.ok(ids(letter).length < MODULES.length, letter);
-  assert.deepEqual(ids('k'), ['keyhole-raytracing'], 'Keyhole Ray Tracing (prefix)');
+  assert.deepEqual(ids('k'), ['keyhole-raytracing'], 'Keyhole Laser Absorption (prefix)');
   assert.ok(ids('re').length > ids('r').length, 'two characters reach id, workspace, maturity and description');
 });
 

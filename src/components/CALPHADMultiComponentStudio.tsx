@@ -858,7 +858,7 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
                 : "bg-slate-800 text-slate-400 border-slate-700"
             }`}
           >
-            <span>{isLiveSyncedWithUniversalSpecimen ? "⚡ Live Sync: ON" : "Live Sync: PAUSED"}</span>
+            <span>{isLiveSyncedWithUniversalSpecimen ? "⚡ Follow shared material: ON" : "Follow shared material: PAUSED"}</span>
           </button>
           <button
             type="button"
@@ -902,7 +902,7 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
           <div className="flex items-center justify-between">
             <div className="text-[10px] font-bold text-sky-400 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>UNIVERSAL SPECIMEN</span>
+              <span>SHARED MATERIAL</span>
             </div>
           </div>
           <div className="text-xs font-bold text-white truncate mt-1">{activeSpecimen.name}</div>

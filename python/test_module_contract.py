@@ -589,7 +589,7 @@ class ContractedRegistryTests(unittest.TestCase):
             with self.subTest(module=contract.id, missing=missing):
                 if missing:
                     self.assertTrue(oracle.ci_note, "a present oracle outside the CI lock must record the gap")
-                    self.assertIn("not run in CI", oracle.ci_note)
+                    self.assertIn("not run automatically", oracle.ci_note)
                     for package in missing:
                         self.assertIn(package.lower(), oracle.ci_note.lower())
                     self.assertIn(oracle.ci_note, contract.evidence.note)

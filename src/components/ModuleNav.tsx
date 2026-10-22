@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MODULES, NAV_GROUPS, type ModuleId } from '../data/workspaces';
+import { MODULES, MODULE_PURPOSE, NAV_GROUPS, type ModuleId } from '../data/workspaces';
 import { rovingIndex } from '../utils/rovingFocus';
 
 /**
@@ -54,7 +54,7 @@ export function ModuleNav({ home = false, modules, activeTab, onNavigate }: {
     items[next].focus();
   }
   const entryButton = (module: (typeof MODULES)[number]) => (
-    <button key={module.id} {...item(module.id, ' nav-desc-' + module.id)} aria-current={!home && activeTab === module.id ? 'page' : undefined} title={module.description} onClick={() => onNavigate(module.id)} className={`mk-nav-item${!home && activeTab === module.id ? ' is-active' : ''}`}>
+    <button key={module.id} {...item(module.id, ' nav-desc-' + module.id)} aria-current={!home && activeTab === module.id ? 'page' : undefined} title={MODULE_PURPOSE[module.id]} onClick={() => onNavigate(module.id)} className={`mk-nav-item${!home && activeTab === module.id ? ' is-active' : ''}`}>
       {module.label}
     </button>
   );
@@ -64,7 +64,7 @@ export function ModuleNav({ home = false, modules, activeTab, onNavigate }: {
       <p id={'module-nav-group-' + group.id} className="mk-nav-ws">{group.label}</p>
       <div className="space-y-0.5">{group.entries.map(entryButton)}</div>
     </div>)}
-    <div hidden>{modules.map(module => <span key={module.id} id={'nav-desc-' + module.id}>{module.description}</span>)}</div>
+    <div hidden>{modules.map(module => <span key={module.id} id={'nav-desc-' + module.id}>{MODULE_PURPOSE[module.id]}</span>)}</div>
     {!modules.length && <p role="status" className="text-sm text-slate-400">No matching modules. Try a material, method or workflow name.</p>}
   </nav>;
 }

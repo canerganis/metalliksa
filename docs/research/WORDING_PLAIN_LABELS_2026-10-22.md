@@ -1,6 +1,8 @@
-# Plain-English label proposals (not applied)
+Applied 2026-10-22 (maintainer approved all rows). Skipped rows: none. Notes: the defaults notice says "1 input uses an unsourced default" for a count of one; the "N more notes" row was already the shipped wording; the sidebar tooltip and hidden description now use MODULE_PURPOSE, and the registry description stays in the module header disclosure; tests/fixtures/modules-nav-golden.json was updated to the new names and the scorecard description.
 
-Status: proposal for maintainer approval. Nothing in this table is applied in the code. The evidence labels themselves (Measured, Validated simulation, Calibrated simulation, Literature estimate, Screening only, Uncalibrated estimate, Unresolved, "Not experimentally validated", maturity badges, refusal and warning sentences) are governed by RULES.md and stay as they are. The proposals below are only for the jargon around them.
+# Plain-English label proposals (applied)
+
+Status: approved and applied (see the first line). The evidence labels themselves (Measured, Validated simulation, Calibrated simulation, Literature estimate, Screening only, Uncalibrated estimate, Unresolved, "Not experimentally validated", maturity badges, refusal and warning sentences) are governed by RULES.md and stay as they are. The proposals below are only for the jargon around them.
 
 How to read the table: "Where" is the place a user sees the string. "Today" is the current text. "Proposed" is the replacement. "Why" is the plain reason.
 

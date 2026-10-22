@@ -7,7 +7,7 @@ const src = (path: string) => readFileSync(path, "utf8");
 test("shell: status chip does not claim engine connection; boot row says the registry is bundled, not probed", () => {
   const app = src("src/App.tsx");
   assert.doesNotMatch(app, /Engine connected/);
-  assert.match(app, /Python daemon ready/);
+  assert.match(app, /Calculation engine ready/);
   const boot = src("src/services/bootSteps.ts");
   assert.match(boot, /Module registry \(bundled\)/);
   assert.match(boot, /not probed/);

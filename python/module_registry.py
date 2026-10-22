@@ -269,7 +269,7 @@ _KEYHOLE_OUTPUT = OutputSchema(
 
 # test_keyhole_contract.py imports warp, which the CI CPU lock (python/requirements-lpbf.in)
 # does not install; test_module_contract checks this note against the oracle's imports.
-_KEYHOLE_ORACLE_CI_NOTE = "Oracle not run in CI (requires Warp/GPU stack)."
+_KEYHOLE_ORACLE_CI_NOTE = "The reference check is not run automatically here (it needs the Warp GPU stack)."
 
 # Checked against the solver's top-level imports by test_contract_keyhole_raytracing.
 _KEYHOLE_WARP_NOTE = ("python/lpbf_keyhole_raytracing.py imports warp (NVIDIA Warp) at module level: without "

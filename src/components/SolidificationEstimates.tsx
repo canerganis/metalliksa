@@ -4,7 +4,7 @@ import { checkedSolidificationEstimates, estimateLine, type SolidificationEstima
 
 const ORDER = ["thermalGradient", "normalSpeed", "coolingRate", "gOverR", "pdas", "sdas", "planarStabilityIndex",
   "equiaxedEnvelopeFraction", "cetClass", "kmAlphaMFraction", "equilibriumPhaseInventory", "scheilMicroconstituents", "phaseInventory"];
-const SURROGATE_NOTE = "Conduction-field surrogate: the temperature field does not include the keyhole cavity.";
+const SURROGATE_NOTE = "Simplified temperature field: it does not include the keyhole cavity.";
 const DOMAIN_PREFIXES = ["Outside the model's stated domain", "Alloy or family transfer"];
 
 function orderedNames(payload: EstimatePayload): string[] {
@@ -13,7 +13,7 @@ function orderedNames(payload: EstimatePayload): string[] {
 }
 
 function warningLine(w: string) {
-  return <>{DOMAIN_PREFIXES.some(p => w.startsWith(p)) ? <strong className="mr-1">Out of domain:</strong> : null}{w}</>;
+  return <>{DOMAIN_PREFIXES.some(p => w.startsWith(p)) ? <strong className="mr-1">Outside the tested range of the model:</strong> : null}{w}</>;
 }
 
 /** Label of every "rest of the warnings" disclosure: the first warning stays visible, the rest are N more notes. */

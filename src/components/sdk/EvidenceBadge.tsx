@@ -29,13 +29,13 @@ export function evidenceBadgeView(contract: BadgeContract | undefined): Evidence
   if (!contract || contract.migrationState !== 'contracted') return null;
   const ceiling: EvidenceType = contract.evidence.ceiling;
   const { status, ciNote, scope } = contract.tests.oracle;
-  const oracle = status === 'present' ? `Oracle present. ${scope ?? ''}` : 'Oracle pending, so the maximum claim stays capped.';
+  const oracle = status === 'present' ? `An independent reference check exists. ${scope ?? ''}` : 'No independent reference check exists yet, so the claim level stays capped.';
   return {
     ceiling,
     oracle: status,
-    text: `Max claim: ${EVIDENCE_LABELS[ceiling]} · Oracle ${status}`,
-    description: 'Maximum claim: the strongest evidence class this module may report under its contract. '
-      + `It is not the status of a result and not a validation claim. ${oracle.trim()}${ciNote ? ` ${ciNote}` : ''}`,
+    text: `Strongest claim allowed: ${EVIDENCE_LABELS[ceiling]}. Reference check: ${status === 'present' ? 'available' : 'not yet available'}`,
+    description: 'The strongest kind of evidence this module is allowed to report. '
+      + `This is a limit, not a grade for any single result, and not a validation. ${oracle.trim()}${ciNote ? ` ${ciNote}` : ''}`,
   };
 }
 
@@ -69,7 +69,7 @@ export function ModuleEvidenceDisclosure({ moduleId, detail }: { readonly module
   if (!view) return detail ? <details className="mk-about"><summary>About this module</summary><div className="mk-about-body"><p>{detail}</p></div></details> : null;
   return (
     <details className="mk-about" data-evidence-ceiling={view.ceiling} data-oracle={view.oracle}>
-      <summary>About this evidence level</summary>
+      <summary>What this result can claim</summary>
       <div className="mk-about-body">
         <p><span className="mk-count-badge text-[11px]">{view.text}</span></p>
         <p>{view.description}</p>
