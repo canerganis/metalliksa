@@ -27,6 +27,36 @@ export const MODULES: readonly NavigationModule[] = LISTED_CONTRACTS.map(contrac
   scope: contract.maturity, description: contract.description, next: contract.next,
 }));
 
+/**
+ * One plain sentence per module for the module header: what a first-time user can do there. The registry
+ * description (technical, with method names) stays reachable under "About this evidence level".
+ */
+export const MODULE_PURPOSE: Readonly<Record<ModuleId, string>> = {
+  '3d-distortion-lab': 'Set the material and laser settings, run the thermal simulation and read the screening result for one build.',
+  'lpbf-optimizer': 'Search power, speed, hatch and layer for settings that screen well. The result is a suggestion, not a qualified window.',
+  'solidification-microstructure': 'See how fast the melt pool cools and which grain structure it tends toward. This is a screening estimate.',
+  'experimental-validation': 'Plot published melt-pool width and depth measurements next to your current workflow result.',
+  'keyhole-raytracing': 'Trace laser rays inside a prescribed keyhole shape to see how much energy the cavity absorbs.',
+  'lpbf-dataset-comparison': 'Compare the screening melt-pool models with published single-track measurements.',
+  'lpbf-calibration-scorecard': 'See how large the held-out errors of each screening melt-pool model are, by alloy and regime.',
+  'database': 'Look up material properties and edit the composition of the active specimen.',
+  'phase-diagram': 'Calculate phase equilibria and solidification paths for multi-element alloys.',
+  'research-hub': 'Collect research briefs and sources, and link them to your material and process work.',
+  'experimental-data': 'Review the findings in your registry that are labelled as measured, with their source and uncertainty gaps.',
+  'traceability': 'Export the active specimen, its sources and linked evidence as a review package.',
+};
+
+/** Modules whose scientific-context block sits below the module, collapsed, so inputs and results come first. */
+export const CONTEXT_AFTER_MODULE: ReadonlySet<string> = new Set(['3d-distortion-lab']);
+
+/** Sidebar groups by task, in display order. Every listed module is in exactly one group. */
+export const NAV_GROUPS: readonly { readonly id: string; readonly label: string; readonly modules: readonly ModuleId[] }[] = [
+  { id: 'simulate', label: 'Simulate', modules: ['3d-distortion-lab', 'lpbf-optimizer', 'solidification-microstructure', 'keyhole-raytracing'] },
+  { id: 'compare', label: 'Compare with data', modules: ['experimental-validation', 'lpbf-dataset-comparison', 'lpbf-calibration-scorecard'] },
+  { id: 'materials', label: 'Materials and phases', modules: ['database', 'phase-diagram'] },
+  { id: 'evidence', label: 'Evidence and export', modules: ['research-hub', 'experimental-data', 'traceability'] },
+];
+
 /** The flagship LPBF screening flow, in flow order. Labels always come from the registry (MODULES). */
 export const CORE_MODULE_IDS: readonly ModuleId[] = ['3d-distortion-lab', 'lpbf-optimizer', 'lpbf-dataset-comparison', 'lpbf-calibration-scorecard'];
 export const CORE_FLOW: readonly { readonly id: ModuleId; readonly verb: string }[] = [

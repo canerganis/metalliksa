@@ -27,7 +27,7 @@ test("scenario fixtures show the tier label, the unknown-uncertainty sentence an
 test("first warning is visible and the rest sit behind the More toggle", () => {
   const html = render("ti64-assumed-scenario");
   assert.ok(html.includes("data-estimate-warnings-toggle"));
-  assert.ok(html.includes("More (3 more warnings)"));
+  assert.ok(html.includes("3 more notes"));
   assert.equal(html.split("data-estimate-warnings-more").length - 1, 1);
   assert.ok(/data-estimate-warnings-more/.test(html) && /hidden=""/.test(html));
 });

@@ -50,7 +50,8 @@ test("module navigation is its own component (focus moves do not re-render App),
   assert.match(nav, /<p id="module-nav-hint" className="mk-sr-only">Arrow keys move between modules\.<\/p>/);
   assert.match(nav, /tabIndex: key === stop \? 0 : -1/);
   assert.match(nav, /if \(event\.ctrlKey \|\| event\.altKey \|\| event\.metaKey\) return;/, "modifier shortcuts are left to the browser");
-  assert.match(nav, /<button \{\.\.\.item\('ws:' \+ workspace\.id\)\}/, "workspace headings join the roving group");
+  assert.doesNotMatch(nav, /item\('ws:'/, "group headings are plain text, not roving entries");
+  assert.match(nav, /role="group" aria-labelledby=/, "each group is labelled by its heading");
   assert.match(nav, /<button key=\{module\.id\} \{\.\.\.item\(module\.id, ' nav-desc-' \+ module\.id\)\} aria-current=\{!home && activeTab === module\.id \? 'page' : undefined\}/);
 });
 

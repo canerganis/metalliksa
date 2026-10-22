@@ -16,7 +16,7 @@ test('engineering screen exposes only the primary run action before CUDA invento
     beamDiameter_um: 80, preheat_C: 25, layer_um: 80, hatch_um: 100,
   }}/>);
   assert.equal((html.match(/>Run simulation<\/button>/g) ?? []).length, 1);
-  for (const text of ['Advanced (GPU pilots)', 'CUDA thermal parity pilot', 'Run CUDA parity pilot', 'Run CPU screen', 'Run CUDA screen']) {
+  for (const text of ['Advanced (GPU pilots)', 'GPU (CUDA)', 'CUDA thermal parity pilot', 'Run CUDA parity pilot', 'Run CPU screen', 'Run CUDA screen']) {
     assert.ok(!html.includes(text), text);
   }
 });
@@ -30,11 +30,12 @@ const cudaDevice = { ordinal: 0, device: 'cuda:0', name: 'Test CUDA device', com
 const workerCaps = { openfoamVersion: null, openfoamThermal: false, freeSurfaceSolver: false,
   platform: 'test', limitation: '', materials: [] };
 
-test('GPU pilot disclosure starts closed and retains both parity and bare-plate controls with a reported CUDA device', () => {
+test('GPU section is open and visible, not a closed disclosure, and retains both parity and bare-plate controls with a reported CUDA device', () => {
   const caps = { ...workerCaps, gpuDevices: { torch: { runtimeAvailable: true, devices: [cudaDevice] } } };
   const html = renderToStaticMarkup(<GpuPilotControls {...pilotProps} caps={caps}/>);
-  assert.match(html, /^<details[^>]*><summary[^>]*>Advanced \(GPU pilots\)<\/summary>/);
-  assert.doesNotMatch(html, /^<details[^>]*\bopen(?:=|\s|>)/);
+  assert.match(html, /^<section aria-label="GPU \(CUDA\)"[^>]*><h4[^>]*>GPU \(CUDA\)<\/h4>/);
+  assert.doesNotMatch(html, /^<details/);
+  assert.ok(!html.includes('Advanced (GPU pilots)'));
   for (const text of ['CUDA thermal parity pilot', 'Run CUDA parity pilot', 'Run CPU screen', 'Run CUDA screen',
     'Explicit CUDA device', 'Numerical CPU/GPU parity only',
     'Experimental validation and qualification are unavailable',
@@ -55,7 +56,7 @@ test('GPU pilot controls stay hidden for missing, unavailable or malformed CUDA 
     { ...workerCaps, gpuDevices: { torch: { runtimeAvailable: true, devices: [{ ...cudaDevice, memoryBytes: 0 }] } } },
   ]) assert.equal(renderToStaticMarkup(<GpuPilotControls {...pilotProps} caps={caps}/>), '');
   const caps = { ...workerCaps, gpuDevices: { warp: { runtimeAvailable: true, devices: [cudaDevice] } } };
-  assert.match(renderToStaticMarkup(<GpuPilotControls {...pilotProps} caps={caps}/>), /Advanced \(GPU pilots\)/);
+  assert.match(renderToStaticMarkup(<GpuPilotControls {...pilotProps} caps={caps}/>), /GPU \(CUDA\)/);
 });
 
 test('material availability does not pass source and uncertainty evidence readiness', () => {
@@ -373,4 +374,13 @@ test('GPU engine label requires matching outer capture, contract, runtime, setti
     malformedVersion.provenance.deviceEvidence.cudaDriverVersion = version;
     assert.equal(gpuPilotEngineLabel(warpCapture, malformedVersion), 'GPU engine unverified');
   }
+});
+
+test('the GPU section follows the main run controls in the engineering screen source', async () => {
+  const { readFileSync } = await import('node:fs');
+  const src = readFileSync(new URL('../src/components/3d-distortion-lab/LpbfEngineeringSimulation.tsx', import.meta.url), 'utf8');
+  const run = src.indexOf('"Submitting…":"Run simulation"');
+  const repeat = src.indexOf('aria-label="Create a fresh computational run record"');
+  const gpu = src.indexOf('<GpuPilotControls input={input}');
+  assert.ok(run > 0 && repeat > run && gpu > repeat, 'GPU controls come right after the run controls');
 });

@@ -368,7 +368,7 @@ test("Studio calculating state shows measured elapsed time, no invented progress
   const markup = renderToStaticMarkup(<CALPHADMultiComponentStudio initialResult={pycalphadResult()} initialSolving />);
   const text = textOf(markup);
   assert.ok(markup.includes('data-testid="calphad-solving"'));
-  assert.match(text, /Calculating with pycalphad… 0\.0 s elapsed/);
+  assert.match(text, /Calculating, typically 20 to 45 s \(the first run per element set compiles models\) ?0\.0 s elapsed/);
   assert.match(text, /No completion estimate exists/);
   assert.match(text, /belong to the previous input/);
   assert.doesNotMatch(text, /\d+ ?%\s*complete/i);

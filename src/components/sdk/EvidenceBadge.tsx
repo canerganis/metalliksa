@@ -58,3 +58,23 @@ export function ContractEvidenceBadge({ contract }: { readonly contract: BadgeCo
 export function EvidenceBadge({ moduleId }: { readonly moduleId: string }) {
   return <ContractEvidenceBadge contract={contractById(moduleId)} />;
 }
+
+/**
+ * Module-header form of the same projection: the max-claim badge and its explanation sit behind a small
+ * disclosure so the header leads with the title, the maturity badge and what the module is for. The text is
+ * exactly the badge text and description above (one click away, keyboard operable). Legacy modules render nothing.
+ */
+export function ModuleEvidenceDisclosure({ moduleId, detail }: { readonly moduleId: string; readonly detail?: string }) {
+  const view = evidenceBadgeView(contractById(moduleId));
+  if (!view) return detail ? <details className="mk-about"><summary>About this module</summary><div className="mk-about-body"><p>{detail}</p></div></details> : null;
+  return (
+    <details className="mk-about" data-evidence-ceiling={view.ceiling} data-oracle={view.oracle}>
+      <summary>About this evidence level</summary>
+      <div className="mk-about-body">
+        <p><span className="mk-count-badge text-[11px]">{view.text}</span></p>
+        <p>{view.description}</p>
+        {detail && <p>{detail}</p>}
+      </div>
+    </details>
+  );
+}
