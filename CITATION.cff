@@ -14,8 +14,8 @@ identifiers:
     description: Version 0.1.0
 repository-code: "https://github.com/canerganis/metalliksa"
 license: AGPL-3.0-only
-version: "0.1.0"
-date-released: 2026-10-08
+version: "0.2.0"
+date-released: 2026-10-22
 abstract: >-
   Open research workstation for LPBF melt-pool and process-window screening.
   Results carry their evidence level and limits; no experimental validation is claimed.
