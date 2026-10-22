@@ -12,6 +12,11 @@ function valueText(value: unknown): string | null {
   if (typeof value === "number") return Number.isFinite(value) ? String(value) : null;
   if (typeof value === "string") return value;
   if (typeof value === "boolean") return String(value);
+  if (typeof value === "object" && !Array.isArray(value)) {
+    // A record of plain numbers (for example the two Ni spacing models) is shown member by member.
+    const members = Object.entries(value as Record<string, unknown>).map(([key, member]) => [key, valueText(member)] as const);
+    return members.length > 0 && members.every(([, text]) => text !== null) ? members.map(([key, text]) => `${key} ${text}`).join(", ") : null;
+  }
   return null;
 }
 
@@ -70,7 +75,8 @@ export function HowCalculated({ explainerId, result, className }: { explainerId:
 
   if (!explainer || result === null || result === undefined) return null;
   const kernel = kernelOfModelId(readResultPath(result, "modelId") ?? readResultPath(result, "heatSourceModel"));
-  const equations = equationsForKernel(explainer, kernel);
+  const alloyValue = readResultPath(result, "alloyId");
+  const equations = equationsForKernel(explainer, kernel, typeof alloyValue === "string" ? alloyValue : null);
 
   return (
     <details className={`rounded-lg border border-slate-800 bg-[#050810]/60 p-2 text-[11px] text-slate-300 ${className ?? ""}`}

@@ -1,5 +1,6 @@
 import React, { useId, useState } from "react";
 import { QUANTITY_ENVELOPE } from "../generated/quantityEnvelope";
+import { HowCalculated } from "./HowCalculated";
 import { checkedSolidificationEstimates, estimateLine, type SolidificationEstimates as EstimatePayload } from "../utils/solidificationEstimateDisplay";
 
 const ORDER = ["thermalGradient", "normalSpeed", "coolingRate", "gOverR", "pdas", "sdas", "planarStabilityIndex",
@@ -82,5 +83,6 @@ export function SolidificationEstimates({ payload }: { payload: unknown }) {
       <p className="break-words text-xs text-slate-300">{parsed.phaseContext.text}</p>
       <p className="break-words text-[11px] text-slate-500">{parsed.phaseContext.locator}</p>
     </section>}
+    <HowCalculated className="mt-3" explainerId="solidification-estimates" result={payload} />
   </div>;
 }
