@@ -14,6 +14,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
+from tools.fixture_compare import serialized_equal  # cross-platform float noise tolerance, see that module
+
 OUT = ROOT / "tests" / "fixtures" / "solidification-estimates"
 BASE = {"beamDiameter_um": 80.0, "preheat_C": 80.0, "layerThickness_um": 40.0, "hatch_um": 100.0,
         "heatSource": "rosenthal"}
@@ -57,7 +59,8 @@ def main(argv=None):
         return 0
     stale = [name for name, text in files.items()
              if not (OUT / f"{name}.json").exists()
-             or (OUT / f"{name}.json").read_text(encoding="utf-8").replace("\r\n", "\n") != text]
+             or (OUT / f"{name}.json").read_text(encoding="utf-8").replace("\r\n", "\n") != text
+             and not serialized_equal((OUT / f"{name}.json").read_text(encoding="utf-8").replace("\r\n", "\n"), text)]
     if stale:
         print("stale fixtures: " + ", ".join(stale))
         return 1

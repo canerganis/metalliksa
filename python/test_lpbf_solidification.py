@@ -1,6 +1,7 @@
 """Manufactured numerical oracles, not experimental LPBF validation."""
 import math
 import io
+import json
 import os
 import tempfile
 import unittest
@@ -109,12 +110,17 @@ class CrossingVerification(unittest.TestCase):
 
     @unittest.skipIf(os.name == "nt", "OpenFOAM dispatch is Linux-only")
     def test_previous_extraction_binary_rejected(self):
+        from lpbf_core_physics import SOURCE_INTEGRATION
         from lpbf_openfoam import thermal
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp)/"openfoam-case"
             folder.mkdir()
             def launch(*args, **kwargs):
-                (folder/"numerical-diagnostics.json").write_text('{"sourceIntegration":"cell-integrated-gaussian-gl2-v1"}')
+                # Passes the earlier capture and source-integration checks so the run reaches the intended
+                # solidification-extraction check (a binary built before linear-liquidus-crossing-v1).
+                # Without a valid capture fraction the Linux-only dispatch raises the capture error first.
+                (folder/"numerical-diagnostics.json").write_text(
+                    json.dumps({"minimumCapturedSourceFraction": 1.0, "sourceIntegration": SOURCE_INTEGRATION}))
                 return SimpleNamespace(stdout=io.StringIO(""), wait=lambda: 0)
             with patch("lpbf_openfoam.BINARY", Path(__file__)), patch("lpbf_openfoam.generate_case", return_value=(1., [])), patch("lpbf_openfoam.subprocess.Popen", side_effect=launch):
                 with self.assertRaisesRegex(ValueError, "solidification extraction contract mismatch"):
