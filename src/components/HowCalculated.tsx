@@ -1,3 +1,4 @@
+import { displayUnit, formatWithUnit } from "../utils/numberFormat";
 import React, { useCallback, useId, useState } from "react";
 import {
   CALCULATION_EXPLAINERS, equationsForKernel, kernelOfModelId, readResultPath,
@@ -95,12 +96,16 @@ export function HowCalculated({ explainerId, result, className }: { explainerId:
           <h5 className="font-sans text-[11px] font-semibold text-slate-200">Inputs of this run</h5>
           <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-[10px]" data-run-inputs>
             {explainer.inputs.map((input) => {
-              const text = valueText(readResultPath(result, input.path));
+              const raw = readResultPath(result, input.path);
+              const text = valueText(raw);
+              const unit = input.unit === "degC" ? "°C" : input.unit;
+              // Shown rounded to 3 significant digits; the exact value of the result stays in the tooltip.
+              const shown = typeof raw === "number" && Number.isFinite(raw) ? formatWithUnit(raw, unit) : text === null ? null : `${text}${unit ? ` ${displayUnit(unit)}` : ""}`;
               return (
                 <React.Fragment key={input.symbol}>
                   <dt className="font-mono text-slate-300">{input.symbol}</dt>
                   <dd className="text-slate-400">
-                    {input.label}: {text === null ? <span className="text-slate-500">symbol only, not in this result</span> : <span className="text-slate-100">{text}{input.unit ? ` ${input.unit}` : ""}</span>}
+                    {input.label}: {text === null ? <span className="text-slate-500">symbol only, not in this result</span> : <span className="text-slate-100" title={`${text}${input.unit ? ` ${input.unit}` : ""}`}>{shown}</span>}
                   </dd>
                 </React.Fragment>
               );
