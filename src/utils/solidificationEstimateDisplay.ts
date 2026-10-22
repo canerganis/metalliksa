@@ -8,6 +8,7 @@
  * "Uncalibrated estimate" with the unknown-uncertainty sentence. The range is never called an error bar.
  */
 import { QUANTITY_ENVELOPE } from "../generated/quantityEnvelope";
+import { THIN_SPACE, displayUnit as plainUnit, formatScientific } from "./numberFormat";
 import { checkedEstimateContainer, reasonText, sourceLabelText, type EstimateContainer, type EstimateQuantity, type EstimateRange } from "../data/quantityEnvelope";
 
 const V2 = QUANTITY_ENVELOPE.estimates;
@@ -48,7 +49,7 @@ export function formatSignificant(value: number, digits: number): string {
   if (!Number.isFinite(value)) throw new Error("nonfinite estimate value");
   if (value === 0) return "0";
   const magnitude = Math.abs(value);
-  if (magnitude < 1e-2 || magnitude >= 1e5) return value.toExponential(Math.max(0, digits - 1));
+  if (magnitude < 1e-2 || magnitude >= 1e5) return formatScientific(value, Math.max(1, digits));
   return Number(value.toPrecision(digits)).toString();
 }
 
@@ -61,7 +62,7 @@ function formatScaled(value: number, q: EstimateQuantity): string {
 export function estimateValueText(q: EstimateQuantity): string | null {
   if (q.value === null) return null;
   const { unit } = displayUnit(q);
-  const suffix = unit ? ` ${unit}` : "";
+  const suffix = unit ? `${THIN_SPACE}${unit}` : "";
   if (typeof q.value === "number") return `${formatScaled(q.value, q)}${suffix}`;
   if (typeof q.value === "string") return q.value;
   return Object.entries(q.value).map(([name, v]) => `${MEMBER_LABELS[name] ?? name} ${formatScaled(v, q)}${suffix}`).join("; ");
@@ -70,7 +71,7 @@ export function estimateValueText(q: EstimateQuantity): string | null {
 /** "input sensitivity range: a to b unit" for a range record (estimateBand or the auxiliary inputSensitivity). */
 export function rangeText(range: EstimateRange, q: EstimateQuantity): string {
   const { unit } = displayUnit(q);
-  const suffix = unit ? ` ${unit}` : "";
+  const suffix = unit ? `${THIN_SPACE}${unit}` : "";
   if (typeof range.lower === "number" && typeof range.upper === "number") {
     return `${RANGE_NAME}: ${formatScaled(range.lower, q)} to ${formatScaled(range.upper, q)}${suffix}`;
   }
@@ -80,7 +81,7 @@ export function rangeText(range: EstimateRange, q: EstimateQuantity): string {
 
 /** The varied inputs of a range, with their actual dimensional endpoints. */
 export function inputRangesText(range: EstimateRange): string {
-  return range.inputRanges.map(row => `${row.name} ${formatSignificant(row.lower, 3)} to ${formatSignificant(row.upper, 3)} ${row.unit}`).join("; ");
+  return range.inputRanges.map(row => `${row.name} ${formatSignificant(row.lower, 3)} to ${formatSignificant(row.upper, 3)}${THIN_SPACE}${plainUnit(row.unit)}`).join("; ");
 }
 
 export interface EstimateLine {

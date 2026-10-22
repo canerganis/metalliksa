@@ -33,7 +33,7 @@ test('v2 record validates and renders the version card and test-only rows', () =
   assert.ok(html.includes('LPBF_CALIBRATION_V2_PREREGISTRATION_2026-10-07.md'));
   assert.ok(html.includes('reproduces every v1 status'));
   assert.ok(html.includes('data-role="test-only"'));
-  assert.ok(html.includes('spot 140 um'));
+  assert.ok(html.includes('spot 140 µm'));
   assert.ok(html.includes('Screening only'));
 });
 

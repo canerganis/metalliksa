@@ -11,6 +11,7 @@ import { useMaterialSpecimenStore } from "../store/useMaterialSpecimenStore";
 import { LITERATURE_PV_WINDOWS } from "../utils/lpbfFourAlloySchema";
 import { resolveOptimizerAlloy } from "../utils/lpbfOptimizerAlloy";
 import { COMMITTED_ERROR_BANDS, bandSubjectFromProcessWindowCell, type ErrorBandsSummary } from "../data/lpbfErrorBands";
+import { THIN_SPACE, formatSignificant } from "../utils/numberFormat";
 import { PublishedTrackBands } from "./PublishedTrackBands";
 import { IS_STATIC_DEMO } from "../demo/flag.ts";
 import { DEMO_LOCK } from "../demo/demoGate.ts";
@@ -37,6 +38,8 @@ import {
   memoGet,
   memoSet,
   moveCell,
+  noPrintableNoteText,
+  cellGateSentences,
   parseAxis,
   verdictStyle,
   type CellPosition,
@@ -48,8 +51,17 @@ const MARKER_COLORS = ["#38bdf8", "#c4b5fd", "#67e8f9", "#f0abfc"];
 
 export type ProcessWindowSource = "computed" | "engine-cache" | "browser-memo";
 
-const fmt = (value: number | null | undefined, digits = 1): string =>
-  value === null || value === undefined ? "not computed" : String(Math.round(value * 10 ** digits) / 10 ** digits);
+/** Display only (3 significant digits, shared formatter). The exact value is in the cell tooltip and in the engine response. */
+const fmt = (value: number | null | undefined, digits = 3): string =>
+  value === null || value === undefined ? "not computed" : formatSignificant(value, digits);
+/** Hover text of a map cell: P and v with units, the verdict, and width / depth in µm when the model resolved them. */
+const cellTooltip = (cell: LpbfProcessWindowCell): string => {
+  const base = `${cell.power_W}${THIN_SPACE}W, ${cell.speed_mm_s}${THIN_SPACE}mm/s: ${verdictStyle(cell.verdict).label}`;
+  if (cell.verdict === "error" || cell.width_um === null || cell.depth_um === null) return base;
+  return `${base}. Width ${formatSignificant(cell.width_um, 3)}${THIN_SPACE}µm, depth ${formatSignificant(cell.depth_um, 3)}${THIN_SPACE}µm.`;
+};
+const exactTitle = (value: number | null | undefined, unit: string): string | undefined =>
+  value === null || value === undefined ? undefined : `Exact value: ${value} ${unit}`;
 
 // ---------------------------------------------------------------------------------------------------------
 // Always-visible honesty banner
@@ -200,6 +212,7 @@ export const ProcessWindowHeatmap: React.FC<HeatmapProps> = ({ result, selected,
                       onClick={() => { onSelect?.({ iP, iV }); gridRef.current?.focus(); }}
                       style={{ cursor: onSelect ? "pointer" : undefined }}
                     >
+                      <title>{cellTooltip(cell)}</title>
                       <rect
                         x={px} y={py} width={cw} height={ch}
                         fill={style.hatched ? `url(#${HATCH_PATTERN_ID})` : style.fill}
@@ -285,6 +298,7 @@ export const ProcessWindowCellDetail: React.FC<{
     return <p data-testid="pw-detail-empty" className="text-sm text-slate-400">Select a cell (click it, or Tab to the grid and use the arrow keys) to see its gates and reasons.</p>;
   }
   const style = verdictStyle(cell.verdict);
+  const gateSentences = cellGateSentences(cell, bandContext?.alloyId);
   return (
     <div data-testid="pw-detail" aria-live="polite" className="space-y-2 text-sm text-slate-300">
       <h3 className="flex items-center gap-2 font-semibold text-slate-100">
@@ -298,6 +312,9 @@ export const ProcessWindowCellDetail: React.FC<{
       ) : (
         <>
           <p data-testid="pw-detail-headline">{cell.headline}</p>
+          {gateSentences.length > 0 && (
+            <ul className="list-disc space-y-1 pl-5 text-xs text-slate-200" data-testid="pw-detail-gate-sentences" aria-label="Why this verdict">{gateSentences.map(sentence => <li key={sentence}>{sentence}</li>)}</ul>
+          )}
           <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
             <dt className="text-slate-500">Dominant gate</dt><dd className="font-mono">{cell.dominantGate ?? "none"}</dd>
             <dt className="text-slate-500">Failing gates (do-not-print)</dt><dd className="font-mono">{gateList(cell.blockingGates)}</dd>
@@ -305,8 +322,8 @@ export const ProcessWindowCellDetail: React.FC<{
             <dt className="text-slate-500">Advisory gates (no verdict effect)</dt><dd className="font-mono">{gateList(cell.advisoryGates)}</dd>
             <dt className="text-slate-500">Unavailable gates</dt><dd className="font-mono">{gateList(cell.unavailableGates)}</dd>
             <dt className="text-slate-500">Melt-pool extent</dt><dd className="font-mono">{cell.extentStatus}</dd>
-            <dt className="text-slate-500">Width / depth (um)</dt>
-            <dd className="font-mono" data-testid="pw-detail-wd">{cell.width_um === null ? "not computed" : fmt(cell.width_um)} / {cell.depth_um === null ? "not computed" : fmt(cell.depth_um)}</dd>
+            <dt className="text-slate-500">Width / depth (µm)</dt>
+            <dd className="font-mono" data-testid="pw-detail-wd" title={[exactTitle(cell.width_um, "µm"), exactTitle(cell.depth_um, "µm")].filter(Boolean).join(" / ") || undefined}>{cell.width_um === null ? "not computed" : fmt(cell.width_um)} / {cell.depth_um === null ? "not computed" : fmt(cell.depth_um)}</dd>
             <dt className="text-slate-500">Normalised enthalpy</dt><dd className="font-mono">{cell.normalizedEnthalpy ?? "not reported"}</dd>
             <dt className="text-slate-500">Balling band</dt><dd className="font-mono">{cell.ballingBand ?? "not available"}</dd>
             <dt className="text-slate-500">Inside literature P-v box</dt><dd className="font-mono">{cell.insideLiteratureBox ? "yes" : "no"}</dd>
@@ -337,7 +354,7 @@ export const ProcessWindowTable: React.FC<{ result: LpbfProcessWindowResponse }>
       <table className="w-full whitespace-nowrap text-xs text-slate-300 [&_td]:pr-3 [&_th]:pr-3">
         <caption className="sr-only">Screening verdict for every power and speed combination of the grid</caption>
         <thead className="text-left text-slate-500">
-          <tr><th scope="col">P (W)</th><th scope="col">v (mm/s)</th><th scope="col">Verdict</th><th scope="col">Dominant gate</th><th scope="col">Extent</th><th scope="col">Width (um)</th><th scope="col">Depth (um)</th><th scope="col">Normalised enthalpy</th></tr>
+          <tr><th scope="col">P (W)</th><th scope="col">v (mm/s)</th><th scope="col">Verdict</th><th scope="col">Dominant gate</th><th scope="col">Extent</th><th scope="col">Width (µm)</th><th scope="col">Depth (µm)</th><th scope="col">Normalised enthalpy</th></tr>
         </thead>
         <tbody>
           {result.cells.map(cell => {
@@ -348,8 +365,8 @@ export const ProcessWindowTable: React.FC<{ result: LpbfProcessWindowResponse }>
                 <td><span className="font-mono">{style.letter}</span> {style.label}{cell.error ? `: ${cell.error}` : ""}</td>
                 <td className="font-mono">{cell.dominantGate ?? "none"}</td>
                 <td className="font-mono">{cell.extentStatus ?? "n/a"}</td>
-                <td className="font-mono">{cell.width_um === null ? "not computed" : fmt(cell.width_um)}</td>
-                <td className="font-mono">{cell.depth_um === null ? "not computed" : fmt(cell.depth_um)}</td>
+                <td className="font-mono" title={exactTitle(cell.width_um, "µm")}>{cell.width_um === null ? "not computed" : fmt(cell.width_um)}</td>
+                <td className="font-mono" title={exactTitle(cell.depth_um, "µm")}>{cell.depth_um === null ? "not computed" : fmt(cell.depth_um)}</td>
                 <td className="font-mono">{cell.normalizedEnthalpy ?? "n/a"}</td>
               </tr>
             );
@@ -385,8 +402,8 @@ export const ProcessWindowMeasurements: React.FC<{ result: LpbfProcessWindowResp
     <section data-testid="pw-measurements" aria-label="Measurement overlay" className="space-y-2 rounded-lg border border-slate-800 bg-slate-900/40 p-3">
       <h3 className="text-sm font-semibold text-slate-200">Measurements (geometry, not print outcomes)</h3>
       <p className="text-xs text-slate-400">
-        Published single-track width and depth, filtered to a beam diameter within {"±"}{result.overlay.beamTolerance_pct} % of {result.request.beamDiameter_um} um
-        ({result.overlay.beamWindow_um[0]}-{result.overlay.beamWindow_um[1]} um). The model verdict is computed at each point{"'"}s P/v with this request{"'"}s beam, layer, hatch and preheat, not at the experiment{"'"}s own layer and preheat.
+        Published single-track width and depth, filtered to a beam diameter within {"±"}{result.overlay.beamTolerance_pct} % of {result.request.beamDiameter_um}{THIN_SPACE}µm
+        ({result.overlay.beamWindow_um[0]}-{result.overlay.beamWindow_um[1]}{THIN_SPACE}µm). The model verdict is computed at each point{"'"}s P/v with this request{"'"}s beam, layer, hatch and preheat, not at the experiment{"'"}s own layer and preheat.
       </p>
       {result.overlay.note && <p className="text-xs text-amber-300" data-testid="pw-overlay-note">{result.overlay.note}</p>}
       <ul className="space-y-2 text-xs text-slate-400">{result.overlay.datasets.map(d => <DatasetNotes key={d.id} dataset={d} tolerancePct={result.overlay.beamTolerance_pct} />)}</ul>
@@ -395,7 +412,7 @@ export const ProcessWindowMeasurements: React.FC<{ result: LpbfProcessWindowResp
           <table className="w-full whitespace-nowrap text-xs text-slate-300 [&_td]:pr-3 [&_th]:pr-3">
             <caption className="sr-only">Published single-track measurements inside the mapped range with the model verdict at their P and v</caption>
             <thead className="text-left text-slate-500">
-              <tr><th scope="col">Dataset</th><th scope="col">Row</th><th scope="col">P (W)</th><th scope="col">v (mm/s)</th><th scope="col">Beam (um)</th><th scope="col">Measured width (um)</th><th scope="col">Measured depth (um)</th><th scope="col">Model verdict here</th><th scope="col">Model width / depth (um)</th></tr>
+              <tr><th scope="col">Dataset</th><th scope="col">Row</th><th scope="col">P (W)</th><th scope="col">v (mm/s)</th><th scope="col">Beam (µm)</th><th scope="col">Measured width (µm)</th><th scope="col">Measured depth (µm)</th><th scope="col">Model verdict here</th><th scope="col">Model width / depth (µm)</th></tr>
             </thead>
             <tbody>
               {rows.map(({ dataset, point }) => (
@@ -403,8 +420,8 @@ export const ProcessWindowMeasurements: React.FC<{ result: LpbfProcessWindowResp
                   <td>{dataset.id}</td><td className="font-mono">{point.rowId}</td>
                   <td className="font-mono">{point.power_W}</td><td className="font-mono">{point.speed_mm_s}</td>
                   <td className="font-mono">{point.beamDiameter_um ?? "n/a"}</td>
-                  <td className="font-mono">{point.measuredWidth_um === null ? "not available" : fmt(point.measuredWidth_um)}</td>
-                  <td className="font-mono">{point.measuredDepth_um === null ? "not available" : fmt(point.measuredDepth_um)}</td>
+                  <td className="font-mono" title={exactTitle(point.measuredWidth_um, "µm")}>{point.measuredWidth_um === null ? "not available" : fmt(point.measuredWidth_um)}</td>
+                  <td className="font-mono" title={exactTitle(point.measuredDepth_um, "µm")}>{point.measuredDepth_um === null ? "not available" : fmt(point.measuredDepth_um)}</td>
                   <td><span className="font-mono">{verdictStyle(point.modelVerdict.verdict).letter}</span> {verdictStyle(point.modelVerdict.verdict).label}</td>
                   <td className="font-mono">{point.modelVerdict.modelWidth_um === null ? "not computed" : fmt(point.modelVerdict.modelWidth_um)} / {point.modelVerdict.modelDepth_um === null ? "not computed" : fmt(point.modelVerdict.modelDepth_um)}</td>
                 </tr>
@@ -460,6 +477,7 @@ export interface ProcessWindowResultViewProps {
 export const ProcessWindowResultView: React.FC<ProcessWindowResultViewProps> = ({ result, selected, onSelect, current, source = "computed", stale = false }) => {
   const basis = result.grid.rangeBasis;
   const cell = selected ? cellAt(result, selected.iP, selected.iV) : null;
+  const noPrintableNote = noPrintableNoteText(result);
   const crosshairOutside = !!current
     && (axisFraction(result.grid.speeds_mm_s, current.speed_mm_s) === null || axisFraction(result.grid.powers_W, current.power_W) === null);
   return (
@@ -467,8 +485,9 @@ export const ProcessWindowResultView: React.FC<ProcessWindowResultViewProps> = (
       <ProcessWindowResultStatus result={result} source={source} stale={stale} />
       <p className="text-xs text-slate-400" data-testid="pw-range-basis">
         Range: P {basis.power.min_W}-{basis.power.max_W} W ({basis.power.n} points, {basis.power.basis === "default" ? basis.power.rule : "requested"}); v {basis.speed.min_mm_s}-{basis.speed.max_mm_s} mm/s
-        ({basis.speed.n} points, {basis.speed.basis === "default" ? basis.speed.rule : "requested"}). Alloy {result.alloyId}, beam {result.request.beamDiameter_um} um, layer {result.request.layer_um} um, hatch {result.request.hatch_um} um, preheat {result.request.preheatTemp_C} C.
+        ({basis.speed.n} points, {basis.speed.basis === "default" ? basis.speed.rule : "requested"}). Alloy {result.alloyId}, beam {result.request.beamDiameter_um}{THIN_SPACE}µm, layer {result.request.layer_um}{THIN_SPACE}µm, hatch {result.request.hatch_um}{THIN_SPACE}µm, preheat {result.request.preheatTemp_C}{THIN_SPACE}°C.
       </p>
+      {noPrintableNote && <p role="status" data-testid="pw-no-printable-note" className="rounded border border-amber-500/40 bg-amber-500/10 p-2 text-xs text-amber-100">{noPrintableNote}</p>}
       <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-3">
           <ProcessWindowHeatmap result={result} selected={selected} onSelect={onSelect} current={current} stale={stale} />
@@ -665,10 +684,10 @@ export const LpbfProcessWindowMap: React.FC = () => {
           <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-slate-300" data-testid="pw-fixed-inputs">
             <dt className="text-slate-500">Alloy</dt>
             <dd className="font-mono" data-testid="pw-alloy">{alloy.ok ? alloy.alloyKey : "unsupported"} <span className="text-slate-500">({specimen.name})</span></dd>
-            <dt className="text-slate-500">Beam diameter</dt><dd className="font-mono">{lpbf.beamDiameter_um} um{defaulted("beamDiameter_um") ? " (default, not specified)" : ""}</dd>
-            <dt className="text-slate-500">Layer thickness</dt><dd className="font-mono">{lpbf.layer_um} um{defaulted("layer_um") ? " (default, not specified)" : ""}</dd>
-            <dt className="text-slate-500">Hatch spacing</dt><dd className="font-mono">{lpbf.hatch_um} um{defaulted("hatch_um") ? " (default, not specified)" : ""}</dd>
-            <dt className="text-slate-500">Preheat</dt><dd className="font-mono">{lpbf.preheatTemp_C} C{defaulted("preheatTemp_C") ? " (default, not specified)" : ""}</dd>
+            <dt className="text-slate-500">Beam diameter</dt><dd className="font-mono">{lpbf.beamDiameter_um}{THIN_SPACE}µm{defaulted("beamDiameter_um") ? " (default, not specified)" : ""}</dd>
+            <dt className="text-slate-500">Layer thickness</dt><dd className="font-mono">{lpbf.layer_um}{THIN_SPACE}µm{defaulted("layer_um") ? " (default, not specified)" : ""}</dd>
+            <dt className="text-slate-500">Hatch spacing</dt><dd className="font-mono">{lpbf.hatch_um}{THIN_SPACE}µm{defaulted("hatch_um") ? " (default, not specified)" : ""}</dd>
+            <dt className="text-slate-500">Preheat</dt><dd className="font-mono">{lpbf.preheatTemp_C}{THIN_SPACE}°C{defaulted("preheatTemp_C") ? " (default, not specified)" : ""}</dd>
             <dt className="text-slate-500">Overlay beam tolerance</dt><dd className="font-mono">{"±"}{PROCESS_WINDOW_BEAM_TOLERANCE_PCT} %</dd>
           </dl>
           <button type="button" onClick={openMaterialAndParameters} className="text-xs text-sky-300 underline" data-testid="pw-open-material">Change these in Material &amp; Parameters</button>

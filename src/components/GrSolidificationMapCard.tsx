@@ -114,6 +114,7 @@ export const GrHeatmap: React.FC<{
   const gridRef = useRef<SVGGElement | null>(null);
   const [focused, setFocused] = useState(false);
   const range = metricRange(result.cells ?? [], metric);
+  const metricUnit = METRICS.find(m => m.id === metric)?.unit ?? "";
   const fontSize = Math.max(9, Math.min(cw, ch) * 0.4);
   const activeId = selected ? `gr-cell-${selected.iP}-${selected.iV}` : undefined;
   const x = (iV: number) => M.left + iV * cw;
@@ -171,6 +172,7 @@ export const GrHeatmap: React.FC<{
                       onClick={() => { onSelect?.({ iP, iV }); gridRef.current?.focus(); }}
                       style={{ cursor: onSelect ? "pointer" : undefined }}
                     >
+                      <title>{`${cellAriaLabel(cell, metric)}${style.noValue ? "" : ` (${metricUnit})`}`}</title>
                       <rect
                         x={x(iV)} y={y(iP)} width={cw} height={ch}
                         fill={style.fill}
@@ -318,9 +320,9 @@ export const GrSolidificationMapCard: React.FC<Props> = ({ initialResult = null 
             <option value="ti6al4v">Ti-6Al-4V</option><option value="alsi10mg">AlSi10Mg</option><option value="ss316l">316L</option>
           </select>
         </label>
-        {field("Beam diameter", "beam", "um")}
-        {field("Layer", "layer", "um")}
-        {field("Hatch", "hatch", "um")}
+        {field("Beam diameter", "beam", "µm")}
+        {field("Layer", "layer", "µm")}
+        {field("Hatch", "hatch", "µm")}
         {field("Preheat", "preheat", "C")}
       </div>
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">

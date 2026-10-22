@@ -114,7 +114,7 @@ function P2Table({ rows }: { rows: readonly ScorecardHeadlineRow[] }) {
           {lines.map(({ r, p }) => (
             <tr key={`${r.kernel}/${r.material}/${r.quantity}/${p.heldOut}`} className="border-b border-slate-100 align-top">
               <td className="p-2">{KERNEL_LABELS[r.kernel] ?? r.kernel} · {r.material} · {r.quantity}</td>
-              <td className="p-2">{p.heldOut}{p.role === "test-only" ? <span data-role="test-only" className="ml-1 text-slate-600">(test-only{p.reading && p.reading !== "stated" ? `, spot ${p.reading} um` : ""})</span> : null}</td>
+              <td className="p-2">{p.heldOut}{p.role === "test-only" ? <span data-role="test-only" className="ml-1 text-slate-600">(test-only{p.reading && p.reading !== "stated" ? `, spot ${p.reading} µm` : ""})</span> : null}</td>
               <td className="p-2">{p.rung}</td>
               <td className="p-2">{p.nRows} / {p.nSets}</td>
               <td className="p-2">{p.unresolvedDefault} / {p.unresolvedServed}</td>

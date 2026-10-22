@@ -218,7 +218,7 @@ test("stale rendering dims numbers only; evidence labels (unavailable/inconclusi
 });
 
 test("the stale dimming helper is only applied to leaf value elements, never to a container", () => {
-  const files = ["src/components/3d-distortion-lab/LpbfResultPresentation.tsx", "src/components/LpbfEngineeringWorkspace.tsx", "src/components/3d-distortion-lab/LpbfEngineeringSimulation.tsx"];
+  const files = ["src/components/3d-distortion-lab/LpbfResultPresentation.tsx", "src/components/3d-distortion-lab/MeltPoolSummaryCard.tsx", "src/components/LpbfEngineeringWorkspace.tsx", "src/components/3d-distortion-lab/LpbfEngineeringSimulation.tsx"];
   let uses = 0;
   for (const file of files) {
     const source = readFileSync(new URL(`../${file}`, import.meta.url), "utf8");

@@ -312,16 +312,17 @@ export const LpbfOptimizerSearchPanel: React.FC = () => {
                 </h3>
                 <div className="h-64 w-full">
                   <ResponsiveContainer>
-                    <LineChart data={result.iterations}>
+                    <LineChart data={result.iterations} margin={{ top: 8, right: 16, bottom: 22, left: 14 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                      <XAxis dataKey="iteration" stroke="#94a3b8" fontSize={12} tickMargin={10} />
-                      <YAxis stroke="#94a3b8" fontSize={12} tickMargin={10} domain={['auto', 'auto']} />
+                      <XAxis dataKey="iteration" stroke="#94a3b8" fontSize={12} tickMargin={10} label={{ value: "Iteration (number)", position: "insideBottom", offset: -16, fill: "#cbd5e1", fontSize: 12 }} />
+                      <YAxis stroke="#94a3b8" fontSize={12} tickMargin={10} domain={['auto', 'auto']} label={{ value: "Verdict score (0 to 1, unitless)", angle: -90, position: "insideLeft", offset: 4, style: { textAnchor: "middle" }, fill: "#cbd5e1", fontSize: 12 }} />
                       <Tooltip
                         contentStyle={{ backgroundColor: "#0f172a", borderColor: "#1e293b", fontSize: "12px", color: "#e2e8f0" }}
-                        formatter={(value: number) => [value, "Score"]}
+                        formatter={(value: number) => [`${value} (unitless)`, "Verdict score"]}
                         labelFormatter={(label) => `Iteration ${label}`}
                       />
-                      <Line type="monotone" dataKey="score" stroke="#38bdf8" strokeWidth={2} dot={{ fill: '#38bdf8', r: 3 }} activeDot={{ r: 5, fill: '#0ea5e9' }} />
+                      <Legend verticalAlign="top" height={24} wrapperStyle={{ fontSize: "12px", color: "#cbd5e1" }} />
+                      <Line type="monotone" dataKey="score" name="Verdict score" stroke="#38bdf8" strokeWidth={2} dot={{ fill: '#38bdf8', r: 3 }} activeDot={{ r: 5, fill: '#0ea5e9' }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>

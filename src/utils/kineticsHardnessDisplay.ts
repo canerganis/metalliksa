@@ -3,6 +3,7 @@
 // null for other alloy classes and outside HRC 20-68. A missing or null value is shown as "Unavailable", never as an
 // invented number.
 import { UNAVAILABLE_TEXT } from "./hardnessConversion";
+import { formatScientific } from "./numberFormat";
 import type { EstimateContainer } from "../data/quantityEnvelope";
 
 export interface KineticsHardnessRow {
@@ -399,7 +400,7 @@ export function buildJobKineticsAvailability(
 
 /** "0.05", "2000", "30.1", "1.09e+6": at most 3-4 significant digits, never a long float. */
 export function formatCoolingRate(rate: number): string {
-  return Math.abs(rate) >= 1e4 ? rate.toExponential(2) : String(Number(rate.toPrecision(4)));
+  return Math.abs(rate) >= 1e4 ? formatScientific(rate, 3) : String(Number(rate.toPrecision(4)));
 }
 
 export interface BuildJobCctRowSelection {

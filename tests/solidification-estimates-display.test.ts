@@ -6,10 +6,10 @@ import { checkedSolidificationEstimates, estimateLine, formatSignificant } from 
 const load = (name: string) => checkedSolidificationEstimates(JSON.parse(readFileSync(new URL(`./fixtures/solidification-estimates/${name}.json`, import.meta.url), "utf8")));
 
 test("formatSignificant keeps the stated digits and never rounds a small value to zero", () => {
-  assert.equal(formatSignificant(24535931, 2), "2.5e+7");
+  assert.equal(formatSignificant(24535931, 2), "2.5 × 10⁷");
   assert.equal(formatSignificant(0.1505, 2), "0.15");
   assert.equal(formatSignificant(0.9046, 1), "0.9");
-  assert.equal(formatSignificant(5.3e-5, 1), "5e-5");
+  assert.equal(formatSignificant(5.3e-5, 1), "5 × 10⁻⁵");
   assert.notEqual(formatSignificant(5.3e-5, 1), "0");
 });
 

@@ -1176,6 +1176,8 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
                       stroke="#64748b"
                       tick={{ fill: "#94a3b8", fontSize: 11 }}
                       minTickGap={28}
+                      label={{ value: "Temperature (°C)", position: "insideBottom", offset: 0, fill: "#94a3b8", fontSize: 11 }}
+                        height={46}
                       tickFormatter={(value: number) => `${Math.round(value)}°C`}
                     />
                     <YAxis
@@ -1185,7 +1187,8 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
                       ticks={[0, 25, 50, 75, 100]}
                       allowDataOverflow
                       tickFormatter={(value: number) => `${Math.round(value)}%`}
-                      width={44}
+                      width={60}
+                      label={{ value: "Phase fraction (%)", angle: -90, position: "insideLeft", style: { textAnchor: "middle" }, fill: "#94a3b8", fontSize: 11 }}
                     />
                     <Tooltip
                       contentStyle={{
@@ -1360,11 +1363,15 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
                         stroke="#64748b"
                         tick={{ fill: "#94a3b8", fontSize: 11 }}
                         unit="°C"
+                        label={{ value: "Temperature (°C)", position: "insideBottom", offset: 0, fill: "#94a3b8", fontSize: 11 }}
+                        height={46}
                       />
                       <YAxis
                         stroke="#64748b"
                         tick={{ fill: "#94a3b8", fontSize: 11 }}
                         unit=" kJ/mol"
+                        label={{ value: "Molar Gibbs energy G_m (kJ/mol)", angle: -90, position: "insideLeft", style: { textAnchor: "middle" }, fill: "#94a3b8", fontSize: 11 }}
+                        width={64}
                         domain={["auto", "auto"]}
                       />
                       <Tooltip
@@ -1400,10 +1407,14 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
                         stroke="#64748b"
                         tick={{ fill: "#94a3b8", fontSize: 11 }}
                         unit="°C"
+                        label={{ value: "Temperature (°C)", position: "insideBottom", offset: 0, fill: "#94a3b8", fontSize: 11 }}
+                        height={46}
                       />
                       <YAxis
                         stroke="#64748b"
                         tick={{ fill: "#94a3b8", fontSize: 11 }}
+                        label={{ value: "Activity a_i (dimensionless)", angle: -90, position: "insideLeft", style: { textAnchor: "middle" }, fill: "#94a3b8", fontSize: 11 }}
+                        width={64}
                         domain={[0, "auto"]}
                       />
                       <Tooltip
@@ -1446,11 +1457,15 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
                         stroke="#64748b"
                         tick={{ fill: "#94a3b8", fontSize: 11 }}
                         unit="°C"
+                        label={{ value: "Temperature (°C)", position: "insideBottom", offset: 0, fill: "#94a3b8", fontSize: 11 }}
+                        height={46}
                       />
                       <YAxis
                         stroke="#64748b"
                         tick={{ fill: "#94a3b8", fontSize: 11 }}
                         unit=" kJ/mol"
+                        label={{ value: "Chemical potential μ_i (kJ/mol)", angle: -90, position: "insideLeft", style: { textAnchor: "middle" }, fill: "#94a3b8", fontSize: 11 }}
+                        width={64}
                         domain={["auto", "auto"]}
                       />
                       <Tooltip
@@ -1710,6 +1725,8 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
                         stroke="#64748b"
                         tick={{ fill: "#94a3b8", fontSize: 11 }}
                         unit=" (f_S)"
+                        label={{ value: "Fraction solid f_S (dimensionless)", position: "insideBottom", offset: 0, fill: "#94a3b8", fontSize: 11 }}
+                        height={46}
                       />
                       <YAxis
                         dataKey="temperatureC"
@@ -1718,6 +1735,8 @@ export const CALPHADMultiComponentStudio: React.FC<CALPHADMultiComponentStudioPr
                         stroke="#64748b"
                         tick={{ fill: "#94a3b8", fontSize: 11 }}
                         unit="°C"
+                        label={{ value: "Temperature (°C)", angle: -90, position: "insideLeft", style: { textAnchor: "middle" }, fill: "#94a3b8", fontSize: 11 }}
+                        width={64}
                       />
                       <Tooltip
                         contentStyle={{
