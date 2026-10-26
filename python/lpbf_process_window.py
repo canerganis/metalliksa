@@ -9,8 +9,10 @@ published single-track measurements (geometry only, never print outcomes), each 
 verdict computed at its own P/v with the request's settings.
 
 Nothing here re-decides printability: verdicts, gates and reasons are the compose_verdict output verbatim
-(P7a, 2026-10-11: do-not-print on the Tang unit criterion, risky in keyhole mode, otherwise printable; the
-literature box, balling, the level 30, the Tang margin and downskin are advisories).
+(Tang advisory bump, 2026-10-27: inconclusive when geometry is not resolved or a verdict input is null, risky in
+keyhole mode, otherwise printable, a screening result that does not establish fusion adequacy; the Tang overlap index
+above 1.0 on modelled geometry, the literature box, balling, the level 30, the Tang margin and downskin are
+advisories). Results stay screening only (experimentalValidation false).
 """
 from __future__ import annotations
 

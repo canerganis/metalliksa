@@ -818,7 +818,7 @@ export function processMapCellTitle(pt: {
 }
 
 /** P7a (2026-10-11): lof_wh and lof_dt are diagnostics with no sourced threshold (gate.required null). */
-export const LOF_DIAGNOSTIC_HINT = "diagnostic, no sourced threshold (Tang index is the gate)";
+export const LOF_DIAGNOSTIC_HINT = "diagnostic, no sourced threshold (Tang index is the advisory screen)";
 
 /**
  * W/h and D/t tile state. A null ratio (lofGeometry payload with a null melt-pool extent or Tang index) is "not

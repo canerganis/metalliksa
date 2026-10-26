@@ -1008,7 +1008,7 @@ export interface PythonLpbfSuggestedPatch {
 
 export interface PythonLpbfBuildJobVerdict {
   verdict: "printable" | "risky" | "do-not-print" | "inconclusive";
-  /** "sourced-criteria-only" since P7a: do-not-print on the Tang unit criterion, risky in keyhole mode, else printable. */
+  /** "model-geometry-advisory-keyhole-screen" since 2026-10-27 (was "sourced-criteria-only" in P7a): risky in keyhole mode, else printable; the Tang overlap index above 1.0 is an advisory. Older payloads may still say do-not-print on Tang. */
   verdictBasis?: string;
   headline: string;
   reasons: string[];

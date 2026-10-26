@@ -439,3 +439,14 @@ test("service: refusals, unreachable engine and success are told apart", async (
     globalThis.fetch = realFetch;
   }
 });
+
+test("Tang advisory bump (2026-10-27): a printable cell with the Tang advisory says so in the detail and the map has no empty-map note", () => {
+  // SYNTHETIC: one cell turned into a current-revision printable cell that carries lof_tang as an advisory gate.
+  const base = checkedProcessWindow(good());
+  const cells = base.cells.map(c => (c.iP === 0 && c.iV === 0 ? { ...c, verdict: "printable" as const, advisoryGates: ["lof_tang"], blockingGates: [], riskGates: [] } : c));
+  const result = { ...base, cells };
+  const html = renderToStaticMarkup(<ProcessWindowResultView result={result} selected={{ iP: 0, iV: 0 }} />);
+  assert.match(html, /The Tang overlap index exceeds 1\.0 using modelled melt-pool geometry: lack of fusion is possible and this screen cannot establish whether fusion is adequate\. It is an advisory only and does not change the verdict\./);
+  assert.doesNotMatch(html, /pw-no-printable-note/);
+  assert.doesNotMatch(html, /Tang lack-of-fusion criterion/);
+});

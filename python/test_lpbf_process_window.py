@@ -325,5 +325,61 @@ class ProcessWindowTests(unittest.TestCase):
             self.assertEqual(out["errorKind"], "validation")
 
 
+
+# Tang advisory bump (2026-10-27). UI default settings of the four alloy presets (src/store/useMaterialSpecimenStore.ts
+# deriveSpecimenProperties: beam 80 um fallback, recommended layer 40 um and hatch 100 um, recommended preheat by base
+# metal / hot-tearing class) on the engine default 11 x 11 axes. BEFORE was measured on the pre-bump tree (fc585b4a,
+# solver revision lpbf-build-job-solt-v28); only its do-not-print cells may move, and only to printable or risky.
+UI_DEFAULTS = {"in718": (80, 40, 100, 200), "ti64": (80, 40, 100, 150), "ss316l": (80, 40, 100, 80),
+               "alsi10mg": (80, 40, 100, 160)}
+VERDICT_ORDER = ("printable", "risky", "do-not-print", "inconclusive", "error")
+BEFORE = {"in718": (0, 58, 58, 5, 0), "ti64": (0, 68, 53, 0, 0), "ss316l": (0, 22, 91, 8, 0),
+          "alsi10mg": (62, 43, 16, 0, 0)}
+AFTER = {"in718": (27, 89, 0, 5, 0), "ti64": (31, 90, 0, 0, 0), "ss316l": (56, 57, 0, 8, 0),
+         "alsi10mg": (78, 43, 0, 0, 0)}
+
+
+class TangAdvisoryDefaultGrid(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        pwc.clear()
+        cls.maps = {}
+        for alloy, (beam, layer, hatch, preheat) in UI_DEFAULTS.items():
+            cls.maps[alloy] = pw.run_process_window({"alloyId": alloy, "beamDiameter_um": beam, "layer_um": layer,
+                                                     "hatch_um": hatch, "preheatTemp_C": preheat})
+
+    def test_counts_after_the_bump(self):
+        for alloy, r in self.maps.items():
+            self.assertTrue(r["success"], alloy)
+            self.assertEqual(r["grid"]["nCells"], 121, alloy)
+            self.assertEqual(tuple(r["counts"][k] for k in VERDICT_ORDER), AFTER[alloy], alloy)
+
+    def test_only_former_do_not_print_cells_moved(self):
+        for alloy in UI_DEFAULTS:
+            b, a = dict(zip(VERDICT_ORDER, BEFORE[alloy])), dict(zip(VERDICT_ORDER, AFTER[alloy]))
+            self.assertEqual(a["do-not-print"], 0, alloy)
+            self.assertEqual((a["inconclusive"], a["error"]), (b["inconclusive"], b["error"]), alloy)
+            self.assertGreaterEqual(a["printable"], b["printable"], alloy)
+            self.assertGreaterEqual(a["risky"], b["risky"], alloy)
+            self.assertEqual(a["printable"] + a["risky"], b["printable"] + b["risky"] + b["do-not-print"], alloy)
+
+    def test_tang_never_blocks_and_is_reported_as_an_advisory(self):
+        for alloy, r in self.maps.items():
+            for c in r["cells"]:
+                self.assertNotIn("lof_tang", c["blockingGates"], (alloy, c["power_W"], c["speed_mm_s"]))
+                self.assertNotEqual(c["dominantGate"], "lof_tang")
+            self.assertTrue(any("lof_tang" in c["advisoryGates"] for c in r["cells"]), alloy)
+            self.assertIs(r["evidence"]["experimentalValidation"], False)
+
+    def test_in718_has_printable_cells_inside_the_literature_box(self):
+        cells = self.maps["in718"]["cells"]
+        inside = sorted((c["power_W"], c["speed_mm_s"]) for c in cells
+                        if c["verdict"] == "printable" and c["insideLiteratureBox"])
+        self.assertEqual(inside, [(138.0, 765.0), (138.0, 887.5)])
+        for c in cells:
+            if c["verdict"] == "printable":
+                self.assertIn("fusion adequacy is not established", c["headline"])
+
+
 if __name__ == "__main__":
     unittest.main()

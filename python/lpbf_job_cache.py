@@ -22,7 +22,7 @@ _MAX_ENTRIES = 64
 
 # Increment when build-job solver behavior changes so a warm worker cannot
 # return results produced by an earlier implementation for identical inputs.
-BUILD_JOB_SOLVER_REVISION = "lpbf-build-job-solt-v28"
+BUILD_JOB_SOLVER_REVISION = "lpbf-build-job-tang-advisory-v29"
 BUILD_JOB_MODEL_ID = "rosenthal-screening-v1"
 
 # Cache key scheme. v2: every LpbfBuildJobRequest field is keyed, either by the explicit normalised entries of

@@ -127,17 +127,36 @@ function response(cells: LpbfProcessWindowCell[], alloyId = "ss316l"): LpbfProce
   } as unknown as LpbfProcessWindowResponse;
 }
 
-test("no-printable note: names both gates and counts the cells from the returned gate data", () => {
+// Tang advisory bump (2026-10-27): a current cell carries lof_tang as an advisory gate; tangCell is a legacy stored
+// result (an earlier solver revision made lof_tang blocking) and is described as such, never as the current policy.
+const tangAdvisoryKeyholeCell = (iV: number) => cell({ iV, verdict: "risky", dominantGate: "keyhole", blockingGates: [], riskGates: ["keyhole"], advisoryGates: ["lof_tang"] });
+const tangAdvisoryPrintableCell = (iV: number) => cell({ iV, verdict: "printable", dominantGate: "none", blockingGates: [], advisoryGates: ["lof_tang"] });
+
+test("no-printable note: legacy Tang-blocked cells are labelled a legacy result, counts come from the returned gate data", () => {
   const cells = [keyholeCell(0), keyholeCell(1), keyholeCell(2), tangCell(3), tangCell(4)];
-  assert.deepEqual(noPrintableExplanation({ cells }), { total: 5, keyholeRiskCells: 3, tangFailCells: 2, unresolvedCells: 0 });
+  assert.deepEqual(noPrintableExplanation({ cells }), { total: 5, keyholeRiskCells: 3, tangAdvisoryCells: 0, legacyTangBlockedCells: 2, unresolvedCells: 0 });
   const text = noPrintableNoteText({ cells, alloyId: "ss316l" })!;
   assert.match(text, /^No cell in this P-v range is printable\./);
   assert.match(text, /The keyhole risk gate \(dH\/hs at or above 20, a threshold transferred from 316L and Ti-6Al-4V and not derived for this alloy\) flags 3 cells of 5 as a keyhole risk/);
-  assert.match(text, /the Tang lack-of-fusion criterion \(its source notes the criterion is problematic with modelled geometry\) fails in 2 cells of 5, which makes them do-not-print/);
+  assert.match(text, /legacy result: an earlier solver revision made 2 cells of 5 do-not-print on the Tang overlap index \(modelled melt-pool geometry\), which the current screen reports as an advisory only \(re-run the map for current verdicts\)/);
+  assert.doesNotMatch(text, /Tang lack-of-fusion criterion|fails in/);
   // Counts are not hard-coded: other gate data gives other counts.
   const one = noPrintableNoteText({ cells: [keyholeCell(0)], alloyId: "ss316l" })!;
   assert.match(one, /flags 1 cell of 1 as a keyhole risk/);
   assert.doesNotMatch(one, /Tang/);
+});
+
+test("no-printable note: a current result counts the Tang advisory cells and never says Tang makes cells do-not-print", () => {
+  const cells = [tangAdvisoryKeyholeCell(0), tangAdvisoryKeyholeCell(1), keyholeCell(2)];
+  assert.deepEqual(noPrintableExplanation({ cells }), { total: 3, keyholeRiskCells: 3, tangAdvisoryCells: 2, legacyTangBlockedCells: 0, unresolvedCells: 0 });
+  const text = noPrintableNoteText({ cells, alloyId: "in718" })!;
+  assert.match(text, /flags 3 cells of 3 as a keyhole risk/);
+  assert.match(text, /2 cells of 3 carry the Tang overlap advisory \(index above 1\.0 on modelled geometry; advisory only, it does not change the verdict\)/);
+  assert.doesNotMatch(text, /do-not-print|legacy/);
+  // A map with a printable Tang-advisory cell shows no empty-map note at all.
+  assert.equal(noPrintableNoteText({ cells: [tangAdvisoryKeyholeCell(0), tangAdvisoryPrintableCell(1)], alloyId: "in718" }), null);
+  const html = renderToStaticMarkup(<ProcessWindowResultView result={response([tangAdvisoryKeyholeCell(0), tangAdvisoryPrintableCell(1)], "in718")} selected={null} />);
+  assert.doesNotMatch(html, /pw-no-printable-note/);
 });
 
 test("no-printable note: absent when any cell is printable or the grid is empty, and no claim of 20 for IN625", () => {
@@ -165,7 +184,11 @@ test("a selected cell lists one plain sentence per gate and keeps the detailed g
     "The balling aspect-ratio screen gives an advisory only and does not change the verdict.",
     "The recoater check could not be evaluated for this cell.",
   ]);
-  assert.match(cellGateSentences(cell({}))[0], /^The Tang lack-of-fusion criterion \(its source notes the criterion is problematic with modelled geometry\) fails here, which makes this cell do-not-print\.$/);
+  // Tang advisory bump (2026-10-27): a blocking lof_tang only exists in legacy stored results and is described so.
+  assert.equal(cellGateSentences(cell({}))[0], "Legacy result: an earlier solver revision made this cell do-not-print on the Tang overlap index (modelled melt-pool geometry); the current screen reports that index as an advisory only. Re-run the map for the current verdict.");
+  assert.deepEqual(cellGateSentences(tangAdvisoryPrintableCell(0), "in718"), [
+    "The Tang overlap index exceeds 1.0 using modelled melt-pool geometry: lack of fusion is possible and this screen cannot establish whether fusion is adequate. It is an advisory only and does not change the verdict.",
+  ]);
   assert.deepEqual(cellGateSentences(cell({ verdict: "error", error: "x" })), []);
   const html = renderToStaticMarkup(<ProcessWindowCellDetail cell={advisory} advisories={[]} bandContext={{ alloyId: "ss316l", modelId: "m", beamDiameter_um: 80 }} />);
   assert.match(html, /data-testid="pw-detail-gate-sentences"/);
