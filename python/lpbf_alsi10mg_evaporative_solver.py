@@ -239,14 +239,13 @@ def run(raw, report=lambda *args: None):
     residual = energies["input_J"]-loss-stored
     scale = max(abs(energies["input_J"]), abs(loss), abs(stored), 1e-12)
     energies.update(stored_J=stored, residual_J=residual, relativeResidual=abs(residual)/scale)
-    reason = ("The surface would deform into a vapor cavity at these settings. "
-              "A fixed-surface model cannot give melt depth here. Use a model with "
-              "surface motion and melt flow for depth, length and volume."
+    reason = ("The model's recoil/capillary onset criterion was exceeded; surface deformation "
+              "and keyhole geometry are not resolved, so depth, length and volume are not reported."
               if gate["onset"] else
               "Melt geometry needs a keyhole-onset check. Supply surface tension, "
               "chamber pressure, beam radius and a compatible recoil model."
               if gate["unresolvedGeometry"] else None)
-    width_warning = ("The surface would deform into a vapor cavity. This width is a "
+    width_warning = ("The model's recoil/capillary onset criterion was exceeded. This width is a "
                      "fixed-surface isotherm scenario and may not represent the melt pool."
                      if gate["onset"] else None)
     warnings = [

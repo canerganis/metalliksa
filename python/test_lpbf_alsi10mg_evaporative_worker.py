@@ -29,9 +29,8 @@ JOB = {
 DISCLOSURE = ("Thermal and vapour constants are Al6061 values (Gan 2021 SI Tables 1-2, citing Valencia and "
               "Quested 2013) used as an Al-rich proxy for AlSi10Mg; Mg and Si selective evaporation and the "
               "real AlSi10Mg composition are not modelled.")
-REFUSAL_REASON = ("The surface would deform into a vapor cavity at these settings. A fixed-surface model "
-                  "cannot give melt depth here. Use a model with surface motion and melt flow for depth, "
-                  "length and volume.")
+REFUSAL_REASON = ("The model's recoil/capillary onset criterion was exceeded; surface deformation "
+                  "and keyhole geometry are not resolved, so depth, length and volume are not reported.")
 
 
 class AlSi10MgEvaporativeWorkerTests(unittest.TestCase):

@@ -13,13 +13,39 @@ const fmt = (value: number | null | undefined) => value === null || value === un
 
 export interface AlSi10MgProcessInput { power_W: number; speed_mm_s: number; beamDiameter_um: number; preheat_C: number }
 
+const processKey = (p: AlSi10MgProcessInput) => JSON.stringify([p.power_W, p.speed_mm_s, p.beamDiameter_um, p.preheat_C]);
+
+/** Settings the completed result was actually computed with, read from its own provenance. */
+export function alsi10mgResultSettings(result: AlSi10MgEvaporativeResult): AlSi10MgProcessInput {
+  const i = result.provenance.inputs;
+  return { power_W: Number(i.power_W), speed_mm_s: Number(i.speed_mm_s), beamDiameter_um: Number(i.beamDiameter_um), preheat_C: Number(i.preheat_C) };
+}
+
+/** True when the shared process inputs differ from the ones the shown result was computed with. */
+export function alsi10mgResultIsStale(result: AlSi10MgEvaporativeResult | undefined, current: AlSi10MgProcessInput): boolean {
+  return !!result && processKey(alsi10mgResultSettings(result)) !== processKey(current);
+}
+
+const settingsText = (p: AlSi10MgProcessInput) => `${fmt(p.power_W)} W, ${fmt(p.speed_mm_s)} mm/s, ${fmt(p.beamDiameter_um)} µm beam, ${fmt(p.preheat_C)} °C preheat`;
+
+/** Job status line plus the submitted settings, so a running or finished job is never shown as if it used the current inputs. */
+export function AlSi10MgRunStatus({ job, submitted, process }: { job: AlSi10MgEvaporativeJob; submitted?: AlSi10MgProcessInput; process: AlSi10MgProcessInput }) {
+  const active = job.status === 'queued' || job.status === 'running';
+  const settings = job.status === 'completed' && job.result ? alsi10mgResultSettings(job.result) : submitted;
+  const changed = !!settings && processKey(settings) !== processKey(process);
+  return <>
+    <p role="status" className="text-xs text-slate-400">Job {job.id} · {job.status}{active ? ` · ${Math.round(job.progress * 100)}%` : ''}</p>
+    {settings && (active || changed) && <p className="text-xs text-slate-400">Submitted settings: {settingsText(settings)}.{changed ? ` The inputs above now read ${settingsText(process)}.` : ''}</p>}
+  </>;
+}
+
 /** Plain explanation placed before the solver's own error text, which is kept verbatim. */
 export function alsi10mgEvaporativeErrorHint(message: string): string {
   if (!/exceeds finite enthalpy\/scenario range/.test(message)) return '';
   return `At these settings the surface temperature leaves the model's declared range (up to ${ALSI10MG_EVAPORATION_SCENARIO.maxTemperature_K} K), so the run stops instead of clipping values. Lower the laser power or raise the scan speed and run again. Solver message: `;
 }
 
-export function AlSi10MgEvaporativeResultView({ result }: { result: AlSi10MgEvaporativeResult }) {
+export function AlSi10MgEvaporativeResultView({ result, stale }: { result: AlSi10MgEvaporativeResult; stale?: boolean }) {
   const g = result.geometry;
   const e = result.energy;
   const refused = !result.gate.geometryAvailable;
@@ -28,6 +54,7 @@ export function AlSi10MgEvaporativeResultView({ result }: { result: AlSi10MgEvap
     <dd className="mt-1 tabular-nums">{value === null ? <>null <span className="text-xs text-amber-200">(not available: {g.refusalReason ?? 'no reason returned'})</span></> : <>{fmt(value)} {unit}</>}</dd>
   </div>;
   return <div className="space-y-4" aria-label="AlSi10Mg evaporative result">
+    {stale && <p role="status" className="rounded-lg border border-amber-400/40 p-3 text-sm text-amber-200">Inputs changed after this run. The result below is the executed snapshot, not the current inputs. Rerun to update it.</p>}
     <p className="text-sm text-amber-200">{result.researchLabel} · {result.tier} · {result.modelId} · experimentalValidation={String(result.experimentalValidation)} · productionReady={String(result.productionReady)}</p>
     <p className="text-xs text-amber-200">{result.disclosure}</p>
     <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -55,11 +82,13 @@ export function AlSi10MgEvaporativePanel({ material, process }: { material: stri
   const [surfaceMode, setSurfaceMode] = useState<AlSi10MgSurfaceMode>('bare-plate');
   const [optIn, setOptIn] = useState(false);
   const [job, setJob] = useState<AlSi10MgEvaporativeJob>();
+  const [submitted, setSubmitted] = useState<AlSi10MgProcessInput>();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const availability = alsi10mgEvaporativeAvailability(material, surfaceMode);
   const active = job?.status === 'queued' || job?.status === 'running';
   const result = job?.status === 'completed' ? job.result : undefined;
+  const stale = alsi10mgResultIsStale(result, process);
 
   useVisiblePolling(async (isLive) => {
     if (!job) return null;
@@ -78,7 +107,8 @@ export function AlSi10MgEvaporativePanel({ material, process }: { material: stri
   const submit = async () => {
     if (busy || active || !availability.available || !optIn) return;
     setBusy(true); setError('');
-    try { setJob(await alsi10mgEvaporativeApi.submit(buildAlSi10MgEvaporativeInput(process))); }
+    const snapshot = { ...process };
+    try { const next = await alsi10mgEvaporativeApi.submit(buildAlSi10MgEvaporativeInput(snapshot)); setSubmitted(snapshot); setJob(next); }
     catch (e) { setError(e instanceof Error ? e.message : 'Evaporative job submission failed'); }
     finally { setBusy(false); }
   };
@@ -110,8 +140,8 @@ export function AlSi10MgEvaporativePanel({ material, process }: { material: stri
       <button className="rounded-lg border border-slate-500 px-3 py-2 text-sm disabled:opacity-40" disabled={busy || active || !availability.available || !optIn} onClick={submit}>Run AlSi10Mg evaporative surface model</button>
       {active && <button className="rounded-lg border border-slate-500 px-3 py-2 text-sm" onClick={cancel}>Cancel</button>}
     </div>
-    {job && <p role="status" className="text-xs text-slate-400">Job {job.id} · {job.status}{active ? ` · ${Math.round(job.progress * 100)}%` : ''}</p>}
+    {job && <AlSi10MgRunStatus job={job} submitted={submitted} process={process} />}
     {(error || job?.error) && <p role="alert" className="rounded-xl border border-red-400/30 p-3 text-sm text-red-200 whitespace-pre-wrap">{alsi10mgEvaporativeErrorHint(error || job?.error || '')}{error || job?.error}</p>}
-    {result && <AlSi10MgEvaporativeResultView result={result} />}
+    {result && <AlSi10MgEvaporativeResultView result={result} stale={stale} />}
   </section>;
 }

@@ -11,13 +11,15 @@ import {
   ALSI10MG_EVAPORATION_SCENARIO, ALSI10MG_EVAPORATIVE_TRACK_UM, ALSI10MG_PROXY_DISCLOSURE,
   alsi10mgEvaporativeAvailability, buildAlSi10MgEvaporativeInput,
 } from '../src/utils/alsi10mgEvaporativeModel';
-import { AlSi10MgEvaporativePanel, AlSi10MgEvaporativeResultView } from '../src/components/AlSi10MgEvaporativePanel';
+import {
+  AlSi10MgEvaporativePanel, AlSi10MgEvaporativeResultView, AlSi10MgRunStatus, alsi10mgResultIsStale, alsi10mgResultSettings,
+} from '../src/components/AlSi10MgEvaporativePanel';
 
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
 const html = (node: React.ReactElement) => renderToStaticMarkup(node).replace(/&#x27;/g, "'");
 const onset: AlSi10MgEvaporativeResult = parseAlSi10MgEvaporativeJob(alsiFixtures.onset).result!;
 const melt: AlSi10MgEvaporativeResult = parseAlSi10MgEvaporativeJob(alsiFixtures.noEvaporation).result!;
-const REFUSAL = 'The surface would deform into a vapor cavity at these settings. A fixed-surface model cannot give melt depth here. Use a model with surface motion and melt flow for depth, length and volume.';
+const REFUSAL = "The model's recoil/capillary onset criterion was exceeded; surface deformation and keyhole geometry are not resolved, so depth, length and volume are not reported.";
 
 test('real AlSi10Mg worker fixtures parse with the proxy disclosure; tampered or foreign jobs do not', () => {
   assert.equal(onset.modelId, 'alsi10mg-al6061-proxy-fixed-surface-evaporation-v1');
@@ -79,4 +81,35 @@ test('the result view keeps null extents with their reason, the disclosure and t
   assert.ok(view.includes('Evaporative loss'));
   const meltView = html(<AlSi10MgEvaporativeResultView result={melt} />);
   assert.doesNotMatch(meltView, /not available/);
+});
+
+test('a finished result goes stale when power, speed, beam diameter or preheat change, and a running job shows its submitted settings', () => {
+  // No DOM runtime in this repo: the panel's staleness predicate and status component are driven through
+  // each input edit, the same way the panel feeds them after the user changes the shared process inputs.
+  const base = alsi10mgResultSettings(onset);
+  assert.deepEqual(base, { power_W: 300, speed_mm_s: 1300, beamDiameter_um: 100, preheat_C: 80 });
+  assert.equal(alsi10mgResultIsStale(onset, base), false);
+  assert.equal(alsi10mgResultIsStale(undefined, base), false);
+  const edits = { power_W: 301, speed_mm_s: 1301, beamDiameter_um: 101, preheat_C: 81 };
+  for (const [key, value] of Object.entries(edits)) {
+    const changed = { ...base, [key]: value };
+    assert.equal(alsi10mgResultIsStale(onset, changed), true, key);
+    const view = html(<AlSi10MgEvaporativeResultView result={onset} stale={alsi10mgResultIsStale(onset, changed)} />);
+    assert.ok(view.includes('Inputs changed after this run'), key);
+    assert.ok(view.includes(ALSI10MG_PROXY_DISCLOSURE), key);
+    const status = html(<AlSi10MgRunStatus job={clone(alsiFixtures.onset)} process={changed} />);
+    assert.ok(status.includes('Submitted settings: 300 W, 1300 mm/s, 100 µm beam, 80 °C preheat.'), key);
+    assert.ok(status.includes('now read'), key);
+  }
+  assert.ok(!html(<AlSi10MgEvaporativeResultView result={onset} stale={false} />).includes('Inputs changed after this run'));
+  const quiet = html(<AlSi10MgRunStatus job={clone(alsiFixtures.onset)} process={base} />);
+  assert.ok(!quiet.includes('Submitted settings') && !quiet.includes('now read'));
+  const running = { ...clone(alsiFixtures.onset), status: 'running', progress: 0.4 };
+  delete running.result;
+  const runningJob = parseAlSi10MgEvaporativeJob(running);
+  const live = html(<AlSi10MgRunStatus job={runningJob} submitted={base} process={{ ...base, power_W: 250 }} />);
+  assert.ok(live.includes('running · 40%'));
+  assert.ok(live.includes('Submitted settings: 300 W, 1300 mm/s, 100 µm beam, 80 °C preheat.'));
+  assert.ok(live.includes('now read 250 W'));
+  assert.ok(html(<AlSi10MgRunStatus job={runningJob} submitted={base} process={base} />).includes('Submitted settings'));
 });

@@ -89,6 +89,40 @@ class ManufacturedTests(unittest.TestCase):
         self.assertTrue(errors[0] > errors[1] > errors[2] > 0.)
         print("conduction refinement L2:", errors)
 
+    def test_rejected_candidate_commits_nothing_to_onset_or_energy_ledger(self):
+        dt0, dx, rho = 1e-6, .001, 4000.
+        T = np.full((2, 2, 2), 3000.)
+        H = T*1000.*rho
+        good = np.full_like(T, 1e12)          # accepted source field, W/m3
+        bad = np.full_like(T, 1e22)           # drives enthalpy past the table: must be rejected
+        seen = []
+        def rejecting(dt, passive, capacity):
+            seen.append(dt)
+            field = bad if dt >= dt0 else good
+            return dt, field, passive+field, 1., 0
+        def direct(dt, passive, capacity):
+            return dt, good, passive+good, 1., 0
+        tt, hh = np.array([273.15, 5000.]), np.array([273150., 5e6])
+        retried = step(T, H, dt0, dx=dx, rho=rho, cp=1000., k=1., tt=tt, hh=hh, source=rejecting)
+        reference = step(T, H, dt0/2, dx=dx, rho=rho, cp=1000., k=1., tt=tt, hh=hh, source=direct)
+        self.assertEqual(seen, [dt0, dt0/2])
+        self.assertEqual(retried["rejectedCandidates"], 1)
+        self.assertEqual(reference["rejectedCandidates"], 0)
+        self.assertEqual(retried["dt_s"], dt0/2)
+        # The rejected candidate's source never enters the ledger: input is the accepted field over the accepted dt only.
+        self.assertEqual(retried["input_J"], float(good.sum())*dx**3*(dt0/2))
+        for key in ("input_J", "base_J", "radiativeConvective_J", "evaporative_J", "diagnosticMass_kg", "dt_s"):
+            self.assertEqual(retried[key], reference[key], key)
+        self.assertTrue(np.array_equal(retried["temperature"], reference["temperature"]))
+        self.assertTrue(np.array_equal(retried["enthalpy"], reference["enthalpy"]))
+        # Onset time is computed from the accepted candidate and its accepted clock only.
+        evaporation = validate_config(scenario()["evaporation"], 915.)
+        onset = [solver.update_onset(None, solver.surface_state(out["temperature"][:, :, -1], evaporation),
+                                     evaporation, 50e-6, out["dt_s"]) for out in (retried, reference)]
+        self.assertEqual(onset[0], onset[1])
+        self.assertTrue(onset[0]["onset"])
+        self.assertEqual(onset[0]["firstOnsetTime_s"], dt0/2)
+
     def test_persistent_invalid_candidate_raises_without_clipping(self):
         T = np.full((1, 1, 1), 2000.)
         def source(dt, passive, capacity):
@@ -147,7 +181,9 @@ class IntegrationTests(unittest.TestCase):
         self.assertIsNotNone(result["gate"]["firstOnsetTime_s"])
         for key in ("depth_um", "length_um", "volume_um3"):
             self.assertIsNone(result["geometry"][key])
-        self.assertIn("Use a model with surface motion and melt flow", result["geometry"]["refusalReason"])
+        self.assertIn("recoil/capillary onset criterion was exceeded", result["geometry"]["refusalReason"])
+        self.assertIn("depth, length and volume are not reported", result["geometry"]["refusalReason"])
+        self.assertNotIn("would deform", result["geometry"]["refusalReason"]+result["geometry"]["widthWarning"])
         self.assertIn(result["geometry"]["widthWarning"], result["warnings"])
         self.assertGreater(result["geometry"]["width_um"], 0.)
         self.assertLessEqual(result["peakTemperature_K"], 5000.)
