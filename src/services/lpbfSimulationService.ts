@@ -1106,3 +1106,77 @@ export const ti64EvaporativeApi = {
     return parseTi64EvaporativeJob(await request(`/api/lpbf/jobs/${encodeURIComponent(id)}`, { method: 'DELETE' }));
   },
 };
+
+/**
+ * Opt-in AlSi10Mg fixed-surface evaporative model on an Al6061 proxy profile (research). A separate job type with its own
+ * schema; it reuses the Ti64 scenario shape but is never parsed as a Ti64 or standard job.
+ */
+export const ALSI10MG_EVAPORATIVE_JOB_TYPE = 'alsi10mg-evaporative-surface' as const;
+export const ALSI10MG_EVAPORATIVE_MODEL_ID = 'alsi10mg-al6061-proxy-fixed-surface-evaporation-v1' as const;
+export interface AlSi10MgEvaporativeConfig {
+  power_W: number; speed_mm_s: number; beamDiameter_um: number; preheat_C: number; trackLength_um: number;
+  evaporation: Ti64EvaporationScenario;
+}
+export interface AlSi10MgEvaporativeInput { jobType: typeof ALSI10MG_EVAPORATIVE_JOB_TYPE; config: AlSi10MgEvaporativeConfig }
+export type AlSi10MgEvaporativeResult = Omit<Ti64EvaporativeResult, 'schema' | 'modelId' | 'jobType' | 'settings'> & {
+  schema: 'lpbf-alsi10mg-evaporative-result-v1'; modelId: typeof ALSI10MG_EVAPORATIVE_MODEL_ID;
+  jobType: typeof ALSI10MG_EVAPORATIVE_JOB_TYPE;
+  settings: { jobType: typeof ALSI10MG_EVAPORATIVE_JOB_TYPE; config: Record<string, unknown> };
+  researchLabel: string; disclosure: string;
+};
+export type AlSi10MgEvaporativeJob = Omit<Ti64EvaporativeJob, 'requestSummary' | 'result'> & {
+  requestSummary: { jobType: typeof ALSI10MG_EVAPORATIVE_JOB_TYPE; config: Record<string, unknown> };
+  result?: AlSi10MgEvaporativeResult;
+};
+
+export function parseAlSi10MgEvaporativeJob(value: unknown): AlSi10MgEvaporativeJob {
+  if (!object(value) || !finiteTree(value) || typeof value.id !== 'string' || !/^[a-f0-9]{32}$/.test(value.id)
+    || !['queued', 'running', 'completed', 'failed', 'cancelled', 'timed_out'].includes(String(value.status))
+    || !isNumber(value.progress) || value.progress < 0 || value.progress > 1
+    || typeof value.log !== 'string' || !(value.error === null || typeof value.error === 'string')
+    || !object(value.requestSummary) || value.requestSummary.jobType !== ALSI10MG_EVAPORATIVE_JOB_TYPE
+    || !object(value.requestSummary.config)) throw new Error('Invalid AlSi10Mg evaporative job response');
+  if (value.status !== 'completed') {
+    if (value.result !== undefined) throw new Error('Unfinished AlSi10Mg evaporative job must not contain a result');
+    checkRefusal(value);
+    return value as unknown as AlSi10MgEvaporativeJob;
+  }
+  const r = value.result;
+  if (!object(r) || r.schema !== 'lpbf-alsi10mg-evaporative-result-v1' || r.modelId !== ALSI10MG_EVAPORATIVE_MODEL_ID
+    || r.jobType !== ALSI10MG_EVAPORATIVE_JOB_TYPE || r.status !== 'completed'
+    || r.experimentalValidation !== false || r.productionReady !== false || typeof r.tier !== 'string'
+    || typeof r.researchLabel !== 'string' || typeof r.disclosure !== 'string' || r.disclosure.length === 0
+    || !object(r.settings) || r.settings.jobType !== ALSI10MG_EVAPORATIVE_JOB_TYPE
+    || JSON.stringify(r.settings.config) !== JSON.stringify(value.requestSummary.config)
+    || !isNumber(r.acceptedStepCount) || !isNumber(r.acceptedTime_s) || !isNumber(r.peakTemperature_K)
+    || typeof r.temperatureLabel !== 'string' || !isNumber(r.diagnosticEmittedMass_kg)
+    || typeof r.diagnosticMassLabel !== 'string'
+    || !Array.isArray(r.warnings) || !r.warnings.every(w => typeof w === 'string')
+    || !object(r.provenance) || !object(r.provenance.inputs)) throw new Error('Invalid AlSi10Mg evaporative result identity');
+  const e = r.energy;
+  if (!object(e) || !['input_J', 'base_J', 'radiativeConvective_J', 'evaporative_J', 'stored_J', 'residual_J', 'relativeResidual']
+    .every(key => isNumber(e[key])) || Math.abs(e.relativeResidual as number) > 1e-9) throw new Error('Invalid AlSi10Mg evaporative energy ledger');
+  const g = r.geometry;
+  const gate = r.gate;
+  if (!object(g) || !object(gate) || typeof gate.onset !== 'boolean' || typeof gate.geometryAvailable !== 'boolean'
+    || !['width_um', 'depth_um', 'length_um', 'volume_um3'].every(key => nullableNumber(g[key]))
+    || typeof g.label !== 'string' || typeof g.widthLabel !== 'string'
+    || !(g.widthWarning === null || typeof g.widthWarning === 'string')
+    || !(g.refusalReason === null || typeof g.refusalReason === 'string')) throw new Error('Invalid AlSi10Mg evaporative geometry');
+  if (!gate.geometryAvailable && (['depth_um', 'length_um', 'volume_um3'].some(key => g[key] !== null)
+    || typeof g.refusalReason !== 'string' || g.refusalReason.length === 0)) throw new Error('Inconsistent AlSi10Mg evaporative refusal');
+  return value as unknown as AlSi10MgEvaporativeJob;
+}
+
+export const alsi10mgEvaporativeApi = {
+  async submit(input: AlSi10MgEvaporativeInput, options: { executionScope?: 'repeat' } = {}) {
+    const endpoint = options.executionScope === 'repeat' ? '/api/lpbf/jobs/repeat' : '/api/lpbf/jobs';
+    return parseAlSi10MgEvaporativeJob(await request(endpoint, { method: 'POST', body: JSON.stringify(input) }));
+  },
+  async get(id: string) {
+    return parseAlSi10MgEvaporativeJob(await request(`/api/lpbf/jobs/${encodeURIComponent(id)}`));
+  },
+  async cancel(id: string) {
+    return parseAlSi10MgEvaporativeJob(await request(`/api/lpbf/jobs/${encodeURIComponent(id)}`, { method: 'DELETE' }));
+  },
+};

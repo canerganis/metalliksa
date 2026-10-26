@@ -39,6 +39,7 @@ IN625_BAREPLATE_MAX_CELLS = 1_000_000
 IN625_BAREPLATE_MAX_CELL_STEPS = 2_000_000
 IN625_BAREPLATE_MAX_STEPS = 25_000
 TI64_EVAPORATIVE_JOB_TYPE = "ti64-evaporative-surface"
+ALSI10MG_EVAPORATIVE_JOB_TYPE = "alsi10mg-evaporative-surface"
 
 
 def _is_allowed_artifact_name(name):
@@ -378,6 +379,81 @@ def _enforce_ti64_evaporative_result(result, settings):
             raise ValueError("Ti64 evaporative result lacks a refusal reason for its null extent")
 
 
+def _validate_alsi10mg_evaporative_request(raw):
+    """Strictly normalize the worker payload for the opt-in AlSi10Mg (Al6061 proxy) evaporative solver.
+
+    Returns (request, material); the solver validator stays the single authority for ranges."""
+    import lpbf_alsi10mg_evaporative_solver as solver
+
+    if not isinstance(raw, dict) or raw.get("jobType") != ALSI10MG_EVAPORATIVE_JOB_TYPE:
+        raise ValueError("Invalid AlSi10Mg evaporative job type")
+    if set(raw) - {"jobType", "config"}:
+        raise ValueError("Unknown AlSi10Mg evaporative request fields")
+    config_raw = raw.get("config")
+    if not isinstance(config_raw, dict):
+        raise ValueError("config must be an object")
+    normalized, process, material, _ = solver._request(config_raw)
+    domain, _ = solver._fixed_surface_grid(process)
+    if domain["nx"]*domain["ny"]*domain["nz"] > solver.SETTINGS["maximumCells"]:
+        raise ValueError("Evaporative CPU mesh exceeds 600000 cells")
+    return {"jobType": ALSI10MG_EVAPORATIVE_JOB_TYPE, "config": normalized}, material
+
+
+def _alsi10mg_evaporative_cache_identity(request, material):
+    import lpbf_alsi10mg_evaporative_solver as solver
+    identity = solver._identity(request["config"], material)
+    return {"jobType": ALSI10MG_EVAPORATIVE_JOB_TYPE, "modelId": solver.MODEL_ID,
+            "requestSha256": identity["requestSha256"],
+            "implementationHash": identity["implementationHash"]}
+
+
+def _run_alsi10mg_evaporative_job(raw, folder, report=lambda progress, message: None):
+    """Run the AlSi10Mg proxy solver for one queued job and bind the result to the submitted request."""
+    import lpbf_alsi10mg_evaporative_solver as solver
+    request, _ = _validate_alsi10mg_evaporative_request(raw)
+    config = request["config"]
+    expected_s = config["trackLength_um"]*1e-6/(config["speed_mm_s"]*1e-3) + config["cooling_s"]
+
+    def on_progress(kind, data):
+        if kind == "progress":
+            report(min(.95, max(0., data["time_s"]/expected_s)), "Evaporative surface solve")
+
+    result = solver.run(config, on_progress)
+    result["jobType"] = ALSI10MG_EVAPORATIVE_JOB_TYPE
+    result["settings"] = request
+    _enforce_alsi10mg_evaporative_result(result, request)
+    return result
+
+
+def _enforce_alsi10mg_evaporative_result(result, settings):
+    """Verify identity, research labels, energy closure and the refusal contract; never repair a value."""
+    import lpbf_alsi10mg_evaporative_solver as solver
+
+    if (not isinstance(result, dict) or not isinstance(settings, dict)
+            or result.get("jobType") != ALSI10MG_EVAPORATIVE_JOB_TYPE
+            or result.get("settings") != settings
+            or result.get("schema") != solver.SCHEMA or result.get("modelId") != solver.MODEL_ID
+            or result.get("status") != "completed"
+            or result.get("experimentalValidation") is not False
+            or result.get("productionReady") is not False
+            or result.get("disclosure") != solver.DISCLOSURE
+            or result.get("researchLabel") != solver.RESEARCH_LABEL):
+        raise ValueError("Invalid AlSi10Mg evaporative result identity")
+    provenance, geometry, gate = result.get("provenance"), result.get("geometry"), result.get("gate")
+    if (not isinstance(provenance, dict) or provenance.get("inputs") != settings.get("config")
+            or not isinstance(geometry, dict) or not isinstance(gate, dict)):
+        raise ValueError("AlSi10Mg evaporative result is missing provenance, geometry or gate")
+    energy = result.get("energy")
+    residual = energy.get("relativeResidual") if isinstance(energy, dict) else None
+    if type(residual) not in (int, float) or not math.isfinite(residual) or abs(residual) > 1e-9:
+        raise ValueError("AlSi10Mg evaporative energy closure failed")
+    if gate.get("geometryAvailable") is not True:
+        if any(geometry.get(key) is not None for key in ("depth_um", "length_um", "volume_um3")):
+            raise ValueError("AlSi10Mg evaporative result reports an extent that its gate refuses")
+        if not isinstance(geometry.get("refusalReason"), str) or not geometry["refusalReason"]:
+            raise ValueError("AlSi10Mg evaporative result lacks a refusal reason for its null extent")
+
+
 def _archive_run_kind(job_type, result=None):
     if job_type == "gpu-thermal-pilot":
         contract = result.get("gpuRunContract") if isinstance(result, dict) else None
@@ -395,7 +471,7 @@ def _archive_run_kind(job_type, result=None):
         return None  # Legacy pilot output remains view-only.
     if job_type == IN625_BAREPLATE_JOB_TYPE:
         return "bounded-material-screening"
-    if job_type == TI64_EVAPORATIVE_JOB_TYPE:
+    if job_type in (TI64_EVAPORATIVE_JOB_TYPE, ALSI10MG_EVAPORATIVE_JOB_TYPE):
         return None  # Research output: view-only, not archived as a run kind.
     if job_type == "build-job":
         return "build-screening"
@@ -840,7 +916,7 @@ class Queue:
             out["requestSummary"]["executionEngine"] = "warp"
         if settings.get("jobType") == IN625_BAREPLATE_JOB_TYPE:
             out["requestSummary"] = {k:settings.get(k) for k in ("jobType", "backend", "config")}
-        if settings.get("jobType") == TI64_EVAPORATIVE_JOB_TYPE:
+        if settings.get("jobType") in (TI64_EVAPORATIVE_JOB_TYPE, ALSI10MG_EVAPORATIVE_JOB_TYPE):
             out["requestSummary"] = {k:settings.get(k) for k in ("jobType", "config")}
         if out["status"] == "completed":
             try:
@@ -868,6 +944,8 @@ class Queue:
                     _enforce_bareplate_result(out["result"], settings, self.root/job)
                 elif settings.get("jobType") == TI64_EVAPORATIVE_JOB_TYPE:
                     _enforce_ti64_evaporative_result(out["result"], settings)
+                elif settings.get("jobType") == ALSI10MG_EVAPORATIVE_JOB_TYPE:
+                    _enforce_alsi10mg_evaporative_result(out["result"], settings)
                 else:
                     enforce_thermal_balances(out["result"])
             except (OSError, ValueError) as error:
@@ -1029,6 +1107,8 @@ class Queue:
             m = in625_lpbf_thermal_snapshot()
         elif job_type == TI64_EVAPORATIVE_JOB_TYPE:
             p, m = _validate_ti64_evaporative_request(raw)
+        elif job_type == ALSI10MG_EVAPORATIVE_JOB_TYPE:
+            p, m = _validate_alsi10mg_evaporative_request(raw)
         else:
             p, m = validate_thermal_request(raw)
         # A rebuilt binary must invalidate a long-lived worker's cache identity.
@@ -1042,6 +1122,9 @@ class Queue:
             key_payload = json.dumps(identity, sort_keys=True, separators=(",", ":"), allow_nan=False)
         elif job_type == TI64_EVAPORATIVE_JOB_TYPE:
             key_payload = json.dumps(_ti64_evaporative_cache_identity(p, m), sort_keys=True,
+                                     separators=(",", ":"), allow_nan=False)
+        elif job_type == ALSI10MG_EVAPORATIVE_JOB_TYPE:
+            key_payload = json.dumps(_alsi10mg_evaporative_cache_identity(p, m), sort_keys=True,
                                      separators=(",", ":"), allow_nan=False)
         else:
             key_payload = fingerprint(p, m)+json.dumps(self.caps, sort_keys=True)
@@ -1175,6 +1258,8 @@ class Queue:
                             _enforce_bareplate_result(result, params, folder)
                         elif params.get("jobType") == TI64_EVAPORATIVE_JOB_TYPE:
                             _enforce_ti64_evaporative_result(result, params)
+                        elif params.get("jobType") == ALSI10MG_EVAPORATIVE_JOB_TYPE:
+                            _enforce_alsi10mg_evaporative_result(result, params)
                         else:
                             enforce_thermal_balances(result)
                         self.finish_running(job, status="completed", progress=1., log=final_log)
@@ -1294,6 +1379,8 @@ def main():
                 result = _run_in625_bareplate_job(input_data, folder)
             elif job_type == TI64_EVAPORATIVE_JOB_TYPE:
                 result = _run_ti64_evaporative_job(input_data, folder, report)
+            elif job_type == ALSI10MG_EVAPORATIVE_JOB_TYPE:
+                result = _run_alsi10mg_evaporative_job(input_data, folder, report)
             elif job_type == "build-job":
                 from lpbf_build_job_solver import solve_lpbf_build_job
                 result = solve_lpbf_build_job(input_data)
