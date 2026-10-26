@@ -16,7 +16,7 @@ export const MIN_ABS_MEDIAN_FOR_DIRECTION = 0.05;
 /** Error-band class edges on the normalized enthalpy index dH/hs (summary config.thresholds): < lo conduction, < hi transition, else keyhole. */
 export const DEPTH_BIAS_ENTHALPY_EDGES: readonly [number, number] = [15.0, 20.0];
 
-export const DEPTH_BIAS_BANDS_ID = "lpbf-meltpool-error-bands-2026-10-16-b37692769673";
+export const DEPTH_BIAS_BANDS_ID = "lpbf-meltpool-error-bands-2026-10-27-607f3a258b5d";
 
 /** "alloy|kernel|regime" -> [median relative error, n tracks, n sources]. */
 export const DEPTH_BIAS_CELLS: Record<string, readonly [number, number, number]> = {
