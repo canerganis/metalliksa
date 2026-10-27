@@ -527,10 +527,21 @@ def _enforce_proxy_evaporative_result(result, settings):
             or evidence.get("label") not in ("Unresolved", "User input", "Literature estimate")
             or (evidence.get("label") == "Unresolved") != bool(evidence.get("unresolvedInputs"))):
         raise ValueError("Proxy evaporative result has an inconsistent evidence label")
+    expected = solver.scenario_evidence(config["evaporation"], spec["profile"])
+    if (evidence.get("label") != expected["label"] or evidence.get("unresolvedInputs") != expected["unresolvedInputs"]
+            or evidence.get("userInputs") != expected["userInputs"] or evidence.get("summary") != expected["summary"]
+            or result.get("evidenceLabel") != expected["label"]):
+        raise ValueError("Proxy evaporative evidence label does not match the request inputs")
     provenance, geometry, gate = result.get("provenance"), result.get("geometry"), result.get("gate")
     if (not isinstance(provenance, dict) or provenance.get("inputs") != config
             or not isinstance(geometry, dict) or not isinstance(gate, dict)):
         raise ValueError("Proxy evaporative result is missing provenance, geometry or gate")
+    flags = [gate.get(key) for key in ("onset", "unresolvedGeometry", "geometryAvailable")]
+    if (not all(type(flag) is bool for flag in flags)
+            or gate["geometryAvailable"] != (not gate["onset"] and not gate["unresolvedGeometry"])
+            or (gate.get("firstOnsetTime_s") is None) == gate["onset"]
+            or (gate.get("firstUnresolvedTime_s") is None) == gate["unresolvedGeometry"]):
+        raise ValueError("Proxy evaporative gate flags are inconsistent")
     energy = result.get("energy")
     residual = energy.get("relativeResidual") if isinstance(energy, dict) else None
     if type(residual) not in (int, float) or not math.isfinite(residual) or abs(residual) > 1e-9:

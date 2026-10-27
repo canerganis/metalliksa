@@ -63,6 +63,9 @@ _FIXED = dict(backend="reference", surfaceMode="bare-plate",
               mode="standard", layers=1, tracks=1, study="none")
 _MODULES = ("lpbf_proxy_evaporative_solver.py", "lpbf_proxy_evaporation.py", "lpbf_proxy_vapor_profiles.py",
             "lpbf_ti64_evaporative_solver.py", "lpbf_ti64_evaporation.py")
+# Presentation choice, not a physical threshold: the peak-temperature warning below is shown when the peak
+# is within this many kelvin of the scenario ceiling maxTemperature_K. No source gives this margin.
+PEAK_NEAR_CEILING_MARGIN_K = 500.0
 REFUSAL_ONSET = ("The model's recoil/capillary onset criterion was exceeded; surface deformation "
                  "and keyhole geometry are not resolved, so depth, length and volume are not reported.")
 REFUSAL_UNRESOLVED = ("Melt geometry needs a keyhole-onset check. Supply surface tension, "
@@ -295,6 +298,14 @@ def run(raw, report=lambda *args: None):
         "This is the liquidus isotherm envelope of the selected temperature model. "
         "The envelope uses the reported instantaneous peak-melt-volume snapshot.",
     ]
+    ceiling_gap = evaporation.maxTemperature_K-peak
+    if ceiling_gap <= PEAK_NEAR_CEILING_MARGIN_K:
+        warnings.append(
+            f"The peak temperature {peak:.0f} K is {ceiling_gap:.0f} K below the scenario ceiling "
+            f"{evaporation.maxTemperature_K:.0f} K. The ceiling is the scenario's computational limit, not a "
+            "physical validity limit. The peak is sensitive to unmodelled surface motion, melt flow and plume. "
+            f"This warning appears within {PEAK_NEAR_CEILING_MARGIN_K:.0f} K of the ceiling, a presentation "
+            "choice and not a physical threshold.")
     if emitted_mass > 0:
         warnings.append("Active evaporation is present. Surface recession, expelled liquid, "
                         "plume shielding, convective redistribution and advective "

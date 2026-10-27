@@ -135,6 +135,52 @@ class ProxyEvaporativeWorkerTests(unittest.TestCase):
             with self.subTest(name), self.assertRaises(ValueError):
                 _enforce_proxy_evaporative_result(copy, request)
 
+    def test_result_audit_recomputes_the_label_from_inputs_and_checks_gate_flags(self):
+        base = JOBS["in718-fang2021-ni-proxy-fixed-surface-evaporation-v1"]
+        request, _ = _validate_proxy_evaporative_request(base)
+        result = lpbf_worker._run_proxy_evaporative_job(base, None)
+        self.assertTrue(result["gate"]["onset"])
+
+        def relabel(r):  # label, evidence label and the unresolved list tampered together
+            r["evidenceLabel"] = "Literature estimate"
+            r["evidence"].update(label="Literature estimate", unresolvedInputs=[])
+
+        def relabel_as_user_input(r):
+            r["evidenceLabel"] = "User input"
+            r["evidence"].update(label="User input", unresolvedInputs=[], userInputs=["transitionLow_K"])
+
+        def open_gate(r):  # geometry flagged available while onset stays latched
+            r["gate"]["geometryAvailable"] = True
+
+        def open_gate_and_fill(r):
+            open_gate(r)
+            r["geometry"].update(depth_um=50.0, length_um=60.0, volume_um3=1e3, refusalReason=None)
+
+        def unlatch_gate(r):  # onset cleared, availability still false
+            r["gate"].update(onset=False, firstOnsetTime_s=None)
+
+        for name, tamper in (
+            ("relabelled together", relabel),
+            ("relabelled as user input", relabel_as_user_input),
+            ("gate open with onset", open_gate),
+            ("gate open, extents filled, reason cleared", open_gate_and_fill),
+            ("onset unlatched", unlatch_gate),
+            ("label and gate together", lambda r: (relabel(r), open_gate_and_fill(r))),
+        ):
+            copy = json.loads(json.dumps(result))
+            tamper(copy)
+            with self.subTest(name), self.assertRaises(ValueError):
+                _enforce_proxy_evaporative_result(copy, request)
+
+        # Thresholds changed in the request, result left Unresolved: the label no longer follows the inputs.
+        changed = json.loads(json.dumps(request))
+        changed["config"]["evaporation"].update(transitionLow_K=3100.0, transitionHigh_K=3600.0)
+        copy = json.loads(json.dumps(result))
+        copy["settings"] = changed
+        copy["provenance"]["inputs"] = changed["config"]
+        with self.assertRaisesRegex(ValueError, "does not match the request inputs"):
+            _enforce_proxy_evaporative_result(copy, changed)
+
 
 if __name__ == "__main__":
     unittest.main()

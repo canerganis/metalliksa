@@ -204,6 +204,22 @@ class IntegrationTests(unittest.TestCase):
                 print(material, "moving-source acceptance:", result["energy"]["relativeResidual"],
                       result["peakTemperature_K"], result["gate"]["firstOnsetTime_s"])
 
+    def test_peak_near_scenario_ceiling_warning(self):
+        # NIST AMB2022-03 IN718 case from the spec: 285 W, 960 mm/s, 67 um beam, 600 um track, 80 C.
+        hot = run(scenario("Inconel 718", power_W=285., speed_mm_s=960., beamDiameter_um=67.,
+                           trackLength_um=600., cooling_s=.0005))
+        gap = 5000.-hot["peakTemperature_K"]
+        self.assertLessEqual(gap, solver.PEAK_NEAR_CEILING_MARGIN_K)
+        notes = [w for w in hot["warnings"] if "scenario ceiling" in w]
+        self.assertEqual(len(notes), 1)
+        self.assertIn(f"{gap:.0f} K below the scenario ceiling 5000 K", notes[0])
+        self.assertIn("computational limit, not a physical validity limit", notes[0])
+        self.assertIn("surface motion, melt flow and plume", notes[0])
+        self.assertIn("presentation choice and not a physical threshold", notes[0])
+        for material in ALLOYS:  # the cooler class cases stay well below the margin
+            self.assertLess(self.results[material]["peakTemperature_K"], 5000.-solver.PEAK_NEAR_CEILING_MARGIN_K)
+            self.assertFalse([w for w in self.results[material]["warnings"] if "scenario ceiling" in w], material)
+
     def test_missing_tension_refuses_geometry_with_active_evaporation(self):
         raw = scenario("Inconel 718"); del raw["evaporation"]["surfaceTension_N_m"]
         result = run(raw)

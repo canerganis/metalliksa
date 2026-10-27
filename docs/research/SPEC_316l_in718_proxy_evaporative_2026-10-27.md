@@ -122,3 +122,14 @@ geometry. The SS316 to 316L transfer and the pure-Ni species for IN718 are state
 Both runs complete; both refuse depth by the recoil criterion, so no depth is compared with NIST AMB2022-03. The
 preheat of the NIST case was not set (solver default 80 C used). The IN718 peak sits 122 K below the scenario limit;
 slightly higher power or lower speed may refuse the run (range error, no clipping).
+
+## Fix round (terra gate, 2026-10-27)
+
+- The panel has validated K inputs for transitionLow_K and transitionHigh_K (defaults unsourced; liquidus <= low < high <= 5000 K, the
+  solver rule). Entered values are sent and tied to the stale-result check; changed values are the user's choice.
+- Near-ceiling warning: `warnings` gains a note when peak T is within `PEAK_NEAR_CEILING_MARGIN_K` = 500 K of maxTemperature_K,
+  stating the gap. The 500 K margin is a declared presentation choice, not a physical threshold; the 5000 K ceiling is the scenario's
+  computational limit, not a validity limit. The peak is sensitive to unmodelled surface motion, melt flow and plume.
+  The IN718 NIST case (4878 K, 122 K gap) triggers it; the pinned 100 um fixtures (peaks 3.5 to 3.7 kK) do not.
+- Worker audit recomputes the evidence label (label, summary, unresolved and user input lists) from the normalised request and checks
+  gate flag consistency (geometryAvailable == not onset and not unresolvedGeometry, latch times match flags).

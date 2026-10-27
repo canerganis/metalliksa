@@ -8,7 +8,7 @@ import {
   parseAlSi10MgEvaporativeJob, parseProxyEvaporativeJob, type ProxyEvaporativeResult,
 } from '../src/services/lpbfSimulationService';
 import {
-  PROXY_ALLOY_PROFILES, PROXY_EVAPORATIVE_TRACK_UM, buildProxyEvaporativeInput, proxyAlloyFor, proxyEvaporativeAvailability,
+  PROXY_ALLOY_PROFILES, PROXY_EVAPORATIVE_TRACK_UM, buildProxyEvaporativeInput, proxyAlloyFor, proxyEvaporativeAvailability, validateProxyThresholds,
 } from '../src/utils/proxyEvaporativeModel';
 import {
   ProxyEvaporativePanel, ProxyEvaporativeResultView, ProxyRunStatus, proxyResultIsStale, proxyResultSettings,
@@ -96,7 +96,8 @@ test('the result view shows the evidence label with the named inputs, null exten
     assert.ok(view.includes(r.researchLabel));
     assert.ok(view.includes(r.disclosure));
     assert.ok(view.includes('Evidence label: <strong>Unresolved</strong>'));
-    assert.ok(view.includes('Unresolved inputs: transitionLow_K, transitionHigh_K.'));
+    assert.ok(view.includes('Evidence label: <strong>Unresolved</strong>. No source gives transitionLow_K and transitionHigh_K for this alloy; the values used are declared defaults.'));
+    assert.doesNotMatch(view, /Unresolved: |Unresolved inputs/); // one clear sentence, no repeated label
     assert.ok(view.includes('experimentalValidation=false'));
     assert.equal((view.match(new RegExp(`null <span[^>]*>\\(not available: ${REFUSAL.replace(/\./g, '\\.')}\\)`, 'g')) ?? []).length, 3);
     assert.ok(view.includes(r.geometry.widthWarning!));
@@ -126,4 +127,57 @@ test('a finished result goes stale when the alloy or any shared process input ch
   const live = html(<ProxyRunStatus job={runningJob} submitted={base} process={{ ...base, power_W: 250 }} />);
   assert.ok(live.includes('running · 40%'));
   assert.ok(live.includes('now read 250 W'));
+});
+
+test('threshold inputs follow the solver rule, are sent in the request and are tied to the stale check', () => {
+  const ok = validateProxyThresholds('Inconel 718', '3100', '3600');
+  assert.deepEqual(ok, { ok: true, thresholds: { transitionLow_K: 3100, transitionHigh_K: 3600 } });
+  const reason = (low: string, high: string, alloy: 'Inconel 718' | '316L Stainless Steel' = 'Inconel 718') => {
+    const c = validateProxyThresholds(alloy, low, high);
+    assert.equal(c.ok, false, `${low}/${high}`);
+    return (c as { reason: string }).reason;
+  };
+  assert.match(reason('', '3600'), /Lower.*number/);
+  assert.match(reason('3100', 'abc'), /Upper.*number/);
+  assert.match(reason('1608', '3600'), /at least the IN718 liquidus, 1609 K/);
+  assert.match(reason('1722', '3600', '316L Stainless Steel'), /316L liquidus, 1723 K/);
+  assert.match(reason('3600', '3600'), /below the upper/);
+  assert.match(reason('3600', '3100'), /below the upper/);
+  assert.match(reason('3100', '5001'), /scenario ceiling, 5000 K/);
+  assert.equal(validateProxyThresholds('Inconel 718', '1609', '5000').ok, true);
+
+  const input = buildProxyEvaporativeInput('Inconel 718', PROCESS, 600, { transitionLow_K: 3100, transitionHigh_K: 3600 });
+  assert.equal(input.config.evaporation.transitionLow_K, 3100);
+  assert.equal(input.config.evaporation.transitionHigh_K, 3600);
+  assert.equal(input.config.evaporation.surfaceTension_N_m, 1.882);
+
+  assert.equal(proxyResultIsStale(in718, PROCESS, 'Inconel 718', { transitionLow_K: 3083, transitionHigh_K: 3583 }), false);
+  assert.equal(proxyResultIsStale(in718, PROCESS, 'Inconel 718', { transitionLow_K: 3100, transitionHigh_K: 3583 }), true);
+  assert.equal(proxyResultIsStale(in718, PROCESS, 'Inconel 718', { transitionLow_K: 3083, transitionHigh_K: 3600 }), true);
+  assert.equal(proxyResultIsStale(in718, PROCESS, 'Inconel 718'), false); // invalid entry passes no thresholds
+});
+
+test('the panel shows both threshold inputs at their unsourced defaults with the validity rule', () => {
+  for (const material of ['316L Stainless Steel', 'Inconel 718'] as const) {
+    const profile = PROXY_ALLOY_PROFILES[material];
+    const view = html(<ProxyEvaporativePanel material={material} process={PROCESS} />);
+    assert.ok(view.includes(`value="${profile.scenario.transitionLow_K}"`), material);
+    assert.ok(view.includes(`value="${profile.scenario.transitionHigh_K}"`), material);
+    assert.ok(view.includes('aria-label="transitionLow_K (K)"') && view.includes('aria-label="transitionHigh_K (K)"'), material);
+    assert.ok(view.includes('unsourced defaults'), material);
+    assert.ok(view.includes(`Rule: ${profile.liquidus_K} K liquidus &lt;= lower &lt; upper &lt;= 5000 K scenario ceiling.`), material);
+  }
+  const wrong = html(<ProxyEvaporativePanel material="AlSi10Mg" process={PROCESS} />);
+  assert.doesNotMatch(wrong, /transitionLow_K \(K\)/);
+});
+
+test('a near-ceiling peak warning shows next to the peak temperature, not in the general notes', () => {
+  const warning = 'The peak temperature 4878 K is 122 K below the scenario ceiling 5000 K. The ceiling is the scenario\'s computational limit, not a physical validity limit. The peak is sensitive to unmodelled surface motion, melt flow and plume. This warning appears within 500 K of the ceiling, a presentation choice and not a physical threshold.';
+  const hot = clone(in718); hot.warnings.push(warning);
+  const view = html(<ProxyEvaporativeResultView result={hot} />);
+  const peakAt = view.indexOf('Peak temperature');
+  const warnAt = view.indexOf(warning);
+  assert.ok(peakAt >= 0 && warnAt > peakAt && warnAt < view.indexOf('>Width<'));
+  assert.equal(view.split(warning).length - 1, 1);
+  assert.doesNotMatch(html(<ProxyEvaporativeResultView result={in718} />), /scenario ceiling/);
 });
