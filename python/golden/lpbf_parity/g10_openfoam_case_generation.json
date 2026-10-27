@@ -4,9 +4,9 @@
  "group": "G10",
  "description": "OpenFOAM case writers (CFD setup_*_case, multiphysics, thermal) file-tree SHA-256",
  "slow": false,
- "recordedImplementationHash": "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0",
+ "recordedImplementationHash": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "96ca4b74231d8e86873ba082fe4e30bb9ff31484",
+ "recordedGitHead": "c5712223e1d4105ef1f7fd50b1e8a03383d561ce",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",

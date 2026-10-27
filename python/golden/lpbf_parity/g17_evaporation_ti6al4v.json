@@ -4,9 +4,9 @@
  "group": "G17",
  "description": "evaporationModel=True Ti-6Al-4V 80 W: L_v passed to the inversion (today IN718's 6.4e6)",
  "slow": false,
- "recordedImplementationHash": "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0",
+ "recordedImplementationHash": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "96ca4b74231d8e86873ba082fe4e30bb9ff31484",
+ "recordedGitHead": "c5712223e1d4105ef1f7fd50b1e8a03383d561ce",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,8 +68,8 @@
   }
  },
  "recordedRuns_s": [
-  3.8,
-  3.6
+  5.7,
+  5.7
  ],
  "recordedTwice": true,
  "observations": {
