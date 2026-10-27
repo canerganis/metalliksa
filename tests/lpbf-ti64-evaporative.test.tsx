@@ -54,6 +54,21 @@ test('model choice is disabled with a reason for another alloy or a powder layer
   assert.doesNotMatch(right, /type="checkbox"[^>]*disabled/);
 });
 
+test('panel states bare plate only above a separate Run button, with no surface choice and opt-in required', () => {
+  const out = html(<Ti64EvaporativePanel material="Ti-6Al-4V" process={{ power_W: 150, speed_mm_s: 1000, beamDiameter_um: 80, preheat_C: 80 }} />);
+  const note = 'Surface: bare plate only. Powder-layer evaporation is not modelled.';
+  assert.ok(out.includes(note));
+  assert.doesNotMatch(out, /type="radio"/);
+  assert.doesNotMatch(out, /Powder layer</);
+  const button = out.match(/<button[^>]*>Run Ti-6Al-4V evaporative model<\/button>/);
+  assert.ok(button, 'separate Run button');
+  assert.match(button![0], /disabled/); // opt-in not ticked yet
+  assert.ok(out.indexOf(note) < out.indexOf('Run Ti-6Al-4V evaporative model'));
+  const wrong = html(<Ti64EvaporativePanel material="Inconel 718" process={{ power_W: 285, speed_mm_s: 960, beamDiameter_um: 80, preheat_C: 80 }} />);
+  assert.match(wrong.match(/<button[^>]*>Run Ti-6Al-4V evaporative model<\/button>/)![0], /disabled/);
+  assert.ok(!('surface' in buildTi64EvaporativeInput({ power_W: 150, speed_mm_s: 1000, beamDiameter_um: 80, preheat_C: 80 }).config));
+});
+
 test('the UI request keeps the measured 600 um track and the declared scenario', () => {
   const input = buildTi64EvaporativeInput({ power_W: 150, speed_mm_s: 1000, beamDiameter_um: 80, preheat_C: 80 });
   assert.equal(TI64_EVAPORATIVE_TRACK_UM, 600);

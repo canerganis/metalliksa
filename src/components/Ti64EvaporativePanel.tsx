@@ -6,8 +6,7 @@ import {
   ti64EvaporativeApi, type Ti64EvaporativeJob, type Ti64EvaporativeResult,
 } from '../services/lpbfSimulationService';
 import {
-  TI64_EVAPORATION_SCENARIO, TI64_EVAPORATIVE_LABEL, TI64_EVAPORATIVE_TRACK_UM, buildTi64EvaporativeInput, ti64EvaporativeAvailability,
-  type Ti64SurfaceMode,
+  TI64_EVAPORATION_SCENARIO, TI64_EVAPORATIVE_LABEL, TI64_SURFACE_NOTE, TI64_EVAPORATIVE_TRACK_UM, buildTi64EvaporativeInput, ti64EvaporativeAvailability,
 } from '../utils/ti64EvaporativeModel';
 import {
   P8_BELOW_ONSET_NOTE, P8_HYPOTHESIS_NOTE, P8_NO_FORWARDING_NOTE, P8_ROW_TITLE, P8_UNAVAILABLE_SUFFIX, W1_CRITERION_NOTE,
@@ -103,13 +102,12 @@ export function Ti64EvaporativeResultView({ result, p8, stale }: { result: Ti64E
 }
 
 export function Ti64EvaporativePanel({ material, process }: { material: string; process: Ti64ProcessInput }) {
-  const [surfaceMode, setSurfaceMode] = useState<Ti64SurfaceMode>('bare-plate');
   const [optIn, setOptIn] = useState(false);
   const [job, setJob] = useState<Ti64EvaporativeJob>();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [p8, setP8] = useState<P8DepthView | 'loading' | 'error'>();
-  const availability = ti64EvaporativeAvailability(material, surfaceMode);
+  const availability = ti64EvaporativeAvailability(material);
   const active = job?.status === 'queued' || job?.status === 'running';
   const result = job?.status === 'completed' ? job.result : undefined;
   const currentKey = JSON.stringify(['Ti-6Al-4V', process.power_W, process.speed_mm_s, process.beamDiameter_um, process.preheat_C]);
@@ -158,11 +156,6 @@ export function Ti64EvaporativePanel({ material, process }: { material: string; 
       <h3 className="font-medium">Thermal model choice</h3>
       <p className="mt-2 text-xs leading-5 text-amber-200">Opt-in research model. Fixed-surface conduction with Ti vapour energy loss on a bare plate. Uncalibrated, not experimentally validated. The default Standard simulation is unchanged.</p>
     </div>
-    <fieldset className="space-y-2">
-      <legend className="text-xs text-slate-400">Surface</legend>
-      <label className="mr-6 text-sm"><input type="radio" name="ti64-surface" className="mr-2 accent-sky-400" checked={surfaceMode === 'bare-plate'} onChange={() => setSurfaceMode('bare-plate')} />Bare plate</label>
-      <label className="text-sm"><input type="radio" name="ti64-surface" className="mr-2 accent-sky-400" checked={surfaceMode === 'powder-layer'} onChange={() => setSurfaceMode('powder-layer')} />Powder layer</label>
-    </fieldset>
     <label className="flex items-start gap-3 text-sm">
       <input type="checkbox" aria-describedby="ti64-evap-reason" className="mt-1 accent-sky-400" checked={optIn && availability.available} disabled={!availability.available || busy || active} onChange={e => setOptIn(e.currentTarget.checked)} />
       <span>{TI64_EVAPORATIVE_LABEL}</span>
@@ -170,8 +163,9 @@ export function Ti64EvaporativePanel({ material, process }: { material: string; 
     <p id="ti64-evap-reason" className="text-xs text-slate-400" role="status">
       {!('reason' in availability) ? `Runs a ${TI64_EVAPORATIVE_TRACK_UM} µm declared track at the shared power, speed, beam diameter and preheat (about 20 s on the reference CPU).` : (availability as {reason:string}).reason}
     </p>
+    <p className="text-sm text-slate-200">{TI64_SURFACE_NOTE}</p>
     <div className="flex flex-wrap gap-3">
-      <button className="rounded-lg border border-slate-500 px-3 py-2 text-sm disabled:opacity-40" disabled={busy || active || !availability.available || !optIn} onClick={submit}>Run evaporative surface model</button>
+      <button className="rounded-lg border border-sky-400 bg-sky-500/20 px-4 py-2 text-sm font-medium text-slate-100 disabled:opacity-40" disabled={busy || active || !availability.available || !optIn} onClick={submit}>Run Ti-6Al-4V evaporative model</button>
       {active && <button className="rounded-lg border border-slate-500 px-3 py-2 text-sm" onClick={cancel}>Cancel</button>}
     </div>
     {job && <p role="status" className="text-xs text-slate-400">Job {job.id} · {job.status}{active ? ` · ${Math.round(job.progress * 100)}%` : ''}</p>}

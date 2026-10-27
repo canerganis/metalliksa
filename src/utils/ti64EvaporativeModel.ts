@@ -2,6 +2,8 @@ import { canonicalLpbfMaterialName } from './lpbfMaterialIdentity';
 import { TI64_EVAPORATIVE_JOB_TYPE, type Ti64EvaporativeConfig, type Ti64EvaporativeInput } from '../services/lpbfSimulationService';
 
 export type Ti64SurfaceMode = 'bare-plate' | 'powder-layer';
+/** Fixed scope note shown above the Run button. The Python model supports a bare plate only. */
+export const TI64_SURFACE_NOTE = 'Surface: bare plate only. Powder-layer evaporation is not modelled.';
 export const TI64_EVAPORATIVE_LABEL = 'Ti-6Al-4V evaporative surface (research)';
 
 /**
@@ -18,7 +20,7 @@ export const TI64_EVAPORATION_SCENARIO = {
 
 export type Ti64Availability = { available: true } | { available: false; code: 'wrong-alloy' | 'powder-layer'; reason: string };
 
-export function ti64EvaporativeAvailability(material: string, surfaceMode: Ti64SurfaceMode): Ti64Availability {
+export function ti64EvaporativeAvailability(material: string, surfaceMode: Ti64SurfaceMode = 'bare-plate'): Ti64Availability {
   if (canonicalLpbfMaterialName(material) !== 'Ti-6Al-4V') {
     return { available: false, code: 'wrong-alloy', reason: `Unavailable: this model exists only for Ti-6Al-4V, and the selected material is ${material || 'not set'}.` };
   }
