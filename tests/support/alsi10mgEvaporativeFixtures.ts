@@ -3,13 +3,13 @@
 /* eslint-disable */
 export const alsiFixtures: any = {
  "onset": {
-  "id": "67184beace9b43a1be1c7b770aff00cf",
-  "cache_key": "b12625579e0af1bb1b63647fb71ecc1e5c98e16e6f50230a583c5f70b9cde7ab",
+  "id": "8f38ba09ee1d41129972f0bb36ad5c75",
+  "cache_key": "57e987e066e3aba7b26663f20174b8d1aa1878d80661091da4dcd0937a74643d",
   "status": "completed",
   "progress": 1.0,
   "log": "{\"progress\": 0.016618602955276743, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.04355187610591996, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.07603666669100727, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.10827964229907552, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.13659420083695312, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.17307627136456377, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.24675096117800763, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.35852824492718255, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.47029955406596, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.5820951872676352, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.6939164900086398, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.8057616548249399, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.9176286656127687, \"message\": \"Evaporative surface solve\"}\n",
   "error": null,
-  "created": 1793057930.9144104,
+  "created": 1793129637.4646928,
   "requestSummary": {
    "jobType": "alsi10mg-evaporative-surface",
    "config": {
@@ -50,16 +50,17 @@ export const alsiFixtures: any = {
    "productionReady": false,
    "tier": "Uncalibrated estimate",
    "provenance": {
-    "implementationHash": "77ea3c9f30f4f6f6599a684615b12605995e7d89c4244396c2de25c3f74b9f3b",
+    "implementationHash": "62d5e275bb844c1f3a552bd25c6f3ace15ce160d443968b0b564a921084d1a03",
     "implementationFingerprintSchema": "alsi10mg-evaporative-dependency-closure-v1",
-    "defaultImplementationHash": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
+    "defaultImplementationHash": "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143",
     "moduleSha256": {
-     "lpbf_alsi10mg_evaporative_solver.py": "e62294e79a4ad828d35172b339021e0f04d877275f8c047f61760a671b75178d",
-     "lpbf_al_proxy_evaporation.py": "fbf2b97b35bfdc19f39c11485dcc51488c9d46ed581eb0fe425e3743ee1e9a9c",
+     "lpbf_alsi10mg_evaporative_solver.py": "51501a7bb7c542644b459c4e0cca5b338957e7f78faf124d4314ccec4c8564e2",
+     "lpbf_al_proxy_evaporation.py": "cd0962e56b25e7b54a0d6219ab2fed5ff0cb4727d0008d608a2072b78c08db90",
+     "lpbf_proxy_evaporation.py": "beb6d65d9799926a2255890247d66868eb6b3406351fd61088612d06965b3ed0",
      "lpbf_ti64_evaporative_solver.py": "a821a5a21cc821f7864ece8131f5c4af644f3973957dca9a3674ae5427143b9f",
      "lpbf_ti64_evaporation.py": "eb7a529c47a49910cb36673f32170f6711d89af43e95a7a1dc9f85338cf98733"
     },
-    "requestSha256": "69fd60963ce7047e1be79fcab8fe72e01e8287e790bfc04c8440b67c9423e0b5",
+    "requestSha256": "bed1f1869a1c363c3a758f3ad13f78ff0851f63bd1bd8247950e006a7f85ae9f",
     "inputs": {
      "power_W": 300.0,
      "speed_mm_s": 1300.0,
@@ -373,7 +374,7 @@ export const alsiFixtures: any = {
      "status": "Gan Table 1 liquid laws are constant for T >= 915 K with no stated upper bound; held above 2792 K as a declared assumption, not a source validity extension"
     },
     "proxyNote": "Single Al6061 proxy profile: thermal table, boiling endpoint and vapor law share one source",
-    "runtime_s": 1.3909999999959837,
+    "runtime_s": 1.2809999999881256,
     "executionRuntime": {
      "executable": "C:\\Users\\can02\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
      "python": "3.12.10",
@@ -478,13 +479,13 @@ export const alsiFixtures: any = {
   }
  },
  "noEvaporation": {
-  "id": "9c1ef91fb756489d9a09594eaf244311",
-  "cache_key": "0af4cbd755399553b89965db87d292a5f3d32491f4b91df2fe00f5af4a23b229",
+  "id": "5a7e9e1d5a8a412498ba18e0f57bb06b",
+  "cache_key": "f1ff1015be5f4c6149ea8e4ffc05c70b8a757980bad70359f73212e25aaaee4b",
   "status": "completed",
   "progress": 1.0,
   "log": "{\"progress\": 0.03421264799506317, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.07680152738693354, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.12153667197121032, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.15922704632279458, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.2478443950313543, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.35971328899836325, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.4715837189447455, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.5834694480754264, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.6953706830431912, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.8072863274056586, \"message\": \"Evaporative surface solve\"}\n{\"progress\": 0.919215100001586, \"message\": \"Evaporative surface solve\"}\n",
   "error": null,
-  "created": 1793057933.5053806,
+  "created": 1793129639.6972983,
   "requestSummary": {
    "jobType": "alsi10mg-evaporative-surface",
    "config": {
@@ -525,16 +526,17 @@ export const alsiFixtures: any = {
    "productionReady": false,
    "tier": "Uncalibrated estimate",
    "provenance": {
-    "implementationHash": "77ea3c9f30f4f6f6599a684615b12605995e7d89c4244396c2de25c3f74b9f3b",
+    "implementationHash": "62d5e275bb844c1f3a552bd25c6f3ace15ce160d443968b0b564a921084d1a03",
     "implementationFingerprintSchema": "alsi10mg-evaporative-dependency-closure-v1",
-    "defaultImplementationHash": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
+    "defaultImplementationHash": "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143",
     "moduleSha256": {
-     "lpbf_alsi10mg_evaporative_solver.py": "e62294e79a4ad828d35172b339021e0f04d877275f8c047f61760a671b75178d",
-     "lpbf_al_proxy_evaporation.py": "fbf2b97b35bfdc19f39c11485dcc51488c9d46ed581eb0fe425e3743ee1e9a9c",
+     "lpbf_alsi10mg_evaporative_solver.py": "51501a7bb7c542644b459c4e0cca5b338957e7f78faf124d4314ccec4c8564e2",
+     "lpbf_al_proxy_evaporation.py": "cd0962e56b25e7b54a0d6219ab2fed5ff0cb4727d0008d608a2072b78c08db90",
+     "lpbf_proxy_evaporation.py": "beb6d65d9799926a2255890247d66868eb6b3406351fd61088612d06965b3ed0",
      "lpbf_ti64_evaporative_solver.py": "a821a5a21cc821f7864ece8131f5c4af644f3973957dca9a3674ae5427143b9f",
      "lpbf_ti64_evaporation.py": "eb7a529c47a49910cb36673f32170f6711d89af43e95a7a1dc9f85338cf98733"
     },
-    "requestSha256": "bc26a7412eba1f27e0628b4f55cdfadf29c2378d2ba2900bcb1642fea57f0299",
+    "requestSha256": "e3c4d94d818abf5780a95b813e3d6338493216e76e8d2ab22b3302d45642018e",
     "inputs": {
      "power_W": 180.0,
      "speed_mm_s": 1300.0,
@@ -848,7 +850,7 @@ export const alsiFixtures: any = {
      "status": "Gan Table 1 liquid laws are constant for T >= 915 K with no stated upper bound; held above 2792 K as a declared assumption, not a source validity extension"
     },
     "proxyNote": "Single Al6061 proxy profile: thermal table, boiling endpoint and vapor law share one source",
-    "runtime_s": 1.1089999999967404,
+    "runtime_s": 1.0159999999887077,
     "executionRuntime": {
      "executable": "C:\\Users\\can02\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
      "python": "3.12.10",
