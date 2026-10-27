@@ -12,6 +12,8 @@ import { ExecutedMaterialProvenance, LpbfJobArchiver, gpuPilotEngineLabel as val
 import { In625BareplatePanel } from "../In625BareplatePanel";
 import { Ti64EvaporativePanel } from "../Ti64EvaporativePanel";
 import { AlSi10MgEvaporativePanel } from "../AlSi10MgEvaporativePanel";
+import { ProxyEvaporativePanel } from "../ProxyEvaporativePanel";
+import { proxyAlloyFor } from "../../utils/proxyEvaporativeModel";
 import { simulationApi, gpuPilotApi, buildGpuPilotInput, type GpuPilotInput, type GpuPilotJob, type GpuPilotResult, SimulationInput, SimulationJob, SimulationMode, SimulationCapabilities, ResourceEstimate, SimulationResult } from "../../services/lpbfSimulationService";
 import { useVisiblePolling } from "../../hooks/useVisiblePolling";
 import { useVisibleInterval } from "../../hooks/useVisibleInterval";
@@ -629,6 +631,7 @@ export function LpbfEngineeringSimulation({input:providedInput}:{input:Simulatio
     <header className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-[10px] tracking-[.3em] uppercase text-slate-400">Metalliksa / Advanced manufacturing</p><h3 className="text-3xl font-medium tracking-tight mt-2">LPBF <span className="text-slate-400">/</span> Melt Pool</h3><p className="mt-2 text-sm text-slate-400">Thermal response, process screening and traceable evidence.</p></div><Badge tone={caps?.openfoamThermal?"active":"neutral"}>{caps?caps.openfoamThermal?"OpenFOAM thermal worker available":"Reference worker · OpenFOAM unavailable":"Connecting to worker…"}</Badge></header>
     {IS_STATIC_DEMO ? <DemoUnavailable what="Ti-6Al-4V evaporative surface model" /> : <Ti64EvaporativePanel material={material||input.material} process={{power_W:input.power_W,speed_mm_s:input.speed_mm_s,beamDiameter_um:input.beamDiameter_um,preheat_C:input.preheat_C}} />}
     {canonicalLpbfMaterialName(material||input.material)==="AlSi10Mg"&&(IS_STATIC_DEMO ? <DemoUnavailable what="AlSi10Mg evaporative surface model" /> : <AlSi10MgEvaporativePanel material={material||input.material} process={{power_W:input.power_W,speed_mm_s:input.speed_mm_s,beamDiameter_um:input.beamDiameter_um,preheat_C:input.preheat_C}} />)}
+    {proxyAlloyFor(material||input.material)&&(IS_STATIC_DEMO ? <DemoUnavailable what="316L / IN718 evaporative surface model" /> : <ProxyEvaporativePanel key={proxyAlloyFor(material||input.material)} material={material||input.material} process={{power_W:input.power_W,speed_mm_s:input.speed_mm_s,beamDiameter_um:input.beamDiameter_um,preheat_C:input.preheat_C}} />)}
     <ResultHeader job={job} material={material||input.material} availability={caps?`${caps.openfoamVersion||"Unavailable"} · free-surface ${caps.freeSurfaceSolver?"reported available":"unavailable"}`:"Checking…"} stale={resultStale} elapsed={elapsed} cancel={cancel} cancelling={cancelling}/>
     {active&&submittedSignature!==signature&&<p role="status" className="text-sm text-amber-200">Inputs changed — the running job uses submitted settings. Local changes apply to the next run.</p>}
     <CancelledRunNotice status={job?.status} />

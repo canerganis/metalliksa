@@ -1180,3 +1180,99 @@ export const alsi10mgEvaporativeApi = {
     return parseAlSi10MgEvaporativeJob(await request(`/api/lpbf/jobs/${encodeURIComponent(id)}`, { method: 'DELETE' }));
   },
 };
+
+/**
+ * Opt-in 316L (Gan 2021 SS316 proxy) and IN718 (Fang 2021 thermal + pure-Ni vapour proxy) fixed-surface evaporative
+ * research models. One job type, the alloy is named in config.material; each alloy has its own model id and schema.
+ * The transition thresholds have no source for SS316 or Ni, so the evidence label is Unresolved at their defaults.
+ */
+export const PROXY_EVAPORATIVE_JOB_TYPE = 'proxy-evaporative-surface' as const;
+export const PROXY_EVAPORATIVE_MODELS = {
+  '316L Stainless Steel': { modelId: 'ss316l-gan2021-ss316-proxy-fixed-surface-evaporation-v1', schema: 'lpbf-ss316l-evaporative-result-v1' },
+  'Inconel 718': { modelId: 'in718-fang2021-ni-proxy-fixed-surface-evaporation-v1', schema: 'lpbf-in718-evaporative-result-v1' },
+} as const;
+export type ProxyEvaporativeAlloy = keyof typeof PROXY_EVAPORATIVE_MODELS;
+export const PROXY_EVIDENCE_LABELS = ['Unresolved', 'User input', 'Literature estimate'] as const;
+export type ProxyEvidenceLabel = typeof PROXY_EVIDENCE_LABELS[number];
+export interface ProxyEvaporativeConfig {
+  material: ProxyEvaporativeAlloy;
+  power_W: number; speed_mm_s: number; beamDiameter_um: number; preheat_C: number; trackLength_um: number;
+  evaporation: Ti64EvaporationScenario;
+}
+export interface ProxyEvaporativeInput { jobType: typeof PROXY_EVAPORATIVE_JOB_TYPE; config: ProxyEvaporativeConfig }
+export interface ProxyEvidence {
+  label: ProxyEvidenceLabel; summary: string; unresolvedInputs: string[]; userInputs: string[];
+  inputBasis: Record<string, { status: string; kind: string; note: string; value?: number }>;
+}
+export type ProxyEvaporativeResult = Omit<Ti64EvaporativeResult, 'schema' | 'modelId' | 'jobType' | 'settings'> & {
+  schema: typeof PROXY_EVAPORATIVE_MODELS[ProxyEvaporativeAlloy]['schema'];
+  modelId: typeof PROXY_EVAPORATIVE_MODELS[ProxyEvaporativeAlloy]['modelId'];
+  jobType: typeof PROXY_EVAPORATIVE_JOB_TYPE; alloy: ProxyEvaporativeAlloy;
+  settings: { jobType: typeof PROXY_EVAPORATIVE_JOB_TYPE; config: Record<string, unknown> };
+  researchLabel: string; disclosure: string; evidenceLabel: ProxyEvidenceLabel; evidence: ProxyEvidence;
+};
+export type ProxyEvaporativeJob = Omit<Ti64EvaporativeJob, 'requestSummary' | 'result'> & {
+  requestSummary: { jobType: typeof PROXY_EVAPORATIVE_JOB_TYPE; config: Record<string, unknown> };
+  result?: ProxyEvaporativeResult;
+};
+
+const isProxyAlloy = (value: unknown): value is ProxyEvaporativeAlloy => typeof value === 'string' && Object.prototype.hasOwnProperty.call(PROXY_EVAPORATIVE_MODELS, value);
+
+export function parseProxyEvaporativeJob(value: unknown): ProxyEvaporativeJob {
+  if (!object(value) || !finiteTree(value) || typeof value.id !== 'string' || !/^[a-f0-9]{32}$/.test(value.id)
+    || !['queued', 'running', 'completed', 'failed', 'cancelled', 'timed_out'].includes(String(value.status))
+    || !isNumber(value.progress) || value.progress < 0 || value.progress > 1
+    || typeof value.log !== 'string' || !(value.error === null || typeof value.error === 'string')
+    || !object(value.requestSummary) || value.requestSummary.jobType !== PROXY_EVAPORATIVE_JOB_TYPE
+    || !object(value.requestSummary.config) || !isProxyAlloy(value.requestSummary.config.material)) throw new Error('Invalid proxy evaporative job response');
+  if (value.status !== 'completed') {
+    if (value.result !== undefined) throw new Error('Unfinished proxy evaporative job must not contain a result');
+    checkRefusal(value);
+    return value as unknown as ProxyEvaporativeJob;
+  }
+  const alloy = value.requestSummary.config.material;
+  const model = PROXY_EVAPORATIVE_MODELS[alloy];
+  const r = value.result;
+  if (!object(r) || r.schema !== model.schema || r.modelId !== model.modelId || r.alloy !== alloy
+    || r.jobType !== PROXY_EVAPORATIVE_JOB_TYPE || r.status !== 'completed'
+    || r.experimentalValidation !== false || r.productionReady !== false || typeof r.tier !== 'string'
+    || typeof r.researchLabel !== 'string' || typeof r.disclosure !== 'string' || r.disclosure.length === 0
+    || !object(r.settings) || r.settings.jobType !== PROXY_EVAPORATIVE_JOB_TYPE
+    || JSON.stringify(r.settings.config) !== JSON.stringify(value.requestSummary.config)
+    || !isNumber(r.acceptedStepCount) || !isNumber(r.acceptedTime_s) || !isNumber(r.peakTemperature_K)
+    || typeof r.temperatureLabel !== 'string' || !isNumber(r.diagnosticEmittedMass_kg)
+    || typeof r.diagnosticMassLabel !== 'string'
+    || !Array.isArray(r.warnings) || !r.warnings.every(w => typeof w === 'string')
+    || !object(r.provenance) || !object(r.provenance.inputs)) throw new Error('Invalid proxy evaporative result identity');
+  const ev = r.evidence;
+  if (!object(ev) || !(PROXY_EVIDENCE_LABELS as readonly unknown[]).includes(ev.label) || r.evidenceLabel !== ev.label
+    || typeof ev.summary !== 'string' || !Array.isArray(ev.unresolvedInputs) || !ev.unresolvedInputs.every(k => typeof k === 'string')
+    || !Array.isArray(ev.userInputs) || !ev.userInputs.every(k => typeof k === 'string') || !object(ev.inputBasis)
+    || (ev.label === 'Unresolved') !== (ev.unresolvedInputs.length > 0)) throw new Error('Invalid proxy evaporative evidence label');
+  const e = r.energy;
+  if (!object(e) || !['input_J', 'base_J', 'radiativeConvective_J', 'evaporative_J', 'stored_J', 'residual_J', 'relativeResidual']
+    .every(key => isNumber(e[key])) || Math.abs(e.relativeResidual as number) > 1e-9) throw new Error('Invalid proxy evaporative energy ledger');
+  const g = r.geometry;
+  const gate = r.gate;
+  if (!object(g) || !object(gate) || typeof gate.onset !== 'boolean' || typeof gate.geometryAvailable !== 'boolean'
+    || !['width_um', 'depth_um', 'length_um', 'volume_um3'].every(key => nullableNumber(g[key]))
+    || typeof g.label !== 'string' || typeof g.widthLabel !== 'string'
+    || !(g.widthWarning === null || typeof g.widthWarning === 'string')
+    || !(g.refusalReason === null || typeof g.refusalReason === 'string')) throw new Error('Invalid proxy evaporative geometry');
+  if (!gate.geometryAvailable && (['depth_um', 'length_um', 'volume_um3'].some(key => g[key] !== null)
+    || typeof g.refusalReason !== 'string' || g.refusalReason.length === 0)) throw new Error('Inconsistent proxy evaporative refusal');
+  return value as unknown as ProxyEvaporativeJob;
+}
+
+export const proxyEvaporativeApi = {
+  async submit(input: ProxyEvaporativeInput, options: { executionScope?: 'repeat' } = {}) {
+    const endpoint = options.executionScope === 'repeat' ? '/api/lpbf/jobs/repeat' : '/api/lpbf/jobs';
+    return parseProxyEvaporativeJob(await request(endpoint, { method: 'POST', body: JSON.stringify(input) }));
+  },
+  async get(id: string) {
+    return parseProxyEvaporativeJob(await request(`/api/lpbf/jobs/${encodeURIComponent(id)}`));
+  },
+  async cancel(id: string) {
+    return parseProxyEvaporativeJob(await request(`/api/lpbf/jobs/${encodeURIComponent(id)}`, { method: 'DELETE' }));
+  },
+};
