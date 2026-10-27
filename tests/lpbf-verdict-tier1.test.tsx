@@ -110,8 +110,8 @@ test("Python advisory / balling-screen wording and the 'advisory' gate status re
   // P7a (2026-10-11): recoater and distortion are not-evaluated (no sourced stress model), never advisory numbers.
   assert.match(py, /"recoater",\s*"not-evaluated"/);
   assert.match(py, /"distortion",\s*"not-evaluated"/);
-  // Tang advisory bump (2026-10-27): the verdict basis names the advisory Tang screen and the keyhole screen.
-  assert.match(py, /VERDICT_BASIS = "model-geometry-advisory-keyhole-screen"/);
+  // Tang bump (2026-10-27): the verdict basis names the Tang and keyhole risk screen.
+  assert.match(py, /VERDICT_BASIS = "model-geometry-tang-keyhole-risk-screen"/);
   const ts = read("src/services/pythonComputationService.ts");
   // P6 containment (2026-10-11): "not-evaluated" for a null gate input, never counted as pass or fail.
   assert.match(ts, /export type PythonLpbfGateStatus = "pass" \| "warn" \| "fail" \| "unavailable" \| "advisory" \| "not-evaluated";/);

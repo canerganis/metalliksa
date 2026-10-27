@@ -440,13 +440,17 @@ test("service: refusals, unreachable engine and success are told apart", async (
   }
 });
 
-test("Tang advisory bump (2026-10-27): a printable cell with the Tang advisory says so in the detail and the map has no empty-map note", () => {
-  // SYNTHETIC: one cell turned into a current-revision printable cell that carries lof_tang as an advisory gate.
+test("Tang bump (2026-10-27): a Tang-risky cell names the Tang cause, shows the index and the fusion note in the detail", () => {
+  // SYNTHETIC: one cell turned into a current-revision risky cell with lof_tang as its risk gate, plus a printable cell.
   const base = checkedProcessWindow(good());
-  const cells = base.cells.map(c => (c.iP === 0 && c.iV === 0 ? { ...c, verdict: "printable" as const, advisoryGates: ["lof_tang"], blockingGates: [], riskGates: [] } : c));
+  const cells = base.cells.map(c => (c.iP === 0 && c.iV === 1 ? { ...c, verdict: "risky" as const, riskGates: ["lof_tang"], blockingGates: [], advisoryGates: [], dominantGate: "lof_tang", tangIndex: 1.001 }
+    : c.iP === 0 && c.iV === 0 ? { ...c, tangIndex: 0.62 } : c));
   const result = { ...base, cells };
-  const html = renderToStaticMarkup(<ProcessWindowResultView result={result} selected={{ iP: 0, iV: 0 }} />);
-  assert.match(html, /The Tang overlap index exceeds 1\.0 using modelled melt-pool geometry: lack of fusion is possible and this screen cannot establish whether fusion is adequate\. It is an advisory only and does not change the verdict\./);
-  assert.doesNotMatch(html, /pw-no-printable-note/);
-  assert.doesNotMatch(html, /Tang lack-of-fusion criterion/);
+  const risky = renderToStaticMarkup(<ProcessWindowResultView result={result} selected={{ iP: 0, iV: 1 }} />);
+  assert.match(risky, /The Tang overlap index exceeds 1\.0 on modelled melt-pool geometry, which makes this cell risky: modelled geometry indicates possible lack of fusion; not an experimentally established defect\./);
+  assert.match(risky, /Tang overlap index 1\.001 on modelled melt-pool geometry \(risk above 1\.0\)\. Screening result; fusion adequacy is not established\./);
+  const printable = renderToStaticMarkup(<ProcessWindowResultView result={result} selected={{ iP: 0, iV: 0 }} />);
+  assert.match(printable, /Tang overlap index 0\.62 on modelled melt-pool geometry \(risk above 1\.0\)\. Screening result; fusion adequacy is not established\./);
+  assert.doesNotMatch(printable, /pw-no-printable-note/);
+  assert.doesNotMatch(printable, /Tang lack-of-fusion criterion/);
 });

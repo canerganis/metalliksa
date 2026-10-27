@@ -4,9 +4,9 @@ The old patch (box minimum power with maximum speed for a keyhole verdict) faile
 all four locked alloys. A patch is now returned only when the solver, re-run at the suggested point, gives a
 printable verdict; otherwise suggestedPatch is None and suggestedPatchNote says why. P7a (2026-10-11): the
 advisories at the suggested point are returned as the third element (suggestedPatchAdvisories). Tang advisory bump
-(2026-10-27): printable means the geometry is resolved, the verdict inputs are not null and the point is below the
-keyhole-mode cut; a Tang overlap index above 1.0 is an advisory of the suggested point, never a rejection, and such a
-point is never called fusion verified. Zero-advisory candidates are still preferred.
+(2026-10-27, physics gate finding 1): printable means the geometry is resolved, the verdict inputs are not null, the
+Tang overlap index on modelled geometry is at or below 1.0 and the point is below the keyhole-mode cut; the note states
+the Tang index and that fusion adequacy is not established, and never says verified.
 """
 import copy
 import os
@@ -17,7 +17,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 from four_alloy_materials import LITERATURE_PV_WINDOWS  # noqa: E402
-from lpbf_build_job_solver import TANG_OVERLAP_ADVISORY, _suggested_patch, solve_lpbf_build_job  # noqa: E402
+from lpbf_build_job_solver import TANG_RISK_REASON, _suggested_patch, solve_lpbf_build_job  # noqa: E402
 from lpbf_thermal_solver import calculate_meltpool_physics  # noqa: E402
 
 ALLOYS = ("in718", "ss316l", "ti6al4v", "alsi10mg")
@@ -70,17 +70,15 @@ class SuggestedPatchUnit(unittest.TestCase):
         evaluate.calls = calls
         return evaluate
 
-    def test_candidates_over_tang_give_a_patch_that_carries_the_tang_advisory(self):
-        # Tang advisory bump (2026-10-27): every candidate has Tang 1.2 below the keyhole cut, so each is printable
-        # with the Tang overlap advisory; the first one is returned with that advisory (was: no patch).
+    def test_every_candidate_over_tang_drops_the_patch_with_a_reason(self):
+        # Tang bump (2026-10-27): Tang 1.2 below the keyhole cut is risky, so no candidate is printable.
         ev = self._evaluator(lambda *a: False)
         patch, note, adv = _suggested_patch(self.th, "in718", "keyhole", "risky", ev)
-        self.assertIsNotNone(patch)
-        self.assertTrue(any(a.startswith(TANG_OVERLAP_ADVISORY) for a in adv), adv)
-        self.assertIn("Tang overlap index 1.2", note)
-        self.assertIn("fusion adequacy is not established", note)
-        self.assertNotIn("erified", note)
-        self.assertGreater(len(ev.calls), 1)  # no zero-advisory candidate: the whole candidate list was searched
+        self.assertIsNone(patch)
+        self.assertEqual(adv, [])
+        self.assertIn("No parameter patch", note)
+        self.assertIn("Tang overlap index at or below 1.0", note)
+        self.assertGreater(len(ev.calls), 1)  # the box corner was tried and rejected, then the grid
 
     def test_the_first_verified_candidate_is_returned_not_the_box_corner(self):
         corner_p, corner_v = self.box["powerMin_W"], self.box["speedMax_mm_s"]
@@ -92,6 +90,9 @@ class SuggestedPatchUnit(unittest.TestCase):
         self.assertTrue(self.box["powerMin_W"] <= patch["laserPower_W"] <= self.box["powerMax_W"])
         self.assertTrue(self.box["speedMin_mm_s"] <= patch["scanSpeed_mms"] <= self.box["speedMax_mm_s"])
         self.assertIn("Re-run by the solver at the suggested point", note)
+        self.assertIn("Tang overlap index 0.5 on modelled geometry", note)
+        self.assertIn("fusion adequacy is not established", note)
+        self.assertNotIn("erified", note)
 
     def test_no_evaluator_offers_no_patch(self):
         patch, note, adv = _suggested_patch(self.th, "in718", "lof_tang", "do-not-print", None)
@@ -139,11 +140,10 @@ class SuggestedPatchEndToEnd(unittest.TestCase):
         again = _job(alloy, patch["laserPower_W"], patch["scanSpeed_mms"], patch["hatch_um"], patch["layer_um"],
                      patch["beamDiameter_um"])
         gates = _gates(again)
-        # Tang advisory bump (2026-10-27): the Tang overlap index of the suggested point may be an advisory; it is then
-        # listed with the patch and the note never says verified.
-        self.assertIn(gates["lof_tang"], ("pass", "advisory"), (alloy, patch))
-        if gates["lof_tang"] == "advisory":
-            self.assertTrue(any(a.startswith(TANG_OVERLAP_ADVISORY) for a in verdict["suggestedPatchAdvisories"]))
+        # Tang bump (2026-10-27): the suggested point passes Tang; the note shows its index and never says verified.
+        self.assertEqual(gates["lof_tang"], "pass", (alloy, patch))
+        self.assertIn("Tang overlap index", verdict["suggestedPatchNote"])
+        self.assertIn("fusion adequacy is not established", verdict["suggestedPatchNote"])
         self.assertNotIn("erified", verdict["suggestedPatchNote"])
         self.assertIn(gates["keyhole"], ("pass", "advisory"), (alloy, patch))
         self.assertEqual(again["verdict"]["verdict"], "printable", (alloy, patch))
@@ -163,24 +163,24 @@ class SuggestedPatchEndToEnd(unittest.TestCase):
         # Not vacuous: the e2e check must have re-run at least one real non-null patch across the alloys.
         self.assertGreaterEqual(verified, 1)
 
-    def test_lack_of_fusion_points_are_never_blocked_by_tang(self):
-        # Tang advisory bump (2026-10-27): a low-energy point is printable with the Tang overlap advisory or
-        # inconclusive (geometry not resolved), never do-not-print; a printable job gets no patch.
-        advised = 0
+    def test_lack_of_fusion_points_are_risky_on_tang_never_blocked(self):
+        # Tang bump (2026-10-27, physics gate finding 1): a low-energy point with a resolved pool and a Tang index
+        # above 1.0 is risky on lof_tang (or inconclusive when the geometry is not resolved), never do-not-print; a
+        # patch, when found, passes Tang below the keyhole cut.
+        risky = 0
         for alloy in ALLOYS:
             p, v = LOF_POINT[alloy]
             job = _job(alloy, p, v)
             self.assertTrue(job["success"], alloy)
             verdict = job["verdict"]
-            self.assertIn(verdict["verdict"], ("printable", "inconclusive"), alloy)
+            self.assertIn(verdict["verdict"], ("risky", "inconclusive"), alloy)
             self.assertEqual(verdict["blockingGates"], [], alloy)
-            self.assertNotEqual(verdict["dominantGate"], "lof_tang", alloy)
-            if verdict["verdict"] == "printable":
-                self.assertIsNone(verdict["suggestedPatch"], alloy)
-            if "lof_tang" in verdict["advisoryGates"]:
-                advised += 1
-                self.assertTrue(any(a.startswith(TANG_OVERLAP_ADVISORY) for a in verdict["advisories"]), alloy)
-        self.assertGreaterEqual(advised, 1)
+            if verdict["verdict"] == "risky":
+                risky += 1
+                self.assertIn("lof_tang", verdict["riskGates"], alloy)
+                self.assertTrue(any(r.startswith(TANG_RISK_REASON) for r in verdict["reasons"]), alloy)
+                self._assert_verified(alloy, job)
+        self.assertGreaterEqual(risky, 1)
 
     def test_a_non_null_verified_patch_exists_across_alloys_and_cases(self):
         verified = 0

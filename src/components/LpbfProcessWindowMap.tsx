@@ -40,6 +40,7 @@ import {
   moveCell,
   noPrintableNoteText,
   cellGateSentences,
+  tangIndexLine,
   parseAxis,
   verdictStyle,
   type CellPosition,
@@ -312,6 +313,7 @@ export const ProcessWindowCellDetail: React.FC<{
       ) : (
         <>
           <p data-testid="pw-detail-headline">{cell.headline}</p>
+          {tangIndexLine(cell.tangIndex) && <p className="text-xs text-slate-200" data-testid="pw-detail-tang">{tangIndexLine(cell.tangIndex)}</p>}
           {gateSentences.length > 0 && (
             <ul className="list-disc space-y-1 pl-5 text-xs text-slate-200" data-testid="pw-detail-gate-sentences" aria-label="Why this verdict">{gateSentences.map(sentence => <li key={sentence}>{sentence}</li>)}</ul>
           )}

@@ -9,8 +9,8 @@
   served regime classifier says keyhole mode (cut 20, IN625 13.6), otherwise printable; balling High (316L only), the
   level 30, the Tang margin 0.80, the literature box and downskin are advisories; recoater and distortion are
   not-evaluated (no sourced stress model). Keyhole mode never gives do-not-print (the former 35 edge is gone).
-- Tang advisory bump (2026-10-27): the Tang index above 1.0 on modelled geometry is an advisory (lof_tang status
-  "advisory"), never blocking and never dominant; a null Tang, width or depth or an unresolved geometry stays
+- Tang bump (2026-10-27, physics gate finding 1): the Tang index above 1.0 on modelled geometry makes the verdict
+  risky (lof_tang status "warn"), never do-not-print; a null Tang, width or depth or an unresolved geometry stays
   inconclusive; the keyhole regime and every other gate are unchanged. Since
   the 2026-10-06 tier-2 bump dH uses the flat-plate absorptivity on every machine, so the IN718 280/940 end-to-end
   case (dH/hs 30.58, keyhole mode) is risky everywhere.
@@ -27,7 +27,7 @@ from unittest import mock
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
-from lpbf_build_job_solver import ADVISORY_GATES, TANG_OVERLAP_ADVISORY, compose_verdict, solve_lpbf_build_job  # noqa: E402
+from lpbf_build_job_solver import ADVISORY_GATES, TANG_RISK_REASON, compose_verdict, solve_lpbf_build_job  # noqa: E402
 from lpbf_defect_diagnostics import balling_screen  # noqa: E402
 from lpbf_thermal_solver import calculate_meltpool_physics  # noqa: E402
 
@@ -240,17 +240,17 @@ class ComposeVerdictTier1(unittest.TestCase):
         adv = next(a for a in high["advisories"] if a.startswith("Advisory: keyhole porosity legacy level"))
         self.assertIn("unsourced screening threshold, legacy porosity level kept for continuity", adv)
 
-    def test_lof_fail_is_an_advisory_never_blocking(self):
-        # Tang advisory bump (2026-10-27): was do-not-print on lof_tang (P7a).
+    def test_lof_fail_is_risky_never_blocking(self):
+        # Tang bump (2026-10-27, physics gate finding 1): was do-not-print on lof_tang (P7a); now a risk gate.
         out = compose_verdict(_clean(lackOfFusionStatus="Fail"), "in718")
-        self.assertEqual(out["verdict"], "printable")
+        self.assertEqual(out["verdict"], "risky")
         self.assertEqual(out["blockingGates"], [])
-        self.assertIn("lof_tang", out["advisoryGates"])
-        self.assertTrue(any(a.startswith(TANG_OVERLAP_ADVISORY) for a in out["advisories"]))
+        self.assertEqual(out["riskGates"], ["lof_tang"])
+        self.assertTrue(any(r.startswith(TANG_RISK_REASON) for r in out["reasons"]))
 
 
-class TangAdvisory(unittest.TestCase):
-    """Tang advisory bump (2026-10-27), design section 4: synthetic Tang values on a real resolved IN718 pool."""
+class TangRisk(unittest.TestCase):
+    """Tang bump (2026-10-27), physics gate finding 1: synthetic Tang values on a real resolved IN718 pool."""
 
     def _tang(self, value, **flags):
         return compose_verdict(_clean(tangIndex_hW_tD=value, lackOfFusionOverlapIndex=value,
@@ -258,69 +258,80 @@ class TangAdvisory(unittest.TestCase):
                                       lackOfFusionMarginAdvisory=value is not None and 0.80 < value <= 1.0, **flags),
                                "in718")
 
-    def _has_tang_advisory(self, out):
-        return any(a.startswith(TANG_OVERLAP_ADVISORY) for a in out["advisories"])
+    def _tang_reason(self, out):
+        return [r for r in out["reasons"] if r.startswith(TANG_RISK_REASON)]
 
-    def test_tang_105_conduction_is_printable_with_the_advisory(self):
-        out = self._tang(1.05)
-        self.assertEqual(out["verdict"], "printable")
-        self.assertTrue(self._has_tang_advisory(out))
-        self.assertTrue(any(r.startswith(TANG_OVERLAP_ADVISORY) for r in out["reasons"]))
-        gate = next(g for g in out["gates"] if g["id"] == "lof_tang")
-        self.assertEqual((gate["status"], gate["measured"], gate["required"]), ("advisory", 1.05, 1.0))
+    def _gate(self, out, gid):
+        return next(g for g in out["gates"] if g["id"] == gid)
+
+    def test_threshold_10_is_printable_and_1001_is_risky(self):
+        at = self._tang(1.0)
+        self.assertEqual(at["verdict"], "printable")
+        self.assertEqual(self._gate(at, "lof_tang")["status"], "pass")
+        self.assertEqual(self._tang_reason(at), [])
+        self.assertIn("fusion adequacy is not established", at["headline"])
+        above = self._tang(1.001)
+        self.assertEqual(above["verdict"], "risky")
+        self.assertEqual(above["riskGates"], ["lof_tang"])
+        self.assertEqual(above["dominantGate"], "lof_tang")
+        self.assertEqual(len(self._tang_reason(above)), 1)
+
+    def test_tang_93_conduction_is_risky_never_do_not_print(self):
+        out = self._tang(9.3)
+        self.assertEqual(out["verdict"], "risky")
+        self.assertEqual(out["blockingGates"], [])
+        gate = self._gate(out, "lof_tang")
+        self.assertEqual((gate["status"], gate["measured"], gate["required"]), ("warn", 9.3, 1.0))
         self.assertIn("Harkin 2023 Eq. 5", gate["basis"])
         self.assertIn("modelled geometry", gate["basis"])
-        self.assertNotIn("lof_tang", out["blockingGates"])
-        self.assertNotEqual(out["dominantGate"], "lof_tang")
-        self.assertIn("lof_tang", out["advisoryGates"])
+        reason = self._tang_reason(out)[0]
+        self.assertIn("(h/W)²+(t/D)² = 9.300", reason)
+        self.assertIn("possible lack of fusion (Tang overlap index above 1.0 on modelled geometry)", out["headline"])
+        self.assertNotIn("keyhole", out["headline"])
         self.assertIn("fusion adequacy is not established", out["headline"])
-        self.assertEqual(out["verdictBasis"], "model-geometry-advisory-keyhole-screen")
+        self.assertEqual(out["verdictBasis"], "model-geometry-tang-keyhole-risk-screen")
 
-    def test_tang_105_in_keyhole_mode_is_risky_with_the_advisory(self):
+    def test_tang_and_keyhole_together_report_both_causes(self):
         out = self._tang(1.05, normalizedEnthalpy=25.0, regime=KEYHOLE_MODE)
         self.assertEqual(out["verdict"], "risky")
-        self.assertEqual(out["dominantGate"], "keyhole")
-        self.assertEqual(out["riskGates"], ["keyhole"])
+        self.assertEqual(out["riskGates"], ["lof_tang", "keyhole"])
         self.assertEqual(out["blockingGates"], [])
-        self.assertTrue(self._has_tang_advisory(out))
-        # At dH/hs >= 15 the advisory also carries the keyhole depth-bias note.
+        self.assertEqual(len(self._tang_reason(out)), 1)
+        self.assertTrue(any(r.startswith("Keyhole mode by the served regime classifier") for r in out["reasons"]))
+        self.assertIn("possible lack of fusion", out["headline"])
+        self.assertIn("keyhole mode by the regime classifier", out["headline"])
         from lpbf_build_job_solver import KEYHOLE_DEPTH_BIAS_LOF_NOTE
-        self.assertTrue(any(KEYHOLE_DEPTH_BIAS_LOF_NOTE in a for a in out["advisories"]))
-
-    def test_threshold_is_strictly_above_one(self):
-        at = self._tang(1.0)
-        self.assertFalse(self._has_tang_advisory(at))
-        self.assertEqual(next(g for g in at["gates"] if g["id"] == "lof_tang")["status"], "pass")
-        above = self._tang(1.001)
-        self.assertTrue(self._has_tang_advisory(above))
-        self.assertEqual(above["verdict"], "printable")
+        self.assertIn(KEYHOLE_DEPTH_BIAS_LOF_NOTE, self._tang_reason(out)[0])
+        # Keyhole alone: the Tang cause is not claimed.
+        kh = self._tang(0.5, normalizedEnthalpy=25.0, regime=KEYHOLE_MODE)
+        self.assertEqual(kh["riskGates"], ["keyhole"])
+        self.assertNotIn("lack of fusion", kh["headline"])
 
     def test_margin_080_unchanged(self):
         self.assertFalse(self._tang(0.80)["lackOfFusionMarginAdvisory"])
         out = self._tang(0.81)
+        self.assertEqual(out["verdict"], "printable")
         self.assertTrue(out["lackOfFusionMarginAdvisory"])
         self.assertTrue(any(a.startswith("Advisory: Tang margin") for a in out["advisories"]))
-        self.assertFalse(self._has_tang_advisory(out))
-        # Above 1.0 the overlap advisory is raised instead of the margin advisory, as before.
         self.assertFalse(self._tang(1.05)["lackOfFusionMarginAdvisory"])
 
     def test_null_tang_width_or_depth_stays_inconclusive(self):
         out = self._tang(None)
         self.assertEqual(out["verdict"], "inconclusive")
-        self.assertEqual(next(g for g in out["gates"] if g["id"] == "lof_tang")["status"], "not-evaluated")
-        self.assertFalse(self._has_tang_advisory(out))
+        self.assertEqual(self._gate(out, "lof_tang")["status"], "not-evaluated")
+        self.assertEqual(self._tang_reason(out), [])
         for key in ("width_um", "depth_um"):
             th = _clean(tangIndex_hW_tD=1.05, lackOfFusionOverlapIndex=1.05, lackOfFusionStatus="Fail")
             th["meltPoolGeometry"][key] = None
             self.assertEqual(compose_verdict(th, "in718")["verdict"], "inconclusive", key)
 
     def test_unresolved_geometry_stays_inconclusive(self):
-        th = _clean(tangIndex_hW_tD=1.05, lackOfFusionOverlapIndex=1.05, lackOfFusionStatus="Fail")
+        th = _clean(tangIndex_hW_tD=9.3, lackOfFusionOverlapIndex=9.3, lackOfFusionStatus="Fail")
         th["meltPoolGeometry"]["extentStatus"] = "width-floor-applied"
         out = compose_verdict(th, "in718")
         self.assertEqual(out["verdict"], "inconclusive")
-        self.assertEqual(next(g for g in out["gates"] if g["id"] == "lof_tang")["status"], "unavailable")
-        self.assertFalse(self._has_tang_advisory(out))
+        self.assertEqual(self._gate(out, "lof_tang")["status"], "unavailable")
+        self.assertEqual(self._tang_reason(out), [])
 
     def test_keyhole_classification_unchanged_at_the_cuts(self):
         # Shared cut 20.0 and the separately calibrated Inconel 625 cut 13.6 (not transferred to IN718).
@@ -331,10 +342,9 @@ class TangAdvisory(unittest.TestCase):
         self.assertEqual(classify_enthalpy_regime(13.6, "in718"), "Conduction Mode (Stable)")
         self.assertTrue(classify_enthalpy_regime(13.6, "Inconel 625").startswith("Keyhole Mode"))
         self.assertEqual(classify_enthalpy_regime(13.59, "Inconel 625"), "Conduction Mode (Stable)")
-        for dh, expect in ((19.99, "printable"), (20.0, "risky")):
-            out = self._tang(1.05, normalizedEnthalpy=dh, regime=classify_enthalpy_regime(dh, "in718"))
-            self.assertEqual(out["verdict"], expect, dh)
-            self.assertTrue(self._has_tang_advisory(out))
+        for dh, gates in ((19.99, []), (20.0, ["keyhole"])):
+            out = self._tang(0.5, normalizedEnthalpy=dh, regime=classify_enthalpy_regime(dh, "in718"))
+            self.assertEqual(out["riskGates"], gates, dh)
 
     def test_real_pool_numbers_equal_the_pre_bump_values(self):
         # IN718 280/940/80 um, preheat 80 C, layer 40, hatch 100 (the _base_thermal case): the bump changes labels and
@@ -342,7 +352,8 @@ class TangAdvisory(unittest.TestCase):
         th = _base_thermal()
         dd = th["defectDiagnostics"]
         self.assertEqual(dd["lackOfFusionStatus"], "Fail")
-        self.assertEqual(dd["lackOfFusionRisk"], "Tang overlap advisory: index > 1 using modelled geometry")
+        self.assertEqual(dd["lackOfFusionRisk"],
+                         "Tang overlap risk: index > 1 using modelled geometry; possible lack of fusion, not an established defect")
         self.assertEqual(PRE_BUMP_BASE, {
             "width_um": th["meltPoolGeometry"]["width_um"], "depth_um": th["meltPoolGeometry"]["depth_um"],
             "tang": dd["tangIndex_hW_tD"], "dh": th["processParameters"]["normalizedEnthalpy"],
@@ -397,18 +408,16 @@ class In718EndToEnd(unittest.TestCase):
         v, dh = self._check(solve_lpbf_build_job(dict(self.PAYLOAD)))
         self._assert_flat_risky(v, dh)
 
-    def test_in718_280_940_at_the_former_hatch_100_is_risky_with_the_tang_advisory(self):
+    def test_in718_280_940_at_the_former_hatch_100_is_risky_on_tang_and_keyhole(self):
         # P7b (2026-10-14): at the pre-P7b 100 um hatch the shallower pool (W 106.8 um) has a Tang index above 1.0.
-        # Tang advisory bump (2026-10-27): that is an advisory now (was do-not-print on lof_tang); the keyhole regime
-        # makes the case risky.
+        # Tang bump (2026-10-27): both risk causes are reported (was do-not-print on lof_tang).
         res = solve_lpbf_build_job({**self.PAYLOAD, "hatchSpacing_um": 100})
         self.assertTrue(res["success"], res.get("error"))
         v = res["verdict"]
         self.assertEqual(v["verdict"], "risky", v["reasons"])
         self.assertEqual(v["blockingGates"], [])
-        self.assertEqual(v["riskGates"], ["keyhole"])
-        self.assertIn("lof_tang", v["advisoryGates"])
-        self.assertTrue(any(a.startswith(TANG_OVERLAP_ADVISORY) for a in v["advisories"]))
+        self.assertEqual(v["riskGates"], ["lof_tang", "keyhole"])
+        self.assertTrue(any(r.startswith(TANG_RISK_REASON) for r in v["reasons"]))
 
     def test_in718_280_940_without_ray_tracer_is_risky(self):
         sys.modules["powder_bed_raytracer"] = None  # GPU module not importable

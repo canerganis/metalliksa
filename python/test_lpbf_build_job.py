@@ -316,7 +316,7 @@ def check_extent_status_consumers():
     assert abs(dh - 30.8) < 0.05, dh
     # P7a: keyhole mode (dH/hs 30.8 >= 20) is risky and never do-not-print; the level 30 is an advisory.
     assert cv["verdict"] == "risky", (dh, cv["verdict"])
-    assert cv["verdictBasis"] == "model-geometry-advisory-keyhole-screen"  # Tang advisory bump (2026-10-27)
+    assert cv["verdictBasis"] == "model-geometry-tang-keyhole-risk-screen"  # Tang bump (2026-10-27)
     assert cv["geometryResolved"] is True and cv["verdictReason"] is None
     assert cv["unavailableGates"] == ["recoater", "distortion"] and cv["geometryIndependentFailGates"] == []
     # P7b (2026-10-14): the Eagar-Tsai L/W of this case is 3.6 (melting-point k / cp shorten the pool), below the
@@ -428,8 +428,9 @@ def main():
         "lpbf-build-job-p6-containment-v23",
         "lpbf-build-job-p7a-rules-and-nulls-v24",
         "lpbf-build-job-solt-v28",
+        "lpbf-build-job-tang-advisory-v29",
     ), BUILD_JOB_SOLVER_REVISION
-    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-tang-advisory-v29"  # Tang advisory bump (2026-10-27)
+    assert BUILD_JOB_SOLVER_REVISION == "lpbf-build-job-tang-risk-v30"  # Tang bump (2026-10-27), physics gate fix round
     assert ti["processSeed"] == 42
     assert ti["scanStrategy"]["id"] == "stripe"
     assert ti["uq"] is None  # lazy default
@@ -833,14 +834,15 @@ def main():
     )
     # 90 W / 1400 mm/s has no resolvable Rosenthal liquidus extent (heuristic W/D/L): the Tang
     # LoF verdict is unavailable rather than a hard do-not-print built on heuristic numbers.
-    # Tang advisory bump (2026-10-27): a resolved pool with Tang above 1.0 (9.3 here) is printable with the Tang
-    # overlap advisory (was do-not-print), so no patch and no patch note are served.
+    # Tang bump (2026-10-27, physics gate finding 1): a resolved pool with Tang above 1.0 (9.3 here) is risky on lof_tang
+    # (was do-not-print), never blocked. P7b (2026-10-14): no point of the 5x5 search grid passes Tang at a 110 um hatch
+    # and 40 um layer, so no patch is suggested and the note says why.
     if lof["thermal"]["meltPoolGeometry"]["extentStatus"] == "computed":
-        assert lof["verdict"]["verdict"] == "printable", lof["verdict"]
-        assert "lof_tang" in lof["verdict"]["advisoryGates"] and lof["verdict"]["blockingGates"] == []
-        assert any(a.startswith("Advisory: Tang overlap index exceeds 1.0") for a in lof["verdict"]["advisories"])
+        assert lof["verdict"]["verdict"] == "risky", lof["verdict"]
+        assert lof["verdict"]["riskGates"] == ["lof_tang"] and lof["verdict"]["blockingGates"] == []
+        assert any(r.startswith("Modelled geometry indicates possible lack of fusion") for r in lof["verdict"]["reasons"])
         assert lof["verdict"]["suggestedPatch"] is None, lof["verdict"]["suggestedPatch"]
-        assert lof["verdict"]["suggestedPatchNote"] is None, lof["verdict"]["suggestedPatchNote"]
+        assert lof["verdict"]["suggestedPatchNote"].startswith("No parameter patch: no point of a 5x5 power-speed grid"), lof["verdict"]["suggestedPatchNote"]
     else:
         assert lof["verdict"]["verdict"] == "inconclusive", lof["verdict"]
         assert "lof_tang" in lof["verdict"]["unavailableGates"]
