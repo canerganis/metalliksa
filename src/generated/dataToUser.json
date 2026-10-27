@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "sourceHashes": {
     "python/four_alloy_materials.py": "d25cf15d3cd312118406a260f48e555d0888fab926776630221f43bffe027e10",
-    "python/lpbf_thermal_solver.py": "053d653b061b459c8b7b528ce30f0b65db3ef8a7f342c7f7f0822b3d71ff3ff6",
+    "python/lpbf_thermal_solver.py": "3ceae6a06a9518fe7d764675fd3f0e49fe1c175b28738f6ed06062418a5857d2",
     "python/lpbf_material_registry.py": "6e194ced1314739647bfd0c62126819cb583ef2145e94416344a60af4e0e1a40",
     "python/quantity_envelope.py": "22dfe94218305be61a00a69e4e7805f2d0243890cd5b327cff0c61edc90ea695",
     "data/benchmark/spent-ledger-v1.json": "844870bd55f89354e934dc5a6eaad66fe849f131115c9e29e7e8bab9731a3827",

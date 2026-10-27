@@ -78,7 +78,7 @@ Background work: none; resources: fetch.
 - `src/services/pythonComputationService.ts::PythonComputationService.runLpbfProcessWindow`
 - `routes/physics.ts:87-87#60000`
 - `python/lpbf_process_window.py::run_process_window`
-- `python/lpbf_process_window.py:37-37#MAX_CELLS = 225`
+- `python/lpbf_process_window.py:39-39#MAX_CELLS = 225`
 
 ## Tests
 
