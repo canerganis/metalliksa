@@ -2,10 +2,10 @@
 
 A ``ProxyVaporProfile`` carries one sourced single-species vapor triple (boiling point,
 latent heat, molar mass), the thermal property table builder and the scenario-input
-basis. The vapor law is the one of lpbf_ti64_evaporation and lpbf_al_proxy_evaporation:
+basis. The vapor law is the one of lpbf_ti64_evaporation, shared by lpbf_al_proxy_evaporation:
 Gan 2021 Eqs 12/14 closed form at and above the high threshold, a declared cubic Hermite
 bridge between the thresholds, zero flux and ambient recoil below the low threshold.
-The Ti64 helpers are reused by import; no Ti64 or AlSi10Mg file is changed.
+The Ti64 helpers are reused by import; no Ti64 file is changed.
 
 Research only. Selective evaporation, activity and composition change, flow, surface
 motion, plume and keyhole geometry are not represented.
@@ -53,9 +53,15 @@ class ProxyVaporProfile:
 
 
 def make_profile(*, key, target_alloy, vaporization_K, latent_heat_J_kg, molar_mass_kg_mol,
-                 disclosure, source_profile, scenario_defaults, scenario_basis, material_properties):
-    """Build a profile and check that every scenario default carries a declared basis."""
-    if set(scenario_defaults) != set(SCENARIO_KEYS) or set(scenario_basis) != set(SCENARIO_KEYS):
+                 disclosure, source_profile, scenario_defaults=None, scenario_basis=None, material_properties):
+    """Build a profile and check that every scenario default carries a declared basis.
+
+    A profile with no scenario defaults (both omitted) supports validate_config and surface_state
+    only; scenario_evidence needs the defaults and their basis.
+    """
+    if scenario_defaults is None and scenario_basis is None:
+        scenario_defaults, scenario_basis = {}, {}
+    elif set(scenario_defaults or ()) != set(SCENARIO_KEYS) or set(scenario_basis or ()) != set(SCENARIO_KEYS):
         raise ValueError("profile must declare a default and a basis for every scenario input")
     for name, basis in scenario_basis.items():
         if basis.get("kind") not in BASIS_KINDS or not basis.get("note"):
