@@ -118,8 +118,8 @@ class ProfileTests(unittest.TestCase):
                 self.assertIn(text, profile.disclosure)
         self.assertIn("constant above 1573 K", IN718_PROFILE.disclosure)
 
-    def test_generic_law_reproduces_the_alsi10mg_proxy_law_bitwise(self):
-        # Proof that the AlSi10Mg proxy is expressible with this module without numeric change.
+    def test_alsi10mg_module_is_this_law_bound_to_its_profile_bitwise(self):
+        # lpbf_al_proxy_evaporation has no vapor law of its own: it binds its constants to this module.
         defaults = dict(transitionLow_K=2800.0, transitionHigh_K=3200.0, ambientPressure_Pa=101325.0,
                         returnFraction=0.18, maxTemperature_K=5000.0, surfaceTension_N_m=0.91)
         basis = {k: dict(kind="sourced", note="test") for k in vapor.SCENARIO_KEYS}
@@ -129,6 +129,9 @@ class ProfileTests(unittest.TestCase):
         temperatures = np.linspace(300.0, 5000.0, 4001)
         generic = vapor.surface_state(temperatures, vapor.validate_config(defaults, 915.0, profile))
         original = al.surface_state(temperatures, al.validate_config(defaults, 915.0))
+        self.assertIsInstance(al.AL6061_PROFILE, vapor.ProxyVaporProfile)
+        self.assertEqual((al.AL6061_PROFILE.vaporizationTemperature_K, al.AL6061_PROFILE.latentHeat_J_kg,
+                          al.AL6061_PROFILE.molarMass_kg_mol), (2792.0, 1.053e7, 0.027))
         for key in original:
             self.assertTrue(np.array_equal(generic[key], original[key]), key)
 
@@ -213,8 +216,7 @@ class VaporLawTests(unittest.TestCase):
             with self.subTest(temperatures=temperatures), self.assertRaises(ValueError):
                 vapor.surface_state(temperatures, c)
         ti_config = ti64.validate_config(dict(scenario("ss316l"), transitionLow_K=3560.0, transitionHigh_K=4000.0), 1923.0)
-        al_config = al.validate_config(dict(scenario("ss316l"), transitionLow_K=2800.0, transitionHigh_K=3200.0), 915.0)
-        for foreign in (ti_config, al_config):
+        for foreign in (ti_config,):
             with self.assertRaises(ValueError):
                 vapor.surface_state(3500.0, foreign)
         # The profile is bound into the config: the same scenario gives different laws per alloy.

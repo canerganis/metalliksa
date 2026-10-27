@@ -40,7 +40,7 @@ _PROCESS_DEFAULTS = dict(power_W=200., speed_mm_s=800., beamDiameter_um=80.,
 _FIXED = dict(material="AlSi10Mg", backend="reference", surfaceMode="bare-plate",
               mode="standard", layers=1, tracks=1, study="none")
 _MODULES = ("lpbf_alsi10mg_evaporative_solver.py", "lpbf_al_proxy_evaporation.py",
-            "lpbf_ti64_evaporative_solver.py", "lpbf_ti64_evaporation.py")
+            "lpbf_proxy_evaporation.py", "lpbf_ti64_evaporative_solver.py", "lpbf_ti64_evaporation.py")
 
 
 def _proxy_material(registry_material):

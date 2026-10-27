@@ -7,24 +7,20 @@ Supplementary Tables 1 and 2, which cite Valencia and Quested 2013 (ASM Handbook
 selective evaporation and the real AlSi10Mg composition are not modelled. The
 OPEN O8 AlSi10Mg values in four_alloy_materials.py are neither used nor relabelled.
 
-The vapor law follows lpbf_ti64_evaporation exactly (Gan Eqs 12/14 closed form above
+The vapor law is the shared lpbf_proxy_evaporation one (Gan Eqs 12/14 closed form above
 the high threshold, a declared cubic Hermite bridge between the thresholds). Table 2
 supplies the Al6061 threshold pair 2800/3200 K that the default scenario declares as
 the bridge interval; its ablation and surface-pressure polynomial constants are
-recorded for traceability only and are not evaluated, as in the Ti64 model. The
-Ti64 helpers are reused by import; no Ti64 file is changed.
+recorded for traceability only and are not evaluated, as in the Ti64 model. This
+module only holds the Al6061 constants and binds them to a ProxyVaporProfile.
 """
 
-from collections.abc import Mapping
-from dataclasses import dataclass
-import math
 from types import MappingProxyType
 
-import numpy as np
-
 from four_alloy_materials import ABSORPTIVITY_AUTHORITY
-from lpbf_ti64_evaporation import (EvaporationConfig, _array, _bridge_coefficients,
-                                   _number, update_onset)
+from lpbf_proxy_evaporation import (GAS_CONSTANT_J_MOL_K, REFERENCE_PRESSURE_PA,
+                                    SCENARIO_TEMPERATURE_LIMIT_K, make_profile, surface_state,
+                                    update_onset, validate_config as _validate_config)
 
 
 SOURCE_ID = "Gan2021-SI-Tables1-2-Al6061-proxy-for-AlSi10Mg"
@@ -57,13 +53,9 @@ LOW_VAPORIZATION_THRESHOLD_K = 2800.0
 HIGH_VAPORIZATION_THRESHOLD_K = 3200.0
 RETRO_DIFFUSION_COEFFICIENT = 0.18
 
-GAS_CONSTANT_J_MOL_K = 8.31446261815324
-REFERENCE_PRESSURE_PA = 101325.0
-SCENARIO_TEMPERATURE_LIMIT_K = 6000.0
 # Gan's property step at the liquidus is a discontinuity; the registry table is
 # piecewise linear, so the step is carried by a declared 1 K ramp below 915 K.
 PHASE_STEP_RAMP_K = 1.0
-_CLAUSIUS_K = LATENT_HEAT_J_KG * MOLAR_MASS_KG_MOL / GAS_CONSTANT_J_MOL_K
 
 
 def _row(quantity, value, unit, table, locator, used_as):
@@ -175,93 +167,16 @@ def proxy_material_properties():
         uncertaintyNote=DISCLOSURE)
 
 
-@dataclass(frozen=True, slots=True)
-class AlProxyEvaporationConfig(EvaporationConfig):
-    """Al6061-proxy scenario; same fields as the Ti64 config so update_onset applies unchanged."""
-
-
-def _high_law(temperature, return_fraction):
-    with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
-        inverse_temperature = 1.0 / temperature
-        saturation = REFERENCE_PRESSURE_PA * np.exp(
-            _CLAUSIUS_K * (1.0 / VAPORIZATION_TEMPERATURE_K - inverse_temperature))
-        mass = (1.0 - return_fraction) * saturation * np.sqrt(
-            MOLAR_MASS_KG_MOL / (2.0 * math.pi * GAS_CONSTANT_J_MOL_K) * inverse_temperature)
-        recoil = (1.0 + return_fraction) * saturation / 2.0
-        pressure_log_slope = _CLAUSIUS_K * inverse_temperature * inverse_temperature
-        mass_slope = mass * (pressure_log_slope - 0.5 * inverse_temperature)
-        recoil_slope = recoil * pressure_log_slope
-    return mass, recoil, mass_slope, recoil_slope
+AL6061_PROFILE = make_profile(
+    key="alsi10mg", target_alloy="AlSi10Mg", vaporization_K=VAPORIZATION_TEMPERATURE_K,
+    latent_heat_J_kg=LATENT_HEAT_J_KG, molar_mass_kg_mol=MOLAR_MASS_KG_MOL, disclosure=DISCLOSURE,
+    source_profile=SOURCE_PROFILE, material_properties=proxy_material_properties)
 
 
 def validate_config(raw, liquidus_K):
-    """Validate the explicit evaporation object; never infer missing assumptions."""
-    required = {"transitionLow_K", "transitionHigh_K", "ambientPressure_Pa",
-                "returnFraction", "maxTemperature_K"}
-    allowed = required | {"surfaceTension_N_m"}
-    if not isinstance(raw, Mapping):
-        raise ValueError("evaporation must be an explicit object")
-    if set(raw) - allowed or required - set(raw):
-        raise ValueError("evaporation contains unknown keys or is missing required keys")
-    liquidus = _number(liquidus_K, "liquidus_K")
-    low = _number(raw["transitionLow_K"], "transitionLow_K")
-    high = _number(raw["transitionHigh_K"], "transitionHigh_K")
-    ambient = _number(raw["ambientPressure_Pa"], "ambientPressure_Pa")
-    beta = _number(raw["returnFraction"], "returnFraction", zero_allowed=True)
-    maximum = _number(raw["maxTemperature_K"], "maxTemperature_K")
-    sigma = _number(raw["surfaceTension_N_m"], "surfaceTension_N_m") if "surfaceTension_N_m" in raw else None
-    if beta >= 1:
-        raise ValueError("returnFraction must satisfy 0 <= returnFraction < 1")
-    if not liquidus <= low < high <= maximum <= SCENARIO_TEMPERATURE_LIMIT_K:
-        raise ValueError("require liquidus <= low < high <= maxTemperature_K <= 6000 K (scenario limit)")
-    try:
-        mass, recoil, mass_slope, recoil_slope = _high_law(np.asarray(high), beta)
-        mass_coefficients = _bridge_coefficients(0.0, float(mass), float(mass_slope), high - low, "mass flux")
-        recoil_coefficients = _bridge_coefficients(ambient, float(recoil), float(recoil_slope), high - low, "recoil")
-    except (FloatingPointError, OverflowError) as exc:
-        raise ValueError("evaporation scenario is outside finite numerical range") from exc
-    return AlProxyEvaporationConfig(low, high, ambient, beta, maximum, sigma, liquidus,
-                                    mass_coefficients, recoil_coefficients)
+    """Validate the explicit evaporation object against the Al6061 proxy profile."""
+    return _validate_config(raw, liquidus_K, AL6061_PROFILE)
 
 
-def surface_state(temperature_K, config):
-    """Return independent arrays (also 0-D for scalars); never mutate the input.
-
-    The heat derivative is the analytic d(j*Lv)/dT for the surface-loss explicit
-    stability bound. Invalid/out-of-scenario temperatures raise; nothing is capped.
-    """
-    if not isinstance(config, AlProxyEvaporationConfig):
-        raise ValueError("config must be produced by lpbf_al_proxy_evaporation.validate_config")
-    temperature = _array(temperature_K, "temperature_K")
-    if np.any(temperature <= 0) or np.any(temperature > config.maxTemperature_K):
-        raise ValueError("temperature_K must be positive and <= maxTemperature_K")
-    mass = np.zeros_like(temperature)
-    recoil = np.full_like(temperature, config.ambientPressure_Pa)
-    mass_slope = np.zeros_like(temperature)
-    bridge = (temperature > config.transitionLow_K) & (temperature < config.transitionHigh_K)
-    high = temperature >= config.transitionHigh_K
-    try:
-        with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
-            width = config.transitionHigh_K - config.transitionLow_K
-            u = (temperature[bridge] - config.transitionLow_K) / width
-            a, b = config._mass_coefficients
-            mass[bridge] = u * u * (a + b * u)
-            mass_slope[bridge] = u * (2.0 * a + 3.0 * b * u) / width
-            a, b = config._recoil_coefficients
-            recoil[bridge] += u * u * (a + b * u)
-            mass[high], recoil[high], mass_slope[high], _ = _high_law(temperature[high], config.returnFraction)
-            heat = mass * LATENT_HEAT_J_KG
-            heat_slope = mass_slope * LATENT_HEAT_J_KG
-    except (FloatingPointError, OverflowError) as exc:
-        raise ValueError("surface vapor state is outside finite numerical range") from exc
-    result = {"mass_flux_kg_m2_s": mass, "heat_flux_W_m2": heat,
-              "recoil_pressure_Pa": recoil, "heat_flux_derivative_W_m2K": heat_slope}
-    if (not all(np.isfinite(value).all() for value in result.values())
-            or np.any(mass < 0) or np.any(heat_slope < 0)
-            or np.any(recoil < config.ambientPressure_Pa)):
-        raise ValueError("surface vapor state is negative, nonfinite or below ambient pressure")
-    return result
-
-
-__all__ = ["CONSTANTS", "DISCLOSURE", "SOURCE_PROFILE", "AlProxyEvaporationConfig",
+__all__ = ["CONSTANTS", "DISCLOSURE", "SOURCE_PROFILE", "AL6061_PROFILE",
            "proxy_material_properties", "validate_config", "surface_state", "update_onset"]

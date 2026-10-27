@@ -158,7 +158,7 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(result["geometry"]["liquidus_K"], 915.0)
         self.assertEqual(set(result["provenance"]["moduleSha256"]),
                          {"lpbf_alsi10mg_evaporative_solver.py", "lpbf_al_proxy_evaporation.py",
-                          "lpbf_ti64_evaporative_solver.py", "lpbf_ti64_evaporation.py"})
+                          "lpbf_proxy_evaporation.py", "lpbf_ti64_evaporative_solver.py", "lpbf_ti64_evaporation.py"})
         self.assertEqual(result["provenance"]["vaporSource"]["proxyAlloy"], "Al6061")
         json.dumps(result, allow_nan=False)
 
