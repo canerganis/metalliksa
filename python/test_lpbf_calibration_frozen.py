@@ -61,13 +61,14 @@ BASE_REF = BASE_REF_CANDIDATES[0]
 # nominal transfer 1385 / 1450 C (was 1375 / 1400 C), so width, depth, length, normalizedEnthalpy (17.11 at T0 20 C,
 # 1380/1430 of the former value), the regimeBasis/keyhole-cut King text, the front input record and parent and the material identity move;
 # all three digests change. Recorded on the reference machine with the locked interpreter.
-# Tang advisory bump (2026-10-27, 50cc550b): only defectDiagnostics.lackOfFusionRisk changes (Tang index 316L 200/900
-# above 1, "Severe Lack of Fusion ..." -> "Tang overlap advisory: index > 1 using modelled geometry"); putting the
-# former label back into the new output reproduces the three SOL-T digests exactly, so nothing else moved.
+# Tang bump (2026-10-27, 3a978739): only defectDiagnostics.lackOfFusionRisk changes (Tang index 316L 200/900 above 1,
+# "Severe Lack of Fusion ..." -> "Tang overlap risk: index > 1 using modelled geometry; possible lack of fusion, not an
+# established defect"); putting the former label back into the new output reproduces the three SOL-T digests exactly,
+# so nothing else moved.
 HTTP_GOLDEN = {
-    "eagar-tsai": "e5646918b1df9d783440b0520f2792f7af90acfb9b812f1b552c34a0143951a2",
-    "goldak": "fe98a199c6f10dcc97e4773712eef1450f1ab0823b2e861738f4cffcf8b725bd",
-    "rosenthal": "a1bac1d9419f5f28c478b303206addab234da9e70836d233e701b9f406303585",
+    "eagar-tsai": "fdc58396769bd2881869ced456e884cc37673dfc7f298e16f965bc392a345e85",
+    "goldak": "d36e584e45b6c8c9529179809c838432c067a7de6b9a857832651c2b6498c256",
+    "rosenthal": "1d592c3e00bcc5ad4343717bef49d03f6bcc9283c7cdea9836210e6b0cc6777d",
 }
 HTTP_INPUT = {"material": "316L Stainless Steel", "laserPower_W": 200, "scanSpeed_mm_s": 900, "beamDiameter_um": 80,
               "preheatTemp_C": 20, "layerThickness_um": 30, "hatchSpacing_um": 100}
