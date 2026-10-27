@@ -30,14 +30,14 @@ Abstract-level fact from the landing pages: the 2017 paper is a geometry-based s
 | Form | `(H/W)^2 + (T/D)^2 <= 1` | `(H/W)^2 + (L/D)^2 <= 1` | `(h/W)^2 + (t/D)^2`, flagged when `> 1` |
 | Threshold | 1 | 1 | 1.0 (the 0.80 margin is an unsourced advisory) |
 | Layer term | T layer thickness | L layer thickness | `layerThickness_um` |
-| Depth reference | not stated | from the top of the layer | modelled depth, presumed from the free surface (not re-verified here) |
+| Depth reference | not stated | from the top of the layer | liquidus depth below the heated surface z = 0, the top of the current layer (`_liquidus_extent`, `lpbf_thermal_solver.py` ~699; checked by the lead) |
 | Pool shape | not stated | semi-ellipse, identical pools | not an ellipse: model width, depth merged from conduction and Fabbro legs |
 
 ## Mismatches and caveats
 
 1. No arithmetic mismatch between the code and either secondary form. The squares, the sum and the threshold match.
 2. The criterion presumes a semi-elliptical cross-section. The code applies it to a modelled W and a merged D that is not a half-ellipse, so the geometric derivation does not strictly hold. The basis string says "not a measured half-ellipse" but does not name the semi-elliptical assumption as the source's premise.
-3. Depth reference: the derivation takes D from the top of the powder layer, with the layer boundary at depth L. The code's `t` is the nominal layer thickness, so the code is consistent only if its D is also measured from the powder top surface, not from the substrate or a consolidated-layer level. Not checked here. Whether the primary uses powder or consolidated layer thickness is open, because the primary was not read.
+3. Depth reference: the derivation takes D from the top of the powder layer, with the layer boundary at depth L. The code's `t` is the nominal layer thickness, so the code is consistent only if its D is also measured from the powder top surface, not from the substrate or a consolidated-layer level. Checked by the lead: the conduction depth is the liquidus extent below the heated surface z = 0 (`_liquidus_extent`, `python/lpbf_thermal_solver.py` ~699), which is the top of the current layer, so the reference matches. The model treats that surface as solid metal, not powder. Whether the primary uses powder or consolidated layer thickness is open, because the primary was not read.
 4. "Primary not in the library" remains true. The equation locator (number, page) in the primary is unknown. The earlier origin of the semi-elliptical criterion appears to be the 2015 MS&T proceedings, not only the 2017 paper.
 
 ## Proposed replacement basis string (not applied)
