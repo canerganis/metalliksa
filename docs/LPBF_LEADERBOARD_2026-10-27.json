@@ -1,0 +1,1038 @@
+{
+ "benchmarkVersion": "v1",
+ "calibratedRung": {
+  "artefact": "data/calibration/lpbf-meltpool-calibration-v1.json",
+  "enabledCells": 0,
+  "note": "No calibration cell is enabled by the gate, so no calibrated entry exists; built-in entries are the frozen kernels at default absorptivity"
+ },
+ "configSha256": "6926386ddf9ad2a0d9fc787b4dbca7324b20b466e7a806be38b949fbafa1271b",
+ "entries": [
+  {
+   "author": "Metalliksa frozen screening kernels",
+   "cells": [
+    {
+     "baselineMapePct": 36.34,
+     "biasPct": -26.2068,
+     "coverage90": null,
+     "heldOutSource": "hofmann-316l-2026",
+     "mapePct": 26.44,
+     "mapeUnresolvedAsFailPct": 26.5487,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.314388,
+     "nCommon": 638,
+     "nResolved": 676,
+     "nRows": 677,
+     "nSets": 378,
+     "quantity": "width",
+     "skill": 0.277776,
+     "skillCi95": [
+      0.25985,
+      0.296693
+     ],
+     "status": "scored",
+     "unresolved": 1
+    },
+    {
+     "baselineMapePct": 33.686,
+     "biasPct": -19.1254,
+     "coverage90": null,
+     "heldOutSource": "hofmann-316l-2026",
+     "mapePct": 35.2112,
+     "mapeUnresolvedAsFailPct": 35.3069,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.411224,
+     "nCommon": 638,
+     "nResolved": 676,
+     "nRows": 677,
+     "nSets": 378,
+     "quantity": "depth",
+     "skill": -0.0492223,
+     "skillCi95": [
+      -0.0684705,
+      -0.0305485
+     ],
+     "status": "scored",
+     "unresolved": 1
+    },
+    {
+     "baselineMapePct": 20.3267,
+     "biasPct": -18.2341,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-316l-2021",
+     "mapePct": 18.5062,
+     "mapeUnresolvedAsFailPct": 18.5062,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.214609,
+     "nCommon": 44,
+     "nResolved": 44,
+     "nRows": 44,
+     "nSets": 44,
+     "quantity": "width",
+     "skill": 0.0895598,
+     "skillCi95": [
+      0.0696029,
+      0.11085
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 39.9429,
+     "biasPct": -38.4842,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-316l-2021",
+     "mapePct": 39.9429,
+     "mapeUnresolvedAsFailPct": 39.9429,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.542707,
+     "nCommon": 44,
+     "nResolved": 44,
+     "nRows": 44,
+     "nSets": 44,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 31.1827,
+     "biasPct": -0.371839,
+     "coverage90": null,
+     "heldOutSource": "lane-in625-2020",
+     "mapePct": 10.6174,
+     "mapeUnresolvedAsFailPct": 10.6174,
+     "material": "Inconel 625",
+     "meanAbsLn": 0.109761,
+     "nCommon": 14,
+     "nResolved": 23,
+     "nRows": 23,
+     "nSets": 6,
+     "quantity": "width",
+     "skill": 0.669905,
+     "skillCi95": [
+      0.412493,
+      0.883954
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 37.8342,
+     "biasPct": -36.9487,
+     "coverage90": null,
+     "heldOutSource": "lane-in625-2020",
+     "mapePct": 36.9487,
+     "mapeUnresolvedAsFailPct": 36.9487,
+     "material": "Inconel 625",
+     "meanAbsLn": 0.511108,
+     "nCommon": 14,
+     "nResolved": 23,
+     "nRows": 23,
+     "nSets": 6,
+     "quantity": "depth",
+     "skill": -0.158785,
+     "skillCi95": [
+      -0.370821,
+      -0.0655298
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 13.2091,
+     "biasPct": -10.1192,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-ti64-2021",
+     "mapePct": 10.2941,
+     "mapeUnresolvedAsFailPct": 10.2941,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.110035,
+     "nCommon": 14,
+     "nResolved": 14,
+     "nRows": 14,
+     "nSets": 14,
+     "quantity": "width",
+     "skill": 0.220676,
+     "skillCi95": [
+      0.171459,
+      0.28022
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 25.7894,
+     "biasPct": 10.8457,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-ti64-2021",
+     "mapePct": 25.7894,
+     "mapeUnresolvedAsFailPct": 25.7894,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.235708,
+     "nCommon": 14,
+     "nResolved": 14,
+     "nRows": 14,
+     "nSets": 14,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 20.8737,
+     "biasPct": -4.61191,
+     "coverage90": null,
+     "heldOutSource": "totis-ti64-2021",
+     "mapePct": 18.4955,
+     "mapeUnresolvedAsFailPct": 18.4955,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.199001,
+     "nCommon": 80,
+     "nResolved": 80,
+     "nRows": 80,
+     "nSets": 80,
+     "quantity": "width",
+     "skill": 0.11393,
+     "skillCi95": [
+      0.0475247,
+      0.171332
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 40.8686,
+     "biasPct": -14.1,
+     "coverage90": null,
+     "heldOutSource": "totis-ti64-2021",
+     "mapePct": 38.6514,
+     "mapeUnresolvedAsFailPct": 38.6514,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.420221,
+     "nCommon": 80,
+     "nResolved": 80,
+     "nRows": 80,
+     "nSets": 80,
+     "quantity": "depth",
+     "skill": 0.0542502,
+     "skillCi95": [
+      0.00268356,
+      0.100213
+     ],
+     "status": "scored",
+     "unresolved": 0
+    }
+   ],
+   "description": "Eagar-Tsai v2 kernel at the material default absorptivity on the CPU flat-plate path; no fit, no calibration.",
+   "id": "builtin:eagar-tsai",
+   "kind": "built-in-kernel",
+   "name": "Eagar-Tsai v2 kernel",
+   "provenance": {
+    "baselineKernel": "rosenthal",
+    "configSha256": "6926386ddf9ad2a0d9fc787b4dbca7324b20b466e7a806be38b949fbafa1271b",
+    "implementationHash": "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143",
+    "kernel": "eagar-tsai",
+    "manifestSha256": "69caa150f1d2e890c4ba5041276e26422d0bc5ad4b1585072cd296c7e46839e7",
+    "predictionsSha256": "f812182c9dd44f8550a46f34442adec173737393b45f0a842af75b0929b9fa9c"
+   },
+   "sentinels": [
+    {
+     "baselineMapePct": 15.7841,
+     "biasPct": 13.0117,
+     "coverage90": null,
+     "heldOutSource": "guo-316l-2024",
+     "mapePct": 13.0117,
+     "mapeUnresolvedAsFailPct": 13.0117,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.121646,
+     "nCommon": 4,
+     "nResolved": 4,
+     "nRows": 4,
+     "nSets": 4,
+     "quantity": "width",
+     "skill": 0.175642,
+     "skillCi95": [
+      -4.10438,
+      0.669731
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 50.8021,
+     "biasPct": -59.1991,
+     "coverage90": null,
+     "heldOutSource": "guo-316l-2024",
+     "mapePct": 59.1991,
+     "mapeUnresolvedAsFailPct": 59.1991,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.918203,
+     "nCommon": 4,
+     "nResolved": 4,
+     "nRows": 4,
+     "nSets": 4,
+     "quantity": "depth",
+     "skill": -0.165289,
+     "skillCi95": [
+      -0.353549,
+      -0.0569817
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 19.5642,
+     "biasPct": -14.8789,
+     "coverage90": null,
+     "heldOutSource": "nist-amb2022-03-in718",
+     "mapePct": 15.417,
+     "mapeUnresolvedAsFailPct": 15.417,
+     "material": "Inconel 718",
+     "meanAbsLn": 0.170531,
+     "nCommon": 7,
+     "nResolved": 7,
+     "nRows": 7,
+     "nSets": 7,
+     "quantity": "width",
+     "skill": 0.211983,
+     "skillCi95": [
+      0.160888,
+      0.258022
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 27.6309,
+     "biasPct": -27.6309,
+     "coverage90": null,
+     "heldOutSource": "nist-amb2022-03-in718",
+     "mapePct": 27.6309,
+     "mapeUnresolvedAsFailPct": 27.6309,
+     "material": "Inconel 718",
+     "meanAbsLn": 0.326621,
+     "nCommon": 7,
+     "nResolved": 7,
+     "nRows": 7,
+     "nSets": 7,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    }
+   ],
+   "trainedOnSources": [],
+   "url": "",
+   "version": "frozen-default-eta"
+  },
+  {
+   "author": "Metalliksa frozen screening kernels",
+   "cells": [
+    {
+     "baselineMapePct": 36.172,
+     "biasPct": -36.0671,
+     "coverage90": null,
+     "heldOutSource": "hofmann-316l-2026",
+     "mapePct": 36.2144,
+     "mapeUnresolvedAsFailPct": 40.5484,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.462049,
+     "nCommon": 631,
+     "nResolved": 631,
+     "nRows": 677,
+     "nSets": 378,
+     "quantity": "width",
+     "skill": -0.00117334,
+     "skillCi95": [
+      -0.00284044,
+      0.000526937
+     ],
+     "status": "scored",
+     "unresolved": 46
+    },
+    {
+     "baselineMapePct": 33.7149,
+     "biasPct": -12.4981,
+     "coverage90": null,
+     "heldOutSource": "hofmann-316l-2026",
+     "mapePct": 33.1471,
+     "mapeUnresolvedAsFailPct": 37.6896,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.367906,
+     "nCommon": 631,
+     "nResolved": 631,
+     "nRows": 677,
+     "nSets": 378,
+     "quantity": "depth",
+     "skill": 0.0168394,
+     "skillCi95": [
+      0.0113643,
+      0.0223206
+     ],
+     "status": "scored",
+     "unresolved": 46
+    },
+    {
+     "baselineMapePct": 20.3267,
+     "biasPct": -20.0266,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-316l-2021",
+     "mapePct": 20.1772,
+     "mapeUnresolvedAsFailPct": 20.1772,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.237051,
+     "nCommon": 44,
+     "nResolved": 44,
+     "nRows": 44,
+     "nSets": 44,
+     "quantity": "width",
+     "skill": 0.00735614,
+     "skillCi95": [
+      0.00600911,
+      0.00883014
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 39.9429,
+     "biasPct": -38.4842,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-316l-2021",
+     "mapePct": 39.9429,
+     "mapeUnresolvedAsFailPct": 39.9429,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.542707,
+     "nCommon": 44,
+     "nResolved": 44,
+     "nRows": 44,
+     "nSets": 44,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 29.3135,
+     "biasPct": -29.2432,
+     "coverage90": null,
+     "heldOutSource": "lane-in625-2020",
+     "mapePct": 29.2432,
+     "mapeUnresolvedAsFailPct": 69.2362,
+     "material": "Inconel 625",
+     "meanAbsLn": 0.348411,
+     "nCommon": 10,
+     "nResolved": 10,
+     "nRows": 23,
+     "nSets": 6,
+     "quantity": "width",
+     "skill": 0.00239838,
+     "skillCi95": [
+      -0.00421166,
+      0.0081599
+     ],
+     "status": "scored",
+     "unresolved": 13
+    },
+    {
+     "baselineMapePct": 50.1397,
+     "biasPct": -48.3226,
+     "coverage90": null,
+     "heldOutSource": "lane-in625-2020",
+     "mapePct": 48.3226,
+     "mapeUnresolvedAsFailPct": 77.5316,
+     "material": "Inconel 625",
+     "meanAbsLn": 0.685312,
+     "nCommon": 10,
+     "nResolved": 10,
+     "nRows": 23,
+     "nSets": 6,
+     "quantity": "depth",
+     "skill": 0.0362416,
+     "skillCi95": [
+      0.023854,
+      0.0470546
+     ],
+     "status": "scored",
+     "unresolved": 13
+    },
+    {
+     "baselineMapePct": 13.2091,
+     "biasPct": -13.0297,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-ti64-2021",
+     "mapePct": 13.0297,
+     "mapeUnresolvedAsFailPct": 13.0297,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.141519,
+     "nCommon": 14,
+     "nResolved": 14,
+     "nRows": 14,
+     "nSets": 14,
+     "quantity": "width",
+     "skill": 0.0135788,
+     "skillCi95": [
+      0.0114605,
+      0.0163248
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 25.7894,
+     "biasPct": 10.8457,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-ti64-2021",
+     "mapePct": 25.7894,
+     "mapeUnresolvedAsFailPct": 25.7894,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.235708,
+     "nCommon": 14,
+     "nResolved": 14,
+     "nRows": 14,
+     "nSets": 14,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 20.8737,
+     "biasPct": -9.57118,
+     "coverage90": null,
+     "heldOutSource": "totis-ti64-2021",
+     "mapePct": 20.9184,
+     "mapeUnresolvedAsFailPct": 20.9184,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.240417,
+     "nCommon": 80,
+     "nResolved": 80,
+     "nRows": 80,
+     "nSets": 80,
+     "quantity": "width",
+     "skill": -0.00214172,
+     "skillCi95": [
+      -0.00609599,
+      0.000908734
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 40.8686,
+     "biasPct": -10.0073,
+     "coverage90": null,
+     "heldOutSource": "totis-ti64-2021",
+     "mapePct": 41.0579,
+     "mapeUnresolvedAsFailPct": 41.0579,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.418128,
+     "nCommon": 80,
+     "nResolved": 80,
+     "nRows": 80,
+     "nSets": 80,
+     "quantity": "depth",
+     "skill": -0.00463215,
+     "skillCi95": [
+      -0.014032,
+      0.0062195
+     ],
+     "status": "scored",
+     "unresolved": 0
+    }
+   ],
+   "description": "Goldak v3 kernel at the material default absorptivity on the CPU flat-plate path; no fit, no calibration.",
+   "id": "builtin:goldak",
+   "kind": "built-in-kernel",
+   "name": "Goldak v3 kernel",
+   "provenance": {
+    "baselineKernel": "rosenthal",
+    "configSha256": "6926386ddf9ad2a0d9fc787b4dbca7324b20b466e7a806be38b949fbafa1271b",
+    "implementationHash": "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143",
+    "kernel": "goldak",
+    "manifestSha256": "69caa150f1d2e890c4ba5041276e26422d0bc5ad4b1585072cd296c7e46839e7",
+    "predictionsSha256": "c328fdad9e0e55ef44acbbb7ab9e4c97fbb9f595c3c67430369bec443972e2cd"
+   },
+   "sentinels": [
+    {
+     "baselineMapePct": 10.7242,
+     "biasPct": -10.1585,
+     "coverage90": null,
+     "heldOutSource": "guo-316l-2024",
+     "mapePct": 11.0356,
+     "mapeUnresolvedAsFailPct": 33.2767,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.124988,
+     "nCommon": 3,
+     "nResolved": 3,
+     "nRows": 4,
+     "nSets": 4,
+     "quantity": "width",
+     "skill": -0.0290447,
+     "skillCi95": [
+      -0.0714286,
+      -0.0192308
+     ],
+     "status": "scored",
+     "unresolved": 1
+    },
+    {
+     "baselineMapePct": 56.8418,
+     "biasPct": -55.4844,
+     "coverage90": null,
+     "heldOutSource": "guo-316l-2024",
+     "mapePct": 55.4844,
+     "mapeUnresolvedAsFailPct": 66.6133,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.835215,
+     "nCommon": 3,
+     "nResolved": 3,
+     "nRows": 4,
+     "nSets": 4,
+     "quantity": "depth",
+     "skill": 0.0238801,
+     "skillCi95": [
+      0.0177276,
+      0.029304
+     ],
+     "status": "scored",
+     "unresolved": 1
+    },
+    {
+     "baselineMapePct": 19.5642,
+     "biasPct": -19.4557,
+     "coverage90": null,
+     "heldOutSource": "nist-amb2022-03-in718",
+     "mapePct": 19.4557,
+     "mapeUnresolvedAsFailPct": 19.4557,
+     "material": "Inconel 718",
+     "meanAbsLn": 0.221541,
+     "nCommon": 7,
+     "nResolved": 7,
+     "nRows": 7,
+     "nSets": 7,
+     "quantity": "width",
+     "skill": 0.00555059,
+     "skillCi95": [
+      0.00157659,
+      0.0118007
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 27.6309,
+     "biasPct": -27.6309,
+     "coverage90": null,
+     "heldOutSource": "nist-amb2022-03-in718",
+     "mapePct": 27.6309,
+     "mapeUnresolvedAsFailPct": 27.6309,
+     "material": "Inconel 718",
+     "meanAbsLn": 0.326621,
+     "nCommon": 7,
+     "nResolved": 7,
+     "nRows": 7,
+     "nSets": 7,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    }
+   ],
+   "trainedOnSources": [],
+   "url": "",
+   "version": "frozen-default-eta"
+  },
+  {
+   "author": "Metalliksa frozen screening kernels",
+   "cells": [
+    {
+     "baselineMapePct": 36.34,
+     "biasPct": -36.1971,
+     "coverage90": null,
+     "heldOutSource": "hofmann-316l-2026",
+     "mapePct": 36.34,
+     "mapeUnresolvedAsFailPct": 40.0073,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.463743,
+     "nCommon": 638,
+     "nResolved": 638,
+     "nRows": 677,
+     "nSets": 378,
+     "quantity": "width",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 39
+    },
+    {
+     "baselineMapePct": 33.686,
+     "biasPct": -13.5647,
+     "coverage90": null,
+     "heldOutSource": "hofmann-316l-2026",
+     "mapePct": 33.686,
+     "mapeUnresolvedAsFailPct": 37.5061,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.377557,
+     "nCommon": 638,
+     "nResolved": 638,
+     "nRows": 677,
+     "nSets": 378,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 39
+    },
+    {
+     "baselineMapePct": 20.3267,
+     "biasPct": -20.1831,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-316l-2021",
+     "mapePct": 20.3267,
+     "mapeUnresolvedAsFailPct": 20.3267,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.23911,
+     "nCommon": 44,
+     "nResolved": 44,
+     "nRows": 44,
+     "nSets": 44,
+     "quantity": "width",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 39.9429,
+     "biasPct": -38.4842,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-316l-2021",
+     "mapePct": 39.9429,
+     "mapeUnresolvedAsFailPct": 39.9429,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.542707,
+     "nCommon": 44,
+     "nResolved": 44,
+     "nRows": 44,
+     "nSets": 44,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 31.1827,
+     "biasPct": -31.1827,
+     "coverage90": null,
+     "heldOutSource": "lane-in625-2020",
+     "mapePct": 31.1827,
+     "mapeUnresolvedAsFailPct": 58.1112,
+     "material": "Inconel 625",
+     "meanAbsLn": 0.376627,
+     "nCommon": 14,
+     "nResolved": 14,
+     "nRows": 23,
+     "nSets": 6,
+     "quantity": "width",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 9
+    },
+    {
+     "baselineMapePct": 37.8342,
+     "biasPct": -33.7939,
+     "coverage90": null,
+     "heldOutSource": "lane-in625-2020",
+     "mapePct": 37.8342,
+     "mapeUnresolvedAsFailPct": 62.16,
+     "material": "Inconel 625",
+     "meanAbsLn": 0.535292,
+     "nCommon": 14,
+     "nResolved": 14,
+     "nRows": 23,
+     "nSets": 6,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 9
+    },
+    {
+     "baselineMapePct": 13.2091,
+     "biasPct": -13.2091,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-ti64-2021",
+     "mapePct": 13.2091,
+     "mapeUnresolvedAsFailPct": 13.2091,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.143621,
+     "nCommon": 14,
+     "nResolved": 14,
+     "nRows": 14,
+     "nSets": 14,
+     "quantity": "width",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 25.7894,
+     "biasPct": 10.8457,
+     "coverage90": null,
+     "heldOutSource": "ku-leuven-ti64-2021",
+     "mapePct": 25.7894,
+     "mapeUnresolvedAsFailPct": 25.7894,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.235708,
+     "nCommon": 14,
+     "nResolved": 14,
+     "nRows": 14,
+     "nSets": 14,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 20.8737,
+     "biasPct": -9.63053,
+     "coverage90": null,
+     "heldOutSource": "totis-ti64-2021",
+     "mapePct": 20.8737,
+     "mapeUnresolvedAsFailPct": 20.8737,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.239879,
+     "nCommon": 80,
+     "nResolved": 80,
+     "nRows": 80,
+     "nSets": 80,
+     "quantity": "width",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 40.8686,
+     "biasPct": -10.7817,
+     "coverage90": null,
+     "heldOutSource": "totis-ti64-2021",
+     "mapePct": 40.8686,
+     "mapeUnresolvedAsFailPct": 40.8686,
+     "material": "Ti-6Al-4V",
+     "meanAbsLn": 0.420985,
+     "nCommon": 80,
+     "nResolved": 80,
+     "nRows": 80,
+     "nSets": 80,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    }
+   ],
+   "description": "Rosenthal screening kernel at the material default absorptivity on the CPU flat-plate path; no fit, no calibration.",
+   "id": "builtin:rosenthal",
+   "kind": "built-in-kernel",
+   "name": "Rosenthal screening kernel",
+   "provenance": {
+    "baselineKernel": "rosenthal",
+    "configSha256": "6926386ddf9ad2a0d9fc787b4dbca7324b20b466e7a806be38b949fbafa1271b",
+    "implementationHash": "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143",
+    "kernel": "rosenthal",
+    "manifestSha256": "69caa150f1d2e890c4ba5041276e26422d0bc5ad4b1585072cd296c7e46839e7",
+    "predictionsSha256": "628afb52f990d24cdd4281a023b7b72103e1ebf33e4c8dd97e4dca4d3bef6ea7"
+   },
+   "sentinels": [
+    {
+     "baselineMapePct": 15.7841,
+     "biasPct": -15.1701,
+     "coverage90": null,
+     "heldOutSource": "guo-316l-2024",
+     "mapePct": 15.7841,
+     "mapeUnresolvedAsFailPct": 15.7841,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.183374,
+     "nCommon": 4,
+     "nResolved": 4,
+     "nRows": 4,
+     "nSets": 4,
+     "quantity": "width",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 50.8021,
+     "biasPct": -50.8021,
+     "coverage90": null,
+     "heldOutSource": "guo-316l-2024",
+     "mapePct": 50.8021,
+     "mapeUnresolvedAsFailPct": 50.8021,
+     "material": "316L Stainless Steel",
+     "meanAbsLn": 0.749619,
+     "nCommon": 4,
+     "nResolved": 4,
+     "nRows": 4,
+     "nSets": 4,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 19.5642,
+     "biasPct": -19.5642,
+     "coverage90": null,
+     "heldOutSource": "nist-amb2022-03-in718",
+     "mapePct": 19.5642,
+     "mapeUnresolvedAsFailPct": 19.5642,
+     "material": "Inconel 718",
+     "meanAbsLn": 0.222875,
+     "nCommon": 7,
+     "nResolved": 7,
+     "nRows": 7,
+     "nSets": 7,
+     "quantity": "width",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    },
+    {
+     "baselineMapePct": 27.6309,
+     "biasPct": -27.6309,
+     "coverage90": null,
+     "heldOutSource": "nist-amb2022-03-in718",
+     "mapePct": 27.6309,
+     "mapeUnresolvedAsFailPct": 27.6309,
+     "material": "Inconel 718",
+     "meanAbsLn": 0.326621,
+     "nCommon": 7,
+     "nResolved": 7,
+     "nRows": 7,
+     "nSets": 7,
+     "quantity": "depth",
+     "skill": 0.0,
+     "skillCi95": [
+      0.0,
+      0.0
+     ],
+     "status": "scored",
+     "unresolved": 0
+    }
+   ],
+   "trainedOnSources": [],
+   "url": "",
+   "version": "frozen-default-eta"
+  }
+ ],
+ "evidence": {
+  "experimentalValidation": false,
+  "kind": "screening-only",
+  "labelPromotionProposed": "none",
+  "statement": "Screening benchmark: predictions scored on published single tracks; not validation"
+ },
+ "generatedAt": "2026-10-27",
+ "honesty": "Screening benchmark of melt-pool width and depth predictions against published single tracks; not experimental validation; no per-row measurement uncertainty exists in any source; the built-in entries are the frozen screening kernels at their default absorptivity; scores are per (material, source) block and are never combined into one cross-material rank; skill is measured against the Rosenthal kernel at default absorptivity for every entry, unlike the scorecard where each kernel is compared with its own default; experimentalValidation=false",
+ "implementationHash": "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143",
+ "manifestSha256": "69caa150f1d2e890c4ba5041276e26422d0bc5ad4b1585072cd296c7e46839e7",
+ "protocol": {
+  "clusters": "parameter set via lpbf_calibration_stats.set_key = (source, material, power_W, speed_mm_s, beamDiameter_um)",
+  "coverage": {
+   "columns": "width_lo90,width_hi90,depth_lo90,depth_hi90 (absolute um)",
+   "interval": "Wilson 95 %",
+   "nominal": 0.9
+  },
+  "heldOut": "per (material, source) block of the trainable sources; sources a submission declares in trainedOnSources are excluded and marked as such",
+  "metrics": [
+   "mapePct on resolved rows",
+   "meanAbsLn = mean |ln(pred / meas)| on resolved rows",
+   "mapeUnresolvedAsFailPct (an unresolved row counts as a 100 % error)"
+  ],
+  "noCrossMaterialRank": true,
+  "skill": {
+   "baseline": "frozen Rosenthal kernel at its default absorptivity",
+   "baselineKernel": "rosenthal",
+   "bootstrap": {
+    "B": 1000,
+    "seed": 0,
+    "unit": "test parameter set (cluster), predictions fixed"
+   },
+   "statistic": "1 - MAPE_A / MAPE_B on the common resolved rows"
+  },
+  "unresolved": "a missing, blank row counts as unresolved; mapeUnresolvedAsFail scores it as a 100 % error"
+ },
+ "schema": "lpbf-leaderboard-1"
+}

@@ -1360,7 +1360,7 @@
     "status": "partial"
   },
   "provenance": {
-    "buildJobSolverRevision": "lpbf-build-job-solt-v28",
+    "buildJobSolverRevision": "lpbf-build-job-tang-risk-v30",
     "frozenFilesModified": false,
     "heatSource": "rosenthal",
     "solidificationModelId": "solidification-front-v3"
