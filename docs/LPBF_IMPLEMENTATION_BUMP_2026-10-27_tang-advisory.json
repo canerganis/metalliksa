@@ -6,7 +6,7 @@
   "numpy": "2.2.6",
   "platform": "Windows-11-10.0.26300-SP0"
  },
- "pinnedExpectedFingerprint": "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0",
+ "pinnedExpectedFingerprint": "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143",
  "parityGoldens": {
   "g10_openfoam_case_generation": {
    "group": "G10",
@@ -3423,7 +3423,7 @@
   "revision": "worktree",
   "version": "enthalpy-fv-6",
   "fingerprintSchema": "lpbf-thermal-implementation-manifest-v3-canonical-utf8-crlf",
-  "implementationHash": "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0",
+  "implementationHash": "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143",
   "manifestCount": 36,
   "manifest": [
    "four_alloy_materials.py",
@@ -3615,10 +3615,10 @@
     "rawBytes": 5205
    },
    "lpbf_thermal_solver.py": {
-    "canonicalSha256": "366e0bbe92290d2af0d1b969538f9834d101c67301d5bee3fecb25bdf9e72fa3",
-    "canonicalBytes": 97810,
-    "rawSha256": "6369e1224a4337a878309d80de88c001b7f795032f1490d3ce81fd9c45b9ec2d",
-    "rawBytes": 99459
+    "canonicalSha256": "3ceae6a06a9518fe7d764675fd3f0e49fe1c175b28738f6ed06062418a5857d2",
+    "canonicalBytes": 97880,
+    "rawSha256": "8af1ee644863e68cb9ec8f162009c1fef9592b62fcc4c15db54dcbcce0b05785",
+    "rawBytes": 99529
    },
    "lpbf_transient_3d_gpu.py": {
     "canonicalSha256": "a7b07dea293dcfbea9bbad7c2f0a73e5158b0ef6e179fd7a7f2fbe0a97007f88",
@@ -3682,10 +3682,10 @@
    }
   },
   "rawSchema": "lpbf-thermal-implementation-manifest-v2",
-  "rawByteImplementationHash": "10de6f9558f0e14ad43e29193a5341a46d4d637c106299d897b8efbf34aa0ba2"
+  "rawByteImplementationHash": "d0489d2d01c50a6880334c7e218464139ba283885f35ffe774824dfb3fd7cb12"
  },
  "fromHash": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
- "toHash": "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0",
+ "toHash": "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143",
  "dryRunSameHash": false,
  "versionUnchanged": true,
  "pinMatchesToHash": true,
@@ -3735,7 +3735,7 @@
  },
  "commits": {
   "fromRevision": "fc585b4a98d1eee0be31c20100fa79ee33bfc651",
-  "toRevision": "9dcf838f21757261df2a9c0ab0e0c66c3608e16a",
+  "toRevision": "b1c59bb68c31b6092152592116089e8e3f0d0994",
   "worktreeDirty": false
  },
  "expectDrift": [
@@ -3746,9 +3746,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 10.3,
+   "elapsed_s": 9.8,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "35416b2c3051385a2cc788b5c0680ed52c2397144a48ad0361551a83b0fe06a1"
   },
@@ -3756,9 +3756,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 62.3,
+   "elapsed_s": 61.0,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "3bf3e9b81a63552a18f45a78ada97e95c763119634374d4ee3d0f307df79113a"
   },
@@ -3766,9 +3766,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 3.1,
+   "elapsed_s": 2.6,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "b22e2cddf1eb4371c206ff23bf7c313f019a2d04a52a835a64db6fd8523a0942"
   },
@@ -3776,9 +3776,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 1.5,
+   "elapsed_s": 1.7,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "b56c83904adb05f651c6fb9b1f3d4e8e6a303eafa364b4ae8e12498de5941d5d"
   },
@@ -3786,9 +3786,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 4.8,
+   "elapsed_s": 4.6,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "1e4e1302e178c4773c3785a273db0e39e39f335ecb79814f20165ba3d1dda31d"
   },
@@ -3796,9 +3796,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 3.4,
+   "elapsed_s": 3.2,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "cdd4c852bd20ed7df02c514febca9de703474186985a63946f691e1c4de4c021"
   },
@@ -3806,9 +3806,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 4.8,
+   "elapsed_s": 5.0,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "3e37b6e59165cfa5c11e93b16e0a9d872892cb098b2d2436c795f0dedb419c64"
   },
@@ -3816,9 +3816,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 3.0,
+   "elapsed_s": 2.9,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "1d2b3d3b371ad7b4dcf0b942d214d23f0dc2a3f782a3269212234fde05f10380"
   },
@@ -3828,7 +3828,7 @@
    "drift": [],
    "elapsed_s": 1.7,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "c6552e3e16fd7b96437b310059f0d64e50553609f3c67aed17a72140c63f9f89"
   },
@@ -3838,7 +3838,7 @@
    "drift": [],
    "elapsed_s": 3.0,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "1d2f88a90b382be181f68db0ada8fcf790f8a20097db4b36496568d1c1e4ec32"
   },
@@ -3846,7 +3846,7 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 0.2,
+   "elapsed_s": 0.3,
    "implementationHashes": [],
    "observationsSha256": "bc0dd78eadb282f3509b116799d1e3d58631252abc00ffa1aaac86e835960472"
   },
@@ -3856,7 +3856,7 @@
    "drift": [],
    "elapsed_s": 2.7,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "e260fe72496c2822364856baad414fe97489f74a597f9919ba7994c854188218"
   },
@@ -3864,9 +3864,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 0.8,
+   "elapsed_s": 0.4,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "3b30cce7e74611eb712df4a857240b1dd6a934320e7cb5ca53ff6e5af7265e3f"
   },
@@ -3876,7 +3876,7 @@
    "drift": [],
    "elapsed_s": 3.6,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "f6e121845fd0b8715d40c90f8bd13bbf7fc7e9e2ede1a1a5fb40ae86199b810d"
   },
@@ -3884,9 +3884,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 4.1,
+   "elapsed_s": 4.2,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "28266a290ca66f350f2586078a52fb4e21196a864e1f728022dea57e150e4c36"
   },
@@ -3894,9 +3894,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 3.6,
+   "elapsed_s": 4.0,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "7cfd9be9070a012746351715617c6de93fc260ad20ebc333047ac09efcc4e8ce"
   },
@@ -3904,9 +3904,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 9.5,
+   "elapsed_s": 10.9,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "7dee9243ed293db39b4bc623a765fbe87b13a8b17813e674586a2fe1e558b4fd"
   },
@@ -3917,12 +3917,12 @@
     {
      "key": "meltpool.in625",
      "before": "7090c736fee29d53944083fcf5a6e200d3f79ed0e3eef8fc72a7d88965996e9c",
-     "after": "cea06eeaf24a1a3cc2e57e9d5e37c22340e55123651eb2d5cf5710a9320c3808"
+     "after": "b0fd072c54e7c35e2b9df157628c278931c5c338750cfc33394801efc4f7e16b"
     }
    ],
    "elapsed_s": 0.2,
    "implementationHashes": [],
-   "observationsSha256": "1d7647929cab59e702a545784877bfb0dcee5b3c866b0ae6e51b8cc366066a37"
+   "observationsSha256": "66aaefd50e8501ad1553d71413f734064f8e45c2b2d7d1ad3b3dbe433d635c0c"
   },
   "g19_emissivity_echo": {
    "status": "PASS",
@@ -3930,7 +3930,7 @@
    "drift": [],
    "elapsed_s": 3.9,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "2d314966d713b6ff92c2d8987cceb85b18df64c3d8fe1bcd7d756a37a0a30e58"
   },
@@ -3938,9 +3938,9 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 22.0,
+   "elapsed_s": 23.4,
    "implementationHashes": [
-    "50cc550b834bd29d81ef5fc52e0d7acd892641524283aac2c637f46e3087c0d0"
+    "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
    ],
    "observationsSha256": "985818f96d68e043f18ccbd99dbfbf5b56a16659ec8c4fdadefab1fd65526d5d"
   },
@@ -3948,7 +3948,7 @@
    "status": "PASS",
    "problems": [],
    "drift": [],
-   "elapsed_s": 0.1,
+   "elapsed_s": 0.2,
    "implementationHashes": [],
    "observationsSha256": "0fde81a43005646d965e469feea213369644a94f64b7d4809b002e28a7f15aff"
   },
@@ -3967,12 +3967,12 @@
     {
      "key": "meltpool.0.canonicalSha256",
      "before": "3e98b746f8486db0f99e47d85f275c9ca2f8b04fdf8b0d173f39b81bea3e3cfa",
-     "after": "7690c9b804eed9e584d2d2300e7c8b957af0de9f5f664f01494359821df4dd0d"
+     "after": "276b8d62be0429d0a34aa0637d2846903c0ce7b858934893af9626da57c48976"
     },
     {
      "key": "meltpool.0.typedSha256",
      "before": "da9e0383f33e5e1841e49c97368f49822d151cc393e2c05eaa7f155ab043b0d4",
-     "after": "745964bcac916cc542b295259befaacb9d7f5843d59c928a9adfbdf4e80fb958"
+     "after": "b2633194b80a5f0e9b7caa4d7505bf16d115d57e3c473e6d6fb3ee7cafb3a4d3"
     },
     {
      "key": "meltpool.1.canonicalSha256",
@@ -3995,9 +3995,9 @@
      "after": "735688c62df64cad55bf3bfacf2a188f5bac7c0eebf472974c8de1a052d65362"
     }
    ],
-   "elapsed_s": 0.5,
+   "elapsed_s": 0.7,
    "implementationHashes": [],
-   "observationsSha256": "e6dbded5b227cb195119a69b46a07a41c2651e6826104d664e4bd819b46dec2a"
+   "observationsSha256": "f99fe65dd60ffa4ed5e32a71a75955612d476b52ac324335d2dd703527ffe6c5"
   },
   "g12_analytical_modules": {
    "status": "PASS",
