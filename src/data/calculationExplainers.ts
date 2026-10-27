@@ -368,11 +368,11 @@ const ENTHALPY_GATES: Explainer = {
     {
       id: "verdict",
       label: "How the gates set the process-window verdict",
-      latex: String.raw`\text{verdict}=\begin{cases}\text{do-not-print} & \text{Tang index}>1\\ \text{risky} & \text{keyhole mode}\\ \text{printable} & \text{otherwise}\end{cases}\qquad(\text{inconclusive if the geometry is not resolved or a gate input is null})`,
-      plain: "do-not-print if the Tang index is above 1; otherwise risky if the regime is keyhole mode; otherwise printable; inconclusive if the geometry is not resolved or a gate input is null",
+      latex: String.raw`\text{verdict}=\begin{cases}\text{risky} & \text{Tang index}>1\ \text{or keyhole mode}\\ \text{printable} & \text{otherwise}\end{cases}\qquad(\text{inconclusive if the geometry is not resolved or a gate input is null; never do-not-print})`,
+      plain: "risky if the Tang index on modelled geometry is above 1 (possible lack of fusion, not an experimentally established defect) or the regime is keyhole mode; otherwise printable (a screening result; fusion adequacy is not established); inconclusive if the geometry is not resolved or a gate input is null; never do-not-print",
       symbols: [["verdict", "screening verdict of the process-window map cell or the build job, not a print recommendation"]],
-      codeLocator: "python/lpbf_build_job_solver.py:compose_verdict (P7a ladder); python/lpbf_process_window.py evaluates calculate_meltpool_physics then compose_verdict per cell",
-      sourceLocator: "Defined in the code (P7a, 2026-10-11): sourced criteria only. The 0.80 Tang margin, the level 30 and the balling band are advisories that do not change the verdict.",
+      codeLocator: "python/lpbf_build_job_solver.py:compose_verdict (Tang bump 2026-10-27 ladder); python/lpbf_process_window.py evaluates calculate_meltpool_physics then compose_verdict per cell",
+      sourceLocator: "Defined in the code (P7a, 2026-10-11; Tang bump 2026-10-27: a Tang index above 1 is a risk, not a block, because it is applied to modelled geometry). The 0.80 Tang margin, the level 30 and the balling band are advisories that do not change the verdict.",
     },
   ],
 };

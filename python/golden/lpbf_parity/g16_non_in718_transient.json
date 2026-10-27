@@ -4,9 +4,9 @@
  "group": "G16",
  "description": "Standard transient for Ti-6Al-4V, 316L and AlSi10Mg",
  "slow": false,
- "recordedImplementationHash": "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca",
+ "recordedImplementationHash": "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143",
  "recordedVersion": "enthalpy-fv-6",
- "recordedGitHead": "c5712223e1d4105ef1f7fd50b1e8a03383d561ce",
+ "recordedGitHead": "e73ec3af12d0481ad6320b20ab6589a7451ca8a6",
  "recordedEnvironment": {
   "python": "3.12.10",
   "numpy": "2.2.6",
@@ -68,8 +68,8 @@
   }
  },
  "recordedRuns_s": [
-  5.3,
-  5.4
+  4.2,
+  3.7
  ],
  "recordedTwice": true,
  "observations": {

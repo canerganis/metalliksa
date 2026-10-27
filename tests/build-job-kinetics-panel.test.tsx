@@ -47,7 +47,9 @@ test("TS and Python build-job solver revisions are the same string", () => {
   assert.notEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p1-sourced-v22");
   assert.notEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p6-containment-v23");
   assert.notEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-p7a-rules-and-nulls-v24");
-  assert.equal(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-solt-v28");
+  assert.notEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-solt-v28");
+  assert.notEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-tang-advisory-v29");
+  assert.equal(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-tang-risk-v30");
 });
 
 test("all SOL-A Build Job kinetics with no eligible history show only the Python reason", () => {

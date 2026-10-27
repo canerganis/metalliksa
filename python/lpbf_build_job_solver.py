@@ -319,9 +319,11 @@ def _patch_candidates(thermal, alloy_id, dominant_gate):
 
 def _verified_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None):
     """(patch, note, advisories). A patch is suggested only when the served solver, re-run at the suggested point,
-    returns a printable verdict under the P7a ladder: Tang unit criterion passes, geometry resolved, below the keyhole-mode
-    cut. The literature box is only the search range (a display range, not a window); the box, balling, the keyhole
-    level 30, the Tang margin and downskin are advisories, reported for the suggested point in the third element.
+    returns a printable verdict under the current ladder (Tang bump, 2026-10-27): geometry resolved, verdict inputs not
+    null, Tang overlap index at or below 1.0 on modelled geometry, below the keyhole-mode cut. The literature box is
+    only the search range (a display range, not a window); the box, balling, the keyhole level 30, the Tang margin and
+    downskin are advisories, reported for the suggested point in the third element. The note states the Tang index of
+    the point and that fusion adequacy is not established; a point is never called fusion verified.
     Selection prefers the first printable candidate with zero advisories, else the first printable one. Without an
     evaluator (hand-built thermal input, UQ samples) no patch is offered.
     The downskin caveat of the note is added by _suggested_patch."""
@@ -333,7 +335,7 @@ def _verified_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None):
             # is searched instead of claiming that no gate fails.
             return None, ("The verdict is inconclusive (geometry not resolved or a verdict-driving input null), so "
                           "no parameter patch is searched: a patch would be verified against unresolved numbers."), []
-        return None, "No sourced gate fails or warns, so there is no parameter change to suggest.", []
+        return None, "No verdict-driving gate is raised, so there is no parameter change to suggest.", []
     if evaluate is None:
         return None, "No parameter patch: the solver was not available to verify a suggested point.", []
     first = None
@@ -353,9 +355,10 @@ def _verified_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None):
         advisories = list(check["advisories"])
         keyhole_gate = next(g for g in check["gates"] if g["id"] == "keyhole")
         note = (
-            f"Verified by re-running the solver at the suggested point: Tang unit criterion passes (index "
-            f"{check['lofGeometry']['tangIndex']}), geometry resolved, below the keyhole-mode cut (ΔH/hₛ "
-            f"{keyhole_gate['measured']} < {keyhole_gate['required']}); verdict {check['verdict']} under the P7a ladder. "
+            f"Re-run by the solver at the suggested point: geometry resolved, below the keyhole-mode cut (ΔH/hₛ "
+            f"{keyhole_gate['measured']} < {keyhole_gate['required']}), Tang overlap index "
+            f"{check['lofGeometry']['tangIndex']} on modelled geometry (at or below 1.0); verdict "
+            f"{check['verdict']} (screening result; fusion adequacy is not established). "
             "The literature box is a search range (display range, not a window). Downskin, if requested, is unchanged "
             "by these parameters. Advisories at the suggested point: "
             + ("; ".join(advisories) if advisories else "none")
@@ -364,8 +367,9 @@ def _verified_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None):
     return None, (
         "No parameter patch: no point of a "
         f"{PATCH_GRID_LEVELS}x{PATCH_GRID_LEVELS} power-speed grid over the {alloy_id} literature search range (display "
-        "range, not a window), with the current or the per-alloy conduction hatch, layer and beam, passes the Tang unit "
-        "criterion below the keyhole-mode cut with resolved geometry (printable verdict) in the served solver."
+        "range, not a window), with the current or the per-alloy conduction hatch, layer and beam, has a Tang overlap "
+        "index at or below 1.0 below the keyhole-mode cut with resolved geometry (printable verdict) in the served "
+        "solver."
     ), []
 
 
@@ -395,11 +399,14 @@ def _suggested_patch(thermal, alloy_id, dominant_gate, verdict, evaluate=None, g
 # these are unavailable: a verdict must not be built from screening-heuristic numbers.
 GEOMETRY_DEPENDENT_GATES = ("lof_tang", "lof_wh", "lof_dt", "balling")
 
-# P7a (2026-10-11, docs/research/SPEC_p7a_rules_and_nulls_2026-10-11.md): the verdict uses sourced criteria, the
-# regime classifier and validity guards only (verdictBasis "sourced-criteria-only"). Ladder: inconclusive (geometry
-# not resolved or a verdict-driving input null) > do-not-print (Tang unit criterion fails) > risky (served regime is
-# keyhole mode) > printable. Everything else is an advisory with the status text "unsourced screening threshold".
-VERDICT_BASIS = "sourced-criteria-only"
+# P7a (2026-10-11, docs/research/SPEC_p7a_rules_and_nulls_2026-10-11.md) and the Tang bump (2026-10-27,
+# docs/LPBF_IMPLEMENTATION_BUMP_2026-10-27_tang-advisory.reasons.md, physics gate finding 1): ladder inconclusive
+# (geometry not resolved or a verdict-driving input null: the Tang index, width, depth or dH/hs) > risky (Tang overlap
+# index above 1.0 on modelled geometry, or the served regime is keyhole mode; every applying cause is reported) >
+# printable. The Tang index uses the sourced geometric unit bound (Harkin 2023 Eq. 5) on modelled, not measured,
+# geometry, so it indicates a possible lack of fusion (lof_tang status "warn", a risk gate), never a blocking gate:
+# no rule of this ladder issues do-not-print. Everything else is an advisory ("unsourced screening threshold").
+VERDICT_BASIS = "model-geometry-tang-keyhole-risk-screen"
 UNSOURCED_SCREENING_THRESHOLD = "unsourced screening threshold"
 # Stress and distortion gates: not evaluated since P7a (no sourced stress model; G1 audit B08, B09). They are advisory
 # gates, listed in unavailableGates, and never make the verdict inconclusive.
@@ -417,11 +424,19 @@ PARAMETER_INDEPENDENT_ADVISORY_NOTE = (
 TANG_CRITERION_BASIS = (
     "Tang criterion as quoted in Harkin 2023 Eq. 5, primary not in the library; sourced for measured melt pool "
     "geometry; with analytic geometry Harkin 2023 Eq. 9 to 11 and Conclusions find the unit value problematic "
-    "(Ti-6Al-4V, one machine); here applied to modelled geometry, a screening, not a prediction"
+    "(Ti-6Al-4V, one machine); here applied to modelled geometry (model width and a depth merged from the conduction "
+    "and Fabbro legs, not a measured half-ellipse), so since 2026-10-27 an index above 1.0 indicates a risk, never a "
+    "blocking gate"
 )
+# The Tang risk reason of the physics gate, finding 1 (verbatim).
+TANG_RISK_REASON = (
+    "Modelled geometry indicates possible lack of fusion (Tang overlap index above 1.0); not an experimentally "
+    "established defect."
+)
+FUSION_NOT_ESTABLISHED = "Screening result; fusion adequacy is not established."
 LOF_DIAGNOSTIC_BASIS = (UNSOURCED_SCREENING_THRESHOLD + " removed: the former required values 1.05 (W/h) and 1.15 "
                         "(D/t) had no source, so required is null and the status is always pass; diagnostic ratio only, "
-                        "the Tang unit criterion is the gate (P7a, G1 audit V20)")
+                        "the Tang overlap index is the lack-of-fusion screen (P7a, G1 audit V20; risk, not blocking, since 2026-10-27)")
 KEYHOLE_LEVEL_30_ADVISORY_BASIS = (UNSOURCED_SCREENING_THRESHOLD + ", legacy porosity level kept for continuity, not a "
                                    "porosity boundary")
 ZHAO_BAND_ADVISORY_BASIS = ("no pore condition below 15 in Zhao 2020 (0 of 35), not evidence of safety; Ti-6Al-4V pores "
@@ -513,8 +528,9 @@ def compose_verdict(thermal, alloy_id, extras=None):
         for gid in ("lof_tang", "lof_wh", "lof_dt"):
             not_evaluated[gid] = "lack-of-fusion input (Tang index, width or depth) is null"
     lof_status = def_.get("lackOfFusionStatus")
-    # P7a: one lack-of-fusion rule, the Tang unit criterion (served status Fail, or the index itself above 1.0 for a
-    # hand-built dict). The 0.80 margin is an advisory flag only (the former "Warning" status of older payloads too).
+    # One lack-of-fusion screen, the Tang unit criterion (served status Fail, or the index itself above 1.0 for a
+    # hand-built dict). Since the Tang bump (2026-10-27) lof_fail makes the verdict risky (never do-not-print). The
+    # 0.80 margin is an advisory flag only (the former "Warning" status of older payloads too).
     lof_fail = "lof_tang" not in not_evaluated and (lof_status == "Fail" or (tang is not None and tang > 1.0))
     lof_margin = ("lof_tang" not in not_evaluated and not lof_fail
                   and (bool(def_.get("lackOfFusionMarginAdvisory")) or lof_status == "Warning"
@@ -573,12 +589,13 @@ def compose_verdict(thermal, alloy_id, extras=None):
             + ". A null input is never counted as pass or fail."
         )
     if lof_fail:
-        reasons.append(
-            f"Lack of fusion (Tang unit criterion): (h/W)²+(t/D)² = {tang:.3f} (need ≤1.0); "
+        tang_reason = (
+            f"{TANG_RISK_REASON} Index (h/W)²+(t/D)² = {tang:.3f} (risk above 1.0, Harkin 2023 Eq. 5); "
             f"W/h = {width_over_hatch:.2f}, D/t = {depth_over_layer:.2f}. {TANG_CRITERION_BASIS}."
         )
         if dh is not None and dh >= ENTHALPY_TRANSITION:
-            reasons[-1] += " " + KEYHOLE_DEPTH_BIAS_LOF_NOTE
+            tang_reason += " " + KEYHOLE_DEPTH_BIAS_LOF_NOTE
+        reasons.append(tang_reason)
     if keyhole_mode:
         reasons.append(
             f"Keyhole mode by the served regime classifier: ΔH/hₛ = {dh} at or above the cut {keyhole_cut:g} "
@@ -629,11 +646,10 @@ def compose_verdict(thermal, alloy_id, extras=None):
             f"{LITERATURE_PV_ADVISORY_BASIS}. It does not change the verdict."
         )
 
-    # P7a ladder: sourced criteria, the regime classifier and validity guards only.
+    # Ladder (Tang bump, 2026-10-27, physics gate finding 1): Tang above 1.0 or keyhole mode -> risky; a null Tang,
+    # width, depth or dH/hs input or an unresolved geometry -> inconclusive below; never do-not-print.
     verdict = "printable"
-    if lof_fail:
-        verdict = "do-not-print"
-    elif keyhole_mode:
+    if lof_fail or keyhole_mode:
         verdict = "risky"
     verdict_gate_not_evaluated = "lof_tang" in not_evaluated or "keyhole" in not_evaluated
     if not geometry_resolved or verdict_gate_not_evaluated:
@@ -641,8 +657,8 @@ def compose_verdict(thermal, alloy_id, extras=None):
 
     if not reasons:
         reasons.append(
-            f"Melt pool passes the Tang overlap criterion; regime: {geometry.get('regime') or 'not reported'}. "
-            "VED is not used as the sole criterion."
+            f"No verdict-driving gate is raised; regime: {geometry.get('regime') or 'not reported'}. "
+            f"{FUSION_NOT_ESTABLISHED} VED is not used as the sole criterion."
         )
 
     n_adv = len(advisories)
@@ -651,10 +667,16 @@ def compose_verdict(thermal, alloy_id, extras=None):
         f"Inconclusive — melt-pool geometry not resolved ({extent_status}); see reasons" if not geometry_resolved
         else "Inconclusive — a verdict-driving gate was not evaluated (null input, never pass or fail); see reasons"
     )
+    risk_causes = []
+    if lof_fail:
+        risk_causes.append("possible lack of fusion (Tang overlap index above 1.0 on modelled geometry)")
+    if keyhole_mode:
+        risk_causes.append("keyhole mode by the regime classifier")
     headline = {
-        "printable": f"Printable — no sourced gate fails ({n_adv} {advisory_word}); see advisories",
-        "risky": "Risky — keyhole mode by the regime classifier; qualify with coupon builds before flight hardware",
-        "do-not-print": "Do not print — Tang unit criterion fails; change P, v, h, or t before a build",
+        "printable": (f"Printable — screening result, fusion adequacy is not established ({n_adv} {advisory_word}); "
+                      "see advisories"),
+        "risky": (f"Risky — {' and '.join(risk_causes)}; {FUSION_NOT_ESTABLISHED[0].lower()}{FUSION_NOT_ESTABLISHED[1:-1]}; "
+                  "qualify with coupon builds before flight hardware"),
         "inconclusive": inconclusive_headline,
     }[verdict]
 
@@ -666,7 +688,7 @@ def compose_verdict(thermal, alloy_id, extras=None):
     lw = None if width_over_hatch is None else round(width_over_hatch, 3)
     dt = None if depth_over_layer is None else round(depth_over_layer, 3)
     tang_r = None if tang is None else round(tang, 3)
-    tang_status = "fail" if lof_fail else "pass"
+    tang_status = "warn" if lof_fail else "pass"
     kh_status = ("warn" if keyhole_mode else "advisory" if (keyhole_band or keyhole_level30) else "pass")
     ball_status = ("advisory" if (balling_high or balling_moderate)
                    else "unavailable" if balling_unavailable else "pass")
@@ -681,8 +703,9 @@ def compose_verdict(thermal, alloy_id, extras=None):
             tang_r,
             1.0,
             "1",
-            "Tang LoF unit criterion (h/W)²+(t/D)² — fail > 1.0 (do-not-print); the only verdict-driving fusion gate. "
-            "Index above 0.80: margin advisory only.",
+            "Tang overlap index (h/W)²+(t/D)² on modelled melt-pool geometry — above 1.0 → warn (risky: possible lack "
+            "of fusion, not an experimentally established defect), never blocking (never do-not-print). Index above "
+            "0.80: margin advisory only.",
             basis=TANG_CRITERION_BASIS,
         ),
         _gate(
@@ -692,7 +715,7 @@ def compose_verdict(thermal, alloy_id, extras=None):
             None,
             "1",
             "Diagnostic melt-pool width / hatch (W/h). Informational, never a gate; no sourced threshold; the Tang index "
-            "is the gate.",
+            "is the lack-of-fusion screen.",
             basis=LOF_DIAGNOSTIC_BASIS,
         ),
         _gate(
@@ -702,7 +725,7 @@ def compose_verdict(thermal, alloy_id, extras=None):
             None,
             "1",
             "Diagnostic melt-pool depth / layer (D/t). Informational, never a gate; no sourced threshold; the Tang index "
-            "is the gate.",
+            "is the lack-of-fusion screen.",
             basis=LOF_DIAGNOSTIC_BASIS,
         ),
         _gate(
@@ -1162,12 +1185,14 @@ def _solve_lpbf_build_job_core(data):
 
     assumptions = [
         "Melt-pool field is regularized Rosenthal (not volumetric Goldak FEA).",
-        "LoF gate is Tang (h/W)²+(t/D)² ≤ 1; VED is not the sole criterion.",
+        "LoF screen is the Tang overlap index (h/W)²+(t/D)² on modelled geometry: above 1 risky (possible lack of "
+        "fusion, not an established defect), never do-not-print (2026-10-27); VED is not the sole criterion.",
         (
             f"Regime labels use ΔH/hs cuts: vapor-depression onset {ENTHALPY_TRANSITION:g} (Cunningham 2019) and a "
             f"provisional keyhole-mode cut {ENTHALPY_KEYHOLE:g} ({ENTHALPY_KEYHOLE_IN625:g} for Inconel 625, fitted on "
-            "NIST mds2-2923 tracks), a mode onset and not a porosity boundary. The verdict (P7a, sourced criteria only) "
-            "is do-not-print on the Tang unit criterion, risky in keyhole mode, otherwise printable. The level "
+            "NIST mds2-2923 tracks), a mode onset and not a porosity boundary. The verdict (Tang advisory bump "
+            "2026-10-27) is risky when the Tang overlap index on modelled geometry is above 1.0 or in keyhole mode, "
+            "otherwise printable (a screening result; fusion adequacy is not established); never do-not-print. The level "
             f"{POROSITY_SCREEN_HIGH_AT:g}, the Tang margin 0.80, the literature box, the balling Moderate band and the "
             "downskin angles are unsourced screening thresholds reported as advisories (the balling High band was "
             "removed in P7b). The Fabbro keyhole depth leg "

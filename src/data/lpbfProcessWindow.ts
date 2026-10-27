@@ -337,7 +337,7 @@ const TANG_GATE = "lof_tang";
 
 const GATE_NAMES: Readonly<Record<string, string>> = {
   [KEYHOLE_GATE]: "the keyhole risk gate",
-  [TANG_GATE]: "the Tang lack-of-fusion criterion",
+  [TANG_GATE]: "the Tang overlap screen",
   lof_wh: "the width-over-hatch diagnostic",
   lof_dt: "the depth-over-layer diagnostic",
   balling: "the balling aspect-ratio screen",
@@ -360,16 +360,32 @@ export function keyholeGateClause(alloyId: string | null | undefined): string {
     : "the keyhole risk gate (dH/hs at or above 20, a threshold transferred from 316L and Ti-6Al-4V and not derived for this alloy)";
 }
 
-const TANG_CLAUSE = "the Tang lack-of-fusion criterion (its source notes the criterion is problematic with modelled geometry)";
+/**
+ * Since the Tang bump (2026-10-27) a Tang overlap index above 1.0 on modelled melt-pool geometry makes a cell risky (a risk
+ * gate, never blocking). A stored result in which lof_tang is still a blocking gate was computed by an earlier solver
+ * revision: it is described as a legacy result, never as the current policy.
+ */
+export const TANG_RISK_SENTENCE =
+  "The Tang overlap index exceeds 1.0 on modelled melt-pool geometry, which makes this cell risky: modelled geometry indicates possible lack of fusion; not an experimentally established defect.";
+export const FUSION_NOT_ESTABLISHED_NOTE = "Screening result; fusion adequacy is not established.";
+
+/** The Tang index line shown for a selected cell (null when the payload has no index). */
+export function tangIndexLine(tangIndex: number | null | undefined): string | null {
+  if (tangIndex === null || tangIndex === undefined || !Number.isFinite(tangIndex)) return null;
+  return `Tang overlap index ${tangIndex} on modelled melt-pool geometry (risk above 1.0). ${FUSION_NOT_ESTABLISHED_NOTE}`;
+}
+const TANG_LEGACY_SENTENCE =
+  "Legacy result: an earlier solver revision made this cell do-not-print on the Tang overlap index (modelled melt-pool geometry); the current screen reports an index above 1.0 as a risk (risky), never do-not-print. Re-run the map for the current verdict.";
+const TANG_LEGACY_CLAUSE = "the Tang overlap index (modelled melt-pool geometry)";
 
 /** One plain sentence per gate that touched the cell: failing, risk, advisory and unavailable gates in that order. */
 export function cellGateSentences(cell: LpbfProcessWindowCell, alloyId?: string | null): string[] {
   if (cell.verdict === "error") return [];
   const out: string[] = [];
-  const clause = (gate: string): string => (gate === KEYHOLE_GATE ? keyholeGateClause(alloyId) : gate === TANG_GATE ? TANG_CLAUSE : gateName(gate));
+  const clause = (gate: string): string => (gate === KEYHOLE_GATE ? keyholeGateClause(alloyId) : gateName(gate));
   const cap = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
-  for (const gate of cell.blockingGates) out.push(`${cap(clause(gate))} fails here, which makes this cell do-not-print.`);
-  for (const gate of cell.riskGates) out.push(`${cap(clause(gate))} flags this cell, which makes it risky.`);
+  for (const gate of cell.blockingGates) out.push(gate === TANG_GATE ? TANG_LEGACY_SENTENCE : `${cap(clause(gate))} fails here, which makes this cell do-not-print.`);
+  for (const gate of cell.riskGates) out.push(gate === TANG_GATE ? TANG_RISK_SENTENCE : `${cap(clause(gate))} flags this cell, which makes it risky.`);
   for (const gate of cell.advisoryGates) out.push(`${cap(gateName(gate))} gives an advisory only and does not change the verdict.`);
   for (const gate of cell.unavailableGates) out.push(`${cap(gateName(gate))} could not be evaluated for this cell.`);
   return out;
@@ -379,15 +395,18 @@ export interface NoPrintableExplanation {
   total: number;
   /** Cells where the keyhole gate is a risk gate. */
   keyholeRiskCells: number;
-  /** Cells where the Tang criterion is a failing gate. */
-  tangFailCells: number;
+  /** Cells where the Tang overlap index is a risk gate (current results: possible lack of fusion, never blocking). */
+  tangRiskCells: number;
+  /** Legacy results only: cells where an earlier solver revision made lof_tang a blocking gate. */
+  legacyTangBlockedCells: number;
   /** Cells with an inconclusive or error verdict (no gate decided them). */
   unresolvedCells: number;
 }
 
 /**
- * When no cell is printable: how many cells each of the two verdict-driving gates holds back, counted from the returned
- * cell gate data. Returns null when at least one cell is printable or the grid is empty.
+ * When no cell is printable: how many cells each risk gate (keyhole, Tang) flags and, for a legacy stored result only,
+ * how many an earlier revision blocked on Tang; counted from the returned cell gate data (a cell may count under both
+ * risk gates). Returns null when at least one cell is printable or the grid is empty.
  */
 export function noPrintableExplanation(result: Pick<LpbfProcessWindowResponse, "cells">): NoPrintableExplanation | null {
   const cells = result.cells;
@@ -395,7 +414,8 @@ export function noPrintableExplanation(result: Pick<LpbfProcessWindowResponse, "
   return {
     total: cells.length,
     keyholeRiskCells: cells.filter(c => c.riskGates.includes(KEYHOLE_GATE)).length,
-    tangFailCells: cells.filter(c => c.blockingGates.includes(TANG_GATE)).length,
+    tangRiskCells: cells.filter(c => c.riskGates.includes(TANG_GATE)).length,
+    legacyTangBlockedCells: cells.filter(c => c.blockingGates.includes(TANG_GATE)).length,
     unresolvedCells: cells.filter(c => c.verdict === "inconclusive" || c.verdict === "error").length,
   };
 }
@@ -408,7 +428,8 @@ export function noPrintableNoteText(result: Pick<LpbfProcessWindowResponse, "cel
   if (!x) return null;
   const parts: string[] = [];
   if (x.keyholeRiskCells > 0) parts.push(`${keyholeGateClause(result.alloyId)} flags ${cellsText(x.keyholeRiskCells)} of ${x.total} as a keyhole risk`);
-  if (x.tangFailCells > 0) parts.push(`${TANG_CLAUSE} fails in ${cellsText(x.tangFailCells)} of ${x.total}, which makes them do-not-print`);
+  if (x.legacyTangBlockedCells > 0) parts.push(`legacy result: an earlier solver revision made ${cellsText(x.legacyTangBlockedCells)} of ${x.total} do-not-print on ${TANG_LEGACY_CLAUSE}, which the current screen reports as a risk (risky), never do-not-print (re-run the map for current verdicts)`);
+  if (x.tangRiskCells > 0) parts.push(`the Tang overlap index (above 1.0 on modelled geometry) flags ${cellsText(x.tangRiskCells)} of ${x.total} as a possible lack-of-fusion risk, not an experimentally established defect`);
   if (x.unresolvedCells > 0) parts.push(`${cellsText(x.unresolvedCells)} of ${x.total} could not be resolved`);
   const lead = "No cell in this P-v range is printable.";
   if (parts.length === 0) return `${lead} Select a cell to see which gates held it back.`;

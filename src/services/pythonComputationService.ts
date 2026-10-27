@@ -1008,7 +1008,7 @@ export interface PythonLpbfSuggestedPatch {
 
 export interface PythonLpbfBuildJobVerdict {
   verdict: "printable" | "risky" | "do-not-print" | "inconclusive";
-  /** "sourced-criteria-only" since P7a: do-not-print on the Tang unit criterion, risky in keyhole mode, else printable. */
+  /** "model-geometry-tang-keyhole-risk-screen" since 2026-10-27 (was "sourced-criteria-only" in P7a): risky when the Tang overlap index on modelled geometry is above 1.0 or in keyhole mode, else printable; never do-not-print. Older payloads may still say do-not-print on Tang. */
   verdictBasis?: string;
   headline: string;
   reasons: string[];
@@ -1643,6 +1643,8 @@ export interface LpbfProcessWindowCell {
   ballingBand: string | null;
   width_um: number | null;
   depth_um: number | null;
+  /** Tang overlap index (h/W)^2+(t/D)^2 on modelled geometry; null when the extent is not computed or the payload predates 2026-10-27. */
+  tangIndex?: number | null;
   error: string | null;
 }
 

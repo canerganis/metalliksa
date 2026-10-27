@@ -646,7 +646,7 @@ class ProcessMapGrid(unittest.TestCase):
                                     "beamDiameter_um": 80, "preheatTemp_C": 80, "layerThickness_um": 40,
                                     "hatchSpacing_um": 100, "preset": "nozzle", "bypassCache": True})
         self.assertTrue(job["success"])
-        self.assertEqual(job["solverRevision"], "lpbf-build-job-solt-v28")
+        self.assertEqual(job["solverRevision"], "lpbf-build-job-tang-risk-v30")
         self.assertFalse(job.get("experimentalValidation", False))
         text = json.dumps(job)
         self.assertNotIn('"productionReady": true', text)

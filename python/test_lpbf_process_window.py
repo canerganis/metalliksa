@@ -325,5 +325,75 @@ class ProcessWindowTests(unittest.TestCase):
             self.assertEqual(out["errorKind"], "validation")
 
 
+
+# Tang bump (2026-10-27, physics gate finding 1). UI default settings of the four alloy presets
+# (src/store/useMaterialSpecimenStore.ts deriveSpecimenProperties: beam 80 um fallback, recommended layer 40 um and hatch
+# 100 um, recommended preheat by base metal / hot-tearing class) on the engine default 11 x 11 axes. BEFORE was measured
+# on the pre-bump tree (fc585b4a, solver revision lpbf-build-job-solt-v28); only its do-not-print cells may move, and
+# only to risky (Tang above 1.0 or keyhole mode). No printable cell is forced: IN718 has none at these settings.
+UI_DEFAULTS = {"in718": (80, 40, 100, 200), "ti64": (80, 40, 100, 150), "ss316l": (80, 40, 100, 80),
+               "alsi10mg": (80, 40, 100, 160)}
+VERDICT_ORDER = ("printable", "risky", "do-not-print", "inconclusive", "error")
+BEFORE = {"in718": (0, 58, 58, 5, 0), "ti64": (0, 68, 53, 0, 0), "ss316l": (0, 22, 91, 8, 0),
+          "alsi10mg": (62, 43, 16, 0, 0)}
+AFTER = {"in718": (0, 116, 0, 5, 0), "ti64": (0, 121, 0, 0, 0), "ss316l": (0, 113, 0, 8, 0),
+         "alsi10mg": (62, 59, 0, 0, 0)}
+# Risky cells by risk-gate set after the bump: (lof_tang only, keyhole only, both).
+RISK_MIX = {"in718": (27, 58, 31), "ti64": (31, 68, 22), "ss316l": (56, 22, 35), "alsi10mg": (16, 43, 0)}
+
+
+class TangRiskDefaultGrid(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        pwc.clear()
+        cls.maps = {}
+        for alloy, (beam, layer, hatch, preheat) in UI_DEFAULTS.items():
+            cls.maps[alloy] = pw.run_process_window({"alloyId": alloy, "beamDiameter_um": beam, "layer_um": layer,
+                                                     "hatch_um": hatch, "preheatTemp_C": preheat})
+
+    def test_counts_after_the_bump(self):
+        for alloy, r in self.maps.items():
+            self.assertTrue(r["success"], alloy)
+            self.assertEqual(r["grid"]["nCells"], 121, alloy)
+            self.assertEqual(tuple(r["counts"][k] for k in VERDICT_ORDER), AFTER[alloy], alloy)
+
+    def test_only_former_do_not_print_cells_moved_to_risky(self):
+        for alloy in UI_DEFAULTS:
+            b, a = dict(zip(VERDICT_ORDER, BEFORE[alloy])), dict(zip(VERDICT_ORDER, AFTER[alloy]))
+            self.assertEqual(a["do-not-print"], 0, alloy)
+            self.assertEqual((a["printable"], a["inconclusive"], a["error"]),
+                             (b["printable"], b["inconclusive"], b["error"]), alloy)
+            self.assertEqual(a["risky"], b["risky"] + b["do-not-print"], alloy)
+
+    def test_tang_is_a_risk_gate_never_blocking_and_every_cause_is_listed(self):
+        for alloy, r in self.maps.items():
+            mix = [0, 0, 0]
+            for c in r["cells"]:
+                where = (alloy, c["power_W"], c["speed_mm_s"])
+                self.assertEqual(c["blockingGates"], [], where)
+                self.assertNotIn("lof_tang", c["advisoryGates"], where)
+                if c["verdict"] == "risky":
+                    risk = set(c["riskGates"])
+                    mix[0 if risk == {"lof_tang"} else 1 if risk == {"keyhole"} else 2] += 1
+                    self.assertTrue(risk <= {"lof_tang", "keyhole"} and risk, where)
+                    if "lof_tang" in risk:
+                        self.assertGreater(c["tangIndex"], 1.0, where)
+                        self.assertTrue(any(x.startswith("Modelled geometry indicates possible lack of fusion")
+                                            for x in c["reasons"]), where)
+                if c["verdict"] in ("printable", "risky"):
+                    self.assertIsNotNone(c["tangIndex"], where)
+            self.assertEqual(tuple(mix), RISK_MIX[alloy], alloy)
+            self.assertIs(r["evidence"]["experimentalValidation"], False)
+
+    def test_in718_has_no_printable_cell_at_the_ui_defaults(self):
+        # Reported, not forced: at hatch 100 um and layer 40 um every resolved IN718 cell has a Tang index above 1.0 or
+        # is keyhole mode.
+        self.assertEqual([c for c in self.maps["in718"]["cells"] if c["verdict"] == "printable"], [])
+        for c in self.maps["alsi10mg"]["cells"]:
+            if c["verdict"] == "printable":
+                self.assertIn("fusion adequacy is not established", c["headline"])
+                self.assertLessEqual(c["tangIndex"], 1.0)
+
+
 if __name__ == "__main__":
     unittest.main()

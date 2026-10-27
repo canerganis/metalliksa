@@ -234,7 +234,7 @@
  },
  "defectDiagnostics": {
   "lackOfFusionStatus": "Pass",
-  "lackOfFusionRisk": "Full Fusion Bonding (Tang (h/W)^2+(t/D)^2 \u2264 1.0); margin advisory: index above 0.80, an unsourced screening threshold",
+  "lackOfFusionRisk": "Tang overlap screen: index <= 1 using modelled geometry; fusion not established; margin advisory: index above 0.80, an unsourced screening threshold",
   "lackOfFusionOverlapIndex": 0.912,
   "tangIndex_hW_tD": 0.912,
   "hOverW": 0.904,
@@ -917,7 +917,7 @@
   "regimeBasis": "dH/hs < 15 conduction, 15-20 transition, >= 20 keyhole mode (melt-pool D/W > 0.5 screening onset); Inconel 625 uses its own cut: < 13.6 conduction, >= 13.6 keyhole mode, no transition band (see the IN625 alloy note). 20 is a provisional screening choice, not a derived exact threshold: it lies in the overlap of King et al. 2014 30+/-4 (316L) converted to the repo convention (18.6-24.3 at the SOL-T 316L liquidus 1450 C, 19.3-25.2 at the former 1400 C where the cut was chosen; conditional on the app absorptivity, 20 C preheat and property set; King's printed density unit kg/m3 corrected to 7980 kg/m3) and the Cunningham et al. 2019 Fig. 3A melt-pool transition line (Ti-6Al-4V; app index 17.3-20.0 along speed, a range, not a confidence interval). Both sources and the held-out checks are for Ti-6Al-4V and 316L; transferred, not derived, for IN718/AlSi10Mg and the other alloys. Cunningham and Gan data are not independent validation. Keyhole mode is not keyhole porosity; a low index is not an assurance.",
   "regimeKeyholeThreshold": 20.0,
   "gridKernel": "rosenthal-screening-v1",
-  "gridKernelNote": "process map not computed (include_process_map=False: an internal re-run)",
+  "gridKernelNote": "every grid cell is the served Rosenthal field extent (_axial_peak_x, _liquidus_extent) at the authority field power A P with the served k, cp, rho and alpha convention and depth = max(liquidus depth, Fabbro leg), whatever kernel the operating point requested; the former closed-form width sqrt(8/(pi e) A P / (rho cp dT v) + d_beam^2) had no source (G1 audit B17) and the 0.5 w depth bound is dropped. Cells whose extent is not a computed isotherm serve width and depth null with their extentStatus and no Lack of Fusion Zone class.",
   "keyholeIndexLackOfFusionCut": 20.0,
   "ballingNote": "Balling is screened at the operating point only (defectDiagnostics.ballingScreen, Eagar-Tsai L/W); the grid has no melt-pool length and marks no balling zone."
  }

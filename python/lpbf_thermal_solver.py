@@ -1159,16 +1159,19 @@ def calculate_meltpool_physics(
     # P7a (2026-10-11): one lack-of-fusion rule for both screens, the Tang unit criterion (Harkin 2023 Eq. 5 quoting
     # Tang, Pistorius and Beuth 2017): Pass or Fail only. The former 0.80 "Warning" band is an unsourced screening
     # threshold reported as the margin advisory flag lackOfFusionMarginAdvisory (never a status, never a verdict).
+    # Tang bump (2026-10-27): the index uses modelled geometry. lackOfFusionStatus, lackOfFusionRisk and the index
+    # fields are kept for compatibility; compose_verdict makes an index above 1.0 risky (possible lack of fusion, not
+    # an established defect), never do-not-print. The labels make no fusion claim either way.
     lof_margin_advisory = bool(0.80 < lof_criterion_val <= 1.0)
     if lof_criterion_val > 1.0:
-        lof_risk = "Severe Lack of Fusion (Tang index > 1 — inter-track/layer unmelt)"
+        lof_risk = "Tang overlap risk: index > 1 using modelled geometry; possible lack of fusion, not an established defect"
         lof_status = "Fail"
     elif lof_margin_advisory:
-        lof_risk = ("Full Fusion Bonding (Tang (h/W)^2+(t/D)^2 ≤ 1.0); margin advisory: index above 0.80, an unsourced "
-                    "screening threshold")
+        lof_risk = ("Tang overlap screen: index <= 1 using modelled geometry; fusion not established; margin advisory: "
+                    "index above 0.80, an unsourced screening threshold")
         lof_status = "Pass"
     else:
-        lof_risk = "Full Fusion Bonding (Tang (h/W)^2+(t/D)^2 ≤ 1.0)"
+        lof_risk = "Tang overlap screen: index <= 1 using modelled geometry; fusion not established"
         lof_status = "Pass"
 
     # B) Balling / track-instability screen (lpbf_defect_diagnostics.balling_screen): Eagar–Tsai liquidus

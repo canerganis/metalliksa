@@ -69,8 +69,12 @@ PRE_BUMP_REVISION = "520903802a5cb89e368af60f68e53f232c99046d"
 # re-recorded all goldens: the 456 exact keys of docs/LPBF_IMPLEMENTATION_BUMP_2026-10-16_sol-t.expect-drift.txt moved
 # (IN718 and Ti64 cases: identity and D13 keys only; 316L and AlSi10Mg: endpoint-driven fields; G9 also the 316L U95
 # probe at 1700 K, now mushy); every IN718 reference numeric stays bit equal.
-GOLDEN_FINGERPRINT = "13203cac19bf69db80b546c6e67ed846a0941e35ea4ad62e53a786de073c46ca"
-GOLDEN_REVISION = "b5ee77d2792e36875ab3d34879816891cdadb5ab"
+# Tang bump (2026-10-27, 13203cac -> 3a978739, re-pin commit b1c59bb6 of lane/tang-2026-10-27; the lane's first,
+# advisory variant 50cc550b was replaced after the physics gate) re-recorded all goldens: only the 7 exact keys of
+# docs/LPBF_IMPLEMENTATION_BUMP_2026-10-27_tang-advisory.expect-drift.txt moved (G11 meltpool.0/1/2 digests and G18
+# meltpool.in625: the lackOfFusionRisk label only); everything else recording metadata.
+GOLDEN_FINGERPRINT = "3a978739eb184883089cf2d4e7078a0f310adccdd3abe52f267cd4c26f993143"
+GOLDEN_REVISION = "b1c59bb68c31b6092152592116089e8e3f0d0994"
 SLOW = os.environ.get("LPBF_PARITY_SLOW") == "1"
 # Off the reference machine every case test is skipped (the goldens are bit-exact for one
 # environment). METALLIKSA_REQUIRE_PARITY=1 turns such a "NOT VERIFIED" skip into a failure,

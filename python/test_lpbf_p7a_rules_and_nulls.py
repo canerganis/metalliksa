@@ -152,12 +152,17 @@ def _gates(out):
 
 class Ladder(unittest.TestCase):
     def test_ladder(self):
-        for dh, regime in ((12.0, "Conduction Mode (Stable)"), (60.0, KH), (17.0, "Transition Mode")):
+        # Tang bump (2026-10-27, physics gate finding 1): Tang above 1.0 on modelled geometry is risky, never blocking
+        # (was do-not-print on lof_tang in P7a); with keyhole mode both causes are reported.
+        for dh, regime, risk in ((12.0, "Conduction Mode (Stable)", ["lof_tang"]), (60.0, KH, ["lof_tang", "keyhole"]),
+                                 (17.0, "Transition Mode", ["lof_tang"])):
             out = bj.compose_verdict(_thermal(tang=1.05, dh=dh, regime=regime), "in718")
-            self.assertEqual(out["verdict"], "do-not-print", (dh, regime))
+            self.assertEqual(out["verdict"], "risky", (dh, regime))
             self.assertEqual(out["dominantGate"], "lof_tang")
-            self.assertEqual(out["blockingGates"], ["lof_tang"])  # lof_wh / lof_dt are diagnostics, never fail
-            self.assertIn("Tang unit criterion", out["headline"])
+            self.assertEqual(out["riskGates"], risk)
+            self.assertEqual(out["blockingGates"], [])  # lof_wh / lof_dt are diagnostics, never fail
+            self.assertTrue(any(r.startswith(bj.TANG_RISK_REASON) for r in out["reasons"]))
+            self.assertIn("possible lack of fusion", out["headline"])
         out = bj.compose_verdict(_thermal(tang=0.5, dh=25.0, regime=KH), "in718")
         self.assertEqual(out["verdict"], "risky")
         self.assertEqual(out["dominantGate"], "keyhole")
@@ -172,10 +177,13 @@ class Ladder(unittest.TestCase):
         for dh, regime in ((12.0, "Conduction Mode (Stable)"), (17.0, "Transition Mode")):
             out = bj.compose_verdict(_thermal(tang=0.5, dh=dh, regime=regime), "in718")
             self.assertEqual(out["verdict"], "printable", (dh, regime))
-            self.assertEqual(out["verdictBasis"], "sourced-criteria-only")
+            self.assertEqual(out["verdictBasis"], "model-geometry-tang-keyhole-risk-screen")
             self.assertEqual(out["dominantGate"], "none")
-            self.assertTrue(out["reasons"][0].startswith("Melt pool passes the Tang overlap criterion; regime:"), out["reasons"])
-            self.assertIn("no sourced gate fails", out["headline"])
+            self.assertTrue(out["reasons"][0].startswith("No verdict-driving gate is raised; regime:"), out["reasons"])
+            self.assertIn("Screening result; fusion adequacy is not established.", out["reasons"][0])
+            self.assertIn("fusion adequacy is not established", out["headline"])
+            for text in [out["headline"], *out["reasons"]]:
+                self.assertNotRegex(text, r"no sourced gate fails|passes the Tang|[Ff]ull [Ff]usion")
         out = bj.compose_verdict(_thermal(tang=0.85, dh=12.0), "in718")
         self.assertEqual(out["verdict"], "printable")
         self.assertTrue(out["lackOfFusionMarginAdvisory"])
@@ -305,7 +313,9 @@ class Ladder(unittest.TestCase):
         self.assertTrue(any("literature display range" in a for a in adv), adv)
         self.assertTrue(any("Tang margin" in a for a in adv), adv)
         self.assertIn("Advisories at the suggested point:", note)
-        self.assertIn("Tang unit criterion passes", note)
+        self.assertNotIn("Tang unit criterion passes", note)  # Tang advisory bump (2026-10-27)
+        self.assertNotIn("erified", note)
+        self.assertIn("fusion adequacy is not established", note)
         self.assertIn("below the keyhole-mode cut", note)
         del ev, far
         # (b) a keyhole-mode candidate (Tang 0.5) is rejected; a Tang 1.2 candidate is rejected; all rejected -> null.
@@ -317,9 +327,11 @@ class Ladder(unittest.TestCase):
         self.assertIn("No parameter patch", note)
         self.assertIn("keyhole-mode cut", note)
         self.assertGreater(len(calls), 1)
+        # Tang bump (2026-10-27): a Tang 1.2 candidate below the cut is risky, so it is rejected; all rejected -> null.
         patch, note, adv = bj._suggested_patch(base, "in718", "keyhole", "risky",
                                                make(lambda p, v, h, t, d: {"tang": 1.2, "dh": 12.0}))
         self.assertIsNone(patch)
+        self.assertIn("Tang overlap index at or below 1.0", note)
         # (c) a later zero-advisory candidate wins over an earlier printable one with advisories.
         calls.clear()
         patch, note, adv = bj._suggested_patch(
@@ -369,10 +381,12 @@ class Ladder(unittest.TestCase):
             gates = _gates(plain)
             for gid in ("recoater", "distortion", "literature_pv", "balling", "downskin", "lof_wh", "lof_dt"):
                 self.assertIn(gates[gid]["status"], ("pass", "advisory", "not-evaluated"), (gid, kw))
-            # The verdict equals the verdict without any advisory or not-evaluated gate: only Tang and the regime count.
-            expect = "do-not-print" if kw.get("tang", 0.5) > 1.0 else ("risky" if kw.get("regime", "") == KH else "printable")
+            # The verdict equals the verdict without any advisory or not-evaluated gate: only Tang and the regime count
+            # (Tang bump, 2026-10-27: Tang above 1.0 is risky, never blocking).
+            expect = "risky" if (kw.get("regime", "") == KH or kw.get("tang", 0.5) > 1.0) else "printable"
             self.assertEqual(plain["verdict"], expect, kw)
             self.assertEqual(sorted((set(plain["blockingGates"]) | set(plain["riskGates"])) - {"lof_tang", "keyhole"}), [], kw)
+            self.assertEqual(plain["blockingGates"], [], kw)
 
     def test_pdas_band(self):
         # SOL-A1 (2026-10-15): the equation-derived coefficients (SPEC A3.A2) and the fixed-G line admission (SPEC
@@ -468,15 +482,18 @@ class Ladder(unittest.TestCase):
     def test_assumptions_and_revision(self):
         from lpbf_job_cache import BUILD_JOB_SOLVER_REVISION
         # P7b (2026-10-14): v25.
-        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-solt-v28")
+        self.assertEqual(BUILD_JOB_SOLVER_REVISION, "lpbf-build-job-tang-risk-v30")  # Tang advisory bump (2026-10-27)
         job = bj.solve_lpbf_build_job({"alloyId": "in718", "laserPower_W": 285, "scanSpeed_mm_s": 960,
                                        "hatchSpacing_um": 110, "layerThickness_um": 40, "bypassCache": True})
         text = " ".join(job["assumptions"])
         self.assertIn("a mode onset and not a porosity boundary", text)
-        self.assertIn("do-not-print on the Tang unit criterion, risky in keyhole mode, otherwise printable", text)
+        self.assertIn("is risky when the Tang overlap index on modelled geometry is above 1.0 or in keyhole mode, "
+                      "otherwise printable (a screening result; fusion adequacy is not established); never "
+                      "do-not-print", text)
+        self.assertNotIn("do-not-print on the Tang unit criterion", text)
         self.assertIn("unsourced screening thresholds reported as advisories", text)
         self.assertNotIn("do-not-print above 35", text)
-        self.assertEqual(job["verdict"]["verdictBasis"], "sourced-criteria-only")
+        self.assertEqual(job["verdict"]["verdictBasis"], "model-geometry-tang-keyhole-risk-screen")
         self.assertIn("suggestedPatchAdvisories", job["verdict"])
         micro = job["microstructure"]
         self.assertIn("pdas", micro["quantities"])
