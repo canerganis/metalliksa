@@ -1,0 +1,1506 @@
+{
+ "schema": "metalliksa.research-scheil.results.v1",
+ "label": {
+  "evidenceKind": "Literature estimate",
+  "maturity": "Research",
+  "validated": false,
+  "servedOutput": false,
+  "method": "CALPHAD calculation"
+ },
+ "date": "2026-11-02",
+ "commands": {
+  "in625_c0": "python python/research_scheil.py --case in625_c0 --steps 2,1 --time-limit-s 600 --out <file>",
+  "ti64_mc_ti": "python python/research_scheil.py --case ti64_mc_ti --steps 2 --time-limit-s 300 --out <file>"
+ },
+ "notes": [
+  "in625_c0 was run before the per-case scheilFloorC and liquidOutsideTestedLimits fields were added; its Scheil floor was the grid minimum 1100 C, which the path did not reach (stopped at 1149.2 C on residual liquid), so the numbers are unaffected. Its liquidOutsideTestedLimits field is absent."
+ ],
+ "runs": {
+  "in625_c0": {
+   "schema": "metalliksa.research-scheil.v1",
+   "label": {
+    "evidenceKind": "Literature estimate",
+    "maturity": "Research",
+    "validated": false,
+    "servedOutput": false,
+    "method": "CALPHAD calculation",
+    "methodDetail": "pycalphad Gibbs energy minimisation on an open TDB; Scheil-Gulliver limit (complete liquid mixing, no solid diffusion, local interface equilibrium). Not measured, not an LPBF solidification path, not validated against experiment."
+   },
+   "case": {
+    "caseId": "in625_c0",
+    "alloy": "IN625 nominal, C-free",
+    "wtPct": {
+     "Ni": 61.0,
+     "Cr": 21.5,
+     "Mo": 9.0,
+     "Nb": 3.6000000000000005,
+     "Fe": 4.9
+    },
+    "atFrac": {
+     "Ni": 0.6211896219042294,
+     "Cr": 0.2471434982029312,
+     "Mo": 0.05606324029862282,
+     "Nb": 0.02316004523562681,
+     "Fe": 0.05244359435858978
+    },
+    "databaseId": "mc_ni",
+    "databaseName": "MatCalc mc_ni 2.036 open Ni-superalloy database (syntactically repaired for pycalphad)",
+    "tdbFile": "mc_ni_v2036_repaired.tdb",
+    "tdbSha256": "c914f534cc99f5fc2f7aab0373cfe5bc720bd2b85b545027d35ac4e0bcc6f94d",
+    "databaseSource": "MatCalc open databases, https://www.matcalc.at/index.php/databases/open-databases (mc_ni_v2036.tdb, sha256 84ba813156e1f7d8bde495d74420319afec03572b981f6b56103807f305313ab)",
+    "databaseLicence": "ODbL 1.0 / DbCL 1.0 (MatCalc open databases, TU Wien); see python/databases/MATCALC_OPEN_DATABASES_LICENSE.md",
+    "outsideTestedLimits": [
+     {
+      "element": "Cr",
+      "wtPct": 21.5,
+      "testedUpToWtPct": 20.0
+     },
+     {
+      "element": "Mo",
+      "wtPct": 9.0,
+      "testedUpToWtPct": 5.0
+     }
+    ],
+    "compositionSource": "Special Metals INCONEL alloy 625 bulletin, Table 1 limits (Cr 20-23, Mo 8-10, Nb+Ta 3.15-4.15, Fe <= 5); same scenario as python/test_calphad_matcalc_open.py IN625 and the calphad_solver ALLOY_KNOWN_DEVIATIONS record. Nb+Ta realised as Nb 3.6, Ta 0 (mc_ni has no Ta); Si, Mn, Al, Ti, C, P, S not included.",
+    "tGridC": [
+     1100.0,
+     1450.0,
+     10.0
+    ]
+   },
+   "identity": {
+    "tdbSha256": "c914f534cc99f5fc2f7aab0373cfe5bc720bd2b85b545027d35ac4e0bcc6f94d",
+    "phases": [
+     "ALN",
+     "ALN_EQU",
+     "ALPHA_MN",
+     "ANILITE",
+     "A_CHALC",
+     "BCC_A2",
+     "BETA_MN",
+     "BETA_RHOMBO_B",
+     "BN_HP4",
+     "B_CHALC",
+     "CEMENTITE",
+     "CHI_A12",
+     "CO3MO",
+     "CO3V",
+     "CORUND",
+     "COV3",
+     "COVELLITE",
+     "CR2B",
+     "CR2VC2",
+     "CR3MN5",
+     "CR5B3",
+     "CRB",
+     "CU2S",
+     "DELTA",
+     "DIAMOND_A4",
+     "DIGENITE",
+     "DISULF",
+     "DJURLEITE",
+     "D_NIMO",
+     "ETA",
+     "FCC_A1",
+     "FC_MONO",
+     "FC_ORTHO",
+     "FE17Y2",
+     "FE3NB3B4",
+     "FE4N",
+     "FEB",
+     "FENBB",
+     "FES_P",
+     "GAMMA_DP",
+     "GAMMA_PRIME",
+     "GRAPHITE",
+     "G_PHASE",
+     "HALITE",
+     "HCP_A3",
+     "HF1O2_C",
+     "HF1O2_M",
+     "HF1O2_T",
+     "KSI_CARBIDE",
+     "LA2O3_A",
+     "LA2O3_C",
+     "LA2O3_H",
+     "LAVES",
+     "LAV_C14",
+     "LIQUID",
+     "M12C",
+     "M23C6",
+     "M23C6_WY",
+     "M2B",
+     "M3C2",
+     "M6C",
+     "M6C_WY",
+     "M7C3",
+     "MN6N4",
+     "MN6N5",
+     "MNS_Q",
+     "MOB",
+     "MOB2",
+     "MU_PHASE",
+     "NB3B2",
+     "NB5B6",
+     "NBB",
+     "NI2CR",
+     "NI5HF",
+     "NI5Y",
+     "NI7HF2",
+     "NIAL",
+     "NITI2",
+     "O1_GAS",
+     "PYRR",
+     "P_PHASE",
+     "R_PHASE",
+     "SIGMA",
+     "SIO2",
+     "SPINEL",
+     "TI2O3",
+     "TI3B4",
+     "TI4C2S2",
+     "TIB",
+     "TIB2",
+     "TIO2",
+     "TIS",
+     "TRID",
+     "V3C2",
+     "WC",
+     "Y2O3_C",
+     "Y2O3_H",
+     "ZET"
+    ],
+    "usedMoleFractions": {
+     "CR": 0.2471434982029312,
+     "FE": 0.05244359435858978,
+     "MO": 0.05606324029862282,
+     "NB": 0.02316004523562681,
+     "NI": 0.6211896219042294
+    },
+    "pressurePa": 101325.0,
+    "calcOptions": {
+     "pdens": 10
+    },
+    "seeded": true,
+    "pycalphadVersion": "0.11.2"
+   },
+   "equilibrium": {
+    "criticalTemperatures": {
+     "liquidusC": 1366.2,
+     "solidusC": 1309.2,
+     "freezingRangeC": 56.9
+    },
+    "status": {
+     "liquidusC": {
+      "status": "bisected",
+      "bracketC": [
+       1366.1,
+       1366.2
+      ],
+      "gridBracketC": [
+       1360.0,
+       1370.0
+      ],
+      "toleranceC": 0.1,
+      "refinementRounds": 2,
+      "refinementPoints": 18,
+      "definition": "lowest temperature with liquid >= 99.9 % (up to 0.1 % solid may remain: phases below 0.1 % are not reported)",
+      "note": "refined by multi-section equilibrium calculations between the bracketing grid points"
+     },
+     "solidusC": {
+      "status": "bisected",
+      "bracketC": [
+       1309.2,
+       1309.3
+      ],
+      "gridBracketC": [
+       1300.0,
+       1310.0
+      ],
+      "toleranceC": 0.1,
+      "refinementRounds": 2,
+      "refinementPoints": 18,
+      "definition": "lowest temperature with liquid > 0.1 % (liquid below 0.1 % is not reported)",
+      "note": "refined by multi-section equilibrium calculations between the bracketing grid points"
+     }
+    },
+    "compositionAdjustments": {},
+    "elapsedS": 9.44
+   },
+   "scheilRuns": [
+    {
+     "schema": "metalliksa.research-scheil.v1",
+     "label": {
+      "evidenceKind": "Literature estimate",
+      "maturity": "Research",
+      "validated": false,
+      "servedOutput": false,
+      "method": "CALPHAD calculation",
+      "methodDetail": "pycalphad Gibbs energy minimisation on an open TDB; Scheil-Gulliver limit (complete liquid mixing, no solid diffusion, local interface equilibrium). Not measured, not an LPBF solidification path, not validated against experiment."
+     },
+     "status": "complete",
+     "stopReason": "residual-liquid-below-stop",
+     "stopDetail": "residual liquid 2.1e-05 < 0.0001; not treated as zero",
+     "fractionBasis": "moles of atoms",
+     "temperatureInitialC": 1367.2,
+     "temperatureOnset": {
+      "bracketC": [
+       1365.7,
+       1366.2
+      ],
+      "midpointC": 1365.95,
+      "bracketWidthK": 0.5,
+      "definition": "first accepted temperature with fraction solid > 1e-08"
+     },
+     "thresholdTemperatures": {
+      "0.001": {
+       "fractionSolid": 0.001,
+       "bracketC": [
+        1365.7,
+        1366.2
+       ],
+       "midpointC": 1365.95,
+       "bracketWidthK": 0.5
+      },
+      "0.5": {
+       "fractionSolid": 0.5,
+       "bracketC": [
+        1344.7,
+        1345.2
+       ],
+       "midpointC": 1344.95,
+       "bracketWidthK": 0.5
+      },
+      "0.9": {
+       "fractionSolid": 0.9,
+       "bracketC": [
+        1238.7,
+        1239.2
+       ],
+       "midpointC": 1238.95,
+       "bracketWidthK": 0.5
+      },
+      "0.99": {
+       "fractionSolid": 0.99,
+       "bracketC": [
+        1152.2,
+        1152.7
+       ],
+       "midpointC": 1152.45,
+       "bracketWidthK": 0.5
+      },
+      "0.999": {
+       "fractionSolid": 0.999,
+       "bracketC": [
+        1150.2,
+        1150.7
+       ],
+       "midpointC": 1150.45,
+       "bracketWidthK": 0.5
+      }
+     },
+     "solidificationRange_0.1_99.9": {
+      "valueK": 215.5,
+      "boundsK": [
+       215.0,
+       216.0
+      ],
+      "definition": "T(fs=0.001) - T(fs=0.999), midpoints of the brackets; boundsK from the bracket ends"
+     },
+     "temperatureExhaustion": null,
+     "temperatureLastValidC": 1149.2,
+     "residualLiquidFraction": 2.1014844479060515e-05,
+     "residualLiquidX": {
+      "CR": 0.3178221636180598,
+      "FE": 0.011583477172060555,
+      "MO": 0.005229523192642851,
+      "NB": 0.12173909265685673,
+      "NI": 0.5436257433603802
+     },
+     "finalFractionSolid": 0.999978985155521,
+     "phaseTotals": {
+      "BCC_A2": 0.004028431960204644,
+      "DELTA": 0.021733483673437876,
+      "FCC_A1": 0.9695741821295669,
+      "LAVES": 0.004642887086245911
+     },
+     "events": [
+      {
+       "event": "phase-appears",
+       "phase": "FCC_A1",
+       "bracketC": [
+        1365.7,
+        1366.2
+       ]
+      },
+      {
+       "event": "phase-appears",
+       "phase": "DELTA",
+       "bracketC": [
+        1191.7,
+        1193.7
+       ]
+      },
+      {
+       "event": "phase-appears",
+       "phase": "LAVES",
+       "bracketC": [
+        1183.7,
+        1185.7
+       ]
+      },
+      {
+       "event": "phase-appears",
+       "phase": "BCC_A2",
+       "bracketC": [
+        1152.7,
+        1153.7
+       ]
+      }
+     ],
+     "solidVertexCount": 161,
+     "pathInventory": {
+      "ok": true,
+      "maxAbsError": 3.060655062725459e-10,
+      "maxRelError": 4.936179210706659e-10,
+      "perComponentAbsError": {
+       "CR": 8.427650244335894e-11,
+       "FE": 2.588709802076039e-11,
+       "MO": 1.714630520899263e-11,
+       "NB": 7.85516096613037e-12,
+       "NI": 1.866107268710948e-10
+      },
+      "toleranceAbs": 1e-06,
+      "toleranceRel": 0.001
+     },
+     "solverCalls": 148,
+     "rejectedOrRefinedSteps": 24,
+     "conditionClampUses": 0,
+     "conditionClampMaxChange": 0.0,
+     "conditionClampNote": null,
+     "settings": {
+      "stepC": 2.0,
+      "minStepC": 0.0625,
+      "bracketC": 0.5,
+      "maxFsJump": 0.05,
+      "residualStop": 0.0001,
+      "thresholds": [
+       0.001,
+       0.5,
+       0.9,
+       0.99,
+       0.999
+      ],
+      "stepInventoryTolAbs": 1e-07
+     },
+     "components": [
+      "CR",
+      "FE",
+      "MO",
+      "NB",
+      "NI"
+     ],
+     "elapsedS": 12.598,
+     "comparison": {
+      "label": {
+       "evidenceKind": "Literature estimate",
+       "maturity": "Research",
+       "validated": false,
+       "servedOutput": false,
+       "method": "CALPHAD calculation",
+       "methodDetail": "pycalphad Gibbs energy minimisation on an open TDB; Scheil-Gulliver limit (complete liquid mixing, no solid diffusion, local interface equilibrium). Not measured, not an LPBF solidification path, not validated against experiment."
+      },
+      "pairing": "same TDB hash, phase set, used composition, pressure and calculation options",
+      "equilibriumLiquidusC": 1366.2,
+      "equilibriumLiquidusBracketC": [
+       1366.1,
+       1366.2
+      ],
+      "equilibriumSolidusC": 1309.2,
+      "equilibriumSolidusBracketC": [
+       1309.2,
+       1309.3
+      ],
+      "equilibriumRangeK": 57.0,
+      "scheilT0_001C": 1365.95,
+      "scheilT0_999C": 1150.45,
+      "scheilRangeK": 215.5,
+      "deltaFirstSolidK": -0.25,
+      "deltaLastSolidK": -158.75,
+      "note": "delta = Scheil - equilibrium. The first-solid pair should agree to within the brackets (same thermodynamics); the last-solid difference is the segregation effect of the Scheil limit. A wider Scheil range is expected but not required."
+     },
+     "curveSample": [
+      {
+       "temperatureC": 1367.2,
+       "fractionSolid": 0.0
+      },
+      {
+       "temperatureC": 1361.7,
+       "fractionSolid": 0.1569517
+      },
+      {
+       "temperatureC": 1356.7,
+       "fractionSolid": 0.2902141
+      },
+      {
+       "temperatureC": 1350.7,
+       "fractionSolid": 0.4106216
+      },
+      {
+       "temperatureC": 1345.7,
+       "fractionSolid": 0.4875004
+      },
+      {
+       "temperatureC": 1339.7,
+       "fractionSolid": 0.5600444
+      },
+      {
+       "temperatureC": 1333.7,
+       "fractionSolid": 0.6172913
+      },
+      {
+       "temperatureC": 1327.7,
+       "fractionSolid": 0.6632365
+      },
+      {
+       "temperatureC": 1321.7,
+       "fractionSolid": 0.7007477
+      },
+      {
+       "temperatureC": 1315.7,
+       "fractionSolid": 0.7318314
+      },
+      {
+       "temperatureC": 1309.7,
+       "fractionSolid": 0.7579264
+      },
+      {
+       "temperatureC": 1303.7,
+       "fractionSolid": 0.7800874
+      },
+      {
+       "temperatureC": 1297.7,
+       "fractionSolid": 0.7991018
+      },
+      {
+       "temperatureC": 1291.7,
+       "fractionSolid": 0.8155682
+      },
+      {
+       "temperatureC": 1285.7,
+       "fractionSolid": 0.8299477
+      },
+      {
+       "temperatureC": 1279.7,
+       "fractionSolid": 0.842601
+      },
+      {
+       "temperatureC": 1273.7,
+       "fractionSolid": 0.8538133
+      },
+      {
+       "temperatureC": 1267.7,
+       "fractionSolid": 0.8638125
+      },
+      {
+       "temperatureC": 1261.7,
+       "fractionSolid": 0.8727828
+      },
+      {
+       "temperatureC": 1255.7,
+       "fractionSolid": 0.8808742
+      },
+      {
+       "temperatureC": 1249.7,
+       "fractionSolid": 0.8882098
+      },
+      {
+       "temperatureC": 1243.7,
+       "fractionSolid": 0.8948912
+      },
+      {
+       "temperatureC": 1238.7,
+       "fractionSolid": 0.9000158
+      },
+      {
+       "temperatureC": 1233.7,
+       "fractionSolid": 0.9047887
+      },
+      {
+       "temperatureC": 1227.7,
+       "fractionSolid": 0.9101032
+      },
+      {
+       "temperatureC": 1221.7,
+       "fractionSolid": 0.9150125
+      },
+      {
+       "temperatureC": 1215.7,
+       "fractionSolid": 0.919561
+      },
+      {
+       "temperatureC": 1209.7,
+       "fractionSolid": 0.9237867
+      },
+      {
+       "temperatureC": 1203.7,
+       "fractionSolid": 0.9277215
+      },
+      {
+       "temperatureC": 1197.7,
+       "fractionSolid": 0.9313928
+      },
+      {
+       "temperatureC": 1191.7,
+       "fractionSolid": 0.9358957
+      },
+      {
+       "temperatureC": 1185.7,
+       "fractionSolid": 0.9438539
+      },
+      {
+       "temperatureC": 1179.7,
+       "fractionSolid": 0.9534805
+      },
+      {
+       "temperatureC": 1173.7,
+       "fractionSolid": 0.9616794
+      },
+      {
+       "temperatureC": 1167.7,
+       "fractionSolid": 0.9666294
+      },
+      {
+       "temperatureC": 1161.7,
+       "fractionSolid": 0.9757961
+      },
+      {
+       "temperatureC": 1155.7,
+       "fractionSolid": 0.9799555
+      },
+      {
+       "temperatureC": 1150.7,
+       "fractionSolid": 0.9985998
+      },
+      {
+       "temperatureC": 1149.2,
+       "fractionSolid": 0.999979
+      }
+     ]
+    },
+    {
+     "schema": "metalliksa.research-scheil.v1",
+     "label": {
+      "evidenceKind": "Literature estimate",
+      "maturity": "Research",
+      "validated": false,
+      "servedOutput": false,
+      "method": "CALPHAD calculation",
+      "methodDetail": "pycalphad Gibbs energy minimisation on an open TDB; Scheil-Gulliver limit (complete liquid mixing, no solid diffusion, local interface equilibrium). Not measured, not an LPBF solidification path, not validated against experiment."
+     },
+     "status": "complete",
+     "stopReason": "residual-liquid-below-stop",
+     "stopDetail": "residual liquid 1.61e-05 < 0.0001; not treated as zero",
+     "fractionBasis": "moles of atoms",
+     "temperatureInitialC": 1367.2,
+     "temperatureOnset": {
+      "bracketC": [
+       1365.7,
+       1366.2
+      ],
+      "midpointC": 1365.95,
+      "bracketWidthK": 0.5,
+      "definition": "first accepted temperature with fraction solid > 1e-08"
+     },
+     "thresholdTemperatures": {
+      "0.001": {
+       "fractionSolid": 0.001,
+       "bracketC": [
+        1365.7,
+        1366.2
+       ],
+       "midpointC": 1365.95,
+       "bracketWidthK": 0.5
+      },
+      "0.5": {
+       "fractionSolid": 0.5,
+       "bracketC": [
+        1344.2,
+        1344.7
+       ],
+       "midpointC": 1344.45,
+       "bracketWidthK": 0.5
+      },
+      "0.9": {
+       "fractionSolid": 0.9,
+       "bracketC": [
+        1237.7,
+        1238.2
+       ],
+       "midpointC": 1237.95,
+       "bracketWidthK": 0.5
+      },
+      "0.99": {
+       "fractionSolid": 0.99,
+       "bracketC": [
+        1151.7,
+        1152.2
+       ],
+       "midpointC": 1151.95,
+       "bracketWidthK": 0.5
+      },
+      "0.999": {
+       "fractionSolid": 0.999,
+       "bracketC": [
+        1150.2,
+        1150.7
+       ],
+       "midpointC": 1150.45,
+       "bracketWidthK": 0.5
+      }
+     },
+     "solidificationRange_0.1_99.9": {
+      "valueK": 215.5,
+      "boundsK": [
+       215.0,
+       216.0
+      ],
+      "definition": "T(fs=0.001) - T(fs=0.999), midpoints of the brackets; boundsK from the bracket ends"
+     },
+     "temperatureExhaustion": null,
+     "temperatureLastValidC": 1149.2,
+     "residualLiquidFraction": 1.6090651475100215e-05,
+     "residualLiquidX": {
+      "CR": 0.3179395171039606,
+      "FE": 0.01113101720763047,
+      "MO": 0.0052669849036088455,
+      "NB": 0.12170420779767194,
+      "NI": 0.543958272987128
+     },
+     "finalFractionSolid": 0.9999839093485249,
+     "phaseTotals": {
+      "BCC_A2": 0.0040552680664924946,
+      "DELTA": 0.021653040188696144,
+      "FCC_A1": 0.9693600550386923,
+      "LAVES": 0.004915544765958642
+     },
+     "events": [
+      {
+       "event": "phase-appears",
+       "phase": "FCC_A1",
+       "bracketC": [
+        1365.7,
+        1366.2
+       ]
+      },
+      {
+       "event": "phase-appears",
+       "phase": "DELTA",
+       "bracketC": [
+        1192.7,
+        1193.7
+       ]
+      },
+      {
+       "event": "phase-appears",
+       "phase": "LAVES",
+       "bracketC": [
+        1184.7,
+        1185.7
+       ]
+      },
+      {
+       "event": "phase-appears",
+       "phase": "BCC_A2",
+       "bracketC": [
+        1152.7,
+        1153.7
+       ]
+      }
+     ],
+     "solidVertexCount": 283,
+     "pathInventory": {
+      "ok": true,
+      "maxAbsError": 1.288685269607015e-09,
+      "maxRelError": 1.5620519135881542e-09,
+      "perComponentAbsError": {
+       "CR": 3.4301464446606644e-10,
+       "FE": 8.19196169232761e-11,
+       "MO": 7.510964072920956e-11,
+       "NB": 1.4314070762022624e-12,
+       "NI": 7.872099638817076e-10
+      },
+      "toleranceAbs": 1e-06,
+      "toleranceRel": 0.001
+     },
+     "solverCalls": 231,
+     "rejectedOrRefinedSteps": 8,
+     "conditionClampUses": 0,
+     "conditionClampMaxChange": 0.0,
+     "conditionClampNote": null,
+     "settings": {
+      "stepC": 1.0,
+      "minStepC": 0.0625,
+      "bracketC": 0.5,
+      "maxFsJump": 0.05,
+      "residualStop": 0.0001,
+      "thresholds": [
+       0.001,
+       0.5,
+       0.9,
+       0.99,
+       0.999
+      ],
+      "stepInventoryTolAbs": 1e-07
+     },
+     "components": [
+      "CR",
+      "FE",
+      "MO",
+      "NB",
+      "NI"
+     ],
+     "elapsedS": 19.116,
+     "comparison": {
+      "label": {
+       "evidenceKind": "Literature estimate",
+       "maturity": "Research",
+       "validated": false,
+       "servedOutput": false,
+       "method": "CALPHAD calculation",
+       "methodDetail": "pycalphad Gibbs energy minimisation on an open TDB; Scheil-Gulliver limit (complete liquid mixing, no solid diffusion, local interface equilibrium). Not measured, not an LPBF solidification path, not validated against experiment."
+      },
+      "pairing": "same TDB hash, phase set, used composition, pressure and calculation options",
+      "equilibriumLiquidusC": 1366.2,
+      "equilibriumLiquidusBracketC": [
+       1366.1,
+       1366.2
+      ],
+      "equilibriumSolidusC": 1309.2,
+      "equilibriumSolidusBracketC": [
+       1309.2,
+       1309.3
+      ],
+      "equilibriumRangeK": 57.0,
+      "scheilT0_001C": 1365.95,
+      "scheilT0_999C": 1150.45,
+      "scheilRangeK": 215.5,
+      "deltaFirstSolidK": -0.25,
+      "deltaLastSolidK": -158.75,
+      "note": "delta = Scheil - equilibrium. The first-solid pair should agree to within the brackets (same thermodynamics); the last-solid difference is the segregation effect of the Scheil limit. A wider Scheil range is expected but not required."
+     },
+     "curveSample": [
+      {
+       "temperatureC": 1367.2,
+       "fractionSolid": 0.0
+      },
+      {
+       "temperatureC": 1361.7,
+       "fractionSolid": 0.1569517
+      },
+      {
+       "temperatureC": 1356.7,
+       "fractionSolid": 0.2898108
+      },
+      {
+       "temperatureC": 1351.7,
+       "fractionSolid": 0.3918735
+      },
+      {
+       "temperatureC": 1346.7,
+       "fractionSolid": 0.4720947
+      },
+      {
+       "temperatureC": 1341.2,
+       "fractionSolid": 0.5420906
+      },
+      {
+       "temperatureC": 1336.2,
+       "fractionSolid": 0.5934751
+      },
+      {
+       "temperatureC": 1331.2,
+       "fractionSolid": 0.6360259
+      },
+      {
+       "temperatureC": 1326.2,
+       "fractionSolid": 0.6717089
+      },
+      {
+       "temperatureC": 1321.2,
+       "fractionSolid": 0.7019684
+      },
+      {
+       "temperatureC": 1316.2,
+       "fractionSolid": 0.7278855
+      },
+      {
+       "temperatureC": 1311.2,
+       "fractionSolid": 0.7502827
+      },
+      {
+       "temperatureC": 1306.2,
+       "fractionSolid": 0.7697948
+      },
+      {
+       "temperatureC": 1301.2,
+       "fractionSolid": 0.7869188
+      },
+      {
+       "temperatureC": 1296.2,
+       "fractionSolid": 0.8020481
+      },
+      {
+       "temperatureC": 1291.2,
+       "fractionSolid": 0.8154976
+      },
+      {
+       "temperatureC": 1286.2,
+       "fractionSolid": 0.8275218
+      },
+      {
+       "temperatureC": 1281.2,
+       "fractionSolid": 0.8383286
+      },
+      {
+       "temperatureC": 1276.2,
+       "fractionSolid": 0.8480886
+      },
+      {
+       "temperatureC": 1271.2,
+       "fractionSolid": 0.8569435
+      },
+      {
+       "temperatureC": 1266.2,
+       "fractionSolid": 0.8650116
+      },
+      {
+       "temperatureC": 1261.2,
+       "fractionSolid": 0.8723919
+      },
+      {
+       "temperatureC": 1256.2,
+       "fractionSolid": 0.8791685
+      },
+      {
+       "temperatureC": 1251.2,
+       "fractionSolid": 0.8854125
+      },
+      {
+       "temperatureC": 1246.2,
+       "fractionSolid": 0.8911847
+      },
+      {
+       "temperatureC": 1241.2,
+       "fractionSolid": 0.896537
+      },
+      {
+       "temperatureC": 1235.7,
+       "fractionSolid": 0.9019922
+      },
+      {
+       "temperatureC": 1230.7,
+       "fractionSolid": 0.9066014
+      },
+      {
+       "temperatureC": 1225.7,
+       "fractionSolid": 0.9109107
+      },
+      {
+       "temperatureC": 1220.7,
+       "fractionSolid": 0.9149487
+      },
+      {
+       "temperatureC": 1215.7,
+       "fractionSolid": 0.9187402
+      },
+      {
+       "temperatureC": 1210.7,
+       "fractionSolid": 0.9223067
+      },
+      {
+       "temperatureC": 1205.7,
+       "fractionSolid": 0.9256673
+      },
+      {
+       "temperatureC": 1200.7,
+       "fractionSolid": 0.9288382
+      },
+      {
+       "temperatureC": 1195.7,
+       "fractionSolid": 0.931834
+      },
+      {
+       "temperatureC": 1190.7,
+       "fractionSolid": 0.9365889
+      },
+      {
+       "temperatureC": 1185.7,
+       "fractionSolid": 0.9431724
+      },
+      {
+       "temperatureC": 1180.7,
+       "fractionSolid": 0.9512694
+      },
+      {
+       "temperatureC": 1175.7,
+       "fractionSolid": 0.9584174
+      },
+      {
+       "temperatureC": 1170.7,
+       "fractionSolid": 0.9628701
+      },
+      {
+       "temperatureC": 1165.7,
+       "fractionSolid": 0.9712614
+      },
+      {
+       "temperatureC": 1160.7,
+       "fractionSolid": 0.9754186
+      },
+      {
+       "temperatureC": 1155.7,
+       "fractionSolid": 0.9788608
+      },
+      {
+       "temperatureC": 1150.7,
+       "fractionSolid": 0.9989638
+      },
+      {
+       "temperatureC": 1149.2,
+       "fractionSolid": 0.9999839
+      }
+     ]
+    }
+   ],
+   "scheilNote": null,
+   "convergence": {
+    "steps": [
+     2.0,
+     1.0
+    ],
+    "thresholdShiftK": {
+     "0.001": 0.0,
+     "0.5": -0.5,
+     "0.9": -1.0,
+     "0.99": -0.5,
+     "0.999": 0.0
+    },
+    "target": "<= 1 K between the last two runs (Astra brief); a target, not a pass claim"
+   },
+   "elapsedS": 42.22
+  },
+  "ti64_mc_ti": {
+   "schema": "metalliksa.research-scheil.v1",
+   "label": {
+    "evidenceKind": "Literature estimate",
+    "maturity": "Research",
+    "validated": false,
+    "servedOutput": false,
+    "method": "CALPHAD calculation",
+    "methodDetail": "pycalphad Gibbs energy minimisation on an open TDB; Scheil-Gulliver limit (complete liquid mixing, no solid diffusion, local interface equilibrium). Not measured, not an LPBF solidification path, not validated against experiment."
+   },
+   "case": {
+    "caseId": "ti64_mc_ti",
+    "alloy": "Ti-6Al-4V ideal ternary",
+    "wtPct": {
+     "Ti": 90.0,
+     "Al": 6.0,
+     "V": 4.0
+    },
+    "atFrac": {
+     "Ti": 0.8620462072720712,
+     "Al": 0.10195331654063755,
+     "V": 0.0360004761872912
+    },
+    "databaseId": "mc_ti",
+    "databaseName": "MatCalc mc_ti 2.03 open titanium database (syntactically repaired for pycalphad)",
+    "tdbFile": "mc_ti_v203_repaired.tdb",
+    "tdbSha256": "f8758e12d8a96109b4dee0e0d95365ebe6ec19b0d1b8e3b249465c46a12e94ff",
+    "databaseSource": "MatCalc special databases, https://www.matcalc.at/index.php/databases/special-databases (mc_ti_v203.tdb, sha256 7bec5404071fa3cbdaf340bdb431af98f5a00a6d5526b84ff31834b5ff5841cb)",
+    "databaseLicence": "ODbL 1.0 / DbCL 1.0 (MatCalc open databases, TU Wien); see python/databases/MATCALC_OPEN_DATABASES_LICENSE.md",
+    "outsideTestedLimits": [],
+    "testedLimitsWtPct": {
+     "AL": 30.0,
+     "B": 1.0,
+     "CR": 2.0,
+     "MO": 3.0,
+     "NB": 10.0,
+     "V": 5.0
+    },
+    "compositionSource": "nominal Ti-6Al-4V; C, Fe, O, N, H are not in mc_ti and are not represented",
+    "tGridC": [
+     1500.0,
+     1750.0,
+     10.0
+    ],
+    "scheilFloorC": 1000.0
+   },
+   "identity": {
+    "tdbSha256": "f8758e12d8a96109b4dee0e0d95365ebe6ec19b0d1b8e3b249465c46a12e94ff",
+    "phases": [
+     "AL2NB",
+     "AL2TI",
+     "AL3NB",
+     "AL3TI_H",
+     "AL3TI_L",
+     "AL5TI2",
+     "AL5TI3",
+     "ALNB2",
+     "ALNB3",
+     "BCC_A2",
+     "BCC_B2",
+     "BETA_RHOMBO_B",
+     "CR2B",
+     "CR5B3",
+     "CRB",
+     "FCC_A1",
+     "HCP_A3",
+     "LIQUID",
+     "M2B",
+     "MOB",
+     "MOB2",
+     "NB3B2",
+     "NB5B6",
+     "NBB",
+     "OMEGA",
+     "TI3AL",
+     "TI3B4",
+     "TIAL",
+     "TIB",
+     "TIB2",
+     "V5AL8"
+    ],
+    "usedMoleFractions": {
+     "AL": 0.10195331654063755,
+     "V": 0.0360004761872912,
+     "TI": 0.8620462072720713
+    },
+    "pressurePa": 101325.0,
+    "calcOptions": {},
+    "seeded": false,
+    "pycalphadVersion": "0.11.2"
+   },
+   "equilibrium": {
+    "criticalTemperatures": {
+     "liquidusC": 1647.4,
+     "solidusC": 1578.8,
+     "freezingRangeC": 68.7
+    },
+    "status": {
+     "liquidusC": {
+      "status": "bisected",
+      "bracketC": [
+       1647.4,
+       1647.5
+      ],
+      "gridBracketC": [
+       1640.0,
+       1650.0
+      ],
+      "toleranceC": 0.1,
+      "refinementRounds": 2,
+      "refinementPoints": 18,
+      "definition": "lowest temperature with liquid >= 99.9 % (up to 0.1 % solid may remain: phases below 0.1 % are not reported)",
+      "note": "refined by multi-section equilibrium calculations between the bracketing grid points"
+     },
+     "solidusC": {
+      "status": "bisected",
+      "bracketC": [
+       1578.7,
+       1578.8
+      ],
+      "gridBracketC": [
+       1570.0,
+       1580.0
+      ],
+      "toleranceC": 0.1,
+      "refinementRounds": 2,
+      "refinementPoints": 18,
+      "definition": "lowest temperature with liquid > 0.1 % (liquid below 0.1 % is not reported)",
+      "note": "refined by multi-section equilibrium calculations between the bracketing grid points"
+     }
+    },
+    "compositionAdjustments": {},
+    "elapsedS": 2.35
+   },
+   "scheilRuns": [
+    {
+     "schema": "metalliksa.research-scheil.v1",
+     "label": {
+      "evidenceKind": "Literature estimate",
+      "maturity": "Research",
+      "validated": false,
+      "servedOutput": false,
+      "method": "CALPHAD calculation",
+      "methodDetail": "pycalphad Gibbs energy minimisation on an open TDB; Scheil-Gulliver limit (complete liquid mixing, no solid diffusion, local interface equilibrium). Not measured, not an LPBF solidification path, not validated against experiment."
+     },
+     "status": "complete",
+     "stopReason": "residual-liquid-below-stop",
+     "stopDetail": "residual liquid 9.11e-05 < 0.0001; not treated as zero",
+     "fractionBasis": "moles of atoms",
+     "temperatureInitialC": 1648.5,
+     "temperatureOnset": {
+      "bracketC": [
+       1647.0,
+       1647.5
+      ],
+      "midpointC": 1647.25,
+      "bracketWidthK": 0.5,
+      "definition": "first accepted temperature with fraction solid > 1e-08"
+     },
+     "thresholdTemperatures": {
+      "0.001": {
+       "fractionSolid": 0.001,
+       "bracketC": [
+        1647.0,
+        1647.5
+       ],
+       "midpointC": 1647.25,
+       "bracketWidthK": 0.5
+      },
+      "0.5": {
+       "fractionSolid": 0.5,
+       "bracketC": [
+        1623.0,
+        1623.5
+       ],
+       "midpointC": 1623.25,
+       "bracketWidthK": 0.5
+      },
+      "0.9": {
+       "fractionSolid": 0.9,
+       "bracketC": [
+        1507.5,
+        1508.0
+       ],
+       "midpointC": 1507.75,
+       "bracketWidthK": 0.5
+      },
+      "0.99": {
+       "fractionSolid": 0.99,
+       "bracketC": [
+        1409.5,
+        1410.0
+       ],
+       "midpointC": 1409.75,
+       "bracketWidthK": 0.5
+      },
+      "0.999": {
+       "fractionSolid": 0.999,
+       "bracketC": [
+        1390.0,
+        1390.5
+       ],
+       "midpointC": 1390.25,
+       "bracketWidthK": 0.5
+      }
+     },
+     "solidificationRange_0.1_99.9": {
+      "valueK": 257.0,
+      "boundsK": [
+       256.5,
+       257.5
+      ],
+      "definition": "T(fs=0.001) - T(fs=0.999), midpoints of the brackets; boundsK from the bracket ends"
+     },
+     "temperatureExhaustion": null,
+     "temperatureLastValidC": 1369.0,
+     "residualLiquidFraction": 9.109413381980142e-05,
+     "residualLiquidX": {
+      "AL": 0.284944175574187,
+      "TI": 0.5119908092443793,
+      "V": 0.20306501518143377
+     },
+     "finalFractionSolid": 0.9999089058661802,
+     "phaseTotals": {
+      "BCC_A2": 0.9999089058520496
+     },
+     "events": [
+      {
+       "event": "phase-appears",
+       "phase": "BCC_A2",
+       "bracketC": [
+        1647.0,
+        1647.5
+       ]
+      }
+     ],
+     "solidVertexCount": 152,
+     "pathInventory": {
+      "ok": true,
+      "maxAbsError": 1.4130252523614217e-11,
+      "maxRelError": 1.0984759815075755e-10,
+      "perComponentAbsError": {
+       "AL": 7.259109979784739e-12,
+       "TI": 2.9165558856902862e-12,
+       "V": 3.95456584145748e-12
+      },
+      "toleranceAbs": 1e-06,
+      "toleranceRel": 0.001
+     },
+     "solverCalls": 176,
+     "rejectedOrRefinedSteps": 22,
+     "conditionClampUses": 0,
+     "conditionClampMaxChange": 0.0,
+     "conditionClampNote": null,
+     "settings": {
+      "stepC": 2.0,
+      "minStepC": 0.0625,
+      "bracketC": 0.5,
+      "maxFsJump": 0.05,
+      "residualStop": 0.0001,
+      "thresholds": [
+       0.001,
+       0.5,
+       0.9,
+       0.99,
+       0.999
+      ],
+      "stepInventoryTolAbs": 1e-07
+     },
+     "components": [
+      "AL",
+      "TI",
+      "V"
+     ],
+     "elapsedS": 1.622,
+     "comparison": {
+      "label": {
+       "evidenceKind": "Literature estimate",
+       "maturity": "Research",
+       "validated": false,
+       "servedOutput": false,
+       "method": "CALPHAD calculation",
+       "methodDetail": "pycalphad Gibbs energy minimisation on an open TDB; Scheil-Gulliver limit (complete liquid mixing, no solid diffusion, local interface equilibrium). Not measured, not an LPBF solidification path, not validated against experiment."
+      },
+      "pairing": "same TDB hash, phase set, used composition, pressure and calculation options",
+      "equilibriumLiquidusC": 1647.4,
+      "equilibriumLiquidusBracketC": [
+       1647.4,
+       1647.5
+      ],
+      "equilibriumSolidusC": 1578.8,
+      "equilibriumSolidusBracketC": [
+       1578.7,
+       1578.8
+      ],
+      "equilibriumRangeK": 68.60000000000014,
+      "scheilT0_001C": 1647.25,
+      "scheilT0_999C": 1390.25,
+      "scheilRangeK": 257.0,
+      "deltaFirstSolidK": -0.15000000000009095,
+      "deltaLastSolidK": -188.54999999999995,
+      "note": "delta = Scheil - equilibrium. The first-solid pair should agree to within the brackets (same thermodynamics); the last-solid difference is the segregation effect of the Scheil limit. A wider Scheil range is expected but not required."
+     },
+     "liquidOutsideTestedLimits": [
+      {
+       "element": "V",
+       "testedUpToWtPct": 5.0,
+       "firstExceededAtC": 1635.0,
+       "firstFractionSolid": 0.32646987285704,
+       "maxLiquidWtPct": 26.188032448302792
+      }
+     ],
+     "curveSample": [
+      {
+       "temperatureC": 1648.5,
+       "fractionSolid": 0.0
+      },
+      {
+       "temperatureC": 1643.0,
+       "fractionSolid": 0.1425938
+      },
+      {
+       "temperatureC": 1637.0,
+       "fractionSolid": 0.2869924
+      },
+      {
+       "temperatureC": 1631.0,
+       "fractionSolid": 0.3953854
+      },
+      {
+       "temperatureC": 1625.0,
+       "fractionSolid": 0.4790343
+      },
+      {
+       "temperatureC": 1620.0,
+       "fractionSolid": 0.5349763
+      },
+      {
+       "temperatureC": 1614.0,
+       "fractionSolid": 0.590256
+      },
+      {
+       "temperatureC": 1608.0,
+       "fractionSolid": 0.6355227
+      },
+      {
+       "temperatureC": 1602.0,
+       "fractionSolid": 0.673156
+      },
+      {
+       "temperatureC": 1596.0,
+       "fractionSolid": 0.7048574
+      },
+      {
+       "temperatureC": 1590.0,
+       "fractionSolid": 0.731872
+      },
+      {
+       "temperatureC": 1584.0,
+       "fractionSolid": 0.7551299
+      },
+      {
+       "temperatureC": 1578.0,
+       "fractionSolid": 0.775338
+      },
+      {
+       "temperatureC": 1572.0,
+       "fractionSolid": 0.793042
+      },
+      {
+       "temperatureC": 1566.0,
+       "fractionSolid": 0.8086696
+      },
+      {
+       "temperatureC": 1560.0,
+       "fractionSolid": 0.8225598
+      },
+      {
+       "temperatureC": 1554.0,
+       "fractionSolid": 0.8349846
+      },
+      {
+       "temperatureC": 1548.0,
+       "fractionSolid": 0.8461648
+      },
+      {
+       "temperatureC": 1542.0,
+       "fractionSolid": 0.8562811
+      },
+      {
+       "temperatureC": 1536.0,
+       "fractionSolid": 0.8654828
+      },
+      {
+       "temperatureC": 1530.0,
+       "fractionSolid": 0.8738945
+      },
+      {
+       "temperatureC": 1524.0,
+       "fractionSolid": 0.8816211
+      },
+      {
+       "temperatureC": 1518.0,
+       "fractionSolid": 0.8887515
+      },
+      {
+       "temperatureC": 1512.0,
+       "fractionSolid": 0.895362
+      },
+      {
+       "temperatureC": 1506.5,
+       "fractionSolid": 0.9010141
+      },
+      {
+       "temperatureC": 1500.5,
+       "fractionSolid": 0.9068056
+      },
+      {
+       "temperatureC": 1494.5,
+       "fractionSolid": 0.9122478
+      },
+      {
+       "temperatureC": 1488.5,
+       "fractionSolid": 0.9173871
+      },
+      {
+       "temperatureC": 1482.5,
+       "fractionSolid": 0.9222661
+      },
+      {
+       "temperatureC": 1476.5,
+       "fractionSolid": 0.9269252
+      },
+      {
+       "temperatureC": 1470.5,
+       "fractionSolid": 0.9314037
+      },
+      {
+       "temperatureC": 1464.5,
+       "fractionSolid": 0.9357421
+      },
+      {
+       "temperatureC": 1458.5,
+       "fractionSolid": 0.9399843
+      },
+      {
+       "temperatureC": 1452.5,
+       "fractionSolid": 0.9441826
+      },
+      {
+       "temperatureC": 1446.5,
+       "fractionSolid": 0.9484045
+      },
+      {
+       "temperatureC": 1440.5,
+       "fractionSolid": 0.9527486
+      },
+      {
+       "temperatureC": 1434.5,
+       "fractionSolid": 0.9573792
+      },
+      {
+       "temperatureC": 1428.5,
+       "fractionSolid": 0.9626229
+      },
+      {
+       "temperatureC": 1422.5,
+       "fractionSolid": 0.9692851
+      },
+      {
+       "temperatureC": 1416.5,
+       "fractionSolid": 0.9791562
+      },
+      {
+       "temperatureC": 1410.5,
+       "fractionSolid": 0.9892664
+      },
+      {
+       "temperatureC": 1404.5,
+       "fractionSolid": 0.9947198
+      },
+      {
+       "temperatureC": 1398.5,
+       "fractionSolid": 0.9974442
+      },
+      {
+       "temperatureC": 1392.5,
+       "fractionSolid": 0.9987521
+      },
+      {
+       "temperatureC": 1387.0,
+       "fractionSolid": 0.999327
+      },
+      {
+       "temperatureC": 1381.0,
+       "fractionSolid": 0.9996618
+      },
+      {
+       "temperatureC": 1375.0,
+       "fractionSolid": 0.9998265
+      },
+      {
+       "temperatureC": 1369.0,
+       "fractionSolid": 0.9999089
+      }
+     ]
+    }
+   ],
+   "scheilNote": null,
+   "convergence": null,
+   "elapsedS": 4.1
+  }
+ }
+}
