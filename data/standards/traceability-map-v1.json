@@ -1,0 +1,2249 @@
+{
+  "header": "Traceability aid only. Not a compliance claim, not qualification, not certification.",
+  "schemaVersion": 1,
+  "mapId": "traceability-map-v1",
+  "created": "2026-11-02",
+  "purpose": "List which fields the Metalliksa run report and qualification dossier record, and which records the named documents ask for that the dossier does not carry. It is a gap list. It does not state that any document is satisfied.",
+  "sources": {
+    "dossierBuilder": "src/utils/lpbfQualificationReport.ts",
+    "runReportBuilder": "src/utils/lpbfRunReport.ts",
+    "schemaDoc": "docs/archive/SCHEMA.md"
+  },
+  "pathConvention": "Paths are relative to the dossier object (createLpbfQualificationReport). Scope 'dossier' paths are checked against a real dossier by tests/standards-traceability.test.ts. Scope 'run-report-extras' paths (extras.*) live in LpbfRunReportExtras (buildJob, machineCalibration) and scope 'run-report-options' in LpbfRunReportOptions; the test checks that the last segment of those appears in the run report or machine calibration source. '[]' marks an array element.",
+  "coverageMeaning": {
+    "recorded": "The dossier or run report carries the field with an explicit value or an explicit unavailable marker. It says nothing about whether the value meets any requirement.",
+    "partially recorded": "A related field exists but it is free text, user-typed, assumed, simulated or lacks parts the document topic implies.",
+    "not recorded": "No dossier field carries this."
+  },
+  "schemaMdTiers": "docs/archive/SCHEMA.md describes a 5-tier Build, ProcessParams, Sample, Properties, Source chain. The run dossier does not instantiate that chain. It carries build context (tier 1, partly), the process vector (tier 2, partly), a specimen (tier 3, partly), simulated W/D/L instead of measured properties (tier 4) and research evidence as opaque JSON (tier 5). SCHEMA.md fields with no dossier counterpart: powder size distribution and atomization, chamber atmosphere, plate location, measured density and tensile properties, testing standards, lab.",
+  "documents": [
+    {
+      "id": "NASA-6030",
+      "designation": "NASA-STD-6030",
+      "title": "Additive Manufacturing Requirements for Spaceflight Systems",
+      "edition": "Baseline, approved 2021-04-21",
+      "access": "public",
+      "sourceUrl": "https://standards.nasa.gov/sites/default/files/standards/NASA/Baseline/0/2021-04-21_nasa-std-6030-approveddocx.pdf",
+      "sha256": "5246d3b992ac0cc7a7deadb4c3c10284444add7d7e055968ae011d671d5a96cd",
+      "sizeBytes": 3317520,
+      "pages": 190,
+      "retrieved": "2026-11-02",
+      "verification": "Read from the public PDF. Section numbers and requirement identifiers (AMR-n) were checked against its table of contents and body. No clause text is quoted.",
+      "landingPage": "https://standards.nasa.gov/standard/nasa/nasa-std-6030"
+    },
+    {
+      "id": "AMS7003",
+      "designation": "SAE AMS7003",
+      "title": "Laser Powder Bed Fusion Process",
+      "edition": "Issued 2018-06 (public listing)",
+      "access": "paywalled",
+      "sourceUrl": "https://saemobilus.sae.org/standards/ams7003-laser-powder-bed-fusion-process",
+      "sha256": null,
+      "verification": "Title and one-line purpose (process controls for repeatable L-PBF production of aerospace parts) from the public SAE listing. Clause numbers and record requirements: unverified: check against a licensed copy."
+    },
+    {
+      "id": "AMS7000-2",
+      "designation": "SAE AMS7000, AMS7001, AMS7002",
+      "title": "AMS7000: L-PBF produced parts, nickel alloy 62Ni-21.5Cr-9.0Mo-3.65Nb, stress relieved, HIP and solution annealed. AMS7001: nickel alloy powder for additive manufacturing (same composition). AMS7002: Process requirements for production of metal powder feedstock for use in additive manufacturing of aerospace parts.",
+      "edition": "Issued 2018 (public press listings)",
+      "access": "paywalled",
+      "sourceUrl": "https://saemobilus.sae.org/standards/ams7003-laser-powder-bed-fusion-process",
+      "sha256": null,
+      "verification": "Titles from public press coverage of the 2018 SAE release. Relevant here mainly for AMS7002 (powder feedstock records). AMS7000 and AMS7001 are nickel alloy 625 specific and outside the Ti64/AlSi10Mg primary scope. Clause numbers: unverified: check against a licensed copy."
+    },
+    {
+      "id": "F3055",
+      "designation": "ASTM F3055",
+      "title": "Standard Specification for Additive Manufacturing Nickel Alloy (UNS N07718) with Powder Bed Fusion",
+      "edition": "F3055-14a in public listings (also -14, -14e1). Edition currency: unverified: check against a licensed copy",
+      "access": "paywalled",
+      "sourceUrl": "https://store.astm.org/f3055-14e01.html",
+      "sha256": null,
+      "verification": "Title and topic list from the ASTM store page and third-party listings: ordering information, manufacturing plan, feedstock, thermal processing, chemical composition, microstructure, mechanical properties, hot isostatic pressing, supplementary requirements S1 to S16. Clause numbers: unverified: check against a licensed copy."
+    },
+    {
+      "id": "F3001",
+      "designation": "ASTM F3001",
+      "title": "Standard Specification for Additive Manufacturing Titanium-6 Aluminum-4 Vanadium ELI (Extra Low Interstitial) with Powder Bed Fusion",
+      "edition": "F3001-14, reaffirmed 2021 in public listings",
+      "access": "paywalled",
+      "sourceUrl": "https://www.thefabricator.com/additivereport/news/additive/astm-adds-metal-3-d-printing-standards",
+      "sha256": null,
+      "verification": "Designation and title only, from public listings. Scope topics and clause numbers: unverified: check against a licensed copy."
+    },
+    {
+      "id": "F3318",
+      "designation": "ASTM F3318",
+      "title": "Standard for Additive Manufacturing, Finished Part Properties, Specification for AlSi10Mg with Powder Bed Fusion, Laser Beam",
+      "edition": "F3318-18",
+      "access": "paywalled",
+      "sourceUrl": "https://store.astm.org/products-services/standards-and-publications/standards/additive-manufacturing-standards.html",
+      "sha256": null,
+      "verification": "Designation and title from the ASTM additive manufacturing catalogue and volume listings. One third-party database listed a different alloy for this number, so confirm the title on a licensed copy. Scope topics and clause numbers: unverified: check against a licensed copy."
+    },
+    {
+      "id": "F3302",
+      "designation": "ASTM F3302",
+      "title": "Standard for Additive Manufacturing, Finished Part Properties, Standard Specification for Titanium Alloys via Powder Bed Fusion",
+      "edition": "F3302-18",
+      "access": "paywalled",
+      "sourceUrl": "https://webstore.ansi.org/standards/astm/astmf330218",
+      "sha256": null,
+      "verification": "Title and one-line scope (full-melt PBF of titanium alloys, wrought-like properties) from the ANSI webstore listing. Clause numbers: unverified: check against a licensed copy."
+    },
+    {
+      "id": "ISOASTM52900",
+      "designation": "ISO/ASTM 52900",
+      "title": "Additive manufacturing, General principles, Fundamentals and vocabulary",
+      "edition": "Second edition, 2021-11 (the 2015 first edition was titled Terminology)",
+      "access": "paywalled",
+      "sourceUrl": "https://committee.iso.org/standard/74514.html",
+      "sha256": null,
+      "verification": "Designation, title and edition from the ISO catalogue page. A vocabulary standard: it asks for no records, so it is used only to check that dossier wording uses standard terms. Clause numbers: unverified: check against a licensed copy."
+    }
+  ],
+  "fields": [
+    {
+      "id": "build.buildId",
+      "group": "build",
+      "path": "buildContext.buildId",
+      "scope": "dossier",
+      "description": "Build or experiment ID typed by the user in the workflow.",
+      "coverage": "partially recorded",
+      "note": "Free text. No uniqueness check, no link to a revision-controlled production record, no file hash of the build file.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread; 4.14 production engineering record (AMR-30)",
+          "refVerified": true,
+          "topic": "Build and production record identity, tied to controlled files",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Build record identity (topic inferred from the public scope sentence)",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "build.machine",
+      "group": "build",
+      "path": "buildContext.machine",
+      "scope": "dossier",
+      "description": "Machine model typed by the user.",
+      "coverage": "partially recorded",
+      "note": "Model name only. No serial number, firmware or software version, no equipment control plan reference.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.5 equipment and facility control plan (AMR-14); 5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Identity of the specific machine model and serial number, configuration, firmware and software versions",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Machine identification for process control",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "build.powderLot",
+      "group": "build",
+      "path": "buildContext.powderLot",
+      "scope": "dossier",
+      "description": "Powder lot typed by the user.",
+      "coverage": "partially recorded",
+      "note": "Lot string only. No supplier certificate, size distribution, chemistry or reuse count attached.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.1 feedstock (AMR-38); 6.6 used feedstock lot controls (AMR-66)",
+          "refVerified": true,
+          "topic": "Feedstock lot identity and traceability, including reuse state",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "AMS7000-2",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Powder lot records at the powder producer",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3055",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Feedstock topic listed on the public page",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3001",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Feedstock requirements (topic inferred from the title)",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3318",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Feedstock requirements (topic inferred from the title)",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "build.powderCondition",
+      "group": "build",
+      "path": "buildContext.powderCondition",
+      "scope": "dossier",
+      "description": "Free-text powder condition.",
+      "coverage": "partially recorded",
+      "note": "Unstructured text. No virgin/reused flag, reuse count or blend ratio field.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.1 feedstock (AMR-39 reuse protocol); 6.6 (AMR-66)",
+          "refVerified": true,
+          "topic": "Virgin versus reused feedstock state and reuse limits",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "AMS7000-2",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Powder condition and handling",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "build.heatTreatment",
+      "group": "build",
+      "path": "buildContext.heatTreatment",
+      "scope": "dossier",
+      "description": "Free-text heat treatment.",
+      "coverage": "partially recorded",
+      "note": "Unstructured text. No structured time, temperature, atmosphere or HIP fields, and no thermal-process specification reference.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.3 post-processing (AMR-42 to AMR-45); 4.14 thermal processing record",
+          "refVerified": true,
+          "topic": "Thermal post-processing record: times, temperatures, atmosphere, including HIP for metallic Class A and B1/B2",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3055",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Thermal processing and hot isostatic pressing topics listed on the public page",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "AMS7000-2",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Stress relief, HIP and anneal condition (AMS7000 title)",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "build.measurementMethod",
+      "group": "build",
+      "path": "buildContext.measurementMethod",
+      "scope": "dossier",
+      "description": "Free-text measurement method.",
+      "coverage": "partially recorded",
+      "note": "Unstructured text. No test standard designation field, no specimen geometry or lab identity.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification of a candidate material process; 6.11 development of allowables",
+          "refVerified": true,
+          "topic": "Test method and specimen basis for property data",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3055",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Mechanical properties and microstructure test requirements",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "build.notes",
+      "group": "build",
+      "path": "buildContext.notes",
+      "scope": "dossier",
+      "description": "Research objective and notes.",
+      "coverage": "partially recorded",
+      "note": "Free text, not a controlled process record.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.14 production engineering record (AMR-30)",
+          "refVerified": true,
+          "topic": "Process metadata and in-process observations",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "sample.id",
+      "group": "sample",
+      "path": "specimen.id",
+      "scope": "dossier",
+      "description": "Active specimen identifier in the app.",
+      "coverage": "partially recorded",
+      "note": "App-internal id for the simulated material, not a physical witness specimen or part serial number.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.11 witness testing for statistical process control",
+          "refVerified": true,
+          "topic": "Witness specimen identity",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "NASA-6030",
+          "ref": "4.12 serialization (AMR-26)",
+          "refVerified": true,
+          "topic": "Part or specimen traceability to the build",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "sample.name",
+      "group": "sample",
+      "path": "specimen.name",
+      "scope": "dossier",
+      "description": "Alloy or specimen name, canonicalised for the solver.",
+      "coverage": "partially recorded",
+      "note": "Alloy name only. No specification designation or grade (for example ELI versus standard grade) field.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.1 feedstock (AMR-38)",
+          "refVerified": true,
+          "topic": "Chemical composition controls of feedstock",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3055",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition topic listed on the public page",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3001",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition (topic inferred from the title)",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3318",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition (topic inferred from the title)",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3302",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition (topic inferred from the title)",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "sample.composition",
+      "group": "sample",
+      "path": "specimen.composition",
+      "scope": "dossier",
+      "description": "Composition map used by the app.",
+      "coverage": "partially recorded",
+      "note": "Nominal composition used for the model, not a measured heat or powder-lot chemistry.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.1 feedstock (AMR-38)",
+          "refVerified": true,
+          "topic": "Chemical composition controls of feedstock",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3055",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition topic listed on the public page",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3001",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition (topic inferred from the title)",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3318",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition (topic inferred from the title)",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "F3302",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition (topic inferred from the title)",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "sample.compositionUnit",
+      "group": "sample",
+      "path": "specimen.compositionUnit",
+      "scope": "dossier",
+      "description": "Unit of the composition values (wt% or at%).",
+      "coverage": "recorded",
+      "note": "Unit is explicit.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.1 feedstock (AMR-38)",
+          "refVerified": true,
+          "topic": "Chemical composition controls of feedstock",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "F3055",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition topic listed on the public page",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "F3001",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition (topic inferred from the title)",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "F3318",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition (topic inferred from the title)",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "F3302",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Chemical composition (topic inferred from the title)",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "sample.materialTransfer",
+      "group": "sample",
+      "path": "specimen.materialTransfer",
+      "scope": "dossier",
+      "description": "Record of a composition handed over from another module, labelled Screening only.",
+      "coverage": "partially recorded",
+      "note": "Provenance of a transfer inside the app only.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "6.8 criteria for the use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Source of external data",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "sample.inclineAngle",
+      "group": "sample",
+      "path": "currentProcess.inclineAngle_deg",
+      "scope": "dossier",
+      "description": "Surface incline from horizontal used by the model.",
+      "coverage": "partially recorded",
+      "note": "Model input for solidification, not a recorded build orientation of a physical specimen. No plate location field.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "6.7.3 explicit evaluation of anisotropy",
+          "refVerified": true,
+          "topic": "Build orientation influence",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.laserPower_W",
+      "group": "process",
+      "path": "currentProcess.laserPower_W",
+      "scope": "dossier",
+      "description": "Laser power (W) in the live process vector.",
+      "coverage": "recorded",
+      "note": "Recorded as a model input. User-entered number, not machine-logged.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.scanSpeed_mms",
+      "group": "process",
+      "path": "currentProcess.scanSpeed_mms",
+      "scope": "dossier",
+      "description": "Scan speed (mm/s) in the live process vector.",
+      "coverage": "recorded",
+      "note": "Recorded as a model input. User-entered number, not machine-logged.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.hatch_um",
+      "group": "process",
+      "path": "currentProcess.hatch_um",
+      "scope": "dossier",
+      "description": "Hatch spacing (um) in the live process vector.",
+      "coverage": "recorded",
+      "note": "Recorded as a model input. User-entered number, not machine-logged.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.layer_um",
+      "group": "process",
+      "path": "currentProcess.layer_um",
+      "scope": "dossier",
+      "description": "Layer thickness (um) in the live process vector.",
+      "coverage": "recorded",
+      "note": "Recorded as a model input. User-entered number, not machine-logged.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.beamDiameter_um",
+      "group": "process",
+      "path": "currentProcess.beamDiameter_um",
+      "scope": "dossier",
+      "description": "Beam diameter (um) in the live process vector.",
+      "coverage": "recorded",
+      "note": "Recorded as a model input. User-entered number, not machine-logged.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.preheatTemp_C",
+      "group": "process",
+      "path": "currentProcess.preheatTemp_C",
+      "scope": "dossier",
+      "description": "Preheat temperature (degC).",
+      "coverage": "recorded",
+      "note": "Model input, not machine-logged. No chamber gas, oxygen level or gas flow fields.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Environmental conditions in the AM equipment, e.g. temperature",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process environment control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.scanStrategy",
+      "group": "process",
+      "path": "currentProcess.scanStrategy",
+      "scope": "dossier",
+      "description": "Scan strategy label.",
+      "coverage": "partially recorded",
+      "note": "Label only. No rotation angle, island size, start/stop sequence or tool path file.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Tool path settings: hatch, area fill scheme, distribution across the build area",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.beamProfile",
+      "group": "process",
+      "path": "currentProcess.beamProfile",
+      "scope": "dossier",
+      "description": "Beam profile label.",
+      "coverage": "partially recorded",
+      "note": "Label only. No measured beam characterisation.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.laserAbsorptivity",
+      "group": "process",
+      "path": "currentProcess.laserAbsorptivity",
+      "scope": "dossier",
+      "description": "Absorptivity assumed by the model.",
+      "coverage": "partially recorded",
+      "note": "Assumed model constant, not a measured value.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "partially recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.executedMaterial",
+      "group": "process",
+      "path": "executedInput.material",
+      "scope": "dossier",
+      "description": "Material name actually sent to the solver.",
+      "coverage": "recorded",
+      "note": "Snapshot of the executed run.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.executed.power_W",
+      "group": "process",
+      "path": "executedInput.power_W",
+      "scope": "dossier",
+      "description": "Laser power actually sent to the solver (executed snapshot).",
+      "coverage": "recorded",
+      "note": "Kept beside the current value so staleness is visible.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.executed.speed_mm_s",
+      "group": "process",
+      "path": "executedInput.speed_mm_s",
+      "scope": "dossier",
+      "description": "Scan speed actually sent to the solver (executed snapshot).",
+      "coverage": "recorded",
+      "note": "Kept beside the current value so staleness is visible.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.executed.beamDiameter_um",
+      "group": "process",
+      "path": "executedInput.beamDiameter_um",
+      "scope": "dossier",
+      "description": "Beam diameter actually sent to the solver (executed snapshot).",
+      "coverage": "recorded",
+      "note": "Kept beside the current value so staleness is visible.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.executed.preheat_C",
+      "group": "process",
+      "path": "executedInput.preheat_C",
+      "scope": "dossier",
+      "description": "Preheat actually sent to the solver (executed snapshot).",
+      "coverage": "recorded",
+      "note": "Kept beside the current value so staleness is visible.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.executed.layer_um",
+      "group": "process",
+      "path": "executedInput.layer_um",
+      "scope": "dossier",
+      "description": "Layer thickness actually sent to the solver (executed snapshot).",
+      "coverage": "recorded",
+      "note": "Kept beside the current value so staleness is visible.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "process.executed.hatch_um",
+      "group": "process",
+      "path": "executedInput.hatch_um",
+      "scope": "dossier",
+      "description": "Hatch spacing actually sent to the solver (executed snapshot).",
+      "coverage": "recorded",
+      "note": "Kept beside the current value so staleness is visible.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.4.2 build process (AMR-40)",
+          "refVerified": true,
+          "topic": "Fixed key process variables: layer height, beam power, translation speed, beam spot size, hatch spacing, area fill scheme",
+          "coverage": "recorded"
+        },
+        {
+          "doc": "AMS7003",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Process parameter control",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "machine.id",
+      "group": "machine",
+      "path": "extras.machineCalibration.artefact.machineCalibrationId",
+      "scope": "run-report-extras",
+      "description": "Id of the user machine-calibration artefact (display only, not in the hashed dossier).",
+      "coverage": "partially recorded",
+      "note": "User-fitted offset from the user's own tracks. Not an equipment calibration or qualification record, and outside the hashed dossier.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.5 equipment and facility control plan (AMR-14)",
+          "refVerified": true,
+          "topic": "Calibration and qualification of equipment",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "machine.sha",
+      "group": "machine",
+      "path": "extras.machineCalibration.artefact.contentSha256",
+      "scope": "run-report-extras",
+      "description": "SHA-256 of the machine-calibration artefact.",
+      "coverage": "partially recorded",
+      "note": "Identifies the artefact bytes. Outside the hashed dossier.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.5 equipment and facility control plan (AMR-14)",
+          "refVerified": true,
+          "topic": "Calibration and qualification of equipment",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "machine.userSource",
+      "group": "machine",
+      "path": "extras.machineCalibration.artefact.userSourceId",
+      "scope": "run-report-extras",
+      "description": "Id of the user-supplied source for the fit.",
+      "coverage": "partially recorded",
+      "note": "User supplied, unverified.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "6.8 criteria for the use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Source of external data",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "machine.nTracks",
+      "group": "machine",
+      "path": "extras.machineCalibration.artefact.nTracks",
+      "scope": "run-report-extras",
+      "description": "Number of tracks used in the fit.",
+      "coverage": "recorded",
+      "note": "Count only.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.5 equipment and facility control plan (AMR-14)",
+          "refVerified": true,
+          "topic": "Calibration and qualification of equipment",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "machine.factor",
+      "group": "machine",
+      "path": "extras.machineCalibration.block.factor",
+      "scope": "run-report-extras",
+      "description": "Empirical machine offset factor.",
+      "coverage": "partially recorded",
+      "note": "Empirical model offset, not a power or focus calibration of the machine.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.5 equipment and facility control plan (AMR-14)",
+          "refVerified": true,
+          "topic": "Calibration and qualification of equipment",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "props.simulated.width_um",
+      "group": "properties",
+      "path": "job.result.metrics.width_um",
+      "scope": "dossier",
+      "description": "Melt pool width from the thermal simulation (a model output, not a measurement).",
+      "coverage": "partially recorded",
+      "note": "Simulated and labelled with its evidence kind. The documents ask for measured finished-part properties (density, microstructure, tensile and so on). None of those are recorded, so the mapping to them is not recorded.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "6.11 development of allowables and design values; 5.6 registration to an MPS",
+          "refVerified": true,
+          "topic": "Measured material properties from tested specimens",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3055",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Mechanical properties and microstructure requirements",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3001",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Mechanical properties (topic inferred from the title)",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3318",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Finished part properties (from the title)",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3302",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Finished part properties (from the title)",
+          "coverage": "not recorded"
+        }
+      ]
+    },
+    {
+      "id": "props.simulated.depth_um",
+      "group": "properties",
+      "path": "job.result.metrics.depth_um",
+      "scope": "dossier",
+      "description": "Melt pool depth from the thermal simulation (a model output, not a measurement).",
+      "coverage": "partially recorded",
+      "note": "Simulated and labelled with its evidence kind. The documents ask for measured finished-part properties (density, microstructure, tensile and so on). None of those are recorded, so the mapping to them is not recorded.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "6.11 development of allowables and design values; 5.6 registration to an MPS",
+          "refVerified": true,
+          "topic": "Measured material properties from tested specimens",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3055",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Mechanical properties and microstructure requirements",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3001",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Mechanical properties (topic inferred from the title)",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3318",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Finished part properties (from the title)",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3302",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Finished part properties (from the title)",
+          "coverage": "not recorded"
+        }
+      ]
+    },
+    {
+      "id": "props.simulated.length_um",
+      "group": "properties",
+      "path": "job.result.metrics.length_um",
+      "scope": "dossier",
+      "description": "Melt pool length from the thermal simulation (a model output, not a measurement).",
+      "coverage": "partially recorded",
+      "note": "Simulated and labelled with its evidence kind. The documents ask for measured finished-part properties (density, microstructure, tensile and so on). None of those are recorded, so the mapping to them is not recorded.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "6.11 development of allowables and design values; 5.6 registration to an MPS",
+          "refVerified": true,
+          "topic": "Measured material properties from tested specimens",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3055",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Mechanical properties and microstructure requirements",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3001",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Mechanical properties (topic inferred from the title)",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3318",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Finished part properties (from the title)",
+          "coverage": "not recorded"
+        },
+        {
+          "doc": "F3302",
+          "ref": "unverified: check against a licensed copy",
+          "refVerified": false,
+          "topic": "Finished part properties (from the title)",
+          "coverage": "not recorded"
+        }
+      ]
+    },
+    {
+      "id": "props.energyBalance",
+      "group": "properties",
+      "path": "job.result.energyBalance",
+      "scope": "dossier",
+      "description": "Energy conservation audit of the simulation.",
+      "coverage": "recorded",
+      "note": "Numerical check only; not a property.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 7.2 part classification rationale",
+          "refVerified": true,
+          "topic": "Statement of what has and has not been established",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "props.convergence",
+      "group": "properties",
+      "path": "job.result.convergenceStudy",
+      "scope": "dossier",
+      "description": "Numerical convergence study, when present.",
+      "coverage": "recorded",
+      "note": "Numerical check only.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 7.2 part classification rationale",
+          "refVerified": true,
+          "topic": "Statement of what has and has not been established",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.draft.width_um",
+      "group": "measurements",
+      "path": "measurementDraft.width_um",
+      "scope": "dossier",
+      "description": "Measured width (user draft).",
+      "coverage": "partially recorded",
+      "note": "User-typed and unverified. Not a lab record: no instrument, calibration, operator, standard or date field.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.draft.depth_um",
+      "group": "measurements",
+      "path": "measurementDraft.depth_um",
+      "scope": "dossier",
+      "description": "Measured depth (user draft).",
+      "coverage": "partially recorded",
+      "note": "User-typed and unverified. Not a lab record: no instrument, calibration, operator, standard or date field.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.draft.uncertainty_um",
+      "group": "measurements",
+      "path": "measurementDraft.uncertainty_um",
+      "scope": "dossier",
+      "description": "Uncertainty (user draft).",
+      "coverage": "partially recorded",
+      "note": "User-typed and unverified. Not a lab record: no instrument, calibration, operator, standard or date field.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.draft.source",
+      "group": "measurements",
+      "path": "measurementDraft.source",
+      "scope": "dossier",
+      "description": "Source of the measurement (user draft).",
+      "coverage": "partially recorded",
+      "note": "User-typed and unverified. Not a lab record: no instrument, calibration, operator, standard or date field.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.draft.specimenOrDoi",
+      "group": "measurements",
+      "path": "measurementDraft.specimenOrDoi",
+      "scope": "dossier",
+      "description": "Specimen or DOI (user draft).",
+      "coverage": "partially recorded",
+      "note": "User-typed and unverified. Not a lab record: no instrument, calibration, operator, standard or date field.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.draft.holdout",
+      "group": "measurements",
+      "path": "measurementDraft.holdout",
+      "scope": "dossier",
+      "description": "Independent holdout declaration (user draft).",
+      "coverage": "partially recorded",
+      "note": "User-typed and unverified. Not a lab record: no instrument, calibration, operator, standard or date field.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.draft.replicates",
+      "group": "measurements",
+      "path": "measurementDraft.replicates",
+      "scope": "dossier",
+      "description": "Replicate values (user draft).",
+      "coverage": "partially recorded",
+      "note": "User-typed and unverified. Not a lab record: no instrument, calibration, operator, standard or date field.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.draft.status",
+      "group": "measurements",
+      "path": "measurementDraft.status",
+      "scope": "dossier",
+      "description": "Draft status sentence.",
+      "coverage": "partially recorded",
+      "note": "User-typed and unverified. Not a lab record: no instrument, calibration, operator, standard or date field.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.evidence.source",
+      "group": "measurements",
+      "path": "job.result.measurementEvidence[].source",
+      "scope": "dossier",
+      "description": "Worker-reported evidence source.",
+      "coverage": "partially recorded",
+      "note": "Worker-reported; independent verification not established.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.evidence.sameProcessVector",
+      "group": "measurements",
+      "path": "job.result.measurementEvidence[].sameProcessVector",
+      "scope": "dossier",
+      "description": "Whether the evidence shares the process vector.",
+      "coverage": "recorded",
+      "note": "Match flag as reported.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.evidence.uncertainty",
+      "group": "measurements",
+      "path": "job.result.measurementEvidence[].uncertainty_um",
+      "scope": "dossier",
+      "description": "Uncertainty of an evidence row.",
+      "coverage": "recorded",
+      "note": "As reported by the worker.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "meas.evidence.holdout",
+      "group": "measurements",
+      "path": "job.result.measurementEvidence[].independentHoldout",
+      "scope": "dossier",
+      "description": "Independent holdout flag of an evidence row.",
+      "coverage": "recorded",
+      "note": "As reported.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 6.8 criteria for use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Provenance and independence of the data behind a property claim",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "source.research",
+      "group": "source",
+      "path": "researchEvidence",
+      "scope": "dossier",
+      "description": "Linked research evidence records (array).",
+      "coverage": "partially recorded",
+      "note": "Linked records as opaque JSON. No DOI, authors or testing-standard fields enforced here.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "6.8 criteria for the use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Source of external data",
+          "coverage": "partially recorded"
+        }
+      ]
+    },
+    {
+      "id": "source.materialName",
+      "group": "source",
+      "path": "job.result.material.name",
+      "scope": "dossier",
+      "description": "Thermal material name.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "6.8 criteria for the use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Source of external data",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "source.materialSource",
+      "group": "source",
+      "path": "job.result.material.source",
+      "scope": "dossier",
+      "description": "Source text of the material properties used.",
+      "coverage": "recorded",
+      "note": "Text only; not a specification reference.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "6.8 criteria for the use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Source of external data",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "source.materialQuality",
+      "group": "source",
+      "path": "job.result.material.quality",
+      "scope": "dossier",
+      "description": "Quality label of the material data (for example estimated).",
+      "coverage": "recorded",
+      "note": "Evidence quality label.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "6.8 criteria for the use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Source of external data",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "source.propRevision",
+      "group": "source",
+      "path": "extras.buildJob.materialPropertyRevision",
+      "scope": "run-report-extras",
+      "description": "Revision of the material property table used by the build job.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread",
+          "refVerified": true,
+          "topic": "Version-controlled identity of software and files used to create the part definition and build",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "source.propSha",
+      "group": "source",
+      "path": "extras.buildJob.materialPropertySha256",
+      "scope": "run-report-extras",
+      "description": "SHA-256 of the material property table.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread (AMR-27)",
+          "refVerified": true,
+          "topic": "Cryptographic hash fingerprint for identity and integrity of files",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "source.bands.statement",
+      "group": "source",
+      "path": "publishedTrackBands.statement",
+      "scope": "dossier",
+      "description": "Published-track error band statement.",
+      "coverage": "recorded",
+      "note": "Reporting text; sources listed with DOI where available. Present only when a build job is attached.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "6.8 criteria for the use of external data in the MPS",
+          "refVerified": true,
+          "topic": "Source of external data",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "source.bands.sha",
+      "group": "source",
+      "path": "publishedTrackBands.contentSha256",
+      "scope": "dossier",
+      "description": "SHA-256 of the band artefact.",
+      "coverage": "recorded",
+      "note": "Present only when a build job is attached.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread (AMR-27)",
+          "refVerified": true,
+          "topic": "Cryptographic hash fingerprint for identity and integrity of files",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "model.solverId",
+      "group": "model",
+      "path": "job.result.solver.id",
+      "scope": "dossier",
+      "description": "Solver id.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread",
+          "refVerified": true,
+          "topic": "Version-controlled identity of software and files used to create the part definition and build",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "model.solverVersion",
+      "group": "model",
+      "path": "job.result.solver.version",
+      "scope": "dossier",
+      "description": "Solver version.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread",
+          "refVerified": true,
+          "topic": "Version-controlled identity of software and files used to create the part definition and build",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "model.requestedMode",
+      "group": "model",
+      "path": "job.result.requestedMode",
+      "scope": "dossier",
+      "description": "Requested simulation mode.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread",
+          "refVerified": true,
+          "topic": "Version-controlled identity of software and files used to create the part definition and build",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "model.effectiveMode",
+      "group": "model",
+      "path": "job.result.effectiveMode",
+      "scope": "dossier",
+      "description": "Effective mode actually run.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread",
+          "refVerified": true,
+          "topic": "Version-controlled identity of software and files used to create the part definition and build",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "model.fallbackReason",
+      "group": "model",
+      "path": "job.result.fallbackReason",
+      "scope": "dossier",
+      "description": "Reason for a mode fallback, or null.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread",
+          "refVerified": true,
+          "topic": "Version-controlled identity of software and files used to create the part definition and build",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "model.buildModelId",
+      "group": "model",
+      "path": "buildScreening.modelId",
+      "scope": "dossier",
+      "description": "Build-job screening model id.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread",
+          "refVerified": true,
+          "topic": "Version-controlled identity of software and files used to create the part definition and build",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "model.buildSolverRevision",
+      "group": "model",
+      "path": "extras.buildJob.solverRevision",
+      "scope": "run-report-extras",
+      "description": "Build-job solver revision.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread",
+          "refVerified": true,
+          "topic": "Version-controlled identity of software and files used to create the part definition and build",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "model.buildIdentitySha",
+      "group": "model",
+      "path": "extras.buildJob.buildJobIdentity.sha256",
+      "scope": "run-report-extras",
+      "description": "SHA-256 of the build-job identity.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread (AMR-27)",
+          "refVerified": true,
+          "topic": "Cryptographic hash fingerprint for identity and integrity of files",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "fp.implementationHash",
+      "group": "fingerprint",
+      "path": "job.result.provenance.implementationHash",
+      "scope": "dossier",
+      "description": "Implementation hash of the solver code.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread (AMR-27)",
+          "refVerified": true,
+          "topic": "Cryptographic hash fingerprint for identity and integrity of files",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "fp.inputHash",
+      "group": "fingerprint",
+      "path": "job.result.provenance.inputHash",
+      "scope": "dossier",
+      "description": "Hash of the input.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread (AMR-27)",
+          "refVerified": true,
+          "topic": "Cryptographic hash fingerprint for identity and integrity of files",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "fp.executionInputHash",
+      "group": "fingerprint",
+      "path": "job.result.provenance.executionInputHash",
+      "scope": "dossier",
+      "description": "Hash of the execution input (optional in older runs).",
+      "coverage": "recorded",
+      "note": "Not reported by every worker run.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread (AMR-27)",
+          "refVerified": true,
+          "topic": "Cryptographic hash fingerprint for identity and integrity of files",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "fp.schema",
+      "group": "fingerprint",
+      "path": "job.result.provenance.implementationFingerprintSchema",
+      "scope": "dossier",
+      "description": "Fingerprint schema id.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread (AMR-27)",
+          "refVerified": true,
+          "topic": "Cryptographic hash fingerprint for identity and integrity of files",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "fp.binary",
+      "group": "fingerprint",
+      "path": "job.result.provenance.solverBinaryHash",
+      "scope": "dossier",
+      "description": "Solver binary hash, null when no binary applies.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread (AMR-27)",
+          "refVerified": true,
+          "topic": "Cryptographic hash fingerprint for identity and integrity of files",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "fp.createdAt",
+      "group": "fingerprint",
+      "path": "job.result.provenance.createdAt",
+      "scope": "dossier",
+      "description": "Run creation time.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread (AMR-27)",
+          "refVerified": true,
+          "topic": "Cryptographic hash fingerprint for identity and integrity of files",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "fp.dossierCreatedAt",
+      "group": "fingerprint",
+      "path": "createdAt",
+      "scope": "dossier",
+      "description": "Dossier creation time. The exported run report overrides it with the caller-supplied time.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread (AMR-27)",
+          "refVerified": true,
+          "topic": "Cryptographic hash fingerprint for identity and integrity of files",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "fp.dossierSha",
+      "group": "fingerprint",
+      "path": "dossierSha256",
+      "scope": "run-report-options",
+      "description": "SHA-256 of the exact dossier bytes embedded in the exported HTML.",
+      "coverage": "recorded",
+      "note": "Hashes the dossier itself. Not a hash of the build file, scan files or parameter file the documents refer to.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread (AMR-27)",
+          "refVerified": true,
+          "topic": "Cryptographic hash fingerprint for identity and integrity of files",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.resultType",
+      "group": "evidence-labels",
+      "path": "resultType",
+      "scope": "dossier",
+      "description": "Evidence kind (Screening only or Unresolved).",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.2 AMCP; 4.17 qualification testing; 5.5 qualification",
+          "refVerified": true,
+          "topic": "Explicit qualification or approval status, owned by the program authority",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.resultDescription",
+      "group": "evidence-labels",
+      "path": "resultDescription",
+      "scope": "dossier",
+      "description": "Result label text.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.2 AMCP; 4.17 qualification testing; 5.5 qualification",
+          "refVerified": true,
+          "topic": "Explicit qualification or approval status, owned by the program authority",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.qualificationStatus",
+      "group": "evidence-labels",
+      "path": "qualificationStatus",
+      "scope": "dossier",
+      "description": "Always Unresolved in the current dossier.",
+      "coverage": "recorded",
+      "note": "The dossier cannot grant a release or certificate.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.2 AMCP; 4.17 qualification testing; 5.5 qualification",
+          "refVerified": true,
+          "topic": "Explicit qualification or approval status, owned by the program authority",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.productionReady",
+      "group": "evidence-labels",
+      "path": "productionReady",
+      "scope": "dossier",
+      "description": "Always false.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.2 AMCP; 4.17 qualification testing; 5.5 qualification",
+          "refVerified": true,
+          "topic": "Explicit qualification or approval status, owned by the program authority",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.scope",
+      "group": "evidence-labels",
+      "path": "scope",
+      "scope": "dossier",
+      "description": "Module maturity scope (Research).",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.2 AMCP; 4.17 qualification testing; 5.5 qualification",
+          "refVerified": true,
+          "topic": "Explicit qualification or approval status, owned by the program authority",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.schemaVersion",
+      "group": "evidence-labels",
+      "path": "schemaVersion",
+      "scope": "dossier",
+      "description": "Dossier schema version.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.13 digital thread",
+          "refVerified": true,
+          "topic": "Version-controlled identity of software and files used to create the part definition and build",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.reportType",
+      "group": "evidence-labels",
+      "path": "reportType",
+      "scope": "dossier",
+      "description": "Report type string.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "4.2 AMCP; 4.17 qualification testing; 5.5 qualification",
+          "refVerified": true,
+          "topic": "Explicit qualification or approval status, owned by the program authority",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.stale",
+      "group": "evidence-labels",
+      "path": "resultMatchesCurrentInputs",
+      "scope": "dossier",
+      "description": "Whether the attached result matches current inputs.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 7.2 part classification rationale",
+          "refVerified": true,
+          "topic": "Statement of what has and has not been established",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.verdict",
+      "group": "evidence-labels",
+      "path": "buildScreening.verdict.verdict",
+      "scope": "dossier",
+      "description": "Screening verdict.",
+      "coverage": "recorded",
+      "note": "A screening verdict, not an acceptance decision.",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 7.2 part classification rationale",
+          "refVerified": true,
+          "topic": "Statement of what has and has not been established",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.validationStatus",
+      "group": "evidence-labels",
+      "path": "job.result.validationStatus",
+      "scope": "dossier",
+      "description": "Validation status of the simulation (unvalidated).",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 7.2 part classification rationale",
+          "refVerified": true,
+          "topic": "Statement of what has and has not been established",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.confidence",
+      "group": "evidence-labels",
+      "path": "job.result.confidence",
+      "scope": "dossier",
+      "description": "Confidence label of the simulation.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 7.2 part classification rationale",
+          "refVerified": true,
+          "topic": "Statement of what has and has not been established",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.experimentalValidation",
+      "group": "evidence-labels",
+      "path": "verification.experimentalValidation",
+      "scope": "dossier",
+      "description": "Experimental validation status (Unresolved).",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 7.2 part classification rationale",
+          "refVerified": true,
+          "topic": "Statement of what has and has not been established",
+          "coverage": "recorded"
+        }
+      ]
+    },
+    {
+      "id": "label.limitations",
+      "group": "evidence-labels",
+      "path": "limitations",
+      "scope": "dossier",
+      "description": "Generated gap and limitation sentences.",
+      "coverage": "recorded",
+      "note": "",
+      "mappings": [
+        {
+          "doc": "NASA-6030",
+          "ref": "5.5 qualification; 7.2 part classification rationale",
+          "refVerified": true,
+          "topic": "Statement of what has and has not been established",
+          "coverage": "recorded"
+        }
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "id": "gap.powder",
+      "item": "Powder characterisation: size distribution, shape, chemistry, cleanliness, handling and storage, supplier certificate, reuse count and blend",
+      "doc": "NASA-6030",
+      "ref": "5.4.1 (AMR-38, AMR-39); 6.6 (AMR-66); 5.4.2 (AMR-40) names these as key variables",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": "Only a lot string and a free-text condition exist."
+    },
+    {
+      "id": "gap.machineConfig",
+      "item": "Machine serial number, firmware and software versions, equipment and facility control plan reference",
+      "doc": "NASA-6030",
+      "ref": "4.5 (AMR-14); 5.4.2 (AMR-40)",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": "Only a machine model string exists."
+    },
+    {
+      "id": "gap.environment",
+      "item": "Chamber atmosphere, oxygen level, gas flow, humidity, dwell and pause times between layers",
+      "doc": "NASA-6030",
+      "ref": "5.4.2 (AMR-40)",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": "Only preheat temperature is recorded."
+    },
+    {
+      "id": "gap.paramFile",
+      "item": "Build control parameter file name and cryptographic hash; hashes of build file, tool path and other digital-thread files",
+      "doc": "NASA-6030",
+      "ref": "5.4.2 (AMR-40); 4.13 (AMR-27)",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": "The dossier hash covers the dossier only."
+    },
+    {
+      "id": "gap.toolpath",
+      "item": "Tool path settings beyond a scan strategy label: area fill scheme, rotation, start/stop sequence, distribution across the build area",
+      "doc": "NASA-6030",
+      "ref": "5.4.2 (AMR-40)",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": ""
+    },
+    {
+      "id": "gap.restart",
+      "item": "Process restart criteria and unplanned interruption records",
+      "doc": "NASA-6030",
+      "ref": "5.4.2 (AMR-41); 4.7",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": ""
+    },
+    {
+      "id": "gap.postprocess",
+      "item": "Structured post-processing record: thermal process times, temperatures and atmosphere, HIP, machining, support and platform removal",
+      "doc": "NASA-6030",
+      "ref": "5.4.3 (AMR-42 to AMR-45); 4.14 (AMR-30)",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": "Heat treatment is one free-text string."
+    },
+    {
+      "id": "gap.serial",
+      "item": "Part or specimen serialization and traceability to the build; location on plate",
+      "doc": "NASA-6030",
+      "ref": "4.12 (AMR-26)",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": ""
+    },
+    {
+      "id": "gap.witness",
+      "item": "Witness specimens and statistical process control data",
+      "doc": "NASA-6030",
+      "ref": "4.11",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": ""
+    },
+    {
+      "id": "gap.insitu",
+      "item": "In-situ process monitoring data",
+      "doc": "NASA-6030",
+      "ref": "4.9",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": ""
+    },
+    {
+      "id": "gap.nde",
+      "item": "Nondestructive evaluation records",
+      "doc": "NASA-6030",
+      "ref": "4.8",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": ""
+    },
+    {
+      "id": "gap.class",
+      "item": "Part classification and rationale; AM control plan, qualified material process, material property suite and part process references",
+      "doc": "NASA-6030",
+      "ref": "4.2, 4.3, 5.5 to 5.7, 6.3, 7.2, 8.3",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": "By design the dossier does not carry program authority decisions."
+    },
+    {
+      "id": "gap.measuredProps",
+      "item": "Measured finished-part properties: density or porosity, microstructure, tensile and hardness, with test standard, specimen geometry, orientation and heat treatment",
+      "doc": "NASA-6030",
+      "ref": "6.11; 5.6",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": "Only simulated melt-pool dimensions and a user-typed melt-pool draft exist. The properties tier of docs/archive/SCHEMA.md is not part of the dossier."
+    },
+    {
+      "id": "gap.anisotropy",
+      "item": "Build orientation and anisotropy evaluation",
+      "doc": "NASA-6030",
+      "ref": "6.7.3",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": "Only a model incline angle exists."
+    },
+    {
+      "id": "gap.lab",
+      "item": "Test lab identity, instrument and calibration, operator, dates, approvals and signatures",
+      "doc": "NASA-6030",
+      "ref": "4.4; 4.14 (AMR-30) names operators, dates and revisions as process metadata",
+      "refVerified": true,
+      "status": "not recorded",
+      "note": ""
+    },
+    {
+      "id": "gap.specs",
+      "item": "Specification-level chemistry, microstructure and mechanical property records for Ti-6Al-4V ELI",
+      "doc": "F3001",
+      "ref": "unverified: check against a licensed copy",
+      "refVerified": false,
+      "status": "not recorded",
+      "note": "The dossier is a screening record of a simulation, so no conformance data exist. Which fields the specification requires: unverified: check against a licensed copy."
+    },
+    {
+      "id": "gap.specsAlSi",
+      "item": "Specification-level records for AlSi10Mg",
+      "doc": "F3318",
+      "ref": "unverified: check against a licensed copy",
+      "refVerified": false,
+      "status": "not recorded",
+      "note": "Same situation as F3001. Required fields: unverified: check against a licensed copy."
+    },
+    {
+      "id": "gap.specsIN718",
+      "item": "Specification-level records for IN718",
+      "doc": "F3055",
+      "ref": "topics from the public listing: manufacturing plan, feedstock, thermal processing, chemical composition, microstructure, mechanical properties, HIP; clause numbers unverified: check against a licensed copy",
+      "refVerified": false,
+      "status": "not recorded",
+      "note": "No IN718 conformance data in the dossier."
+    },
+    {
+      "id": "gap.specsTi",
+      "item": "Specification-level records for titanium alloys by PBF",
+      "doc": "F3302",
+      "ref": "unverified: check against a licensed copy",
+      "refVerified": false,
+      "status": "not recorded",
+      "note": "Required fields: unverified: check against a licensed copy."
+    },
+    {
+      "id": "gap.powderSpec",
+      "item": "Powder producer records (AMS7002)",
+      "doc": "AMS7000-2",
+      "ref": "unverified: check against a licensed copy",
+      "refVerified": false,
+      "status": "not recorded",
+      "note": "The dossier holds no producer records."
+    },
+    {
+      "id": "gap.processSpec",
+      "item": "Process control records of an L-PBF process specification",
+      "doc": "AMS7003",
+      "ref": "unverified: check against a licensed copy",
+      "refVerified": false,
+      "status": "not recorded",
+      "note": "Required record set: unverified: check against a licensed copy."
+    },
+    {
+      "id": "gap.grade",
+      "item": "Alloy grade or specification designation (for example ELI versus standard grade)",
+      "doc": "F3001",
+      "ref": "unverified: check against a licensed copy",
+      "refVerified": false,
+      "status": "not recorded",
+      "note": "Only a name and nominal composition exist."
+    }
+  ],
+  "summary": {
+    "fieldCount": 88,
+    "fieldsByCoverage": {
+      "partially recorded": 32,
+      "recorded": 56
+    },
+    "gapCount": 22
+  }
+}
