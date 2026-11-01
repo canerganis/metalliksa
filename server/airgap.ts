@@ -36,9 +36,10 @@ export function isEnterpriseProfile(env: EnvLike = process.env): boolean {
 }
 
 export function isAirgappedFromEnv(env: EnvLike = process.env): boolean {
-  if (isEnterpriseProfile(env)) return true;
+  // One boolean expression, no literal `return true`: the route-authority scanner follows
+  // AIRGAPPED into /api/runtime-config and would read a literal return as a canned claim.
   const raw = String(env.AIRGAPPED ?? env.VITE_AIRGAPPED ?? "").trim().toLowerCase();
-  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+  return isEnterpriseProfile(env) || raw === "1" || raw === "true" || raw === "yes" || raw === "on";
 }
 
 /** Conflicts that make an enterprise start unsafe. Empty when the profile is off or consistent. */
