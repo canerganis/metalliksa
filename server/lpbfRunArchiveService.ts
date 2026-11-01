@@ -7,6 +7,7 @@ import { dryRunRunImport, importRun, runArtifacts } from './lpbfRunImport';
 import { lpbfWorker } from './lpbfWorkerBridge';
 import { storeGpuPilotArtifactResolver } from './lpbfGpuPilotArtifacts';
 import { verifyGpuPilotArchive } from './lpbfGpuRunArchive';
+import { recordRunAudit } from './auditLedger';
 
 const MAX_RUN_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
 const MAX_ARCHIVE_SIZE_BYTES = 15 * 1024 * 1024 * 1024; // 15 GB
@@ -219,6 +220,7 @@ export class LpbfRunArchiveService {
         const repository = this.runRepository(false)!;
         try {
           const record = await importRun(repository, new LpbfArtifactStore(path.join(this.runRoot, 'artifacts')), capture, links, sourceRepo, root);
+          await recordRunAudit(record);
           return { ...record, sourceBindingStatus: 'exact-revision-bound' as const };
         } catch (error) {
           if (error instanceof Error && /conflict/i.test(error.message)) throw new LpbfRunArchiveError(409, 'Run identity conflict.');

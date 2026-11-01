@@ -14,6 +14,7 @@ import { researchRouter } from "./routes/research.ts";
 import { createResearchRegistryRouter } from "./routes/researchRegistry.ts";
 import { createLpbfSourcesRouter } from "./routes/lpbfSources.ts";
 import { createLpbfRunsRouter } from "./routes/lpbfRuns.ts";
+import { createAuditLedgerRouter } from "./routes/auditLedger.ts";
 import { processOrchestrationMiddleware } from "./server/processOrchestrator.ts";
 import {
   AIRGAP_ALLOWED_LOCAL,
@@ -76,6 +77,7 @@ applySecurity(app, bindConfig.token, { auth: loginAuth });
 app.use(createResearchRegistryRouter());
 app.use(createLpbfSourcesRouter());
 app.use(createLpbfRunsRouter());
+app.use(createAuditLedgerRouter());
 
 // Body parsing with generous payload capacity for base64 micrograph scans & CAD models
 app.use(express.json({ limit: "50mb" }));
