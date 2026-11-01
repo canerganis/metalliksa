@@ -113,3 +113,5 @@
 /demo/snapshots/** -text
 # SOL-C morphology source receipt: sol_c_a6_morph_phase_check.py pins its raw bytes (sha256), so no EOL conversion.
 /docs/research/sol_c_a6_morph_source_extracts.json -text
+# Spent-set descriptive records: test_lpbf_spent_descriptive compares the raw bytes with the LF canonical form.
+/docs/LPBF_SPENT_DESCRIPTIVE_*.json -text

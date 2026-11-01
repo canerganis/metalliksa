@@ -3,6 +3,7 @@ import { FlaskConical } from 'lucide-react';
 import { sourceMeasurements, SourceNotImportedError } from '../services/lpbfSourceService';
 import { useLpbfEngineeringStore } from '../store/useLpbfEngineeringStore';
 import { aggregateByVelocity, overlayGate, residualAt, CMU_OVERLAY_SCOPE, MEASURED_DEPTH_LABEL, DEPTH_NOT_COMPARABLE_REASON, describePowers, type MeasuredRow, type ResidualQuantity, type Residual } from '../utils/experimentalValidation';
+import { BlindTestPointer } from './research/BlindTestLink';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceDot } from 'recharts';
 
 const fmt = (v: number | null | undefined, d = 1) => v == null ? 'n/a' : v.toFixed(d);
@@ -64,6 +65,7 @@ export const ExperimentalValidationLab: React.FC = () => {
 
   return (
     <section aria-labelledby="lpbf-experiment-heading" className="max-w-5xl mx-auto p-4 space-y-4">
+      <BlindTestPointer />
       <div className="flex items-center gap-3 bg-cyan-950/40 p-4 rounded-xl border border-cyan-800/50">
         <FlaskConical aria-hidden="true" className="w-8 h-8 text-cyan-400 shrink-0" />
         <div>

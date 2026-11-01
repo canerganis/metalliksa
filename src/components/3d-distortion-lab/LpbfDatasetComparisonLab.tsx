@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { Suspense, useMemo, useState } from "react";
 import { FileSearch } from "lucide-react";
 import {
   absorptivitySensitivityCells,
@@ -410,7 +410,20 @@ export function NoComparisonRecord() {
   );
 }
 
+// Spent-set descriptive panel (research hub spec 8.4): its own lazy chunk, mounted outside DatasetComparisonView so it
+// renders without the 2026-10-05 record. The static fallback keeps renderToStaticMarkup from throwing on the lazy import.
+const SpentSetDescriptivePanel = React.lazy(() =>
+  import("./SpentSetDescriptivePanel").then((m) => ({ default: m.SpentSetDescriptivePanel })),
+);
+
 export function LpbfDatasetComparisonLab({ document }: { document?: LpbfDatasetComparisonDocument | null }) {
-  if (document === undefined) return <SpentDatasetPanel />;
-  return document ? <DatasetComparisonView document={document} /> : <NoComparisonRecord />;
+  const main = document === undefined ? <SpentDatasetPanel /> : document ? <DatasetComparisonView document={document} /> : <NoComparisonRecord />;
+  return (
+    <>
+      {main}
+      <Suspense fallback={<p className="mx-4 mb-4 text-xs text-slate-500" data-testid="spent-descriptive-fallback">Spent sets, descriptive: loading.</p>}>
+        <SpentSetDescriptivePanel />
+      </Suspense>
+    </>
+  );
 }

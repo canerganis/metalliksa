@@ -4,7 +4,7 @@ import type { ResearchBrief, ResearchFeedback, ResearchFinding, ResearchSnapshot
 import { normalizeDoi, parseResearchSnapshot, researchIntegrationIssues, researchReviewIssues, researchRecordKey, researchSnapshotKey, validateResearchFinding, validateResearchSource } from '../utils/researchRegistry';
 
 type ActionResult = { id?: string; errors: string[] };
-type ResearchTab = 'brief' | 'sources' | 'extract' | 'registry' | 'catalog';
+type ResearchTab = 'brief' | 'sources' | 'extract' | 'registry' | 'catalog' | 'blind-test';
 export interface ResearchState extends ResearchSnapshot {
   activeBriefId: string;
   activeSourceId: string;
@@ -208,7 +208,7 @@ export const useResearchStore = create<ResearchState>()(persist((set, get) => ({
     try {
       const data = persisted as ResearchState; const snapshot = { ...parseResearchSnapshot(data), serverBase: data.serverBase && typeof data.serverBase.registryId === 'string' && data.serverBase.registryId.length > 0 && Number.isSafeInteger(data.serverBase.revision) && data.serverBase.revision >= 0 ? { registryId: data.serverBase.registryId, revision: data.serverBase.revision } : null };
       const drafts = data.drafts && typeof data.drafts === 'object' ? Object.fromEntries(Object.entries(data.drafts).filter(([, draft]) => draft && typeof draft === 'object' && !Array.isArray(draft) && Object.values(draft).every(value => typeof value === 'string'))) : {};
-      return { ...current, ...snapshot, activeBriefId: snapshot.briefs.some(b => b.id === data.activeBriefId) ? data.activeBriefId : snapshot.briefs[0]?.id ?? '', activeSourceId: snapshot.sources.some(s => s.id === data.activeSourceId) ? data.activeSourceId : '', activeTab: ['brief', 'sources', 'extract', 'registry', 'catalog'].includes(data.activeTab) ? data.activeTab : 'brief', drafts };
+      return { ...current, ...snapshot, activeBriefId: snapshot.briefs.some(b => b.id === data.activeBriefId) ? data.activeBriefId : snapshot.briefs[0]?.id ?? '', activeSourceId: snapshot.sources.some(s => s.id === data.activeSourceId) ? data.activeSourceId : '', activeTab: ['brief', 'sources', 'extract', 'registry', 'catalog', 'blind-test'].includes(data.activeTab) ? data.activeTab : 'brief', drafts };
     } catch { storageWritesBlocked = true; return { ...current, storageError: 'Saved research data could not be read safely. Original browser data are preserved and persistence is paused. Export this session to preserve new work.' }; }
   },
   onRehydrateStorage: () => (_state, error) => { if (error) { storageWritesBlocked = true; reportStorageError('Research storage could not be loaded. Original data are preserved; export browser recovery copy to keep new records and drafts.'); } },

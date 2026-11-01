@@ -1,0 +1,22 @@
+{
+ "files": [
+  {
+   "path": "python/lpbf_build_job_material_snapshot.py",
+   "sha256": "c0cda3994e4b2e7df30796964075cc7ea8293bb897b6c918cc3ab16e3c702083"
+  },
+  {
+   "path": "python/lpbf_job_cache.py",
+   "sha256": "0f5369e1bc2f895fef1e6706b67a01764e640c64328488515c92dabc8d45389c"
+  },
+  {
+   "path": "python/lpbf_public_datasets.py",
+   "sha256": "c8af101836331e0a3e19e946644c70062c538ad58d8b5180058403c06552bba8"
+  },
+  {
+   "path": "python/lpbf_served_arms.py",
+   "sha256": "c24354878a9e8950fcf78634a4c4ee8ed4f74239ec766e7fe24e34548e53faa1"
+  }
+ ],
+ "note": "Project modules the served blind-test arm loads that are not in lpbf_simulation.IMPLEMENTATION_SOURCE_FILES. A change is a reviewed commit.",
+ "schema": "lpbf-served-closure-pin-1"
+}

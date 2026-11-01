@@ -1,0 +1,2 @@
+condition_id,track_id,section_id,power_W,speed_mm_s,spot_um
+C-SYNTHETIC-EXAMPLE,T-SYNTHETIC-EXAMPLE-1,S1,200,800,80

@@ -1,5 +1,5 @@
 import { WORKSPACES } from '../data/workspaces';
-import React, { useRef, useState } from 'react';
+import React, { Suspense, lazy, useRef, useState } from 'react';
 import { BookOpen, Download, Upload } from 'lucide-react';
 import { MeltPoolMeasuredTrackPanel } from './MeltPoolMeasuredTrackPanel';
 import { useResearchStore } from '../store/useResearchStore';
@@ -9,7 +9,9 @@ import { ResearchRegistryPanel } from './research/ResearchRegistryPanel';
 import { ResearchSyncPanel } from './research/ResearchSyncPanel';
 import { Field, Select, Notice, Empty, Badge, useDraft, buttonClass, primaryClass, panelClass } from './research/ResearchControls';
 
-const tabs = [{ id: 'brief', label: '1. Research brief' }, { id: 'sources', label: '2. Literature & sources' }, { id: 'extract', label: '3. Data extraction' }, { id: 'registry', label: '4. Registry & feedback' }, { id: 'catalog', label: 'Measured track catalog' }] as const;
+const BlindTestPanel = lazy(() => import('./research/BlindTestPanel'));
+
+const tabs = [{ id: 'brief', label: '1. Research brief' }, { id: 'sources', label: '2. Literature & sources' }, { id: 'extract', label: '3. Data extraction' }, { id: 'registry', label: '4. Registry & feedback' }, { id: 'catalog', label: 'Measured track catalog' }, { id: 'blind-test', label: 'Your blind test' }] as const;
 const briefDefaults = { question: '', alloy: '', process: 'LPBF', method: '', dataType: '' };
 
 export const AdvancedResearchHub: React.FC = () => {
@@ -31,13 +33,14 @@ export const AdvancedResearchHub: React.FC = () => {
       const anchor = document.createElement('a'); anchor.href = url; anchor.download = `research-browser-recovery-${Date.now()}.json`; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
     }}><Download size={14} /> Export browser recovery copy</button>}
     <ResearchSyncPanel />
-    <div className="flex flex-wrap items-end justify-between gap-3"><div className="min-w-64 flex-1 max-w-xl"><Select label="Active research brief" value={state.activeBriefId} options={[{ value: '', label: 'Create a research brief to begin' }, ...state.briefs.map(brief => ({ value: brief.id, label: brief.question }))]} onChange={state.setActiveBrief} /></div><p className="text-xs text-slate-500">{state.sources.length} saved sources · {state.findings.length} extractions · {state.integrations.length} evidence links</p></div>
+    <div className="flex flex-wrap items-end justify-between gap-3">{state.activeTab !== 'blind-test' ? <div className="min-w-64 flex-1 max-w-xl"><Select label="Active research brief" value={state.activeBriefId} options={[{ value: '', label: 'Create a research brief to begin' }, ...state.briefs.map(brief => ({ value: brief.id, label: brief.question }))]} onChange={state.setActiveBrief} /></div> : <div className="flex-1" />}<p className="text-xs text-slate-500">{state.sources.length} saved sources · {state.findings.length} extractions · {state.integrations.length} evidence links</p></div>
     <nav aria-label="Research workflow" className="flex flex-wrap gap-2">{tabs.map(tab => <button key={tab.id} className={`${buttonClass} ${state.activeTab === tab.id ? 'border-sky-500 bg-sky-950 text-sky-200' : ''}`} aria-current={state.activeTab === tab.id ? 'step' : undefined} onClick={() => state.setActiveTab(tab.id)}>{tab.label}</button>)}</nav>
     {state.activeTab === 'brief' && <BriefPanel />}
     {state.activeTab === 'sources' && (activeBrief ? <ResearchSourcesPanel key={activeBrief.id} /> : <Empty>Create or select a research brief before collecting sources.</Empty>)}
     {state.activeTab === 'extract' && <ResearchExtractionPanel />}
     {state.activeTab === 'registry' && <ResearchRegistryPanel />}
     {state.activeTab === 'catalog' && <MeltPoolMeasuredTrackPanel />}
+    {state.activeTab === 'blind-test' && <Suspense fallback={<p className="text-sm text-slate-400">Loading your blind test...</p>}><BlindTestPanel /></Suspense>}
     <p className="border-t border-slate-800 pt-3 text-xs text-slate-500">Browser records persist locally; server revisions are saved explicitly. Metadata discovery is not full-text review. Confidence and review are user assessments; they do not certify a material or validate a solver. Export JSON for portable traceability.</p>
   </div>;
 };

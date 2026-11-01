@@ -37,13 +37,15 @@ class ResearchHubContractTests(unittest.TestCase):
             "flag-finding-conflict", "record-feedback", "check-server-registry", "save-server-revision",
             "read-server-revision", "apply-reviewed-server-merge", "import-registry-json",
             "export-registry-json", "export-browser-recovery-copy", "browse-measured-track-catalog",
-            "validate-measured-track-intake",
+            "validate-measured-track-intake", "download-blind-test-templates", "edit-blind-test-metadata",
+            "check-blind-test-headers", "render-blind-test-report", "export-blind-test-report",
+            "blind-test-estimate", "blind-test-job-submit", "blind-test-job-poll", "blind-test-job-artifact",
         })
         self.assertEqual(contract.tests.oracle.status, "pending")
         self.assertEqual(contract.evidence.ceiling, "screening-only")
         self.assertEqual(contract.evidence.emits, ())
-        self.assertEqual(contract.lifecycle.background_work, "none")
-        self.assertEqual(contract.lifecycle.resources, ("fetch",))
+        self.assertEqual(contract.lifecycle.background_work, "server-job")
+        self.assertEqual(contract.lifecycle.resources, ("fetch", "interval"))
 
     def test_server_and_crossref_authorities_match_live_routes_and_deadlines(self):
         search = self.operations["search-crossref-metadata"]
@@ -73,6 +75,26 @@ class ResearchHubContractTests(unittest.TestCase):
         self.assertIn("setTimeout(() => controller.abort(), 12000)", search_route)
         self.assertIn("activeRequests >= 3", search_route)
         self.assertIn("api.crossref.org/works", provider)
+
+    def test_blind_test_routes_use_worker_authorities_and_local_checks(self):
+        expected = {
+            "blind-test-estimate": ("POST", "/api/lpbf/estimate", "estimate"),
+            "blind-test-job-submit": ("POST", "/api/lpbf/jobs", "submit"),
+            "blind-test-job-poll": ("GET", "/api/lpbf/jobs/:id", "get"),
+            "blind-test-job-artifact": ("GET", "/api/lpbf/jobs/:id/artifacts/:name", "artifact"),
+        }
+        for operation_id, (method, route, worker_method) in expected.items():
+            operation = self.operations[operation_id]
+            self.assertEqual((operation.method, operation.route, operation.authority.kind,
+                              operation.authority.worker_method), (method, route, "lpbf-worker", worker_method))
+        for operation_id in ("download-blind-test-templates", "edit-blind-test-metadata", "check-blind-test-headers",
+                             "render-blind-test-report", "export-blind-test-report"):
+            operation = self.operations[operation_id]
+            self.assertEqual((operation.route, operation.method, operation.authority.kind),
+                             (None, None, "browser-local"))
+        notes = " ".join(self.contract.legacy_notes)
+        self.assertNotIn("No polling, interval, server job or background analysis", notes)
+        self.assertIn("Only the Your blind test tab polls", notes)
 
     def test_ui_actions_track_store_payloads_and_distinguish_user_labels(self):
         local = {operation_id: self.operations[operation_id] for operation_id in (

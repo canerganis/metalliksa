@@ -45,6 +45,13 @@
 - **Karar:** Ti64 mevcut kaynaklarla koşullu G1.2/G1.3 uygulamasının ilk adayı. IN625'te tablo kodu var, ancak kaynak kabulü varsayılan tam transient yolu açmıyor. Ti CALPHAD faz uyumsuzluğu sürüyor; C silinmedi, TDB değiştirilmedi. Pin/golden, fizik ve ürün etiketleri değişmedi.
 - **Sıradaki somut iş:** W1 için Ti64 sabit-yüzey buharlaşma enerji operatörü, bağımsız sayısal kabul vakaları ve A1.1 keyhole-onset latch sözleşmesini hazırlayıp mevcut tasarıma göre uygulamak. W1–W5 henüz tamamlanmadı. Arka plan işi yok; push yapılmadı. Başlangıçtaki kullanıcı değişiklikleri korundu.
 
+## Güncel devam noktası — 2026-10-17 / Research hub Part P (`feat/research-hub`, yerel, push yok)
+
+- **Teslim:** kullanıcının kendi kör testi (ön kontrol, tahminleri hash ile dondurma, açma, puanlama, rapor, karşılaştırma CSV'si, paket ve çevrimdışı doğrulama), Research Hub "Your blind test" sekmesi ve Dataset Comparison lab'ında beş harcanmış veri seti için betimsel panel. Araştırma kolu istenmedi; Mode A ve Mode B (Part S, G3s) yapılmadı.
+- **Alaşım kararı (2026-10-17):** beş alaşımın tümü aynı eşiklerle puanlanır; 316L, IN718 ve IN625 için eşiklerin yeniden kullanıldığı etiketlenir; sonuçlar alaşım başına verilir. G3o ve G3s kapsamı değişmedi.
+- **Doğrulama:** lint, unit (1489 / 1488 PASS / 1 SKIP), CI Python listesi (1930 test OK), parity `--check --slow` PASS, bundle bütçeleri içinde. Fingerprint pin ve 25 golden değişmedi; served-closure pin eklendi.
+- **Açık:** `.github/workflows/ci.yml` eklemesi için bakımcı Ceiling-Review trailer'ı; WSL drvfs çökme matrisi ve LAN tarayıcı koşusu yapılmadı; bağımsız Opus kapısının son onayı; Astra'nın fizik nedeni cümleleri ve Cunningham/Gan kararı (Q5).
+
 ## Güncel devam noktası — 2026-10-15 / Solidification gate onarımı (`batch/solidification-2026-10-15`, yerel)
 
 - **Onarım:** null ön miktarları, reddedilmiş worker/G-R/segregation blokları ve CALPHAD literature adaptörü sabit envelope sözleşmesine taşındı; PDAS yardımcısı gerçek görünümden erişiliyor. Fizik, kaynak katsayıları, liquidus admission ve honesty/label/parity kuralları değişmedi. Değiştirilen her test beklentisi ve gerekçesi: [onarım kaydı](docs/research/SOLBATCH_gate_repair_2026-10-15.md).

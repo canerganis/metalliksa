@@ -53,6 +53,27 @@ def _remote(operation_id: str, method: str, route: str, timeout_ms: int,
     )
 
 
+_WORKER_TIMEOUT_MS = 20000  # server/lpbfWorkerBridge.ts requestTimeoutMs default (same value as module_registry)
+_BLIND_REQUEST_KEYS = (
+    "jobType", "schema", "metadata", "inputsCsvBase64", "inputsFileName", "previewSha256", "overlapSha256",
+    "acknowledgements", "freezeKey", "confirmation", "revealConfirmation", "targetsCsvBase64", "targetsFileName",
+    "declarations", "acceptCommitmentMismatch", "name", "attempt", "page", "pageSize",
+)
+
+
+def _worker_remote(operation_id: str, method: str, route: str, worker_method: str,
+                   inputs: Tuple[str, ...], outputs: Tuple[str, ...]) -> Operation:
+    """A bound lpbf-worker route (the Your blind test tab); same authority as the _worker entries of module_registry."""
+    return Operation(
+        id=operation_id,
+        method=method,
+        route=route,
+        authority=Authority(kind="lpbf-worker", worker_method=worker_method, timeout_ms=_WORKER_TIMEOUT_MS),
+        undeclared_input=inputs,
+        output=OutputSchema(fields=outputs, status_key=None),
+    )
+
+
 _SOURCE_FIELDS = ("briefId", "title", "authors", "year", "doi", "url", "sourceType", "confidence", "notes")
 _FINDING_FIELDS = (
     "briefId", "sourceId", "materialId", "materialName", "property", "value", "unit", "rangeLow", "rangeHigh",
@@ -94,6 +115,21 @@ def _operations() -> Tuple[Operation, ...]:
         _local("export-browser-recovery-copy", (), _SNAPSHOT + ("browserDrafts",)),
         _local("browse-measured-track-catalog", (), ("cases",)),
         _local("validate-measured-track-intake", ("row",), ("ok", "reason")),
+        # Your blind test tab (spec research_hub_data section 3.4). Browser checks are convenience only; the worker
+        # repeats every check and is the only authority for numbers, statuses and labels.
+        _local("download-blind-test-templates", (), ("inputsCsv", "targetsCsv", "metadataJson")),
+        _local("edit-blind-test-metadata", ("field", "value"), ("draft",)),
+        _local("check-blind-test-headers", ("fileHead", "csvDialect"), ("issues", "warnings", "mapped")),
+        _local("render-blind-test-report", ("report",), ("reportView",)),
+        _local("export-blind-test-report", ("name", "attempt"), ("download",)),
+        _worker_remote("blind-test-estimate", "POST", "/api/lpbf/estimate", "estimate",
+                       _BLIND_REQUEST_KEYS, ("schema", "honesty")),
+        _worker_remote("blind-test-job-submit", "POST", "/api/lpbf/jobs", "submit",
+                       _BLIND_REQUEST_KEYS, ("id",)),
+        _worker_remote("blind-test-job-poll", "GET", "/api/lpbf/jobs/:id", "get",
+                       ("id",), ("id", "result", "error", "blindError")),
+        _worker_remote("blind-test-job-artifact", "GET", "/api/lpbf/jobs/:id/artifacts/:name", "artifact",
+                       ("id", "name"), ("content",)),
     )
 
 
@@ -128,10 +164,10 @@ def build_research_hub_contract(seed: Mapping[str, str]) -> ModuleContract:
         ),
         migration_state="contracted",
         operations=_operations(),
-        lifecycle=Lifecycle(background_work="none", resources=("fetch",)),
+        lifecycle=Lifecycle(background_work="server-job", resources=("fetch", "interval")),
         legacy_notes=(
             "The rendered child modes are Research brief, Literature & sources, Data extraction, Registry & feedback, "
-            "and Measured track catalog. Briefs, sources, findings, review, comparison, module links, conflicts and "
+            "Measured track catalog, and Your blind test. Briefs, sources, findings, review, comparison, module links, conflicts and "
             "feedback are user-driven browser-store operations. Data extraction transcribes a reported value and "
             "unit plus material, composition, process, machine, parameters, powder condition, heat treatment, "
             "measurement method, source locator, uncertainty, limitations, evidence type, confidence, validation "
@@ -170,14 +206,33 @@ def build_research_hub_contract(seed: Mapping[str, str]) -> ModuleContract:
             "Network requests occur only after explicit search/check/save/revision-export actions. Fetch deadline timers "
             "clear in request finally blocks; source search aborts on unmount, while registry sync lives outside "
             "the component. Downloads schedule URL revocation after one second, without an unmount timer cleanup. "
-            "The lifecycle vocabulary has no timeout resource, so these are described here rather than mislabeled as intervals. No polling, interval, server "
-            "job or background analysis is launched by the hub.",
+            "The lifecycle vocabulary has no timeout resource, so these are described here rather than mislabeled as intervals. Only the Your blind test "
+            "tab polls: while the hub is visible it follows its own queued blind jobs (freeze, reveal, score, bundle and open) with one request to "
+            "GET /api/lpbf/jobs/:id per step, pauses when the hub is hidden, resumes from the job ids kept in the browser after a reload, and stops "
+            "when each job ends. A job starts only from a button press. No other tab polls or launches background work.",
+        "The Your blind test tab lets a user freeze the app's served predictions for their own tracks and later score their own measurements "
+            "against them. Python is the only authority for every number, status and label: the browser renders the documents, checks file headers "
+            "before upload (convenience only, the worker repeats every check), hashes a targets file with SubtleCrypto and never computes a "
+            "statistic. The tab uses the bound worker routes POST /api/lpbf/estimate (preview, list, get), POST /api/lpbf/jobs, "
+            "GET /api/lpbf/jobs/:id and GET /api/lpbf/jobs/:id/artifacts/:name, all same-origin. User values are labelled Measured (user-supplied) "
+            "with Trust tier Declared, served model values are labelled Unresolved, and the module ceiling stays Screening only. The research arm "
+            "is not requested in this version and the tab has no research opt-in. The browser keeps only the metadata draft, queued job ids and "
+            "receipt summaries; it never stores file text, predictions or measurements.",
         ),
         source_refs=(
             "src/components/AdvancedResearchHub.tsx::AdvancedResearchHub",
-            "src/components/AdvancedResearchHub.tsx:12-12#Research brief",
-            "src/components/AdvancedResearchHub.tsx:19-21#state.exportSnapshot()",
+            "src/components/AdvancedResearchHub.tsx::tabs",
+            "src/components/AdvancedResearchHub.tsx::exportRegistry",
             "src/components/research/ResearchControls.tsx::useDraft",
+            "src/components/research/BlindTestPanel.tsx::BlindTestPanel",
+            "src/components/research/BlindTestMetadataForm.tsx::BlindTestMetadataForm",
+            "src/components/research/BlindTestInputsStep.tsx::BlindTestInputsStep",
+            "src/components/research/BlindTestTargetsStep.tsx::BlindTestTargetsStep",
+            "src/components/research/BlindTestReportView.tsx::BlindTestReportView",
+            "src/data/lpbfUserBlind.ts::checkedBlindReport",
+            "src/services/lpbfUserBlindClient.ts::createBlindClient",
+            "src/store/useUserBlindStore.ts::useUserBlindStore",
+            "python/lpbf_user_blind.py::validate_request",
             "src/components/research/ResearchSourcesPanel.tsx::ResearchSourcesPanel",
             "src/components/research/ResearchSourcesPanel.tsx:19-24#api/research/search",
             "src/components/research/ResearchExtractionPanel.tsx::ResearchExtractionPanel",

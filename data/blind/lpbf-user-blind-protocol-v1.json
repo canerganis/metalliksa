@@ -1,0 +1,534 @@
+{
+ "acknowledgements": [
+  "predeterminedInconclusive",
+  "powderLayerDescriptive",
+  "exposedDescriptive",
+  "publishedConditionOverlap",
+  "calibrationOverlap"
+ ],
+ "arms": [
+  "served",
+  "served:P-5%",
+  "served:P+5%",
+  "served:d-5%",
+  "served:d+5%",
+  "research:melt-link",
+  "research:cavity",
+  "context:fabbro"
+ ],
+ "artifactNames": [
+  "blind-receipt.json",
+  "blind-freeze.json",
+  "blind-report.json",
+  "blind-bundle.tar",
+  "blind-comparison.csv"
+ ],
+ "blindness": [
+  "blind-committed",
+  "blind-prospective-declared",
+  "blind-retrospective-declared",
+  "not-blind-predictions-viewed",
+  "not-blind-predictions-revealed",
+  "not-blind-earlier-test-overlap",
+  "not-blind-rescored-changed-targets",
+  "not-blind-data-already-used-by-app",
+  "not-blind-app-history",
+  "not-blind-used-for-calibration"
+ ],
+ "canonicalUnit": {
+  "power_W": "W",
+  "power_u_k1_W": "W",
+  "speed_mm_s": "mm/s",
+  "spot_um": "um"
+ },
+ "caps": {
+  "base64Chars": 350000,
+  "conditions": 48,
+  "fileBytes": 262144,
+  "lossShareMax": "0.20",
+  "minScoredConditions": 12,
+  "rows": 2000,
+  "storeBytes": 209715200,
+  "storeFreezes": 500
+ },
+ "depthStatus": [
+  "measured",
+  "track-not-formed",
+  "specimen-lost",
+  "section-unreadable",
+  "not-measured"
+ ],
+ "divergences": [
+  {
+   "id": "D1",
+   "melt": "MELT reduce_conditions refuses a missing or non-positive target; GOAL kill criterion 3",
+   "rule": "declared measurement losses (specimen-lost, section-unreadable, not-measured) are excluded, listed and counted at section, track and condition level; above 20 % of tracks or of conditions is a block issue; a status change after an attempt is a changed targets file"
+  },
+  {
+   "id": "D2",
+   "melt": "MELT block_level_issues has no boundary item",
+   "rule": "a boundary that is not an etched fusion boundary is a block issue"
+  },
+  {
+   "id": "D3",
+   "melt": "no MELT item",
+   "rule": "a cross-section location near track ends or unstated is a block issue"
+  },
+  {
+   "id": "D4",
+   "melt": "no MELT item",
+   "rule": "beam profile top-hat or ring is a block issue; unknown is a label only"
+  },
+  {
+   "id": "D5",
+   "melt": "MELT: initial temperature not released is a block issue",
+   "rule": "a missing plate temperature refuses (PREHEAT_MISSING); nominal-ambient is labelled"
+  },
+  {
+   "id": "D6",
+   "melt": "MELT registers thresholds and leverage cuts for Ti-6Al-4V and AlSi10Mg only",
+   "rule": "thresholds and statistics registered for Ti-6Al-4V and AlSi10Mg are reused unchanged for 316L, IN718 and IN625 with a label; low cut 15 proposed for 316L and IN718; IN625 leverage is not evaluable (a step 5 qualifier); results are reported per alloy and never pooled (maintainer decision 2026-10-17); the G3o and G3s objectives keep their registered scope"
+  },
+  {
+   "id": "D7",
+   "melt": "MELT scores its registered arm catalogue",
+   "rule": "protocol 1 scores the served Build Job melt-pool depth"
+  },
+  {
+   "id": "D8",
+   "melt": "MELT S2 is the registered melt-link candidate",
+   "rule": "the research arm would be P8 linkedMeltDepth_um, not the registered S2 candidate"
+  },
+  {
+   "id": "D9",
+   "melt": "MELT exposure: a target read before the prediction hash",
+   "rule": "blindness statuses of 6.4, several of them declared by the user"
+  },
+  {
+   "id": "D10",
+   "melt": "MELT status words PASS, FAIL, INCONCLUSIVE",
+   "rule": "status words thresholds-met, threshold-not-met, inconclusive and the descriptive words"
+  },
+  {
+   "id": "D11",
+   "melt": "MELT refuses a non-positive target",
+   "rule": "track-not-formed counts as APE +inf for every arm"
+  },
+  {
+   "id": "D12",
+   "melt": "no MELT counterpart",
+   "rule": "research band coverage and consistency counts (protocol 2 only; inactive here)"
+  },
+  {
+   "id": "G1",
+   "melt": "GOAL roadmap item 1: served and P8 side by side",
+   "rule": "protocol 1 records the research arm as RESEARCH_NOT_REQUESTED; keyholeCavity is never scored against melt-pool depth"
+  }
+ ],
+ "enums": {
+  "alloy": [
+   "Ti-6Al-4V",
+   "AlSi10Mg",
+   "316L",
+   "IN718",
+   "IN625"
+  ],
+  "atmosphere": [
+   "argon",
+   "nitrogen",
+   "helium",
+   "vacuum",
+   "air",
+   "other",
+   "unstated"
+  ],
+  "beam.basis": [
+   "measured-work-plane",
+   "measured-other-plane",
+   "nominal"
+  ],
+  "beam.definition": [
+   "1/e2",
+   "D4sigma",
+   "FWHM",
+   "unstated"
+  ],
+  "beam.profile": [
+   "gaussian",
+   "top-hat",
+   "ring",
+   "unknown"
+  ],
+  "beam.quantity": [
+   "diameter",
+   "radius"
+  ],
+  "chemistry.basis": [
+   "certified-heat-analysis",
+   "supplier-nominal",
+   "unstated"
+  ],
+  "crossSectionLocation": [
+   "steady-state-mid-track",
+   "several-locations",
+   "near-track-start-or-end",
+   "unstated"
+  ],
+  "csvDialect": [
+   "comma-dot",
+   "semicolon-dot",
+   "semicolon-comma"
+  ],
+  "depthBoundary": [
+   "etched-fusion-boundary",
+   "unetched-contrast",
+   "other"
+  ],
+  "depthDatum": [
+   "original-surface",
+   "powder-top",
+   "cap-top",
+   "depth-plus-height",
+   "unresolved"
+  ],
+  "depthUncertainty.basis": [
+   "per-row",
+   "block",
+   "not-released"
+  ],
+  "depthUncertainty.coverageFactor": [
+   1,
+   2
+  ],
+  "independence.dataPreviouslyPublished": [
+   "no",
+   "yes",
+   "unknown"
+  ],
+  "independence.predictionsViewedBeforeFreeze": [
+   "no",
+   "yes",
+   "unsure"
+  ],
+  "measurementMethod": [
+   "optical-cross-section",
+   "sem-cross-section",
+   "other"
+  ],
+  "mode": [
+   "pre-measurement",
+   "post-measurement"
+  ],
+  "power.basis": [
+   "measured-at-workpiece",
+   "measured-elsewhere",
+   "commanded",
+   "unstated"
+  ],
+  "preheatBasis": [
+   "measured",
+   "set-point",
+   "nominal-ambient"
+  ],
+  "quantity": [
+   "melt-pool-depth"
+  ],
+  "reduction": [
+   "per-section-raw",
+   "per-track-mean-of-sections",
+   "track-value-released",
+   "condition-mean-released",
+   "maximum-only",
+   "single-selected-section"
+  ],
+  "substrate.alsi10mgState": [
+   "as-built",
+   "heat-treated",
+   "unstated"
+  ],
+  "substrate.kind": [
+   "bare-plate",
+   "powder-layer"
+  ],
+  "substrate.surfacePreparation": [
+   "machined",
+   "ground",
+   "polished",
+   "blasted",
+   "as-built",
+   "other",
+   "unstated"
+  ]
+ },
+ "honesty": {
+  "appValidation": false,
+  "dataLabel": "Measured (user-supplied)",
+  "evidenceKind": "screening-only",
+  "experimentalValidation": false,
+  "g3Satisfied": false,
+  "labelPromotionProposed": "none",
+  "n3Counted": false,
+  "neverEnters": {
+   "calibration": true,
+   "g3": true,
+   "g3o": true,
+   "leaderboard": true,
+   "n3": true,
+   "n4": true,
+   "physicsBump": true,
+   "researchRegistry": true
+  },
+  "notG3oRecord": true,
+  "protocolId": "lpbf-user-blind-protocol-1",
+  "resultScope": "user-blind-test"
+ },
+ "inputAliases": {
+  "condition_id": [
+   "condition"
+  ],
+  "power_W": [
+   "P_W",
+   "P",
+   "power",
+   "laser_power_W",
+   "Power (W)"
+  ],
+  "power_u_k1_W": [
+   "P_u_k1_W"
+  ],
+  "section_id": [
+   "section"
+  ],
+  "speed_mm_s": [
+   "v_mm_s",
+   "v",
+   "speed",
+   "scan_speed_mm_s",
+   "Velocity (mm/s)",
+   "Speed (mm/s)"
+  ],
+  "spot_um": [
+   "beam_um",
+   "beam_diameter_um",
+   "spot",
+   "Spot (um)"
+  ],
+  "track_id": [
+   "track"
+  ]
+ },
+ "inputColumns": [
+  "condition_id",
+  "track_id",
+  "section_id",
+  "power_W",
+  "speed_mm_s",
+  "spot_um",
+  "power_u_k1_W"
+ ],
+ "layerRange_um": [
+  5.0,
+  200.0
+ ],
+ "leverageLowCut": {
+  "316L": 15.0,
+  "AlSi10Mg": 15.0,
+  "IN718": 15.0,
+  "Ti-6Al-4V": 15.0
+ },
+ "lossStatus": [
+  "specimen-lost",
+  "section-unreadable",
+  "not-measured"
+ ],
+ "metadataSchema": "lpbf-user-blind-metadata-1",
+ "protocolId": "lpbf-user-blind-protocol-1",
+ "protocolSha256": "399f3d8e52dfe225f716ce3f7246d63de94c1014529403ac4e029f3163818d97",
+ "ranges": {
+  "power_W": [
+   10.0,
+   2000.0,
+   "W"
+  ],
+  "power_u_k1_W": [
+   0.0,
+   2000.0,
+   "W"
+  ],
+  "speed_mm_s": [
+   1.0,
+   10000.0,
+   "mm/s"
+  ],
+  "spot_um": [
+   10.0,
+   1000.0,
+   "um"
+  ]
+ },
+ "regex": {
+  "blockLabel": "^[A-Za-z0-9 ._()/-]{1,80}$",
+  "fileName": "^[A-Za-z0-9 ._()-]{1,120}$",
+  "formulaStart": [
+   "=",
+   "+",
+   "-",
+   "@"
+  ],
+  "id": "^[A-Za-z0-9._-]{1,64}$",
+  "syntheticMarker": "SYNTHETIC-EXAMPLE",
+  "targetLike": "depth|width|height|cap|area|penetration|remelt|d_exp|w_exp|d_obs|aspect"
+ },
+ "registeredAlloys": [
+  "Ti-6Al-4V",
+  "AlSi10Mg"
+ ],
+ "requestSchema": "lpbf-user-blind-request-1",
+ "requestTypes": {
+  "jobs": [
+   "user-blind-freeze",
+   "user-blind-reveal",
+   "user-blind-score",
+   "user-blind-bundle",
+   "user-blind-open"
+  ],
+  "rpc": [
+   "user-blind-preview",
+   "user-blind-list",
+   "user-blind-get"
+  ]
+ },
+ "researchArms": {
+  "research:cavity": "RESEARCH_NOT_REQUESTED",
+  "research:melt-link": "RESEARCH_NOT_REQUESTED"
+ },
+ "revealPhrase": "reveal predictions and end blind status",
+ "schema": "lpbf-user-blind-protocol-record-1",
+ "scoredAlloys": [
+  "Ti-6Al-4V",
+  "AlSi10Mg",
+  "316L",
+  "IN718",
+  "IN625"
+ ],
+ "scoredArms": [
+  "served",
+  "research:melt-link"
+ ],
+ "servedClosurePin": "data/blind/served-closure-pin-v1.json",
+ "statusWords": [
+  "thresholds-met",
+  "threshold-not-met",
+  "inconclusive",
+  "descriptive-not-scored",
+  "descriptive-exposed",
+  "unavailable"
+ ],
+ "targetAliases": {
+  "condition_id": [
+   "condition"
+  ],
+  "depth_status": [],
+  "depth_u_um": [],
+  "depth_um": [
+   "depth",
+   "D_um",
+   "penetration_depth_um",
+   "Depth (um)"
+  ],
+  "section_id": [
+   "section"
+  ],
+  "track_id": [
+   "track"
+  ],
+  "width_um": [
+   "width",
+   "W_um",
+   "Width (um)"
+  ]
+ },
+ "targetColumns": [
+  "condition_id",
+  "track_id",
+  "section_id",
+  "depth_um",
+  "width_um",
+  "depth_u_um",
+  "depth_status"
+ ],
+ "targetLikeExact": [
+  "d",
+  "w"
+ ],
+ "targetRanges": {
+  "depth_um": [
+   1.0,
+   3000.0
+  ],
+  "width_um": [
+   5.0,
+   3000.0
+  ]
+ },
+ "templates": {
+  "inputs": [
+   "condition_id",
+   "track_id",
+   "section_id",
+   "power_W",
+   "speed_mm_s",
+   "spot_um"
+  ],
+  "targets": [
+   "condition_id",
+   "track_id",
+   "section_id",
+   "depth_um",
+   "width_um",
+   "depth_u_um",
+   "depth_status"
+  ]
+ },
+ "thresholds": {
+  "maxApe": "0.50",
+  "meanSigned": "0.10",
+  "median": "0.20",
+  "nMin": 12,
+  "p90": "0.35",
+  "source": "MELT pre-registration Amendment 6 values, reused as fixed protocol 1 constants; this result is not a G3o record",
+  "uMax": "0.10"
+ },
+ "unitlessHeaders": {
+  "p": "power_W",
+  "power": "power_W",
+  "speed": "speed_mm_s",
+  "spot": "spot_um",
+  "v": "speed_mm_s"
+ },
+ "units": {
+  "power_W": {
+   "kw": 1000.0,
+   "w": 1.0
+  },
+  "power_u_k1_W": {
+   "kw": 1000.0,
+   "w": 1.0
+  },
+  "speed_mm_s": {
+   "m/s": 1000.0,
+   "mm/min": 0.016666666666666666,
+   "mm/s": 1.0
+  },
+  "spot_um": {
+   "micron": 1.0,
+   "mm": 1000.0,
+   "um": 1.0,
+   "\u00b5m": 1.0
+  }
+ },
+ "wavelengthRange_nm": [
+  1030.0,
+  1100.0
+ ]
+}

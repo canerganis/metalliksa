@@ -169,6 +169,12 @@ def build_rows(plan: Dict[str, Any], csv_rows: Sequence[Dict[str, str]], source_
     return {"rows": rows, "excluded": sorted(excluded, key=lambda e: e["trackId"])}
 
 
+def _utc_now_iso() -> str:
+    """Import time in UTC with millisecond precision (read by the blind test exposure check)."""
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
 def import_measurements(plan_path: Any, measurements_path: Any, source_id: str, *, out_root: Any = None,
                         existing_sources: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     """Validate, write ``<out_root>/<source_id>/rows.json`` and return the document that was written."""
@@ -187,6 +193,7 @@ def import_measurements(plan_path: Any, measurements_path: Any, source_id: str, 
     doc = {"schema": ROWS_SCHEMA, "sourceId": source_id, "label": ROW_LABEL, "evidenceKind": EVIDENCE_KIND,
            "material": plan["material"],
            "provenance": {"planSha256": _sha256_bytes(plan_bytes), "planSchema": plan["schema"],
+                          "importedAt": _utc_now_iso(),
                           "measurementsSha256": _sha256_bytes(meas_bytes),
                           "statement": ("single-track widths and depths supplied by the user from their own prints; "
                                         "joined to the plan on track_id with identical power, speed and spot; not "

@@ -1,0 +1,37 @@
+{
+ "_title": "Synthetic fixture, not measured data",
+ "document": {
+  "documents": [
+   {
+    "attempt": null,
+    "name": "blind-freeze.json"
+   }
+  ],
+  "freezeKey": "92dee1adaa42e47f5b1e33c8fe8872a689897410266f0e282aaf84398259078b",
+  "honesty": {
+   "appValidation": false,
+   "dataLabel": "Measured (user-supplied)",
+   "evidenceKind": "screening-only",
+   "experimentalValidation": false,
+   "g3Satisfied": false,
+   "labelPromotionProposed": "none",
+   "n3Counted": false,
+   "neverEnters": {
+    "calibration": true,
+    "g3": true,
+    "g3o": true,
+    "leaderboard": true,
+    "n3": true,
+    "n4": true,
+    "physicsBump": true,
+    "researchRegistry": true
+   },
+   "notG3oRecord": true,
+   "protocolId": "lpbf-user-blind-protocol-1",
+   "resultScope": "user-blind-test"
+  },
+  "ledgerSeq": 3,
+  "provenance": {},
+  "revealN": 1
+ }
+}

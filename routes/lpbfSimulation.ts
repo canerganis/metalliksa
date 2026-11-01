@@ -61,7 +61,9 @@ lpbfSimulationRouter.get("/api/lpbf/jobs/:id/artifacts/:name", async (req: Reque
     res.setHeader("Content-Type",data.type);
     res.setHeader("Content-Security-Policy","default-src 'none'; sandbox");
     res.setHeader("X-Content-Type-Options","nosniff");
-    if (req.params.name.endsWith(".csv")) res.setHeader("Content-Disposition",'attachment; filename="thermal-history.csv"');
+    // Closed names only (the worker refuses any other): the blind comparison CSV keeps its own file name.
+    if (req.params.name === "blind-comparison.csv") res.setHeader("Content-Disposition",'attachment; filename="blind_comparison_v1.csv"');
+    else if (req.params.name.endsWith(".csv")) res.setHeader("Content-Disposition",'attachment; filename="thermal-history.csv"');
     res.send(Buffer.from(data.content,"base64"));
   } catch(e) { workerError(res, e, "Artifact unavailable"); }
 });
