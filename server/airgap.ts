@@ -25,9 +25,45 @@ export const AIRGAP_ALLOWED_LOCAL = [
   "Local Python physics (CALPHAD when installed)",
 ] as const;
 
-export function isAirgappedFromEnv(env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env): boolean {
+type EnvLike = NodeJS.ProcessEnv | Record<string, string | undefined>;
+
+/**
+ * Enterprise profile: METALLIKSA_PROFILE=enterprise turns air-gap on by default and refuses to start
+ * when the environment tries to switch it off (AIRGAPPED=0) or supplies an outbound credential.
+ */
+export function isEnterpriseProfile(env: EnvLike = process.env): boolean {
+  return String(env.METALLIKSA_PROFILE ?? "").trim().toLowerCase() === "enterprise";
+}
+
+export function isAirgappedFromEnv(env: EnvLike = process.env): boolean {
+  if (isEnterpriseProfile(env)) return true;
   const raw = String(env.AIRGAPPED ?? env.VITE_AIRGAPPED ?? "").trim().toLowerCase();
   return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+}
+
+/** Conflicts that make an enterprise start unsafe. Empty when the profile is off or consistent. */
+export function enterpriseProfileProblems(env: EnvLike = process.env): string[] {
+  if (!isEnterpriseProfile(env)) return [];
+  const problems: string[] = [];
+  const raw = String(env.AIRGAPPED ?? env.VITE_AIRGAPPED ?? "").trim().toLowerCase();
+  if (raw !== "" && !["1", "true", "yes", "on"].includes(raw)) {
+    problems.push(`AIRGAPPED=${raw} conflicts with METALLIKSA_PROFILE=enterprise (air-gap cannot be disabled)`);
+  }
+  if (String(env.OPENAI_API_KEY ?? "").trim() !== "") {
+    problems.push("OPENAI_API_KEY is set but the enterprise profile allows no outbound feature; unset it");
+  }
+  return problems;
+}
+
+/** Throws before the server listens when the enterprise profile is inconsistent. */
+export function assertEnterpriseProfileConsistent(env: EnvLike = process.env): void {
+  const problems = enterpriseProfileProblems(env);
+  if (problems.length) throw new Error(`Enterprise profile refused to start: ${problems.join("; ")}`);
+}
+
+export function enterpriseStartupLine(env: EnvLike = process.env): string | null {
+  if (!isEnterpriseProfile(env)) return null;
+  return "METALLIKSA_PROFILE=enterprise: air-gap forced on, all outbound features refused (Crossref, cloud AI, external APIs); local LPBF and physics engines remain available.";
 }
 
 export function airgapDenyPayload(service: string) {

@@ -19,6 +19,7 @@
     "test:unit": "tsx --test tests/*.test.ts tests/*.test.tsx",
     "test:coverage": "tsx --test --experimental-test-coverage --test-coverage-include=src/utils/** tests/*.test.ts tests/*.test.tsx",
     "sbom": "python python/generate_sbom.py",
+    "release:checksums": "node scripts/release-checksums.mjs",
     "test:lpbf": "python python/test_lpbf_build_job.py",
     "test:lpbf:engineering": "python python/test_lpbf_engineering.py",
     "test:lpbf:api": "python python/test_lpbf_api.py",
