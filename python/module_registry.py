@@ -183,6 +183,7 @@ LEGACY_OPERATIONS: Dict[str, Tuple[Operation, ...]] = {
             _py("stl_slicer_build_time_solver", _PHYSICS_TIMEOUT_MS, warm=True)),
         _op("lpbf-source-catalog", "GET", "/api/lpbf/sources", _NODE),
         _op("lpbf-run-archive", "GET", "/api/lpbf/runs", _NODE),
+        _op("audit-ledger", "GET", "/api/audit/ledger", _NODE),
         _op("lpbf-research-models", "POST", "/api/python/lpbf-research-models",
             _py("lpbf_research_models", _RESEARCH_TIMEOUT_MS, warm=False)),
     ),

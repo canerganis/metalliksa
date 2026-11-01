@@ -29,7 +29,11 @@ export type AuditEntryInput = Omit<AuditEntry, 'schemaVersion' | 'seq' | 'ts' | 
 export interface AuditVerification {
   entries: AuditEntry[];
   chainValid: boolean;
-  /** Seq of the last entry before the first break (or of the unreadable entry). Null when valid. */
+  /**
+   * Seq of the first entry whose bytes no longer match the chain (an edited line), or of the first
+   * unreadable or out-of-order line. The tamper is at or just after it. Null when valid.
+   * That entry is excluded from `entries` when the chain is broken.
+   */
   firstBrokenSeq: number | null;
   headHash: string;
   problem: string | null;
@@ -52,8 +56,13 @@ export function canonicalJson(value: unknown): string {
 
 export const canonicalSha256 = (value: unknown): string => sha256Hex(canonicalJson(value));
 
-export function defaultLedgerPath(): string {
-  return path.join(path.resolve(process.env.METALLIKSA_AUDIT_DIR || path.join('.runtime', 'audit')), 'ledger.jsonl');
+/**
+ * Default ledger location. An explicit METALLIKSA_AUDIT_DIR wins; otherwise the ledger lives under
+ * the run archive root (<runRoot>/audit), so any test or deployment with its own run root is isolated.
+ */
+export function defaultLedgerPath(runRoot: string = path.resolve(process.env.METALLIKSA_LPBF_RUN_ROOT || '.lpbf-runs')): string {
+  const dir = process.env.METALLIKSA_AUDIT_DIR ? path.resolve(process.env.METALLIKSA_AUDIT_DIR) : path.join(runRoot, 'audit');
+  return path.join(dir, 'ledger.jsonl');
 }
 
 function readLines(file: string): string[] {
@@ -63,6 +72,8 @@ function readLines(file: string): string[] {
 
 export class AuditLedger {
   private queue: Promise<unknown> = Promise.resolve();
+  /** Appends that failed in this process (recordRunAudit is fail-open). Reported by the endpoint. */
+  failedAppends = 0;
   constructor(private readonly file: string = defaultLedgerPath()) {}
 
   /** Appends are serialised in-process; the seq and prevHash are read from the file tail under that queue. */
@@ -110,7 +121,7 @@ export function verifyLedgerFile(file: string): AuditVerification {
     if (entry.prevHash !== expectedPrev) {
       // The bytes of the previous line no longer match what this entry recorded (edit or deletion).
       const broken = Math.max(1, i);
-      return { entries, chainValid: false, firstBrokenSeq: broken, headHash: expectedPrev,
+      return { entries: entries.filter(e => e.seq < broken), chainValid: false, firstBrokenSeq: broken, headHash: expectedPrev,
         problem: `Entry ${i + 1} does not chain to the previous line; tamper at or just after seq ${broken}.` };
     }
     entries.push(entry);
@@ -119,13 +130,18 @@ export function verifyLedgerFile(file: string): AuditVerification {
   return { entries, chainValid: true, firstBrokenSeq: null, headHash: expectedPrev, problem: null };
 }
 
-let shared: AuditLedger | null = null;
-export function sharedAuditLedger(): AuditLedger { return shared ??= new AuditLedger(); }
+const ledgers = new Map<string, AuditLedger>();
+/** One ledger instance per file path, so appends to the same file stay serialised. Path is resolved at call time. */
+export function sharedAuditLedger(file: string = defaultLedgerPath()): AuditLedger {
+  let ledger = ledgers.get(file);
+  if (!ledger) { ledger = new AuditLedger(file); ledgers.set(file, ledger); }
+  return ledger;
+}
 
 const asString = (value: unknown): string | null => (typeof value === 'string' && value ? value : null);
 
 /** Single hook for a persisted run. Never throws: an audit failure must not lose the saved run, but it is logged. */
-export async function recordRunAudit(record: RunRecord, ledger: AuditLedger = sharedAuditLedger(),
+export async function recordRunAudit(record: RunRecord, ledger: AuditLedger,
   route = 'POST /api/lpbf/runs/import'): Promise<AuditEntry | null> {
   try {
     const capture = record.document.capture;
@@ -142,6 +158,7 @@ export async function recordRunAudit(record: RunRecord, ledger: AuditLedger = sh
       evidenceStatus: record.evidenceStatus,
     });
   } catch (error) {
+    ledger.failedAppends += 1;
     console.error('[Audit ledger] append failed:', error instanceof Error ? error.message : error);
     return null;
   }

@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import express from 'express';
 import { createServer } from 'node:http';
-import { AuditLedger, GENESIS_HASH, canonicalJson, canonicalSha256, recordRunAudit, sha256Hex, type AuditEntryInput } from '../server/auditLedger';
+import { AuditLedger, GENESIS_HASH, defaultLedgerPath, canonicalJson, canonicalSha256, recordRunAudit, sha256Hex, type AuditEntryInput } from '../server/auditLedger';
 import { createAuditLedgerRouter } from '../routes/auditLedger';
 
 const sample = (runId: string): AuditEntryInput => ({
@@ -56,7 +56,17 @@ test('editing an entry makes the chain invalid at that seq', () => withLedger(as
   const v = ledger.verify();
   assert.equal(v.chainValid, false);
   assert.equal(v.firstBrokenSeq, 2);
+  assert.deepEqual(v.entries.map(e => e.seq), [1], 'the edited entry and everything after it are not returned');
 }));
+
+test('default ledger path follows the run root unless METALLIKSA_AUDIT_DIR is set', () => {
+  const saved = process.env.METALLIKSA_AUDIT_DIR; delete process.env.METALLIKSA_AUDIT_DIR;
+  try {
+    assert.equal(defaultLedgerPath(path.resolve('some-root')), path.join(path.resolve('some-root'), 'audit', 'ledger.jsonl'));
+    process.env.METALLIKSA_AUDIT_DIR = path.resolve('elsewhere');
+    assert.equal(defaultLedgerPath(path.resolve('some-root')), path.join(path.resolve('elsewhere'), 'ledger.jsonl'));
+  } finally { if (saved === undefined) delete process.env.METALLIKSA_AUDIT_DIR; else process.env.METALLIKSA_AUDIT_DIR = saved; }
+});
 
 test('deleting a middle entry and garbage lines are detected', () => withLedger(async (ledger, file) => {
   for (const id of ['r1', 'r2', 'r3']) await ledger.append(sample(id));
@@ -96,11 +106,12 @@ test('recordRunAudit hashes canonical input/result and extracts model identity',
 }));
 
 test('recordRunAudit never throws when the ledger fails', async () => {
-  const broken = { append: async () => { throw new Error('disk full'); } } as unknown as AuditLedger;
+  const broken = { failedAppends: 0, append: async () => { throw new Error('disk full'); } } as unknown as AuditLedger;
   const origError = console.error; console.error = () => {};
   try {
     const record: any = { document: { runId: 'j', capture: { inputJson: '{}', resultJson: '{}' } }, evidenceStatus: 'unvalidated-model', runKind: 'legacy-unspecified' };
     assert.equal(await recordRunAudit(record, broken), null);
+    assert.equal(broken.failedAppends, 1);
   } finally { console.error = origError; }
 });
 

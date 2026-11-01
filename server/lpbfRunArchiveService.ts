@@ -7,7 +7,7 @@ import { dryRunRunImport, importRun, runArtifacts } from './lpbfRunImport';
 import { lpbfWorker } from './lpbfWorkerBridge';
 import { storeGpuPilotArtifactResolver } from './lpbfGpuPilotArtifacts';
 import { verifyGpuPilotArchive } from './lpbfGpuRunArchive';
-import { recordRunAudit } from './auditLedger';
+import { AuditLedger, defaultLedgerPath, recordRunAudit, sharedAuditLedger } from './auditLedger';
 
 const MAX_RUN_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
 const MAX_ARCHIVE_SIZE_BYTES = 15 * 1024 * 1024 * 1024; // 15 GB
@@ -69,7 +69,8 @@ export class LpbfRunArchiveService {
   private busy = false;
   constructor(
     private readonly runRoot = path.resolve(process.env.METALLIKSA_LPBF_RUN_ROOT || '.lpbf-runs'),
-    private readonly sourceRoot = path.resolve(process.env.METALLIKSA_LPBF_SOURCE_ROOT || '.lpbf-sources')
+    private readonly sourceRoot = path.resolve(process.env.METALLIKSA_LPBF_SOURCE_ROOT || '.lpbf-sources'),
+    private readonly auditLedger: AuditLedger = sharedAuditLedger(defaultLedgerPath(runRoot))
   ) {}
 
   private runRepository(readOnly: boolean) {
@@ -220,7 +221,7 @@ export class LpbfRunArchiveService {
         const repository = this.runRepository(false)!;
         try {
           const record = await importRun(repository, new LpbfArtifactStore(path.join(this.runRoot, 'artifacts')), capture, links, sourceRepo, root);
-          await recordRunAudit(record);
+          await recordRunAudit(record, this.auditLedger);
           return { ...record, sourceBindingStatus: 'exact-revision-bound' as const };
         } catch (error) {
           if (error instanceof Error && /conflict/i.test(error.message)) throw new LpbfRunArchiveError(409, 'Run identity conflict.');

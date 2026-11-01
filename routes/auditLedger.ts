@@ -10,7 +10,8 @@ export function createAuditLedgerRouter(ledger: AuditLedger = sharedAuditLedger(
       const verification = ledger.verify();
       const requested = Number(req.query.limit);
       const limit = Number.isInteger(requested) && requested > 0 ? Math.min(requested, 5000) : 500;
-      res.json({ ...verification, totalEntries: verification.entries.length, entries: verification.entries.slice(-limit) });
+      res.json({ ...verification, totalEntries: verification.entries.length, entries: verification.entries.slice(-limit),
+        failedAppends: ledger.failedAppends });
     } catch (error) {
       console.error('[Audit ledger]', error);
       res.status(503).json({ error: 'Audit ledger unavailable.' });
