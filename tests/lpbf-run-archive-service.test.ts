@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import type { LpbfSourceDocument } from '../src/types/lpbfSource';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
 import express from 'express';
 import { createLpbfRunsRouter } from '../routes/lpbfRuns';
+import { verifyLedgerFile } from '../server/auditLedger';
 import { LpbfArtifactStore } from '../server/lpbfArtifactStore';
 import { LpbfRunArchiveService } from '../server/lpbfRunArchiveService';
 import { LpbfRunRepository } from '../server/lpbfRunRepository';
@@ -84,6 +85,11 @@ test('run HTTP archive resolves exact source and preserves analytical screening 
   assert.equal(imported.body.runKind, 'analytical-screening');
   assert.deepEqual(imported.body.document.sources, selected);
   assert.equal(imported.body.sourceBindingStatus, 'exact-revision-bound');
+  // The audit ledger lives under the temp run root; nothing may be written to the checkout's .runtime.
+  const ledgerState = verifyLedgerFile(path.join(runRoot, 'audit', 'ledger.jsonl'));
+  assert.equal(ledgerState.chainValid, true);
+  assert.deepEqual(ledgerState.entries.map(entry => entry.runId), [jobId]);
+  assert.equal(existsSync(path.resolve('.runtime', 'audit', 'ledger.jsonl')), false, 'tests must not touch the real ledger');
   const record = await (await fetch(`${endpoint}/${jobId}`)).json();
   assert.equal(record.sourceBindingStatus, 'exact-revision-bound');
   assert.equal(record.evidenceStatus, 'unvalidated-model');

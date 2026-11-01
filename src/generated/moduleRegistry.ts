@@ -422,6 +422,25 @@ export const MODULE_REGISTRY = {
           "observations": []
         },
         {
+          "id": "audit-ledger",
+          "method": "GET",
+          "route": "/api/audit/ledger",
+          "authority": {
+            "kind": "node-provider",
+            "script": null,
+            "workerMethod": null,
+            "timeoutMs": null,
+            "gpu": "none",
+            "warm": false,
+            "exceptionReason": null
+          },
+          "input": [],
+          "undeclaredInput": [],
+          "output": null,
+          "quantities": [],
+          "observations": []
+        },
+        {
           "id": "lpbf-research-models",
           "method": "POST",
           "route": "/api/python/lpbf-research-models",
