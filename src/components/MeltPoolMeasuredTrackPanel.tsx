@@ -4,6 +4,7 @@ import {
   MEASURED_TRACK_INTAKE_FIELDS,
   MELT_POOL_LITERATURE_CASES,
 } from "../data/meltPoolLiteratureCases";
+import { BlindTestCallToAction } from "./research/BlindTestLink";
 
 type IntakeRow = {
   material: string;
@@ -95,6 +96,8 @@ export const MeltPoolMeasuredTrackPanel: React.FC = () => {
           </p>
         </div>
       </div>
+
+      <BlindTestCallToAction />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
         {alloys.map((alloy) => (

@@ -184,12 +184,12 @@ export function parseExperimentPlan(text: string): ExperimentPlanDocument {
 
 // ---- client-side CSV (same columns as the Python outputs; no network, no worker) ------------------------------
 
-function csvCell(value: string | number): string {
+export function csvCell(value: string | number): string {
   const text = String(value);
   return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
-function toCsv(header: readonly string[], rows: readonly (readonly (string | number)[])[]): string {
+export function toCsv(header: readonly string[], rows: readonly (readonly (string | number)[])[]): string {
   return [header, ...rows].map(r => r.map(csvCell).join(",")).join("\n") + "\n";
 }
 

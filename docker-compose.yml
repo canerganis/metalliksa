@@ -24,6 +24,11 @@ services:
       METALLIKSA_LPBF_BUNDLE_ROOT: /data/lpbf-run-bundles
       METALLIKSA_JOB_ROOT: /data/lpbf-jobs
       RESEARCH_REGISTRY_DIR: /data/research-registry
+      METALLIKSA_USER_BLIND_ROOT: /data/user-blind
+      # The blind test store is not scoped per user. The port is published on 127.0.0.1 only, so this is a
+      # single-user install. Whoever publishes the port on another interface must remove this line; blind tests
+      # are then refused (STORE_SHARED_HOST).
+      METALLIKSA_USER_BLIND_SINGLE_USER: "true"
     volumes:
       - metalliksa-data:/data
     # No healthcheck override: the image's HEALTHCHECK calls the unauthenticated /api/health on $PORT.

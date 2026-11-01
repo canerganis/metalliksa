@@ -118,6 +118,53 @@ test("a configured job root is forwarded to the WSL worker through WSLENV withou
   assert.deepEqual(host, { cmd: "py", args: ["-3", "-u", "C:/w.py"] });
 });
 
+const noHost = () => { throw new Error("must not probe host"); };
+function wslEnv(env: Record<string, string | undefined>) {
+  return lpbfWorkerCommand({ platform: "win32", file: "C:/w.py", localFallback: false, env, hostPython: noHost }).env;
+}
+
+test("WSL forwards blind, read-only, host and calibration variables through WSLENV", () => {
+  const env = {
+    METALLIKSA_USER_BLIND_ROOT: "D:/blind data", METALLIKSA_READ_ONLY: "1", METALLIKSA_HOST: "0.0.0.0",
+    METALLIKSA_USER_BLIND_SINGLE_USER: "1", LPBF_MACHINE_CALIBRATION_DIR: "E:\\calibration", METALLIKSA_JOB_ROOT: "C:\\jobs",
+    WSLENV: "TERM:METALLIKSA_HOST/u:USERPROFILE/p",
+  };
+  const out = wslEnv(env);
+  assert.ok(out);
+  assert.equal(out.METALLIKSA_USER_BLIND_ROOT, "D:\\blind data", "path values are the drive-letter form");
+  assert.equal(out.LPBF_MACHINE_CALIBRATION_DIR, "E:\\calibration");
+  assert.equal(out.METALLIKSA_JOB_ROOT, "C:\\jobs");
+  assert.equal(out.METALLIKSA_READ_ONLY, "1");
+  assert.deepEqual(out.WSLENV?.split(":"), ["TERM", "USERPROFILE/p", "METALLIKSA_JOB_ROOT/p", "METALLIKSA_USER_BLIND_ROOT/p",
+    "LPBF_MACHINE_CALIBRATION_DIR/p", "METALLIKSA_READ_ONLY", "METALLIKSA_HOST", "METALLIKSA_USER_BLIND_SINGLE_USER"]);
+});
+
+test("WSL forwards every other variable when METALLIKSA_JOB_ROOT is unset, and only the set ones", () => {
+  const out = wslEnv({ METALLIKSA_READ_ONLY: "1", METALLIKSA_USER_BLIND_ROOT: "C:\\blind", METALLIKSA_HOST: "" });
+  assert.ok(out);
+  assert.equal(out.WSLENV, "METALLIKSA_USER_BLIND_ROOT/p:METALLIKSA_READ_ONLY");
+  assert.equal("METALLIKSA_JOB_ROOT" in out, false);
+  assert.equal(wslEnv({ METALLIKSA_HOST: "", PATH: "C:\\bin" }), undefined, "nothing set means no env override");
+});
+
+test("WSL environment forwarding does not mutate the input env", () => {
+  const env = { METALLIKSA_USER_BLIND_ROOT: "blind", METALLIKSA_READ_ONLY: "1", WSLENV: "METALLIKSA_READ_ONLY/u" };
+  const before = { ...env };
+  const out = wslEnv(env);
+  assert.deepEqual(env, before);
+  assert.notEqual(out, env);
+  assert.equal(out?.WSLENV, "METALLIKSA_USER_BLIND_ROOT/p:METALLIKSA_READ_ONLY");
+  assert.match(out?.METALLIKSA_USER_BLIND_ROOT ?? "", /^[A-Za-z]:\\/, "relative paths resolve to a drive-letter path");
+});
+
+test("WSL rejects non-drive-letter path variables and names the variable", () => {
+  for (const name of ["METALLIKSA_USER_BLIND_ROOT", "LPBF_MACHINE_CALIBRATION_DIR", "METALLIKSA_JOB_ROOT"]) {
+    for (const value of ["\\\\server\\share\\blind", "\\\\wsl$\\Ubuntu-22.04\\home\\x", "/home/user/blind"]) {
+      assert.throws(() => wslEnv({ [name]: value }), new RegExp(`${name} must be a drive-letter path`), `${name} ${value}`);
+    }
+  }
+});
+
 test("explicit host Python also controls the first LPBF worker launch", () => {
   const python = { cmd: 'C:/scientific env/python.exe', prefix: [] };
   const command = lpbfWorkerCommand({ platform: 'win32', file: 'C:/project/python/lpbf_worker.py',

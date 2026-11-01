@@ -96,7 +96,15 @@ def _purge_unverified_artifacts(queue, request):
     )
 
 
-def _estimate(request):
+USER_BLIND_RPC_TYPES = frozenset(("user-blind-preview", "user-blind-list", "user-blind-get"))
+
+
+def _estimate(request, queue=None):
+    payload = request["payload"]
+    if isinstance(payload, dict) and payload.get("jobType") in USER_BLIND_RPC_TYPES:
+        # User blind test reads (spec 3.2 item 1): write free, solver free, no queue slot.
+        import lpbf_user_blind
+        return lpbf_user_blind.rpc(payload, job_root=getattr(queue, "root", None))
     p, m = validate(request["payload"])
     return resource_estimate(p, m)
 
@@ -114,7 +122,7 @@ def dispatch(request, queue, capabilities_handler):
     if method == "capabilities":
         return capabilities_handler(queue)
     if method == "estimate":
-        return _estimate(request)
+        return _estimate(request, queue)
     if method in QUEUE_HANDLERS:
         return QUEUE_HANDLERS[method](queue, request)
     if method in RESEARCH_HANDLERS:

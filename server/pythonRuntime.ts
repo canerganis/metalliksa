@@ -79,21 +79,42 @@ export const getHostPython = createPythonRuntime({
   exists: existsSync, probe: probePythonCommand,
 }, loadPythonEnvironment);
 
-/** Environment for a WSL worker when METALLIKSA_JOB_ROOT is configured. Windows variables reach a wsl.exe
- * child only when WSLENV lists them; without this the WSL worker silently ignored the configured root and used
- * the checkout's .lpbf-jobs. '/p' translates the drive path to /mnt/<drive>/..., which WSL can do only for a
- * drive-letter path, so UNC and \\wsl$ roots are rejected loudly. Returns a new object; never mutates env. */
-function wslJobRootEnvironment(env: Record<string, string | undefined>): Record<string, string | undefined> | undefined {
-  const configured = env.METALLIKSA_JOB_ROOT;
-  if (!configured) return undefined;
-  // A leading slash or backslash (UNC, \\wsl$, a Linux path, a root-relative path) would otherwise resolve
-  // silently onto the current drive, so it is rejected before resolving; a relative path resolves against cwd.
-  const resolved = /^[\\/]/.test(configured) ? configured : path.win32.resolve(configured);
-  if (!/^[A-Za-z]:[\\/]/.test(resolved)) {
-    throw new Error(`METALLIKSA_JOB_ROOT must be a drive-letter path (for example C:\\lpbf-jobs) for the WSL LPBF worker; UNC, \\\\wsl$ and Linux paths cannot be forwarded: ${configured}`);
+const WSL_PATH_VARIABLES = ["METALLIKSA_JOB_ROOT", "METALLIKSA_USER_BLIND_ROOT", "LPBF_MACHINE_CALIBRATION_DIR"] as const;
+const WSL_PLAIN_VARIABLES = ["METALLIKSA_READ_ONLY", "METALLIKSA_HOST", "METALLIKSA_USER_BLIND_SINGLE_USER"] as const;
+
+/** Environment for a WSL worker. Windows variables reach a wsl.exe child only when WSLENV lists them; without
+ * this the WSL worker silently ignored the configured values. Each variable is handled on its own and is
+ * forwarded only when it is set. Path variables (job root, user blind root, machine calibration directory) go
+ * with the '/p' flag, which translates a drive path to /mnt/<drive>/...; WSL can do that only for a drive-letter
+ * path, so UNC, \\wsl$ and Linux paths are rejected loudly, naming the variable. Plain variables (read-only
+ * mode, host, blind single-user switch) are forwarded as they are. Existing WSLENV entries for the same names
+ * are replaced and other entries keep their order. Returns a new object and never mutates env, or undefined
+ * when none of these variables is set. */
+function wslWorkerEnvironment(env: Record<string, string | undefined>): Record<string, string | undefined> | undefined {
+  const overrides: Record<string, string> = {};
+  const flagged: string[] = [];
+  for (const name of WSL_PATH_VARIABLES) {
+    const configured = env[name];
+    if (!configured) continue;
+    // A leading slash or backslash (UNC, \\wsl$, a Linux path, a root-relative path) would otherwise resolve
+    // silently onto the current drive, so it is rejected before resolving; a relative path resolves against cwd.
+    const resolved = /^[\\/]/.test(configured) ? configured : path.win32.resolve(configured);
+    if (!/^[A-Za-z]:[\\/]/.test(resolved)) {
+      throw new Error(`${name} must be a drive-letter path (for example C:\\lpbf-jobs) for the WSL LPBF worker; UNC, \\\\wsl$ and Linux paths cannot be forwarded: ${configured}`);
+    }
+    overrides[name] = resolved;
+    flagged.push(`${name}/p`);
   }
-  const forwarded = (env.WSLENV ?? "").split(":").filter(entry => entry && entry.split("/")[0] !== "METALLIKSA_JOB_ROOT");
-  return { ...env, METALLIKSA_JOB_ROOT: resolved, WSLENV: [...forwarded, "METALLIKSA_JOB_ROOT/p"].join(":") };
+  for (const name of WSL_PLAIN_VARIABLES) {
+    const configured = env[name];
+    if (!configured) continue;
+    overrides[name] = configured;
+    flagged.push(name);
+  }
+  if (flagged.length === 0) return undefined;
+  const replaced = new Set<string>([...WSL_PATH_VARIABLES, ...WSL_PLAIN_VARIABLES].filter(name => name in overrides));
+  const kept = (env.WSLENV ?? "").split(":").filter(entry => entry && !replaced.has(entry.split("/")[0]));
+  return { ...env, ...overrides, WSLENV: [...kept, ...flagged].join(":") };
 }
 
 /** An explicit host executable takes precedence; otherwise keep WSL first on Windows. */
@@ -104,7 +125,7 @@ export function lpbfWorkerCommand(options: {
   if (options.platform === "win32" && !options.localFallback && !options.env.METALLIX_PYTHON) {
     const linuxPath = options.file.replace(/^([A-Za-z]):/, (_, drive: string) => `/mnt/${drive.toLowerCase()}`).replaceAll("\\", "/");
     const command = { cmd: "wsl.exe", args: ["-d", options.env.METALLIKSA_WSL_DISTRO || "Ubuntu-22.04", "--", "python3", "-u", linuxPath] };
-    const env = wslJobRootEnvironment(options.env);
+    const env = wslWorkerEnvironment(options.env);
     return env ? { ...command, env } : command;
   }
   const python = options.hostPython();

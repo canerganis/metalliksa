@@ -96,6 +96,8 @@ ENV NODE_ENV=production \
     METALLIKSA_LPBF_BUNDLE_ROOT=/data/lpbf-run-bundles \
     METALLIKSA_JOB_ROOT=/data/lpbf-jobs \
     RESEARCH_REGISTRY_DIR=/data/research-registry
+# User blind test store (research hub spec 3.5): on the volume, never in the image.
+ENV METALLIKSA_USER_BLIND_ROOT=/data/user-blind
 COPY --from=py-deps /opt/venv /opt/venv
 COPY --from=prod-deps /app/node_modules ./node_modules
 # dist comes from the verify stage so an image is only produced from a verified build.
