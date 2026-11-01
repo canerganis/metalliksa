@@ -18,6 +18,8 @@ import { processOrchestrationMiddleware } from "./server/processOrchestrator.ts"
 import {
   AIRGAP_ALLOWED_LOCAL,
   AIRGAP_BLOCKED_SERVICES,
+  assertEnterpriseProfileConsistent,
+  enterpriseStartupLine,
   isAirgappedFromEnv,
 } from "./server/airgap.ts";
 
@@ -26,6 +28,7 @@ dotenv.config();
 // .env loaded just above must not linger in this process's environment or reach ad-hoc spawns.
 delete process.env.METALLIX_IPC_TOKEN;
 
+assertEnterpriseProfileConsistent(process.env);
 const AIRGAPPED = isAirgappedFromEnv(process.env);
 
 // Process-level crash guards: isolate unhandled rejections and errors
@@ -151,6 +154,8 @@ async function startServer() {
     const proxyWarning = buildTrustProxyWarning(bindConfig, trustProxy);
     if (proxyWarning) console.warn(`[Metalliksa-Server] ${proxyWarning}`);
     for (const line of buildLoginBannerLines(bindConfig, PORT)) console.log(`[Metalliksa-Server] ${line}`);
+    const enterpriseLine = enterpriseStartupLine(process.env);
+    if (enterpriseLine) console.log(`[Metalliksa-Server] ${enterpriseLine}`);
     if (AIRGAPPED) {
       console.log("[Metalliksa-Server] AIRGAPPED=1 — Crossref literature search disabled; local LPBF and physics engines remain available.");
     }
