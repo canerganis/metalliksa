@@ -47,8 +47,10 @@ export function verifyChecksums(root, outName = 'SHA256SUMS') {
   for (const line of text.split('\n').filter(Boolean)) {
     const m = /^([0-9a-f]{64}) {2}(.+)$/.exec(line);
     if (!m) { failures.push(`malformed line: ${line}`); continue; }
-    const file = path.join(root, m[2]);
-    if (!fs.existsSync(file)) failures.push(`missing: ${m[2]}`);
+    const file = path.resolve(root, m[2]);
+    const rel = path.relative(path.resolve(root), file);
+    if (rel.startsWith('..') || path.isAbsolute(rel)) failures.push(`outside root: ${m[2]}`);
+    else if (!fs.existsSync(file)) failures.push(`missing: ${m[2]}`);
     else if (sha256File(file) !== m[1]) failures.push(`mismatch: ${m[2]}`);
   }
   return failures;

@@ -41,6 +41,15 @@ test("verifyChecksums reports tampered and missing files", () => {
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
 
+test("verifyChecksums refuses entries that leave the root", () => {
+  const root = tempRoot();
+  try {
+    writeChecksums(root);
+    fs.appendFileSync(path.join(root, "SHA256SUMS"), `${"0".repeat(64)}  ../outside.txt\n`);
+    assert.deepEqual(verifyChecksums(root), ["outside root: ../outside.txt"]);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});
+
 test("writeChecksums refuses an empty tree", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "relsum-empty-"));
   try { assert.throws(() => writeChecksums(root), /No dist/); }
