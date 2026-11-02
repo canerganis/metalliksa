@@ -6,7 +6,7 @@ An append-only JSON-lines file recording who/what/when for every LPBF run the se
 
 - File: `<run root>/audit/ledger.jsonl`, by default `.lpbf-runs/audit/ledger.jsonl` (the run root is `METALLIKSA_LPBF_RUN_ROOT`). Override the directory with `METALLIKSA_AUDIT_DIR`. Runtime data, gitignored, never committed. Because it follows the run root, tests and deployments with their own run root get their own ledger. `LpbfRunArchiveService` takes the ledger as an optional constructor argument.
 - Hook: `recordRunAudit()` in `server/auditLedger.ts`, called once from `LpbfRunArchiveService.import` after the run is saved. Only runs imported into the run archive are logged. Previews, failed imports, bundle restores and unarchived worker jobs are not.
-- Read-only endpoint: `GET /api/audit/ledger?limit=N` returns `{ entries, chainValid, firstBrokenSeq, headHash, problem, totalEntries, failedAppends }`. `failedAppends` counts append failures since the server started. The whole chain is verified on every call; `entries` is the last N (default 500, max 5000).
+- Read-only endpoint: `GET /api/audit/ledger?limit=N` returns `{ entries, chainValid, firstBrokenSeq, headHash, problem, totalEntries, failedAppends }`. `failedAppends` counts append failures since the server started. `totalEntries` counts verified entries: on a broken chain it is the valid prefix only, not every line in the file. The whole chain is verified on every call; `entries` is the last N (default 500, max 5000).
 - No network use, so it works with `AIRGAPPED=1`. No UI view yet.
 
 ## Entry fields

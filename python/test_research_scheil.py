@@ -306,7 +306,7 @@ class CasePreparation(unittest.TestCase):
         self.assertGreater(flags[0]["maxLiquidWtPct"], 5.0)
         self.assertEqual(rs.liquid_outside_tested_limits(curve, {}), [])
 
-    def test_ti64_carbon_refused_on_mc_ti(self):
+    def test_ti64_iron_refused_on_mc_ti(self):
         with self.assertRaises(rs.ScheilInputError):
             rs.prepare_composition({"Ti": 89.9, "Al": 6.0, "V": 4.0, "Fe": 0.1}, "mc_ti")
 

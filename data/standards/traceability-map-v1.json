@@ -47,9 +47,9 @@
       "title": "AMS7000: L-PBF produced parts, nickel alloy 62Ni-21.5Cr-9.0Mo-3.65Nb, stress relieved, HIP and solution annealed. AMS7001: nickel alloy powder for additive manufacturing (same composition). AMS7002: Process requirements for production of metal powder feedstock for use in additive manufacturing of aerospace parts.",
       "edition": "Issued 2018 (public press listings)",
       "access": "paywalled",
-      "sourceUrl": "https://saemobilus.sae.org/standards/ams7003-laser-powder-bed-fusion-process",
+      "sourceUrl": "https://saemobilus.sae.org/",
       "sha256": null,
-      "verification": "Titles from public press coverage of the 2018 SAE release. Relevant here mainly for AMS7002 (powder feedstock records). AMS7000 and AMS7001 are nickel alloy 625 specific and outside the Ti64/AlSi10Mg primary scope. Clause numbers: unverified: check against a licensed copy."
+      "verification": "No per-document public page was verified for AMS7000, AMS7001 or AMS7002; search SAE Mobilus by designation. Titles from public press coverage of the 2018 SAE release. Relevant here mainly for AMS7002 (powder feedstock records). AMS7000 and AMS7001 are nickel alloy 625 specific and outside the Ti64/AlSi10Mg primary scope. Clause numbers: unverified: check against a licensed copy."
     },
     {
       "id": "F3055",

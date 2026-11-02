@@ -23,8 +23,11 @@ npm run build
 npm run sbom
 
 # Python: wheelhouse from the hash-locked file (pick the lock for the target OS)
-pip download --require-hashes -r python/requirements-lpbf-linux-py312.lock -d wheelhouse/
-# Windows target: python/requirements-lpbf-win-py312.lock
+pip download --require-hashes -r python/requirements-lpbf-linux-py312.lock -d wheelhouse/ \
+  --platform manylinux_2_28_x86_64 --python-version 3.12 --implementation cp --only-binary=:all:
+# Windows target: python/requirements-lpbf-win-py312.lock with --platform win_amd64.
+# Without the platform flags pip fetches wheels for the build host, which fail the
+# hash check or do not install when the build host differs from the target.
 
 # Docker (optional): build and export the runtime image
 docker build -t metalliksa:offline .
@@ -70,6 +73,8 @@ Docker: the `metalliksa-data` volume mounted at `/data` holds `lpbf-sources`, `l
 ```bash
 docker run --rm -v metalliksa-data:/data -v "$PWD":/backup busybox tar czf /backup/metalliksa-data.tgz -C /data .
 ```
+
+Machine calibration data is not in that volume: it goes to `/app/.runtime/machine-calibration` inside the container unless `LPBF_MACHINE_CALIBRATION_DIR` points elsewhere. Set `LPBF_MACHINE_CALIBRATION_DIR=/data/machine-calibration` so a container recreate keeps it and the backup above covers it, or back up `/app/.runtime` separately.
 
 The browser-side research registry (`metalliksa-research-registry-v1`) lives in each user's browser storage and is not in these directories.
 

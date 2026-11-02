@@ -97,7 +97,7 @@ bracket of at most 0.5 K, stop when the residual liquid falls below 1e-4.
 | Scheil range 0.1-99.9 % (K) | 257.0 (bounds 256.5-257.5) |
 | Phases | BCC_A2 only (0.99991), residual liquid 9.1e-5 at 1369.0 C |
 | Paired deltas | first solid -0.15 K; last solid -188.55 K |
-| Liquid outside tested limits | V above 5 wt% from 1635 C (fs 0.33); late liquid V 24.3, Al 18.1 wt% |
+| Liquid outside tested limits | V above 5 wt% from 1635 C (fs 0.33); residual liquid at 1369.0 C: V 24.3, Al 18.1 wt% (V peaks at 26.19 wt% along the path, see liquidOutsideTestedLimits.maxLiquidWtPct) |
 | Path inventory max abs error | 1.4e-11 (176 calls) |
 
 Single-phase primary BCC with no terminal reaction gives a long Scheil tail. Below fs 0.33 the liquid lies
@@ -137,7 +137,7 @@ Contradictions (unresolved):
 
 | Source and locator | Source values | mc_ti equilibrium | mc_ti Scheil |
 |---|---|---|---|
-| Gan et al. 2021, Nat. Commun., DOI 10.1038/s41467-021-22704-0, SI PDF20 Supplementary Table 1 (compiled model inputs) | Ts / Tl 1877 / 1933 K = 1603.85 / 1659.85 C, 56 K | Tl -12.45 K, Ts -25.05 K, range 68.6 K | T(0.999) 213.6 K below Gan Ts; range 257 K |
+| Gan et al. 2021, Nat. Commun., DOI 10.1038/s41467-021-22704-0, SI PDF20 Supplementary Table 1 (compiled model inputs) | Ts / Tl 1877 / 1933 K = 1603.85 / 1659.85 C, 56 K (other repo records, e.g. REVIEW_ti64_w1_p8_pairing_2026-10-20.md line 58, carry 1877.15 / 1933.15 K = 1604.0 / 1660.0 C; the 0.15 K difference does not change any conclusion) | Tl -12.45 K, Ts -25.05 K, range 68.6 K | T(0.999) 213.6 K below Gan Ts; range 257 K |
 | Cezairliyan et al. 1977, PDF3 / printed p. 253 (pulse heating, solidus), via `docs/research/sol_t_ti_al_sources.md` | Solidus 1942.6 K = 1669.45 C, estimated total inaccuracy 8 K; no liquidus | mc_ti liquidus is 22.05 K below this measured solidus | first solid 22.2 K below it |
 | Boivineau et al. 2006, DOI 10.1007/s10765-005-0001-6, PDF16 / printed p. 522 (liquidus inferred from extrapolated emissivity) | 1928 K = 1654.85 C | Tl -7.45 K | n/a |
 
