@@ -148,13 +148,16 @@ test("WSL forwards every other variable when METALLIKSA_JOB_ROOT is unset, and o
 });
 
 test("WSL environment forwarding does not mutate the input env", () => {
-  const env = { METALLIKSA_USER_BLIND_ROOT: "blind", METALLIKSA_READ_ONLY: "1", WSLENV: "METALLIKSA_READ_ONLY/u" };
+  // A relative path resolves against the host cwd, which has a drive letter only on a Windows host
+  // (the only host that takes the WSL branch); on a Linux CI runner use a drive path instead.
+  const onWindows = process.platform === "win32";
+  const env = { METALLIKSA_USER_BLIND_ROOT: onWindows ? "blind" : "C:/blind", METALLIKSA_READ_ONLY: "1", WSLENV: "METALLIKSA_READ_ONLY/u" };
   const before = { ...env };
   const out = wslEnv(env);
   assert.deepEqual(env, before);
   assert.notEqual(out, env);
   assert.equal(out?.WSLENV, "METALLIKSA_USER_BLIND_ROOT/p:METALLIKSA_READ_ONLY");
-  assert.match(out?.METALLIKSA_USER_BLIND_ROOT ?? "", /^[A-Za-z]:\\/, "relative paths resolve to a drive-letter path");
+  assert.match(out?.METALLIKSA_USER_BLIND_ROOT ?? "", /^[A-Za-z]:\\/, "the forwarded path is in drive-letter form");
 });
 
 test("WSL rejects non-drive-letter path variables and names the variable", () => {
